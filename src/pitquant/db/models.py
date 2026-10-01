@@ -122,6 +122,103 @@ class Issuer(Base):
     country: Mapped[str | None] = mapped_column(String(2))
 
 
+class IssuerIdentifier(Base):
+    """Issuer-level identifiers (ADR-0020): CIF (Spain), CIK (SEC), LEI. Fundamentals are
+    reported by an ISSUER; prices and membership belong to a SECURITY."""
+
+    __tablename__ = "issuer_identifiers"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    issuer_id: Mapped[str] = mapped_column(ForeignKey("issuers.issuer_id"), index=True)
+    id_type: Mapped[str] = mapped_column(String(10))  # CIF | CIK | LEI
+    value: Mapped[str] = mapped_column(String(30))
+    valid_from: Mapped[date] = mapped_column(Date)
+    valid_to: Mapped[date | None] = mapped_column(Date)
+    source: Mapped[str] = mapped_column(String(100))
+
+    __table_args__ = (
+        Index("ix_issuer_identifier_lookup", "id_type", "value", "valid_from"),
+        CheckConstraint("valid_to IS NULL OR valid_to > valid_from", name="interval"),
+    )
+
+
+class SecurityIdentitySnapshot(Base):
+    """One line of an official identity snapshot (e.g. CNMV ANCV semiannual list).
+
+    It proves ONLY that the ISIN was active (listed / in the ANCV database, per the
+    distribution's LEAME scope) on ``reference_date``. It never proves a start or end date.
+    """
+
+    __tablename__ = "security_identity_snapshots"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    source: Mapped[str] = mapped_column(String(50))  # CNMV_ANCV
+    reference_date: Mapped[date] = mapped_column(Date, index=True)
+    scope: Mapped[str] = mapped_column(String(40))  # ADMITTED_TO_TRADING | ACTIVE_IN_ANCV
+    isin: Mapped[str] = mapped_column(String(12), index=True)
+    issuer_legal_name: Mapped[str] = mapped_column(String(300))
+    instrument_name: Mapped[str] = mapped_column(String(300))
+    instrument_class: Mapped[str] = mapped_column(String(10))  # RV (renta variable)
+    cfi: Mapped[str | None] = mapped_column(String(6))
+    currency: Mapped[str | None] = mapped_column(String(3))
+    nominal: Mapped[str | None] = mapped_column(String(30))
+    issue_date: Mapped[date | None] = mapped_column(Date)  # «Fecha de emisión» if published
+    issuer_id: Mapped[str | None] = mapped_column(ForeignKey("issuers.issuer_id"))
+    security_id: Mapped[str | None] = mapped_column(ForeignKey("securities.security_id"))
+    member_name: Mapped[str] = mapped_column(String(200))  # file inside the distribution
+    source_hash: Mapped[str] = mapped_column(String(64))  # SHA-256 of that member
+    archive_id: Mapped[str] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    parser_version: Mapped[str] = mapped_column(String(50))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        UniqueConstraint("source", "reference_date", "isin", "source_hash", name="uq_ident_snap"),
+    )
+
+
+class IdentityResolutionRun(Base):
+    """One run of the IdentityResolutionEngine over one membership build (ADR-0020)."""
+
+    __tablename__ = "identity_resolution_runs"
+
+    run_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    index_code: Mapped[str] = mapped_column(String(20))
+    build_id: Mapped[str] = mapped_column(ForeignKey("membership_builds.build_id"), index=True)
+    engine_version: Mapped[str] = mapped_column(String(30))
+    inputs_hash: Mapped[str] = mapped_column(String(64))
+    canonical_start: Mapped[date] = mapped_column(Date)
+    metrics: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class MembershipIdentitySegment(Base):
+    """Which SECURITY a membership interval refers to over ``[segment_from, segment_to)``.
+    Only EXACT_OFFICIAL_IDENTIFIER and MULTI_SOURCE_CONFIRMED segments are backtestable."""
+
+    __tablename__ = "membership_identity_segments"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    run_id: Mapped[str] = mapped_column(ForeignKey("identity_resolution_runs.run_id"), index=True)
+    membership_id: Mapped[int] = mapped_column(ForeignKey("index_membership.id"), index=True)
+    segment_from: Mapped[date] = mapped_column(Date)
+    segment_to: Mapped[date | None] = mapped_column(Date)
+    status: Mapped[str] = mapped_column(String(30))
+    period_class: Mapped[str] = mapped_column(String(30))  # V1_CANONICAL | ARCHIVAL_...
+    isin: Mapped[str | None] = mapped_column(String(12))
+    security_id: Mapped[str | None] = mapped_column(ForeignKey("securities.security_id"))
+    issuer_id: Mapped[str | None] = mapped_column(ForeignKey("issuers.issuer_id"))
+    evidence: Mapped[list[Any]] = mapped_column(JSON, default=list)
+
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('EXACT_OFFICIAL_IDENTIFIER','MULTI_SOURCE_CONFIRMED','PROVISIONAL',"
+            "'UNRESOLVED')",
+            name="status_values",
+        ),
+        CheckConstraint("segment_to IS NULL OR segment_to > segment_from", name="interval"),
+    )
+
+
 class Security(Base):
     __tablename__ = "securities"
 
@@ -372,6 +469,69 @@ class CorporateAction(Base):
     ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
 
 
+class CorporateActionEvent(Base):
+    """Normalized, provider-neutral corporate action (ADR-0021). Append-only: a provider
+    correction is a NEW row (same ``provider``/``provider_event_id``, new ``source_hash``).
+
+    ``event_type`` is one of ``pitquant.market.normalized.CorporateActionKind``. Dates are
+    as published by the source; any missing date stays NULL (never inferred). Complex
+    Spanish events (rights issues, scrip, OPAs, mergers, exchanges) must come from an
+    OFFICIAL layer (BME/CNMV) — ``source_tier`` records that.
+    """
+
+    __tablename__ = "corporate_action_events"
+
+    event_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"), index=True)
+    event_type: Mapped[str] = mapped_column(String(30))
+    announcement_date: Mapped[date | None] = mapped_column(Date)
+    ex_date: Mapped[date | None] = mapped_column(Date)
+    record_date: Mapped[date | None] = mapped_column(Date)
+    payment_date: Mapped[date | None] = mapped_column(Date)
+    effective_date: Mapped[date | None] = mapped_column(Date)
+    available_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    ratio: Mapped[float | None] = mapped_column(Float)  # new shares per old share
+    cash_amount: Mapped[float | None] = mapped_column(Float)  # per share
+    currency: Mapped[str | None] = mapped_column(String(3))
+    target_security_id: Mapped[str | None] = mapped_column(ForeignKey("securities.security_id"))
+    details: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    provider: Mapped[str] = mapped_column(String(50))
+    source_tier: Mapped[str] = mapped_column(String(20))  # OFFICIAL | VENDOR | FIXTURE
+    provider_event_id: Mapped[str] = mapped_column(String(200))  # provider raw identifier
+    source_hash: Mapped[str] = mapped_column(String(64))
+    archive_id: Mapped[str | None] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    parser_version: Mapped[str] = mapped_column(String(50))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        UniqueConstraint("provider", "provider_event_id", "source_hash", name="uq_ca_event"),
+        CheckConstraint(
+            "event_type IN ('CASH_DIVIDEND','SPECIAL_DIVIDEND','STOCK_DIVIDEND','SPLIT',"
+            "'REVERSE_SPLIT','RIGHTS_ISSUE','SCRIP_DIVIDEND','SPINOFF','CASH_ACQUISITION',"
+            "'STOCK_ACQUISITION','MERGER','DELISTING','BANKRUPTCY','TICKER_CHANGE',"
+            "'EXCHANGE_CHANGE','LISTING','RETURN_OF_CAPITAL','ISIN_CHANGE')",
+            name="event_type_values",
+        ),
+        CheckConstraint("source_tier IN ('OFFICIAL','VENDOR','FIXTURE')", name="tier_values"),
+        CheckConstraint("ratio IS NULL OR ratio > 0", name="positive_ratio"),
+    )
+
+
+class ProviderAdjustedPrice(Base):
+    """A vendor's ADJUSTED close, kept ONLY for QA/discrepancy detection (ADR-0021). Never
+    an input: adjusted series are rebuilt from raw prices + corporate_action_events."""
+
+    __tablename__ = "provider_adjusted_prices"
+
+    security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"), primary_key=True)
+    session_date: Mapped[date] = mapped_column(Date, primary_key=True)
+    provider: Mapped[str] = mapped_column(String(50), primary_key=True)
+    adj_close: Mapped[float] = mapped_column(Float)
+    vendor_last_updated: Mapped[date | None] = mapped_column(Date)
+    source_hash: Mapped[str] = mapped_column(String(64))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
 class Dividend(Base):
     __tablename__ = "dividends"
 
@@ -483,7 +643,9 @@ class CnmvFiling(Base):
     doc_kind: Mapped[str] = mapped_column(String(30))  # IFI_IPP (periodic, IPP XBRL) | IFA_ESEF
     cif: Mapped[str] = mapped_column(String(20))
     company: Mapped[str] = mapped_column(String(300))
-    security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"))
+    # Pre-0004 rows point to a CIF pseudo-security; from 0004 a filing belongs to an ISSUER.
+    security_id: Mapped[str | None] = mapped_column(ForeignKey("securities.security_id"))
+    issuer_id: Mapped[str | None] = mapped_column(ForeignKey("issuers.issuer_id"), index=True)
     period_start: Mapped[date | None] = mapped_column(Date)
     period_end: Mapped[date] = mapped_column(Date)
     period_label: Mapped[str | None] = mapped_column(String(60))
@@ -520,7 +682,10 @@ class FundamentalFact(Base):
     __tablename__ = "fundamental_facts"
 
     fact_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
-    security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"))
+    # Fundamentals describe the ISSUER (ADR-0020). SEC rows keep security_id (CIK-registered
+    # security); CNMV rows from 0004 carry issuer_id only.
+    security_id: Mapped[str | None] = mapped_column(ForeignKey("securities.security_id"))
+    issuer_id: Mapped[str | None] = mapped_column(ForeignKey("issuers.issuer_id"), index=True)
     taxonomy: Mapped[str] = mapped_column(String(30), default="internal")  # us-gaap, dei, ifrs-full
     concept: Mapped[str] = mapped_column(String(200))
     fiscal_period: Mapped[str | None] = mapped_column(String(10))
@@ -568,6 +733,8 @@ class FundamentalFact(Base):
         CheckConstraint(
             "accepted_at IS NULL OR available_at >= accepted_at", name="available_after_acceptance"
         ),
+        CheckConstraint("security_id IS NOT NULL OR issuer_id IS NOT NULL", name="has_subject"),
+        Index("ix_fact_issuer_asof", "issuer_id", "concept", "period_end", "available_at"),
     )
 
 
@@ -856,5 +1023,9 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "index_events",
         "membership_builds",
         "index_membership",
+        "security_identity_snapshots",
+        "identity_resolution_runs",
+        "membership_identity_segments",
+        "corporate_action_events",
     }
 )

@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **36**.
+Tablas: **42**.
 
 ## Procedencia y calidad
 
@@ -139,6 +139,22 @@ Tablas: **36**.
 - INDEX ix_identifier_history_security_id (security_id)
 - INDEX ix_identifier_lookup (id_type, value, valid_from)
 
+### `issuer_identifiers`
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `id` | INTEGER | no | PK |
+| `issuer_id` | VARCHAR(36) | no | FK→`issuers.issuer_id` |
+| `id_type` | VARCHAR(10) | no |  |
+| `value` | VARCHAR(30) | no |  |
+| `valid_from` | DATE | no |  |
+| `valid_to` | DATE | sí |  |
+| `source` | VARCHAR(100) | no |  |
+
+- CHECK `valid_to IS NULL OR valid_to > valid_from`
+- INDEX ix_issuer_identifier_lookup (id_type, value, valid_from)
+- INDEX ix_issuer_identifiers_issuer_id (issuer_id)
+
 ### `sector_classification`
 
 | Columna | Tipo | Nulo | Clave |
@@ -155,6 +171,72 @@ Tablas: **36**.
 | `available_at` | DATETIME | no |  |
 
 - INDEX ix_sector_classification_security_id (security_id)
+
+## Identidad (ADR-0020)
+
+### `security_identity_snapshots` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `id` | INTEGER | no | PK |
+| `source` | VARCHAR(50) | no |  |
+| `reference_date` | DATE | no |  |
+| `scope` | VARCHAR(40) | no |  |
+| `isin` | VARCHAR(12) | no |  |
+| `issuer_legal_name` | VARCHAR(300) | no |  |
+| `instrument_name` | VARCHAR(300) | no |  |
+| `instrument_class` | VARCHAR(10) | no |  |
+| `cfi` | VARCHAR(6) | sí |  |
+| `currency` | VARCHAR(3) | sí |  |
+| `nominal` | VARCHAR(30) | sí |  |
+| `issue_date` | DATE | sí |  |
+| `issuer_id` | VARCHAR(36) | sí | FK→`issuers.issuer_id` |
+| `security_id` | VARCHAR(36) | sí | FK→`securities.security_id` |
+| `member_name` | VARCHAR(200) | no |  |
+| `source_hash` | VARCHAR(64) | no |  |
+| `archive_id` | VARCHAR(36) | no | FK→`raw_source_archive.archive_id` |
+| `parser_version` | VARCHAR(50) | no |  |
+| `ingested_at` | DATETIME | no |  |
+
+- INDEX ix_security_identity_snapshots_isin (isin)
+- INDEX ix_security_identity_snapshots_reference_date (reference_date)
+- UNIQUE (source, reference_date, isin, source_hash)
+
+### `identity_resolution_runs` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `run_id` | VARCHAR(36) | no | PK |
+| `index_code` | VARCHAR(20) | no |  |
+| `build_id` | VARCHAR(36) | no | FK→`membership_builds.build_id` |
+| `engine_version` | VARCHAR(30) | no |  |
+| `inputs_hash` | VARCHAR(64) | no |  |
+| `canonical_start` | DATE | no |  |
+| `metrics` | JSON | no |  |
+| `created_at` | DATETIME | no |  |
+
+- INDEX ix_identity_resolution_runs_build_id (build_id)
+
+### `membership_identity_segments` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `id` | INTEGER | no | PK |
+| `run_id` | VARCHAR(36) | no | FK→`identity_resolution_runs.run_id` |
+| `membership_id` | INTEGER | no | FK→`index_membership.id` |
+| `segment_from` | DATE | no |  |
+| `segment_to` | DATE | sí |  |
+| `status` | VARCHAR(30) | no |  |
+| `period_class` | VARCHAR(30) | no |  |
+| `isin` | VARCHAR(12) | sí |  |
+| `security_id` | VARCHAR(36) | sí | FK→`securities.security_id` |
+| `issuer_id` | VARCHAR(36) | sí | FK→`issuers.issuer_id` |
+| `evidence` | JSON | no |  |
+
+- CHECK `segment_to IS NULL OR segment_to > segment_from`
+- CHECK `status IN ('EXACT_OFFICIAL_IDENTIFIER','MULTI_SOURCE_CONFIRMED','PROVISIONAL','UNRESOLVED')`
+- INDEX ix_membership_identity_segments_membership_id (membership_id)
+- INDEX ix_membership_identity_segments_run_id (run_id)
 
 ## Universo
 
@@ -247,6 +329,50 @@ Tablas: **36**.
 
 - CHECK `close > 0`
 - CHECK `high IS NULL OR low IS NULL OR high >= low`
+
+### `provider_adjusted_prices`
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `security_id` | VARCHAR(36) | no | PK FK→`securities.security_id` |
+| `session_date` | DATE | no | PK |
+| `provider` | VARCHAR(50) | no | PK |
+| `adj_close` | FLOAT | no |  |
+| `vendor_last_updated` | DATE | sí |  |
+| `source_hash` | VARCHAR(64) | no |  |
+| `ingested_at` | DATETIME | no |  |
+
+### `corporate_action_events` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `event_id` | VARCHAR(36) | no | PK |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `event_type` | VARCHAR(30) | no |  |
+| `announcement_date` | DATE | sí |  |
+| `ex_date` | DATE | sí |  |
+| `record_date` | DATE | sí |  |
+| `payment_date` | DATE | sí |  |
+| `effective_date` | DATE | sí |  |
+| `available_at` | DATETIME | no |  |
+| `ratio` | FLOAT | sí |  |
+| `cash_amount` | FLOAT | sí |  |
+| `currency` | VARCHAR(3) | sí |  |
+| `target_security_id` | VARCHAR(36) | sí | FK→`securities.security_id` |
+| `details` | JSON | no |  |
+| `provider` | VARCHAR(50) | no |  |
+| `source_tier` | VARCHAR(20) | no |  |
+| `provider_event_id` | VARCHAR(200) | no |  |
+| `source_hash` | VARCHAR(64) | no |  |
+| `archive_id` | VARCHAR(36) | sí | FK→`raw_source_archive.archive_id` |
+| `parser_version` | VARCHAR(50) | no |  |
+| `ingested_at` | DATETIME | no |  |
+
+- CHECK `event_type IN ('CASH_DIVIDEND','SPECIAL_DIVIDEND','STOCK_DIVIDEND','SPLIT','REVERSE_SPLIT','RIGHTS_ISSUE','SCRIP_DIVIDEND','SPINOFF','CASH_ACQUISITION','STOCK_ACQUISITION','MERGER','DELISTING','BANKRUPTCY','TICKER_CHANGE','EXCHANGE_CHANGE','LISTING','RETURN_OF_CAPITAL','ISIN_CHANGE')`
+- CHECK `ratio IS NULL OR ratio > 0`
+- CHECK `source_tier IN ('OFFICIAL','VENDOR','FIXTURE')`
+- INDEX ix_corporate_action_events_security_id (security_id)
+- UNIQUE (provider, provider_event_id, source_hash)
 
 ### `corporate_actions`
 
@@ -366,7 +492,8 @@ Tablas: **36**.
 | `doc_kind` | VARCHAR(30) | no |  |
 | `cif` | VARCHAR(20) | no |  |
 | `company` | VARCHAR(300) | no |  |
-| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `security_id` | VARCHAR(36) | sí | FK→`securities.security_id` |
+| `issuer_id` | VARCHAR(36) | sí | FK→`issuers.issuer_id` |
 | `period_start` | DATE | sí |  |
 | `period_end` | DATE | no |  |
 | `period_label` | VARCHAR(60) | sí |  |
@@ -385,6 +512,7 @@ Tablas: **36**.
 | `ingested_at` | DATETIME | no |  |
 
 - CHECK `availability_precision IN ('DATE_ONLY','DATETIME')`
+- INDEX ix_cnmv_filings_issuer_id (issuer_id)
 - INDEX ix_cnmv_filings_nreg (nreg)
 - UNIQUE (nreg, data_sha256)
 
@@ -393,7 +521,8 @@ Tablas: **36**.
 | Columna | Tipo | Nulo | Clave |
 |---|---|---|---|
 | `fact_id` | VARCHAR(36) | no | PK |
-| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `security_id` | VARCHAR(36) | sí | FK→`securities.security_id` |
+| `issuer_id` | VARCHAR(36) | sí | FK→`issuers.issuer_id` |
 | `taxonomy` | VARCHAR(30) | no |  |
 | `concept` | VARCHAR(200) | no |  |
 | `fiscal_period` | VARCHAR(10) | sí |  |
@@ -418,9 +547,12 @@ Tablas: **36**.
 | `ingested_at` | DATETIME | no |  |
 
 - CHECK `accepted_at IS NULL OR available_at >= accepted_at`
+- CHECK `security_id IS NOT NULL OR issuer_id IS NOT NULL`
 - INDEX ix_fact_asof (security_id, concept, period_end, available_at)
+- INDEX ix_fact_issuer_asof (issuer_id, concept, period_end, available_at)
 - INDEX ix_fundamental_facts_accession_number (accession_number)
 - INDEX ix_fundamental_facts_cnmv_filing_id (cnmv_filing_id)
+- INDEX ix_fundamental_facts_issuer_id (issuer_id)
 - UNIQUE (security_id, taxonomy, concept, unit, period_start, period_end, fiscal_period, revision_id, accession_number, source_id)
 
 ### `analyst_estimates`

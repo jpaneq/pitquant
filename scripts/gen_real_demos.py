@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from sqlalchemy import select  # noqa: E402
 
 from pitquant.config.settings import get_settings  # noqa: E402
-from pitquant.db.models import CnmvFiling, IdentifierHistory  # noqa: E402
+from pitquant.db.models import IdentifierHistory  # noqa: E402
 from pitquant.db.session import make_engine, make_session_factory  # noqa: E402
 
 
@@ -35,7 +35,12 @@ def main() -> int:
         aapl = ses.scalars(
             select(IdentifierHistory.security_id).where(IdentifierHistory.value == "0000320193")
         ).one()
-        enagas = ses.scalars(select(CnmvFiling.security_id)).first()
+        # the IBEX security proven to be ISIN ES0130960018, linked to the CNMV issuer (CIF)
+        enagas = ses.scalars(
+            select(IdentifierHistory.security_id).where(
+                IdentifierHistory.id_type == "ISIN", IdentifierHistory.value == "ES0130960018"
+            )
+        ).first()
     sec = [
         "# Demostración PIT con datos REALES de SEC EDGAR",
         "",

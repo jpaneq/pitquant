@@ -15,12 +15,12 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Any, NamedTuple, Protocol
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from pitquant.core.errors import LookAheadError
 from pitquant.core.timeutils import require_aware
-from pitquant.db.models import FundamentalFact
+from pitquant.db.models import FundamentalFact, Security
 
 
 class HasAvailability(Protocol):
@@ -118,10 +118,11 @@ def _version_order(f: FundamentalFact) -> tuple[datetime, datetime, int, str]:
 
 def facts_as_of(
     session: Session,
-    security_id: str,
+    security_id: str | None,
     as_of: datetime,
     concepts: Sequence[str] | None = None,
     *,
+    issuer_id: str | None = None,
     ingested_before: datetime | None = None,
 ) -> dict[FactKey, FundamentalFact]:
     """The version of each fact that was actually available at ``as_of``.
@@ -130,10 +131,24 @@ def facts_as_of(
     later ``available_at``; it can never displace what a snapshot at ``as_of`` saw.
     ``ingested_before`` pins the system's own knowledge (data_version) so a reconstruction
     is reproducible even after new rows are ingested.
+
+    Fundamentals belong to the ISSUER (ADR-0020): for a ``security_id`` the facts filed by
+    its issuer (``securities.issuer_id``) are included; ``issuer_id`` queries an issuer
+    directly.
     """
     as_of = require_aware(as_of, "as_of")
+    if security_id is None and issuer_id is None:
+        raise ValueError("facts_as_of needs a security_id or an issuer_id")
+    if security_id is not None and issuer_id is None:
+        sec = session.get(Security, security_id)
+        issuer_id = sec.issuer_id if sec is not None else None
+    subject = []
+    if security_id is not None:
+        subject.append(FundamentalFact.security_id == security_id)
+    if issuer_id is not None:
+        subject.append(FundamentalFact.issuer_id == issuer_id)
     stmt = select(FundamentalFact).where(
-        FundamentalFact.security_id == security_id,
+        or_(*subject),
         FundamentalFact.available_at <= as_of,
     )
     if concepts:
@@ -146,7 +161,7 @@ def facts_as_of(
         cur = best.get(k)
         if cur is None or _version_order(f) > _version_order(cur):
             best[k] = f
-    guard = PITGuard(as_of, context=f"facts_as_of:{security_id}")
+    guard = PITGuard(as_of, context=f"facts_as_of:{security_id or issuer_id}")
     guard.check_all((f"{k.concept}:{k.period_end}", f.available_at) for k, f in best.items())
     return best
 

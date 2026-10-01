@@ -4,8 +4,9 @@
     PITQUANT_DATABASE_URL=sqlite:///data/pitquant.db PITQUANT_SEC_USER_AGENT="... e-mail" \
         python scripts/rebuild_real_data.py
 
-Steps: schema (alembic) → SEC (MSFT, AAPL) → BME documents + IBEX build → CNMV slice
-(Enagás) → EDGAR time investigation → D-05 evidence → real-data demos.
+Steps: schema (alembic) → SEC (MSFT, AAPL) → BME documents → CNMV slice (Enagás) → ANCV
+identity snapshots + NIF queries → IBEX build + identity resolution → EDGAR time
+investigation → D-05 evidence → real-data demos.
 The raw archive is content-addressed, so already-archived bytes are reused.
 """
 
@@ -114,6 +115,7 @@ def main() -> int:
         for nreg in ENAGAS[1]:
             print(ingest_cnmv_report(ses, prov, nreg, register_missing=True), flush=True)
         ses.commit()
+    run(sys.executable, "scripts/ingest_ancv.py")
     run(sys.executable, "scripts/build_ibex_real.py")
     run(sys.executable, "scripts/edgar_time_investigation.py")
     run(sys.executable, "scripts/verify_contract_cases.py")

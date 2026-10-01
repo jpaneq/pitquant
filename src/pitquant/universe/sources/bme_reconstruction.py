@@ -20,7 +20,7 @@ Guarantees and limits:
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import date
 from itertools import pairwise
@@ -105,7 +105,12 @@ def events_from_official_documents(
     coverage_start: date,
     history_sha256: str,
     expected_size: tuple[int, int],
+    row_resolutions: Mapping[str, tuple[str, str]] | None = None,
+    resolutions_hash: str | None = None,
 ) -> tuple[EventSource, ReconstructionReport]:
+    """``row_resolutions`` (row_ref -> (outcome, evidence)) classifies rows without a legend
+    marker from ANCV ISIN continuity (ADR-0020); ``resolutions_hash`` (hash of the archived
+    snapshots used) becomes part of the source hash so the build is traceable to them."""
     initial, sizes = membership_before(rows, current, coverage_start, expected_size)
     rep = ReconstructionReport(coverage_start, current.observed_on, tuple(sorted(initial)), sizes)
     by_number = sorted((r for r in rows if r.review_number), key=lambda r: r.review_number or 0)
@@ -124,7 +129,13 @@ def events_from_official_documents(
         "membership derived from the observed composition and the complete change list",
     )
     forward = [r for r in rows if r.effective_date > coverage_start]
-    res = classify_rows([seed, *forward], (), INDEX, unproven_as_unresolved_turnover=True)
+    res = classify_rows(
+        [seed, *forward],
+        (),
+        INDEX,
+        unproven_as_unresolved_turnover=True,
+        row_resolutions=row_resolutions,
+    )
     rep.unresolved_events = res.unresolved_events
     src = EventSource(
         SOURCE,
@@ -133,7 +144,10 @@ def events_from_official_documents(
         # archived — same structure as the S&P snapshot reconstruction: provisional.
         SourceConfidence.PROVISIONAL_RESEARCH_SOURCE,
         res.events,
-        content_hash([history_sha256, current.archive_sha256]),
+        content_hash(
+            [history_sha256, current.archive_sha256]
+            + ([resolutions_hash] if resolutions_hash else [])
+        ),
         warnings=tuple(res.warnings),
     )
     return src, rep

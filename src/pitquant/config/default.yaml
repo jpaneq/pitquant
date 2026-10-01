@@ -67,6 +67,10 @@ validation:
     start: "2022-10-01"
     end: "2025-09-30"
 
+# V1 canonical period (ADR-0020): data before this date is ARCHIVAL / NON_CANONICAL_FOR_V1.
+canonical_period:
+  start: "2011-01-01"
+
 scoring:
   version: "baseline-0.1-hypothesis"
   weights:

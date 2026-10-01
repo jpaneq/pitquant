@@ -160,8 +160,12 @@ def test_date_only_availability_waits_for_last_modification(
     assert f.last_modification_date == date(2017, 7, 27)
     # The downloadable XBRL is the CURRENT version: usable only after the last modification.
     assert f.effective_available_at == datetime(2017, 7, 28, 9, 0, tzinfo=MAD)
-    assert facts_as_of(session, f.security_id, datetime(2017, 7, 27, 23, 0, tzinfo=MAD)) == {}
-    assert len(facts_as_of(session, f.security_id, datetime(2017, 7, 28, 9, 0, tzinfo=MAD))) == 2
+    # Filed by the ISSUER (ADR-0020): no pseudo-security is created for a CIF.
+    assert f.security_id is None and f.issuer_id is not None
+    iid = f.issuer_id
+    assert facts_as_of(session, None, datetime(2017, 7, 27, 23, 0, tzinfo=MAD), issuer_id=iid) == {}
+    later = facts_as_of(session, None, datetime(2017, 7, 28, 9, 0, tzinfo=MAD), issuer_id=iid)
+    assert len(later) == 2
     assert ingest_cnmv_report(session, prov, "A").status == "already_ingested"
 
 
@@ -175,12 +179,12 @@ def test_later_report_restates_without_rewriting(session: Session, tmp_path: Pat
     )
     ingest_cnmv_report(session, prov, "A", register_missing=True)
     ingest_cnmv_report(session, prov, "B")
-    sid = session.query(CnmvFiling).first().security_id  # type: ignore[union-attr]
+    iid = session.query(CnmvFiling).first().issuer_id  # type: ignore[union-attr]
 
     def v(at: datetime) -> float | None:
         hits = [
             f
-            for k, f in facts_as_of(session, sid, at, [CONCEPT]).items()
+            for k, f in facts_as_of(session, None, at, [CONCEPT], issuer_id=iid).items()
             if k.period_end == date(2017, 6, 30)
         ]
         return hits[0].value if hits else None

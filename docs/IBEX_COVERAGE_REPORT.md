@@ -1,23 +1,54 @@
 # IBEX 35 — informe de cobertura del universo real
 
-Generado con `scripts/build_ibex_real.py`. Fuentes:
-- Composición histórica IBEX 35: `5c028420d39c9d6e2205fa88d15627865dc217de867bc86987ca8f9fddba3695`.
-- Composición vigente observada el 2026-10-01: **transcripción** de la página oficial de cotizaciones y de las fichas (renderizadas por JavaScript; sus bytes no contienen los valores y no pueden archivarse) — `9d2f010701a50c42de9d5d5bcac6fd3aa4b57cb253b1cd7533740c78b159c28d`. Por eso el build es PROVISIONAL_RESEARCH_SOURCE.
+Generado con `scripts/build_ibex_real.py` (ADR-0017, ADR-0020). Fuentes:
+- Composición histórica IBEX 35 (BME): `5c028420d39c9d6e2205fa88d15627865dc217de867bc86987ca8f9fddba3695`.
+- Composición vigente observada el 2026-10-01: **transcripción** de páginas oficiales renderizadas por JavaScript — `9d2f010701a50c42de9d5d5bcac6fd3aa4b57cb253b1cd7533740c78b159c28d`. Por eso el build es PROVISIONAL_RESEARCH_SOURCE.
+- Identidad: 33 snapshots semestrales ANCV de la CNMV (2010-06-30 → 2026-06-30), hash del conjunto `e22b3703e8f78e7988c05a1a9e4957f7b3ce6570d9735fa06d46c925f1b2efca`.
 
-GAS→NTGY (fila 108) y REE→RED (fila 122) están entre las 7 filas sin marcador de leyenda: se cargan como rotación UNRESOLVED_EVENT_TYPE con identidades nuevas. **No están demostradas como cambios de ticker**; lo demostraría un ISIN fechado del código antiguo y del nuevo.
+Build `9a6aeaa0-d168-428e-903a-7b73b8a80274`: estado **ok**, 334 eventos, 133 intervalos. Run de identidad `2c69abd9-15d7-409a-b0e6-5ddaa92eee46` (`identity-engine-1`).
 
-Build `5342edb0-88b7-4307-a61a-4602a5b76ef7`: estado **ok**, 339 eventos, 138 intervalos.
-Elegible para validación final: **False**.
-Intervalos con identidad sin resolver: **138/138**.
+## Identidad IBEX 2011+ (periodo canónico V1, desde 2011-01-01)
 
-Fecha fiable más temprana: 1995-01-02 (inicio del calendario XMAD). La composición en esa fecha se obtiene recorriendo hacia atrás el histórico completo desde la composición vigente; cada paso está validado.
+| Métrica | IBEX_IDENTITY_2011_PLUS | IBEX_IDENTITY_PRE_2011 (archivo) |
+|---|---|---|
+| intervals_total | 68 | 100 |
+| resolved_exact | 0 | 0 |
+| resolved_multi_source | 61 | 1 |
+| provisional | 4 | 61 |
+| unresolved | 3 | 38 |
+| coverage_percentage | 89.7 | 1.0 |
+
+Un intervalo cuenta como resuelto sólo si TODOS sus segmentos dentro del periodo son EXACT_OFFICIAL_IDENTIFIER o MULTI_SOURCE_CONFIRMED. Lo anterior a 2011-01-01 es ARCHIVAL / NON_CANONICAL_FOR_V1 y no bloquea V1.
+
+### Calibración contra la composición vigente
+
+ISIN del motor en 2026-06-30 frente a la composición BME observada el 2026-10-01: **33 coinciden, 0 discrepan, 2 sin ISIN probado**.
+
+| Código | ISIN BME | Motor |
+|---|---|---|
+| FER | NL0015001FS8 | — (sin ISIN probado) |
+| MTS | LU1598757687 | — (sin ISIN probado) |
+
+## Las 7 filas sin marcador de leyenda
+
+Clasificadas sólo con evidencia: mismo ISIN (ANCV) bajo la etiqueta antigua antes y la nueva después, presente en TODOS los snapshots intermedios.
+
+| Fila | Fecha | Cambio | Resultado | Evidencia |
+|---|---|---|---|---|
+| p2:y291 | 2007-05-10 | CAR→COL | **UNRESOLVED** | no ANCV snapshot on both sides of the effective date |
+| p2:y449 | 2010-07-26 | EVA→EBRO | **UNRESOLVED** | label EVA before / EBRO after not found within 4y |
+| p2:y495 | 2011-07-01 | CRI→CABK | **TICKER_CHANGE** | 2010-12-31: label CRI -> ['ES0140609019']; 2011-12-31: label CABK -> ['ES0140609019']; 2011-06-30: ES0140609019 present as 'CABK/AC 1,00'; issuer legal name 'CRITERIA CAIXACORP, S.A.' -> 'CAIXABANK, S.A.'; same ISIN ES0140609019 on both sides, continuous |
+| p2:y624 | 2013-10-01 | SYV→SCYR | **TICKER_CHANGE** | 2013-06-30: label SYV -> ['ES0182870214']; 2017-06-30: label SCYR -> ['ES0182870214']; 2013-12-31: ES0182870214 present as 'SYV/AC 1,00'; 2014-06-30: ES0182870214 present as 'SYV/AC 1,00'; 2014-12-31: ES0182870214 present as 'SYV/AC 1,00'; 2015-06-30: ES0182870214 present as 'SYV/AC 1,00'; 2015-12-31: ES0182870214 present as 'SYV/AC 1,00'; 2016-06-30: ES0182870214 present as 'SYV/AC 1,00'; 2016-12-31: ES0182870214 present as 'SYV/AC 1,00'; issuer legal name 'SACYR VALLEHERMOSO, S.A.' -> 'SACYR, S.A.'; same ISIN ES0182870214 on both sides, continuous |
+| p3:y174 | 2017-07-24 | GAM→SGRE | **TICKER_CHANGE** | 2016-12-31: label GAM -> ['ES0143416115']; 2017-12-31: label SGRE -> ['ES0143416115']; 2017-06-30: ES0143416115 present as 'SGRE/AC 0,17'; issuer legal name 'GAMESA CORPORACION TECNOLOGICA, S.A.' -> 'SIEMENS GAMESA RENEWABLE ENERGY, S.A.'; same ISIN ES0143416115 on both sides, continuous |
+| p3:y197 | 2018-07-02 | GAS→NTGY | **TICKER_CHANGE** | 2018-06-30: label GAS -> ['ES0116870314']; 2018-12-31: label NTGY -> ['ES0116870314']; issuer legal name 'GAS NATURAL SDG, S.A.' -> 'NATURGY ENERGY GROUP, S.A.'; same ISIN ES0116870314 on both sides, continuous |
+| p3:y359 | 2022-06-13 | REE→RED | **TICKER_CHANGE** | 2021-12-31: label REE -> ['ES0173093024']; 2022-06-30: label RED -> ['ES0173093024']; same ISIN ES0173093024 on both sides, continuous |
 
 ## Comprobaciones por fecha
 
 - **2018-06-29** (day before GAS -> NTGY (row 108, 2018-07-02)): 35 miembros — ACS, ACX, AENA, AMS, ANA, BBVA, BKIA, BKT, CABK, CIE, CLNX, COL, DIA, ELE, ENG, FER, GAS, GRF, IAG, IBE, IDR, ITX, MAP, MEL, MRL, MTS, REE, REP, SAB, SAN, SGRE, TEF, TL5, TRE, VIS
-- **2018-07-02** (GAS -> NTGY effective): 35 miembros — ACS, ACX, AENA, AMS, ANA, BBVA, BKIA, BKT, CABK, CIE, CLNX, COL, DIA, ELE, ENG, FER, GRF, IAG, IBE, IDR, ITX, MAP, MEL, MRL, MTS, NTGY, REE, REP, SAB, SAN, SGRE, TEF, TL5, TRE, VIS
+- **2018-07-02** (GAS -> NTGY effective (code change proven by ANCV)): 35 miembros — ACS, ACX, AENA, AMS, ANA, BBVA, BKIA, BKT, CABK, CIE, CLNX, COL, DIA, ELE, ENG, FER, GRF, IAG, IBE, IDR, ITX, MAP, MEL, MRL, MTS, NTGY, REE, REP, SAB, SAN, SGRE, TEF, TL5, TRE, VIS
 - **2022-06-10** (before REE -> RED (row 122, 2022-06-13)): 35 miembros — ACS, ACX, AENA, ALM, AMS, ANA, BBVA, BKT, CABK, CIE, CLNX, COL, ELE, ENG, FDR, FER, GRF, IAG, IBE, IDR, ITX, MAP, MEL, MRL, MTS, NTGY, PHM, REE, REP, ROVI, SAB, SAN, SGRE, SLR, TEF
-- **2022-06-13** (REE -> RED effective): 35 miembros — ACS, ACX, AENA, ALM, AMS, ANA, BBVA, BKT, CABK, CIE, CLNX, COL, ELE, ENG, FDR, FER, GRF, IAG, IBE, IDR, ITX, MAP, MEL, MRL, MTS, NTGY, PHM, RED, REP, ROVI, SAB, SAN, SGRE, SLR, TEF
+- **2022-06-13** (REE -> RED effective (code change proven by ANCV)): 35 miembros — ACS, ACX, AENA, ALM, AMS, ANA, BBVA, BKT, CABK, CIE, CLNX, COL, ELE, ENG, FDR, FER, GRF, IAG, IBE, IDR, ITX, MAP, MEL, MRL, MTS, NTGY, PHM, RED, REP, ROVI, SAB, SAN, SGRE, SLR, TEF
 - **2019-06-21** (before ordinary review row 112 (2019-06-24: MAS in, TRE out)): 35 miembros — ACS, ACX, AENA, AMS, ANA, BBVA, BKIA, BKT, CABK, CIE, CLNX, COL, ELE, ENC, ENG, FER, GRF, IAG, IBE, IDR, ITX, MAP, MEL, MRL, MTS, NTGY, REE, REP, SAB, SAN, SGRE, TEF, TL5, TRE, VIS
 - **2019-06-24** (ordinary review row 112 effective): 35 miembros — ACS, ACX, AENA, AMS, ANA, BBVA, BKIA, BKT, CABK, CIE, CLNX, COL, ELE, ENC, ENG, FER, GRF, IAG, IBE, IDR, ITX, MAP, MAS, MEL, MRL, MTS, NTGY, REE, REP, SAB, SAN, SGRE, TEF, TL5, VIS
 - **1998-12-31** (before re-entry of ANA (row 22, 1999-01-04; ANA left 1997-07-01)): 35 miembros — ACE, ACR, ACS, ACX, AGS, AMP, ARG, AUM, AZC, BBV, BCH, BKT, CAN, CTE, CTG, DRC, ELE, FCC, IBE, MAP, POP, PRY, PUL, REP, SAN, SEV, SOL, TAB, TEF, TPZ, TUB, UNF, URA, VAL, VIS
@@ -31,52 +62,123 @@ Fecha fiable más temprana: 1995-01-02 (inicio del calendario XMAD). La composic
 
 - p2:y291 2007-05-10: ['CAR'] -> ['COL']
 - p2:y449 2010-07-26: ['EVA'] -> ['EBRO']
-- p2:y495 2011-07-01: ['CRI'] -> ['CABK']
-- p2:y624 2013-10-01: ['SYV'] -> ['SCYR']
-- p3:y174 2017-07-24: ['GAM'] -> ['SGRE']
-- p3:y197 2018-07-02: ['GAS'] -> ['NTGY']
-- p3:y359 2022-06-13: ['REE'] -> ['RED']
 
 ## Anomalías del documento
 
 - row 109 (2018-05-09) precedes row 108 (2018-07-02) in time
 
-## Identidades no resueltas
+## Identidad por intervalo (intervalos que tocan el periodo canónico)
 
-Todas las membresías históricas siguen `IDENTITY_UNRESOLVED`: el histórico usa códigos (tickers) y ningún documento fechado aporta el ISIN de cada miembro en cada fecha. Los ISIN de la composición vigente se registran sólo desde 2026-10-01. `backtest_universe()` falla cerrado.
+| Código | Desde | Hasta | Segmentos (estado: ISIN [desde, hasta)) |
+|---|---|---|---|
+| ACE | 1995-01-02 | 2018-05-09 | MULTI: ES0111845014 [2010-06-30, 2018-05-09) |
+| ACX | 1995-01-02 | 2013-12-23 | MULTI: ES0132105018 [2010-06-30, 2013-12-23) |
+| BKT | 1995-01-02 | — | MULTI: ES0113679I37 [2010-06-30, abierto) |
+| CTG | 1995-01-02 | — | MULTI: ES0116870314 [2010-06-30, abierto) |
+| ELE | 1995-01-02 | 2013-12-23 | MULTI: ES0130670112 [2010-06-30, 2013-12-23) |
+| FCC | 1995-01-02 | 2016-07-18 | MULTI: ES0122060314 [2010-06-30, 2016-07-18) |
+| IBE | 1995-01-02 | — | MULTI: ES0144580Y14 [2010-06-30, abierto) |
+| POP | 1995-01-02 | 2017-06-07 | MULTI: ES0113790531 [2010-06-30, 2013-05-24); MULTI: ES0113790226 [2013-05-24, 2017-06-07) |
+| REP | 1995-01-02 | — | MULTI: ES0173516115 [2010-06-30, abierto) |
+| TEF | 1995-01-02 | — | MULTI: ES0178430E18 [2010-06-30, abierto) |
+| ACS | 1998-04-02 | — | MULTI: ES0167050915 [2010-06-30, abierto) |
+| ANA | 1999-01-04 | 2015-06-22 | MULTI: ES0125220311 [2010-06-30, 2015-06-22) |
+| SCH | 1999-04-19 | — | MULTI: ES0113900J37 [2010-06-30, abierto) |
+| FER | 1999-07-01 | — | MULTI: ES0118900010 [2010-06-30, 2023-01-01); UNRESOLVED: — [2023-01-01, 2026-07-01); PROVISIONAL: — [2026-07-01, abierto) |
+| IDR | 1999-07-01 | — | MULTI: ES0118594417 [2010-06-30, abierto) |
+| BBVA | 2000-01-31 | — | MULTI: ES0113211835 [2010-06-30, abierto) |
+| GAM | 2001-04-24 | 2013-01-02 | MULTI: ES0143416115 [2010-06-30, 2013-01-02) |
+| ITX | 2001-07-02 | — | MULTI: ES0148396015 [2010-06-30, 2014-07-15); MULTI: ES0148396007 [2014-07-15, abierto) |
+| IBLA | 2002-07-01 | 2011-01-21 | MULTI: ES0147200036 [2010-06-30, 2011-01-21) |
+| ENG | 2003-01-10 | — | MULTI: ES0130960018 [2010-06-30, abierto) |
+| SAB | 2004-07-01 | — | MULTI: ES0113860A34 [2010-06-30, abierto) |
+| SYV | 2005-01-03 | 2016-06-21 | MULTI: ES0182870214 [2010-06-30, 2016-06-21) |
+| TL5 | 2005-01-03 | 2020-06-22 | MULTI: ES0152503035 [2010-06-30, 2020-06-22) |
+| REE | 2005-07-01 | — | MULTI: ES0173093115 [2010-06-30, 2016-07-01); PROVISIONAL: ES0173093115|ES0173093024 [2016-07-01, 2016-12-31); MULTI: ES0173093024 [2016-12-31, abierto) |
+| MAP | 2006-07-25 | — | MULTI: ES0124244E34 [2010-06-30, abierto) |
+| BTO | 2006-08-01 | 2011-01-03 | MULTI: ES0113440038 [2010-06-30, 2011-01-03) |
+| BME | 2007-07-02 | 2015-06-22 | MULTI: ES0115056139 [2010-06-30, 2015-06-22) |
+| ABG | 2008-01-02 | 2012-10-26 | MULTI: ES0105200416 [2010-06-30, 2012-10-26) |
+| GRF | 2008-01-02 | — | MULTI: ES0171996012 [2010-06-30, 2016-01-01); PROVISIONAL: ES0171996012|ES0171996087 [2016-01-01, 2016-06-30); MULTI: ES0171996087 [2016-06-30, abierto) |
+| CRI | 2008-02-04 | — | MULTI: ES0140609019 [2010-06-30, abierto) |
+| IBR | 2008-02-04 | 2011-07-11 | MULTI: ES0147645016 [2010-06-30, 2011-07-11) |
+| TRE | 2008-04-13 | 2019-06-24 | MULTI: ES0178165017 [2010-06-30, 2019-06-24) |
+| OHL | 2008-07-01 | 2016-06-21 | MULTI: ES0142090317 [2010-06-30, 2016-06-21) |
+| MTS | 2009-05-05 | — | UNRESOLVED: — [2009-05-05, 2026-07-01); PROVISIONAL: — [2026-07-01, abierto) |
+| EBRO | 2010-07-26 | 2012-05-02 | MULTI: ES0112501012 [2010-07-26, 2012-05-02) |
+| AMS | 2011-01-03 | — | MULTI: ES0109067019 [2011-01-03, abierto) |
+| IAG | 2011-04-01 | — | MULTI: ES0177542018 [2011-04-01, abierto) |
+| BKIA | 2011-10-03 | 2013-01-02 | MULTI: ES0113307039 [2011-10-03, 2013-01-02) |
+| DIA | 2012-01-02 | 2018-12-24 | MULTI: ES0126775032 [2012-01-02, 2018-12-24) |
+| ABG.P | 2012-10-26 | 2013-07-01 | UNRESOLVED: — [2012-10-26, 2013-07-01) |
+| VIS | 2013-01-02 | 2014-12-22 | MULTI: ES0184262212 [2013-01-02, 2014-12-22) |
+| JAZ | 2013-04-23 | 2015-06-24 | MULTI: GB00B5TMSP21 [2013-04-23, 2015-06-24) |
+| EBRO | 2013-07-01 | 2014-06-23 | MULTI: ES0112501012 [2013-07-01, 2014-06-23) |
+| BKIA | 2013-12-23 | 2021-03-29 | MULTI: ES0113307021 [2013-12-23, 2017-06-03); MULTI: ES0113307062 [2017-06-03, 2021-03-29) |
+| GAM | 2013-12-23 | 2022-12-14 | MULTI: ES0143416115 [2013-12-23, 2022-12-14) |
+| ABG.P | 2014-06-23 | 2015-11-27 | UNRESOLVED: — [2014-06-23, 2015-07-01); PROVISIONAL: — [2015-07-01, 2015-11-27) |
+| ELE | 2014-12-22 | — | MULTI: ES0130670112 [2014-12-22, abierto) |
+| ACX | 2015-06-22 | — | MULTI: ES0132105018 [2015-06-22, abierto) |
+| AENA | 2015-06-22 | — | MULTI: ES0105046009 [2015-06-22, 2025-06-12); MULTI: ES0105046017 [2025-06-12, abierto) |
+| ANA | 2015-07-20 | — | MULTI: ES0125220311 [2015-07-20, abierto) |
+| MRL | 2015-12-21 | — | MULTI: ES0105025003 [2015-12-21, abierto) |
+| CLNX | 2016-06-21 | — | MULTI: ES0105066007 [2016-06-21, abierto) |
+| VIS | 2016-06-21 | 2021-12-20 | MULTI: ES0184262212 [2016-06-21, 2021-12-20) |
+| MEL | 2016-08-08 | 2024-07-22 | MULTI: ES0176252718 [2016-08-08, 2024-07-22) |
+| COL | 2017-06-16 | — | MULTI: ES0139140174 [2017-06-16, abierto) |
+| CIE | 2018-06-18 | 2022-06-20 | MULTI: ES0105630315 [2018-06-18, 2022-06-20) |
+| ENC | 2018-12-24 | 2020-09-21 | MULTI: ES0130625512 [2018-12-24, 2020-09-21) |
+| MAS | 2019-06-24 | 2020-09-14 | MULTI: ES0184696104 [2019-06-24, 2020-09-14) |
+| ALM | 2020-06-22 | 2022-06-20 | MULTI: ES0157097017 [2020-06-22, 2022-06-20) |
+| PHM | 2020-09-21 | 2022-12-19 | PROVISIONAL: ES0169501022 [2020-09-21, 2020-12-31); MULTI: ES0169501022 [2020-12-31, 2022-12-19) |
+| SLR | 2020-10-19 | — | MULTI: ES0165386014 [2020-10-19, abierto) |
+| FDR | 2021-03-29 | — | MULTI: ES0137650018 [2021-03-29, abierto) |
+| ROVI | 2021-12-20 | — | MULTI: ES0157261019 [2021-12-20, abierto) |
+| ANE | 2022-06-20 | — | MULTI: ES0105563003 [2022-06-20, abierto) |
+| SCYR | 2022-06-20 | — | MULTI: ES0182870214 [2022-06-20, abierto) |
+| LOG | 2022-12-19 | — | MULTI: ES0105027009 [2022-12-19, abierto) |
+| UNI | 2022-12-27 | — | MULTI: ES0180907000 [2022-12-27, abierto) |
+| PUIG | 2024-07-22 | — | MULTI: ES0105777017 [2024-07-22, abierto) |
+
+## Identidades no resueltas en el periodo canónico
+
+| Código | Desde | Hasta | Estado | Motivo |
+|---|---|---|---|---|
+| FER | 2023-01-01 | 2026-07-01 | UNRESOLVED | 2025-12-31:none:-; 2026-06-30:none:- |
+| FER | 2026-07-01 | abierto | PROVISIONAL | trailing edge after an unresolved run |
+| REE | 2016-07-01 | 2016-12-31 | PROVISIONAL | unexplained window between snapshots |
+| GRF | 2016-01-01 | 2016-06-30 | PROVISIONAL | unexplained window between snapshots |
+| MTS | 2011-01-01 | 2026-07-01 | UNRESOLVED | 2025-12-31:none:-; 2026-06-30:none:- |
+| MTS | 2026-07-01 | abierto | PROVISIONAL | trailing edge after an unresolved run |
+| ABG.P | 2012-10-26 | 2013-07-01 | UNRESOLVED | 2012-12-31:none:-; 2013-06-30:none:- |
+| ABG.P | 2014-06-23 | 2015-07-01 | UNRESOLVED | 2014-12-31:none:-; 2015-06-30:none:- |
+| ABG.P | 2015-07-01 | 2015-11-27 | PROVISIONAL | trailing edge after an unresolved run |
+| PHM | 2020-09-21 | 2020-12-31 | PROVISIONAL | leading edge: 2020-06-30: ISIN absent |
+
+## Intervalos anteriores a 2011 (archivo)
 
 | Ticker | Desde | Hasta | Entrada | Salida |
 |---|---|---|---|---|
-| ACE | 1995-01-02 | 2018-05-09 | INITIAL | EXTRAORDINARY |
-| ACX | 1995-01-02 | 2013-12-23 | INITIAL | ORDINARY |
 | ALB | 1995-01-02 | 1998-07-01 | INITIAL | ORDINARY |
 | ARG | 1995-01-02 | 2000-01-31 | INITIAL | EXTRAORDINARY |
 | AUM | 1995-01-02 | 2000-07-03 | INITIAL | ORDINARY |
 | BBV | 1995-01-02 | 2000-01-31 | INITIAL | EXTRAORDINARY |
 | BCH | 1995-01-02 | 1999-04-19 | INITIAL | EXTRAORDINARY |
-| BKT | 1995-01-02 | — | INITIAL | — |
 | BTO | 1995-01-02 | 1998-04-02 | INITIAL | EXTRAORDINARY |
 | CAN | 1995-01-02 | 2001-04-10 | INITIAL | EXTRAORDINARY |
 | CTE | 1995-01-02 | 2000-10-02 | INITIAL | EXTRAORDINARY |
 | CTF | 1995-01-02 | 1995-07-02 | INITIAL | ORDINARY |
-| CTG | 1995-01-02 | 2018-07-02 | INITIAL | UNRESOLVED_EVENT_TYPE: code change or turnover not proven (no aviso) |
 | CUB | 1995-01-02 | 1997-07-01 | INITIAL | ORDINARY |
 | DRC | 1995-01-02 | 2003-12-15 | INITIAL | EXTRAORDINARY |
-| ELE | 1995-01-02 | 2013-12-23 | INITIAL | ORDINARY |
 | ENC | 1995-01-02 | 1997-01-02 | INITIAL | ORDINARY |
-| FCC | 1995-01-02 | 2016-07-18 | INITIAL | EXTRAORDINARY |
 | FEC | 1995-01-02 | 1998-07-01 | INITIAL | ORDINARY |
 | GES | 1995-01-02 | 1995-07-02 | INITIAL | ORDINARY |
-| IBE | 1995-01-02 | — | INITIAL | — |
 | MAP | 1995-01-02 | 2000-07-03 | INITIAL | ORDINARY |
 | MVC | 1995-01-02 | 1997-07-01 | INITIAL | ORDINARY |
-| POP | 1995-01-02 | 2017-06-07 | INITIAL | EXTRAORDINARY |
 | PRY | 1995-01-02 | 2000-10-02 | INITIAL | EXTRAORDINARY |
-| REP | 1995-01-02 | — | INITIAL | — |
 | SAN | 1995-01-02 | 1999-04-19 | INITIAL | EXTRAORDINARY |
 | SEV | 1995-01-02 | 1999-01-04 | INITIAL | ORDINARY |
 | TAB | 1995-01-02 | 2008-02-04 | INITIAL | EXTRAORDINARY |
-| TEF | 1995-01-02 | — | INITIAL | — |
 | UNF | 1995-01-02 | 2009-04-15 | INITIAL | EXTRAORDINARY |
 | URA | 1995-01-02 | 2000-01-03 | INITIAL | ORDINARY |
 | VAL | 1995-01-02 | 2001-01-02 | INITIAL | ORDINARY |
@@ -91,20 +193,14 @@ Todas las membresías históricas siguen `IDENTITY_UNRESOLVED`: el histórico us
 | AZC | 1997-07-01 | 1999-01-04 | ORDINARY | ORDINARY |
 | TUB | 1997-07-01 | 1999-01-04 | ORDINARY | ORDINARY |
 | VIS | 1997-07-01 | 2000-01-03 | ORDINARY | ORDINARY |
-| ACS | 1998-04-02 | — | EXTRAORDINARY | — |
 | ACR | 1998-07-01 | 2002-02-09 | ORDINARY | EXTRAORDINARY |
 | TPZ | 1998-07-01 | 2002-07-01 | ORDINARY | ORDINARY |
 | ALB | 1999-01-04 | 2003-01-02 | ORDINARY | ORDINARY |
-| ANA | 1999-01-04 | 2015-06-22 | ORDINARY | ORDINARY |
 | NHH | 1999-01-04 | 2005-07-01 | ORDINARY | ORDINARY |
 | RAD | 1999-04-19 | 1999-07-01 | EXTRAORDINARY | ORDINARY |
-| SCH | 1999-04-19 | — | EXTRAORDINARY | — |
-| FER | 1999-07-01 | — | ORDINARY | — |
-| IDR | 1999-07-01 | — | ORDINARY | — |
 | AMS | 2000-01-03 | 2005-06-28 | ORDINARY | EXTRAORDINARY |
 | SGC | 2000-01-03 | 2008-05-12 | ORDINARY | EXTRAORDINARY |
 | TPI | 2000-01-03 | 2006-07-25 | ORDINARY | EXTRAORDINARY |
-| BBVA | 2000-01-31 | — | EXTRAORDINARY | — |
 | TRR | 2000-01-31 | 2003-07-24 | EXTRAORDINARY | EXTRAORDINARY |
 | REE | 2000-07-03 | 2005-01-03 | ORDINARY | ORDINARY |
 | ZEL | 2000-07-03 | 2005-01-03 | ORDINARY | ORDINARY |
@@ -112,76 +208,19 @@ Todas las membresías históricas siguen `IDENTITY_UNRESOLVED`: el histórico us
 | PRS | 2000-10-02 | 2003-07-01 | EXTRAORDINARY | ORDINARY |
 | GPP | 2001-01-02 | 2001-07-02 | ORDINARY | ORDINARY |
 | TEM | 2001-01-02 | 2006-07-25 | ORDINARY | EXTRAORDINARY |
-| GAM | 2001-04-24 | 2013-01-02 | EXTRAORDINARY | ORDINARY |
-| ITX | 2001-07-02 | — | ORDINARY | — |
 | LOR | 2002-02-19 | 2006-07-06 | EXTRAORDINARY | EXTRAORDINARY |
-| IBLA | 2002-07-01 | 2011-01-21 | ORDINARY | EXTRAORDINARY |
 | MVC | 2003-01-02 | 2007-07-02 | ORDINARY | ORDINARY |
 | VAL | 2003-01-02 | 2004-07-01 | ORDINARY | ORDINARY |
-| ENG | 2003-01-10 | — | EXTRAORDINARY | — |
 | MAP | 2003-07-01 | 2006-01-02 | ORDINARY | ORDINARY |
 | TRR | 2003-08-04 | 2004-01-02 | EXTRAORDINARY | ORDINARY |
 | BTO | 2004-01-02 | 2005-07-01 | ORDINARY | ORDINARY |
 | PRS | 2004-01-02 | 2007-01-02 | ORDINARY | EXTRAORDINARY |
-| SAB | 2004-07-01 | — | ORDINARY | — |
-| SYV | 2005-01-03 | 2013-10-01 | ORDINARY | UNRESOLVED_EVENT_TYPE: code change or turnover not proven (no aviso) |
-| TL5 | 2005-01-03 | 2020-06-22 | ORDINARY | ORDINARY |
 | CIN | 2005-07-01 | 2009-12-07 | ORDINARY | EXTRAORDINARY |
-| REE | 2005-07-01 | 2022-06-13 | ORDINARY | UNRESOLVED_EVENT_TYPE: code change or turnover not proven (no aviso) |
 | A3TV | 2005-07-08 | 2008-01-02 | EXTRAORDINARY | ORDINARY |
 | NHH | 2006-01-02 | 2006-07-03 | ORDINARY | ORDINARY |
 | FAD | 2006-07-03 | 2007-03-09 | ORDINARY | EXTRAORDINARY |
-| MAP | 2006-07-25 | — | EXTRAORDINARY | — |
-| BTO | 2006-08-01 | 2011-01-03 | EXTRAORDINARY | ORDINARY |
 | NHH | 2006-08-17 | 2008-01-02 | EXTRAORDINARY | ORDINARY |
 | AGS | 2007-01-02 | 2008-02-04 | EXTRAORDINARY | EXTRAORDINARY |
 | CAR | 2007-03-21 | 2007-05-10 | EXTRAORDINARY | UNRESOLVED_EVENT_TYPE: code change or turnover not proven (no aviso) |
 | COL | 2007-05-10 | 2008-04-13 | UNRESOLVED_EVENT_TYPE: code change or turnover not proven (no aviso) | ORDINARY |
-| BME | 2007-07-02 | 2015-06-22 | ORDINARY | ORDINARY |
-| ABG | 2008-01-02 | 2012-10-26 | ORDINARY | EXTRAORDINARY |
-| GRF | 2008-01-02 | — | ORDINARY | — |
-| CRI | 2008-02-04 | 2011-07-01 | EXTRAORDINARY | UNRESOLVED_EVENT_TYPE: code change or turnover not proven (no aviso) |
-| IBR | 2008-02-04 | 2011-07-11 | EXTRAORDINARY | EXTRAORDINARY |
-| TRE | 2008-04-13 | 2019-06-24 | ORDINARY | ORDINARY |
-| OHL | 2008-07-01 | 2016-06-21 | ORDINARY | ORDINARY |
-| MTS | 2009-05-05 | — | ORDINARY | — |
 | EVA | 2010-01-04 | 2010-07-26 | ORDINARY | UNRESOLVED_EVENT_TYPE: code change or turnover not proven (no aviso) |
-| EBRO | 2010-07-26 | 2012-05-02 | UNRESOLVED_EVENT_TYPE: code change or turnover not proven (no aviso) | EXTRAORDINARY |
-| AMS | 2011-01-03 | — | ORDINARY | — |
-| IAG | 2011-04-01 | — | ORDINARY | — |
-| CABK | 2011-07-01 | — | UNRESOLVED_EVENT_TYPE: code change or turnover not proven (no aviso) | — |
-| BKIA | 2011-10-03 | 2013-01-02 | ORDINARY | ORDINARY |
-| DIA | 2012-01-02 | 2018-12-24 | ORDINARY | ORDINARY |
-| ABG.P | 2012-10-26 | 2013-07-01 | EXTRAORDINARY | ORDINARY |
-| VIS | 2013-01-02 | 2014-12-22 | ORDINARY | ORDINARY |
-| JAZ | 2013-04-23 | 2015-06-24 | EXTRAORDINARY | EXTRAORDINARY |
-| EBRO | 2013-07-01 | 2014-06-23 | ORDINARY | ORDINARY |
-| SCYR | 2013-10-01 | 2016-06-21 | UNRESOLVED_EVENT_TYPE: code change or turnover not proven (no aviso) | ORDINARY |
-| BKIA | 2013-12-23 | 2021-03-29 | ORDINARY | EXTRAORDINARY |
-| GAM | 2013-12-23 | 2017-07-24 | ORDINARY | UNRESOLVED_EVENT_TYPE: code change or turnover not proven (no aviso) |
-| ABG.P | 2014-06-23 | 2015-11-27 | ORDINARY | EXTRAORDINARY |
-| ELE | 2014-12-22 | — | ORDINARY | — |
-| ACX | 2015-06-22 | — | ORDINARY | — |
-| AENA | 2015-06-22 | — | ORDINARY | — |
-| ANA | 2015-07-20 | — | EXTRAORDINARY | — |
-| MRL | 2015-12-21 | — | ORDINARY | — |
-| CLNX | 2016-06-21 | — | ORDINARY | — |
-| VIS | 2016-06-21 | 2021-12-20 | ORDINARY | ORDINARY |
-| MEL | 2016-08-08 | 2024-07-22 | EXTRAORDINARY | EXTRAORDINARY |
-| COL | 2017-06-16 | — | ORDINARY | — |
-| SGRE | 2017-07-24 | 2022-12-14 | UNRESOLVED_EVENT_TYPE: code change or turnover not proven (no aviso) | ORDINARY |
-| CIE | 2018-06-18 | 2022-06-20 | ORDINARY | ORDINARY |
-| NTGY | 2018-07-02 | — | UNRESOLVED_EVENT_TYPE: code change or turnover not proven (no aviso) | — |
-| ENC | 2018-12-24 | 2020-09-21 | ORDINARY | ORDINARY |
-| MAS | 2019-06-24 | 2020-09-14 | ORDINARY | ORDINARY |
-| ALM | 2020-06-22 | 2022-06-20 | ORDINARY | ORDINARY |
-| PHM | 2020-09-21 | 2022-12-19 | ORDINARY | ORDINARY |
-| SLR | 2020-10-19 | — | EXTRAORDINARY | — |
-| FDR | 2021-03-29 | — | EXTRAORDINARY | — |
-| ROVI | 2021-12-20 | — | ORDINARY | — |
-| RED | 2022-06-13 | — | UNRESOLVED_EVENT_TYPE: code change or turnover not proven (no aviso) | — |
-| ANE | 2022-06-20 | — | ORDINARY | — |
-| SCYR | 2022-06-20 | — | ORDINARY | — |
-| LOG | 2022-12-19 | — | ORDINARY | — |
-| UNI | 2022-12-27 | — | EXTRAORDINARY | — |
-| PUIG | 2024-07-22 | — | EXTRAORDINARY | — |

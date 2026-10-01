@@ -100,6 +100,7 @@ def classify_rows(
     identities: Mapping[tuple[str, date], str] | None = None,
     *,
     unproven_as_unresolved_turnover: bool = False,
+    row_resolutions: Mapping[str, tuple[str, str]] | None = None,
 ) -> ParseResult:
     """Turn history rows into events, resolving ambiguity ONLY with avisos.
 
@@ -114,8 +115,14 @@ def classify_rows(
     from another dated official BME/CNMV document). Otherwise membership is recorded but
     the interval is ``IDENTITY_UNRESOLVED``. A re-entry without ISIN is NEVER assumed to be
     the earlier security: it gets a new lineage key.
+
+    ``row_resolutions``: ``row_ref -> (outcome, evidence)`` for rows WITHOUT a legend marker,
+    proven from another official source (ANCV ISIN continuity, ADR-0020). ``TICKER_CHANGE``
+    turns the row into a code change; ``INDEX_TURNOVER`` keeps it as turnover with the
+    proof as reason. Other outcomes leave the row UNRESOLVED_EVENT_TYPE.
     """
     identities = identities or {}
+    row_resolutions = row_resolutions or {}
     by_date: dict[date, list[BMEAviso]] = {}
     for a in avisos:
         by_date.setdefault(a.effective_date, []).append(a)
@@ -154,6 +161,14 @@ def classify_rows(
             continue
 
         style = row.style
+        proven = row_resolutions.get(row.row_ref) if style is RowStyle.UNKNOWN else None
+        proof_reason: str | None = None
+        if proven is not None and proven[0] == "TICKER_CHANGE":
+            style = RowStyle.TICKER_CHANGE
+            proof_reason = f"cambio de código probado: {proven[1]}"
+        elif proven is not None and proven[0] == "INDEX_TURNOVER":
+            # review type still unknown; only the turnover reading is proven
+            proof_reason = f"rotación probada (identidades distintas): {proven[1]}"
         # Code changes marked cell by cell in the document (calibrated layouts only).
         changes: list[tuple[str, str]] = list(row.ticker_changes)
         adds, dels = list(row.additions), list(row.deletions)
@@ -201,7 +216,8 @@ def classify_rows(
                     f"cannot tell ticker change from turnover ({dels} -> {adds})"
                 )
                 continue
-            unresolved_events.append(f"{row.row_ref} {d}: {dels} -> {adds}")
+            if proof_reason is None:
+                unresolved_events.append(f"{row.row_ref} {d}: {dels} -> {adds}")
             warnings.append(
                 f"{row.row_ref} {d}: UNRESOLVED_EVENT_TYPE {dels}->{adds} loaded as turnover "
                 "(membership exact; identity continuity not assumed)"
@@ -241,7 +257,7 @@ def classify_rows(
                     old,
                     new_ticker=new,
                     announced_at=announced,
-                    reason="cambio de código",
+                    reason=proof_reason or "cambio de código",
                     identity_resolved=key.startswith("ISIN:"),
                 )
             )
@@ -262,7 +278,7 @@ def classify_rows(
                     key,
                     t,
                     announced_at=announced,
-                    reason=_reason(style),
+                    reason=proof_reason or _reason(style),
                     parent_source_event_id=parent_id,
                     identity_resolved=key.startswith("ISIN:"),
                 )
@@ -284,7 +300,7 @@ def classify_rows(
                     t,
                     identifier=key.removeprefix("ISIN:") if key.startswith("ISIN:") else None,
                     announced_at=announced,
-                    reason=_reason(style),
+                    reason=proof_reason or _reason(style),
                     parent_source_event_id=parent_id,
                     identity_resolved=key.startswith("ISIN:"),
                 )

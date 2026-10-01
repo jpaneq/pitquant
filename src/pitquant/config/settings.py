@@ -137,6 +137,13 @@ class DataReadinessConfig(_Frozen):
     min_universe_coverage: float = Field(default=0.95, gt=0, le=1)
 
 
+class CanonicalPeriodConfig(_Frozen):
+    # V1 canonical period (ADR-0020). Earlier data is kept but labelled
+    # ARCHIVAL / NON_CANONICAL_FOR_V1: its identity gaps never block V1. Independent of
+    # the sealed holdout.
+    start: date = date(2011, 1, 1)
+
+
 class ReportingConfig(_Frozen):
     base_currency: str
     excess_return_currency: Literal["local", "base"]
@@ -157,6 +164,7 @@ class Settings(_Frozen):
     scoring: ScoringConfig
     reporting: ReportingConfig
     data_readiness: DataReadinessConfig = Field(default_factory=DataReadinessConfig)
+    canonical_period: CanonicalPeriodConfig = Field(default_factory=CanonicalPeriodConfig)
     seed: int
 
     @model_validator(mode="after")

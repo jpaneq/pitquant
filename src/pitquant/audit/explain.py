@@ -22,7 +22,7 @@ from datetime import date, datetime
 from typing import Any
 
 import pandas as pd
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from pitquant.core.timeutils import require_aware, utc_now
@@ -32,8 +32,12 @@ from pitquant.db.models import (
     CnmvFiling,
     DataQualityIssue,
     FundamentalFact,
+    IdentifierHistory,
+    Issuer,
+    IssuerIdentifier,
     RawSourceArchive,
     SecFiling,
+    Security,
 )
 from pitquant.security_master.service import SecurityMaster
 
@@ -79,12 +83,14 @@ class FactExplanation:
     period_end: date
     known: FactProvenance | None
     not_known: list[NotKnown] = field(default_factory=list)
+    identity: list[str] = field(default_factory=list)  # issuer ↔ security chain (ADR-0020)
 
     def to_text(self) -> str:
         lines = [
             f"{self.concept} @ {self.period_end} for {self.security_id} "
             f"(ticker then: {self.ticker_at_as_of or 'unknown'}) as of {self.as_of.isoformat()}",
         ]
+        lines += [f"  identity    {x}" for x in self.identity]
         if self.known is None:
             lines.append("KNOWN: nothing — no version was available at that instant.")
         else:
@@ -188,8 +194,13 @@ def explain_fact(
     (e.g. a quarter and a year-to-date duration). ``ingested_before`` pins a data version.
     """
     as_of = require_aware(as_of, "as_of")
+    sec = session.get(Security, security_id)
+    issuer_id = sec.issuer_id if sec is not None else None
+    subject = [FundamentalFact.security_id == security_id]
+    if issuer_id is not None:  # fundamentals are filed by the issuer (ADR-0020)
+        subject.append(FundamentalFact.issuer_id == issuer_id)
     stmt = select(FundamentalFact).where(
-        FundamentalFact.security_id == security_id,
+        or_(*subject),
         FundamentalFact.concept == concept,
         FundamentalFact.period_end == period_end,
     )
@@ -215,6 +226,7 @@ def explain_fact(
         concept=concept,
         period_end=period_end,
         known=_provenance(session, chosen) if chosen else None,
+        identity=identity_chain(session, security_id, local_day),
     )
     cutoff = require_aware(ingested_before) if ingested_before is not None else None
     for v in sorted(versions, key=lambda x: (x.available_at, x.fact_id)):
@@ -273,4 +285,35 @@ def explain_fact(
                 {k: v for k, v in d.items() if k != "fingerprint"},
             )
         )
+    return out
+
+
+def identity_chain(session: Session, security_id: str, on: date) -> list[str]:
+    """Why this security, its ISIN on ``on`` and its issuer are the same entity."""
+    sec = session.get(Security, security_id)
+    if sec is None:
+        return []
+    out: list[str] = []
+    isins = session.scalars(
+        select(IdentifierHistory).where(
+            IdentifierHistory.security_id == security_id, IdentifierHistory.id_type == "ISIN"
+        )
+    ).all()
+    on_isin = [i for i in isins if i.valid_from <= on and (i.valid_to is None or on < i.valid_to)]
+    out.append(
+        "ISIN on that day: "
+        + (
+            ", ".join(f"{i.value} (proven {i.valid_from}..{i.valid_to or 'open'})" for i in on_isin)
+            or "none proven"
+        )
+    )
+    if sec.issuer_id:
+        iss = session.get_one(Issuer, sec.issuer_id)
+        ids = session.scalars(
+            select(IssuerIdentifier).where(IssuerIdentifier.issuer_id == iss.issuer_id)
+        ).all()
+        ref = ", ".join(f"{x.id_type} {x.value} [{x.source}]" for x in ids) or "no identifier"
+        out.append(f"issuer {iss.name} ({ref})")
+    else:
+        out.append("issuer not linked: issuer-level facts cannot be attributed")
     return out

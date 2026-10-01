@@ -17,6 +17,7 @@ import time
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass, field
+from datetime import date
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -32,8 +33,13 @@ from pitquant.data.providers.cnmv.parsers import (
     parse_ifi_list,
     parse_ipp_xbrl,
 )
-from pitquant.db.models import CnmvFiling, DataSource, FundamentalFact
-from pitquant.security_master.service import SecurityMaster
+from pitquant.db.models import (
+    CnmvFiling,
+    DataSource,
+    FundamentalFact,
+    Issuer,
+    IssuerIdentifier,
+)
 
 PROVIDER = "CNMV"
 BASE = "https://www.cnmv.es"
@@ -136,19 +142,33 @@ def _source_id(session: Session) -> int:
     return src.source_id
 
 
-def security_for_cif(session: Session, cif: str, company: str, *, register: bool) -> str:
-    """Issuer identified by its CIF (no ticker invented from today's data)."""
-    sm = SecurityMaster(session)
-    from datetime import date
-
-    try:
-        return sm.resolve_identifier("CIF", cif, date(2100, 1, 1))
-    except UnknownSecurityError:
-        if not register:
-            raise
-    sec = sm.register(name=f"{company} (CNMV)", exchange="XMAD", currency="EUR", country="ES")
-    sm.add_identifier(sec.security_id, "CIF", cif, date(1900, 1, 1))
-    return sec.security_id
+def issuer_for_cif(session: Session, cif: str, company: str, *, register: bool) -> str:
+    """Issuer identified by its CIF (ADR-0020): CNMV reports are filed by an ISSUER. No
+    security (and no ticker) is created here; the issuer is linked to its securities by
+    official identity evidence (ANCV query by NIF), never by name."""
+    row = session.scalars(
+        select(IssuerIdentifier).where(
+            IssuerIdentifier.id_type == "CIF", IssuerIdentifier.value == cif
+        )
+    ).first()
+    if row is not None:
+        return row.issuer_id
+    if not register:
+        raise UnknownSecurityError(f"no issuer with CIF {cif}")
+    iss = Issuer(name=company, country="ES")
+    session.add(iss)
+    session.flush()
+    session.add(
+        IssuerIdentifier(
+            issuer_id=iss.issuer_id,
+            id_type="CIF",
+            value=cif,
+            valid_from=date(1900, 1, 1),
+            source="CNMV IFI page (NIF field)",
+        )
+    )
+    session.flush()
+    return iss.issuer_id
 
 
 def ingest_cnmv_report(
@@ -177,7 +197,7 @@ def ingest_cnmv_report(
         if n:
             rep.status = "already_ingested"
             return rep
-    sid = security_for_cif(session, det.cif, det.company, register=register_missing)
+    issuer_id = issuer_for_cif(session, det.cif, det.company, register=register_missing)
     if prior is not None:  # same bytes, previously rejected (0 facts): retry the parse only
         return _insert_facts(session, prior, data, rep)
     latest = max(d for d in (det.publication_date, det.last_modification) if d is not None)
@@ -192,7 +212,8 @@ def ingest_cnmv_report(
         doc_kind="IFI_IPP",
         cif=det.cif,
         company=det.company,
-        security_id=sid,
+        security_id=None,
+        issuer_id=issuer_id,
         period_start=det.period_start,
         period_end=det.period_end,
         period_label=f"{det.fiscal_year} S{det.semester}" if det.semester else str(det.fiscal_year),
@@ -230,7 +251,8 @@ def _insert_facts(
     for f in facts:
         session.add(
             FundamentalFact(
-                security_id=filing.security_id,
+                security_id=None,
+                issuer_id=filing.issuer_id,
                 taxonomy=f.taxonomy,
                 concept=f.concept[:200],
                 fiscal_period=filing.period_label,
