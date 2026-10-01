@@ -120,6 +120,26 @@ def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo[None]):  
         rep.longrepr = f"strict PostgreSQL mode: {item.nodeid} was skipped"
 
 
+# Tests that must have PASSED in strict mode; a filtered run (-k, subset of files) that
+# omits any of them fails instead of silently reporting green.
+_CRITICAL_PG_TESTS = frozenset(
+    {
+        "test_migration_matches_models",
+        "test_triggers_installed_on_every_immutable_table",
+        "test_prediction_update_rejected",
+        "test_prediction_delete_rejected",
+        "test_snapshot_update_rejected",
+        "test_snapshot_delete_rejected",
+        "test_timestamps_round_trip_as_utc",
+    }
+)
+
+
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
-    if _REQUIRE_PG and not _pg_executed and exitstatus == 0:
+    if not _REQUIRE_PG or exitstatus != 0:
+        return
+    passed = {nodeid.rsplit("::", 1)[-1] for nodeid in _pg_executed}
+    missing = sorted(_CRITICAL_PG_TESTS - passed)
+    if not _pg_executed or missing:
+        print(f"\nstrict PostgreSQL mode: critical tests not passed: {missing or 'all'}")
         session.exitstatus = 1

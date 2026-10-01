@@ -10,3 +10,5 @@ data/
 *.egg-info/
 .env
 x.db
+.pgdata/
+.pit.log
