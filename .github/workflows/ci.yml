@@ -7,7 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: {python-version: "3.11", cache: pip}
+        with: {python-version: "3.12", cache: pip}
       - run: pip install -e ".[dev]"
       - name: Lint
         run: ruff check src tests migrations scripts && ruff format --check src tests migrations scripts
@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: {python-version: "3.11", cache: pip}
+        with: {python-version: "3.12", cache: pip}
       - run: pip install -e ".[dev]"
       - name: Point-in-time / anti-leakage suite (no skips allowed)
         run: |
@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: {python-version: "3.11", cache: pip}
+        with: {python-version: "3.12", cache: pip}
       - run: pip install -e ".[dev,postgres]"
       - name: Triggers, migrations, UTC round-trip (strict)
         run: pytest -m postgres -rA
