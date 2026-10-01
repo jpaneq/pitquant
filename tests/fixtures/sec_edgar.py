@@ -9,6 +9,8 @@ Timeline (US/Eastern):
   B  10-Q   Q1-2024  filed 2024-05-01, accepted 10:15:00 (intraday)
   C  10-Q/A Q1-2024  filed 2024-06-10, accepted 12:00:00 (amendment: Q1-2024 revenue 30 -> 28)
   D  10-K   FY2024   filed 2025-02-18, accepted 07:00:00 (pre-market; restates FY2023 100 -> 95)
+  E  10-Q   Q2-2024  accepted Thu 2024-08-01 17:45:00, filingDate Fri 2024-08-02 (EDGAR
+     dates submissions accepted after 17:30 ET on the next business day)
   X  orphan accession cited by companyfacts but absent from submissions
   P  10-K   FY2009   filed 2010-03-01 (before XBRL coverage start)
 """
@@ -28,11 +30,13 @@ A, B, C, D = (
     "0000999999-25-000010",
 )
 X, P = "0000999999-24-000099", "0000999999-10-000001"
+E = "0000999999-24-000040"
 
 FILINGS = [  # accession, form, filed, report, accepted (ET wall), submissions acceptance
     (A, "10-K", "2024-02-20", "2023-12-31", "20240220161502", "2024-02-20T16:15:02.000Z"),
     (B, "10-Q", "2024-05-01", "2024-03-31", "20240501101500", "2024-05-01T10:15:00.000Z"),
     (C, "10-Q/A", "2024-06-10", "2024-03-31", "20240610120000", "2024-06-10T12:00:00.000Z"),
+    (E, "10-Q", "2024-08-02", "2024-06-30", "20240801174500", "2024-08-01T17:45:00.000Z"),
     (D, "10-K", "2025-02-18", "2024-12-31", "20250218070000", "2025-02-18T09:00:00.000Z"),
     (P, "10-K", "2010-03-01", "2009-12-31", "20100301120000", "2010-03-01T12:00:00.000Z"),
 ]
@@ -41,6 +45,7 @@ FY23 = ("2023-01-01", "2023-12-31")
 FY24 = ("2024-01-01", "2024-12-31")
 Q1_24 = ("2024-01-01", "2024-03-31")
 Q1_23 = ("2023-01-01", "2023-03-31")
+Q2_24 = ("2024-04-01", "2024-06-30")
 
 # (concept, unit, start, end, val, accn, form, filed)
 FACTS = [
@@ -50,6 +55,7 @@ FACTS = [
     ("Revenues", "USD", *Q1_23, 25.0, B, "10-Q", "2024-05-01"),
     ("NetIncomeLoss", "USD", *Q1_24, 5.0, B, "10-Q", "2024-05-01"),  # instance says 6 -> reject
     ("Revenues", "USD", *Q1_24, 28.0, C, "10-Q/A", "2024-06-10"),
+    ("Revenues", "USD", *Q2_24, 33.0, E, "10-Q", "2024-08-02"),
     ("Revenues", "USD", *FY24, 120.0, D, "10-K", "2025-02-18"),
     ("Revenues", "USD", *FY23, 95.0, D, "10-K", "2025-02-18"),  # restated comparative
     ("Revenues", "USD", *FY23, 101.0, X, "10-K", "2024-03-01"),  # orphan accession
@@ -59,6 +65,7 @@ FACTS = [
 INSTANCE_FACTS = {  # accession -> [(concept, start, end, value)]
     A: [("Revenues", *FY23, 100.0)],
     B: [("Revenues", *Q1_24, 30.0), ("NetIncomeLoss", *Q1_24, 6.0)],
+    E: [("Revenues", *Q2_24, 33.0)],
     D: [("Revenues", *FY24, 120.0), ("Revenues", *FY23, 95.0)],
 }
 
@@ -159,9 +166,13 @@ class FakeSEC:
     """Offline transport serving the fixtures. ``visible`` limits which filings exist yet,
     so tests can ingest history in stages (the world as it looked at different times)."""
 
-    visible: set[str] = field(default_factory=lambda: {A, B, C, D, X, P})
+    visible: set[str] = field(default_factory=lambda: {A, B, C, D, E, X, P})
     calls: list[tuple[str, dict[str, str]]] = field(default_factory=list)
     fail_once: set[str] = field(default_factory=set)
+    # companyfacts as served "later": (accession, concept, start, end) -> new value, and
+    # (accession, concept) pairs not yet present
+    overrides: dict[tuple[str, str, str, str], float] = field(default_factory=dict)
+    hidden_facts: set[tuple[str, str]] = field(default_factory=set)
 
     def get(self, url: str, headers: dict[str, str]) -> HttpResponse:
         self.calls.append((url, headers))
@@ -177,7 +188,11 @@ class FakeSEC:
             finally:
                 FILINGS[:] = saved
         if "companyfacts" in url:
-            facts = [f for f in FACTS if f[5] in self.visible]
+            facts = [
+                (c, u, st, en, self.overrides.get((acc, c, st, en), v), acc, fm, fd)
+                for c, u, st, en, v, acc, fm, fd in FACTS
+                if acc in self.visible and (acc, c) not in self.hidden_facts
+            ]
             return HttpResponse(200, companyfacts_json(facts), "application/json")
         for acc in self.visible:
             nd = acc.replace("-", "")

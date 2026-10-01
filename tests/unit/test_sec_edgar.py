@@ -10,7 +10,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from pitquant.config.settings import Settings
-from pitquant.core.errors import ImmutableRecordError, ProviderContractError
+from pitquant.core.errors import DataQualityError, ImmutableRecordError, ProviderContractError
 from pitquant.data.archive import ArchiveStore
 from pitquant.data.calendars.market_calendar import get_calendar
 from pitquant.data.point_in_time.availability import filing_available_at
@@ -30,7 +30,7 @@ from pitquant.db.models import (
 )
 from pitquant.security_master.service import SecurityMaster
 from tests.conftest import ny, utc
-from tests.fixtures.sec_edgar import CIK, A, B, C, D, FakeSEC, P, X
+from tests.fixtures.sec_edgar import CIK, A, B, C, D, E, FakeSEC, P, X
 
 pytestmark = pytest.mark.pit
 UA = "PITQuant tests fixture@example.invalid"
@@ -262,3 +262,129 @@ def test_client_requires_contact_and_retries(tmp_path: Path) -> None:
     assert client.get(url).status == 200
     assert client.requests_made == 2 and any(s >= 1.0 for s in sleeps)
     assert all(h["User-Agent"] == UA for _, h in fake.calls)
+
+
+# ── second ingestion: drift, re-validation, existing archive ─────────────────
+
+
+def _issues(session: Session, check: str) -> list[DataQualityIssue]:
+    return list(
+        session.scalars(select(DataQualityIssue).where(DataQualityIssue.check_name == check))
+    )
+
+
+def test_companyfacts_drift_is_reported_never_applied(
+    session: Session, tmp_path: Path, settings: Settings
+) -> None:
+    sid, _ = _ingest(session, tmp_path, settings)
+    drifted = FakeSEC(overrides={(A, "Revenues", "2023-01-01", "2023-12-31"): 104.0})
+    rep = ingest_sec_company(session, _provider(tmp_path, settings, drifted), CIK, sid)
+    assert rep.facts_inserted == 0
+    stored = session.scalars(
+        select(FundamentalFact).where(FundamentalFact.accession_number == A)
+    ).all()
+    assert {f.value for f in stored if f.period_end == FY23[1]} == {100.0}  # untouched
+    (issue,) = _issues(session, "companyfacts_value_drift")
+    assert issue.details["accession"] == A
+    assert issue.details["stored_value"] == 100.0
+    assert issue.details["companyfacts_value"] == 104.0
+    assert issue.details["period_end"] == "2023-12-31"
+    # A third identical run does not duplicate the issue.
+    ingest_sec_company(session, _provider(tmp_path, settings, drifted), CIK, sid)
+    assert len(_issues(session, "companyfacts_value_drift")) == 1
+
+
+def test_mismatch_issue_is_structured_and_not_duplicated(
+    session: Session, tmp_path: Path, settings: Settings
+) -> None:
+    sid, _ = _ingest(session, tmp_path, settings)
+    _ingest(session, tmp_path, settings, sid=sid)
+    (issue,) = _issues(session, "companyfacts_xbrl_mismatch")
+    assert issue.details["accession"] == B
+    assert issue.details["concept"] == "NetIncomeLoss"
+    assert (issue.details["companyfacts_value"], issue.details["instance_value"]) == (5.0, 6.0)
+    orphans = _issues(session, "fact_without_filing")
+    assert {i.details["accession"] for i in orphans} == {X}
+
+
+def test_second_ingestion_revalidates_from_archived_instance(
+    session: Session, tmp_path: Path, settings: Settings
+) -> None:
+    # First pass: B's NetIncomeLoss is not yet in companyfacts.
+    sid = _security(session)
+    first = FakeSEC(hidden_facts={(B, "NetIncomeLoss")})
+    ingest_sec_company(session, _provider(tmp_path, settings, first), CIK, sid)
+    assert _issues(session, "companyfacts_xbrl_mismatch") == []
+    n_archive = session.scalar(select(func.count()).select_from(RawSourceArchive))
+    # Second pass: the new fact appears and must be checked against the ARCHIVED instance
+    # (no refetch of the XBRL), which says 6 -> rejected.
+    second = FakeSEC()
+    rep = ingest_sec_company(session, _provider(tmp_path, settings, second), CIK, sid)
+    assert rep.facts_inserted == 0 and rep.facts_rejected >= 1
+    assert len(_issues(session, "companyfacts_xbrl_mismatch")) == 1
+    assert not any(u.endswith("_htm.xml") or u.endswith(".hdr.sgml") for u, _ in second.calls)
+    # Re-fetched submissions/companyfacts with new bytes are archived; nothing is duplicated.
+    n_after = session.scalar(select(func.count()).select_from(RawSourceArchive))
+    assert n_archive is not None and n_after == n_archive + 1  # only the changed companyfacts
+
+
+def test_corrupted_archive_object_fails_revalidation(
+    session: Session, tmp_path: Path, settings: Settings
+) -> None:
+    sid, _ = _ingest(session, tmp_path, settings)
+    filing = session.get_one(SecFiling, B)
+    assert filing.xbrl_archive_id is not None
+    row = session.get_one(RawSourceArchive, filing.xbrl_archive_id)
+    Path(row.storage_uri).write_bytes(b"tampered")
+    with pytest.raises(DataQualityError):
+        _ingest(session, tmp_path, settings, sid=sid)
+
+
+# ── availability on real XNYS calendar edges (fictional filings, real calendar) ──
+
+
+@pytest.mark.parametrize(
+    ("accepted", "expected", "case"),
+    [
+        (ny(2024, 5, 1, 8, 0), ny(2024, 5, 1, 8, 15), "pre-market: usable same morning"),
+        (ny(2024, 5, 1, 11, 0), ny(2024, 5, 1, 11, 15), "intraday"),
+        (ny(2024, 5, 1, 15, 45), ny(2024, 5, 2, 9, 30), "lag lands exactly on the close"),
+        (ny(2024, 5, 1, 16, 1), ny(2024, 5, 2, 9, 30), "after close"),
+        (ny(2024, 5, 3, 16, 30), ny(2024, 5, 6, 9, 30), "Friday after close -> Monday"),
+        (ny(2024, 7, 3, 13, 30), ny(2024, 7, 5, 9, 30), "early close 13:00 eve of 4 July"),
+        (ny(2024, 11, 29, 14, 0), ny(2024, 12, 2, 9, 30), "early close day after Thanksgiving"),
+        (ny(2024, 7, 4, 10, 0), ny(2024, 7, 5, 9, 30), "holiday"),
+        (ny(2024, 3, 8, 16, 30), ny(2024, 3, 11, 9, 30), "Friday before DST start"),
+        (ny(2024, 11, 1, 17, 45), ny(2024, 11, 4, 9, 30), "Friday before DST end"),
+    ],
+)
+def test_conservative_session_edges(accepted, expected, case) -> None:  # type: ignore[no-untyped-def]
+    cal = get_calendar("XNYS")
+    got = filing_available_at(cal, accepted, "conservative_session", 15)
+    assert got == expected, case
+    assert got >= accepted
+
+
+def test_availability_never_derives_from_filed_date(
+    session: Session, tmp_path: Path, settings: Settings
+) -> None:
+    """EDGAR gives submissions accepted after 17:30 ET the NEXT business day as filingDate.
+    accepted_at comes from the header; availability is derived from accepted_at only."""
+    sid, _ = _ingest(session, tmp_path, settings)
+    e = session.get_one(SecFiling, E)
+    assert e.filed_date == date(2024, 8, 2)
+    assert e.accepted_at == ny(2024, 8, 1, 17, 45)
+    assert e.available_at == ny(2024, 8, 2, 9, 30)
+    cal = get_calendar("XNYS")
+    # Under the intraday policy the filing is usable BEFORE its filingDate even starts.
+    assert filing_available_at(cal, e.accepted_at, "accepted_plus_lag", 15) == ny(2024, 8, 1, 18, 0)
+    for f in session.scalars(select(SecFiling)):
+        assert f.available_at >= f.accepted_at
+        assert f.available_at == filing_available_at(
+            cal, f.accepted_at, f.availability_policy, settings.fundamentals.sec.lag_minutes
+        )
+    assert _rev(session, sid, ny(2024, 8, 1, 23, 59), *Q2) is None
+    assert _rev(session, sid, ny(2024, 8, 2, 9, 30), *Q2).value == 33.0  # type: ignore[union-attr]
+
+
+Q2 = (date(2024, 4, 1), date(2024, 6, 30))
