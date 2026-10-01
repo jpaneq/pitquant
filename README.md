@@ -4,14 +4,13 @@ Plataforma de análisis bursátil, scoring y backtesting **point-in-time**: cada
 exclusivamente la información que un inversor podía conocer en el instante analizado.
 
 > ⚠️ **Estado (2026-10-01):**
-> - **SEC EDGAR real:** ingeridos MSFT y AAPL. Detalle en `docs/REAL_DATA_SEC_DEMO.md`.
-> - **BME:** el PDF oficial del histórico IBEX 35 está archivado y el parser calibrado
->   contra él, pero todavía **no hay membership build** (`docs/BME_PARSER.md`).
-> - **S&P DJI, CNMV y market data (D-05):** sin datos reales.
-> - **Señales:** no se generan BUY/HOLD/SELL. El scoring es la fase 5 y la API responde
->   explícitamente que no hay señal en lugar de inventarla.
-> - **Datos versionados en el repositorio:** sólo **SINTÉTICOS** (`SYN*`) y fixtures. Los
->   datos reales viven en `data/` local, que no se versiona.
+> - **Datos reales:** SEC (MSFT, AAPL), CNMV (Enagás) e IBEX 35 (documentos BME), todos
+>   con `explain`. La identidad histórica del IBEX sigue sin resolver.
+> - **Sin datos aún:** S&P DJI y market data (D-05 abierta).
+> - **Señales:** no se generan BUY/HOLD/SELL. La API responde explícitamente que no hay
+>   señal en lugar de inventarla.
+> - **Datos versionados en el repositorio:** sólo sintéticos (`SYN*`) y fixtures. Los datos
+>   reales viven en `data/`, que no se versiona.
 
 ## Qué hay
 

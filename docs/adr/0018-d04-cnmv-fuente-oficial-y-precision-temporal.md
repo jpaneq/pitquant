@@ -58,3 +58,24 @@ formatos exactos de descarga masiva; y las condiciones de reutilización.
 - Verificar si existe una hora oficial de registro por documento.
 - D-04 (b)/(c): proveedor comercial para la historia previa a IPP/ESEF. Es decisión
   económica del propietario.
+
+
+## Addendum 2026-10-01 — vertical slice real (Enagás)
+
+1. **El XBRL descargable es la versión vigente.** La ficha de la CNMV lista las fechas de
+   modificación, pero sólo ofrece el XBRL actual. Como no se puede probar qué valores
+   existían en la publicación inicial, el contenido se usa desde la primera apertura XMAD
+   posterior al final de la fecha **más tardía** entre publicación y modificaciones.
+   Ejemplo: Enagás 2017S1, publicado el 18-07 y modificado el 27-07, se usa desde el
+   28-07 a las 09:00 de Madrid.
+2. **Dimensiones relativas.** Los miembros IPP «…PeriodoActual/Anterior»,
+   «AcumuladoActual/Anterior» y «PeriodoCorriente» sólo sitúan la columna respecto al propio
+   informe. Se elimina el sufijo relativo y se conserva el significado (p. ej.
+   `IngresosOrdinariosClientesExternos`). Así, el comparativo de un informe posterior es una
+   versión posterior del mismo hecho: en Enagás se detectaron 5 hechos de 2017S1 con otro
+   valor en el informe de 2018S1. Los duplicados conflictivos se rechazan.
+3. **Hora.** La página de «Otra información relevante» muestra fecha y hora (HH:MM) y enlaza
+   a fichas IFI por `nReg`, pero **no declara zona horaria**. Hasta verificarla, la hora no
+   se usa: la precisión sigue siendo `DATE_ONLY`.
+4. **Identidad.** El emisor se identifica por CIF (nivel emisor). El vínculo CIF ↔ ISIN ↔
+   miembro del IBEX está pendiente (hoy son `security_id` distintos).

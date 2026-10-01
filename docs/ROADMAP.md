@@ -5,6 +5,7 @@
 | 0 | Arquitectura, ADRs, esquema de datos, flujos, catálogo de tests | ✅ |
 | 1 | Infraestructura + Security Master + universo histórico | ✅ |
 | 1b | D-01…D-03: archivo de fuentes, SEC por accession, universos por eventos, holdout sellado, CI PostgreSQL estricto | ✅ en código y tests con fixtures · ⏳ pendiente: ejecución real contra SEC/S&P/BME y job `postgres` de CI en verde |
+| 1d | ADR-0019 (zona horaria EDGAR), GitHub privado con CI verde (incl. PostgreSQL y Docker 3.12), universo IBEX real desde documentos BME, recuperación SEC desde instancia, slice CNMV real (Enagás), bake-off D-05 (11/20 casos verificados), readiness v2 | ✅ · ⏳ identidades IBEX históricas (ISIN fechados), D-05 (decisión económica), S&P DJI (licencia) |
 | 1c | Verificación real de la toolchain, PostgreSQL local estricto, identidad ≠ membership (ADR-0017), `audit.explain`, `pitquant data-readiness`, contrato D-05, política DATE_ONLY (ADR-0018), jobs SEC | ✅ en código y tests · ✅ SEC real (MSFT y AAPL) · 🟡 BME: PDF real calibrado, sin build (falta composición inicial o actual y 7 avisos) · ⏳ CNMV (documentos por identificar y aprobar) · ⏳ D-05 (decisión económica) |
 | 2 | Market data + corporate actions + calendarios | 🟡 calendarios, precios raw, ajuste as-of, total return, DQ e ingestión idempotente hechos. Falta: stock-for-stock M&A, spin-offs, derechos, FX, almacén Parquet/DuckDB para histórico masivo, benchmarks TR |
 | 3 | Fundamentales PIT | 🟡 modelo bitemporal, `facts_as_of`, reexpresiones, latencia conservadora. Falta: conector real (D-01/D-04), normalización de conceptos XBRL, macro vintages |
@@ -27,38 +28,70 @@
 El Feature/Scoring Engine no empieza hasta que `pitquant data-readiness` salga READY con
 datos reales.
 
+## Requisitos de producto ya acordados (no implementar todavía)
+
+### Stock Analyzer: universos de backtest ≠ valores analizables
+- S&P 500 e IBEX 35 son los **universos de backtest iniciales**, no una restricción sobre
+  qué acciones puede analizar PITQuant.
+- El Stock Analyzer podrá analizar **cualquier** valor que tenga:
+  - identidad inequívoca;
+  - precios suficientes y corporate actions;
+  - fundamentales;
+  - un sector y benchmark adecuados;
+  - la cobertura mínima exigida.
+- `SUPPORTED_SECURITY` (cobertura suficiente) e `INDEX_MEMBERSHIP` (pertenencia a un
+  universo) son conceptos separados.
+- Búsqueda por ticker, nombre o identificadores (ISIN, CIK, CIF…), resolviendo siempre a
+  `security_id`.
+- Con cobertura insuficiente se devuelve `INSUFFICIENT_DATA` o `ANALYSIS_NOT_RELIABLE`.
+  Nunca una señal artificial.
+
+### Data Coverage Panel
+Cobertura por valor de:
+- histórico de precios, fundamentales y corporate actions;
+- benchmark y sector;
+- estimaciones de analistas, cuando existan fuentes PIT.
+
+### Time Machine
+Debe poder analizar también valores fuera del S&P y del IBEX cuando haya cobertura PIT
+suficiente.
+
 ## Módulos acordados para fases posteriores (NO implementar todavía)
 
 ### Decision Support Engine
-Incluirá:
-- tesis de inversión e invalidadores de la tesis;
-- riesgos;
-- expectativas descontadas por el precio y variables a vigilar;
-- comprar / mantener / reducir / evitar;
-- escenarios bear / base / bull;
-- confianza condicionada a sector y régimen;
-- Historical Analogues.
+- Tesis, invalidadores y riesgos.
+- Qué descuenta el precio y qué vigilar.
+- Comprar / mantener / reducir / evitar.
+- Escenarios bear / base / bull.
+- Historical analogues.
+- Confianza según sector y régimen.
 
 ### BTC Engine
-Módulo separado de equities, con backtesting point-in-time:
-- técnico, on-chain y network fundamentals;
-- derivados, macro y liquidez;
-- modelos por horizonte;
-- fan charts probabilísticos.
+Módulo separado que reutiliza la infraestructura común:
+- spot 24/7 y técnico;
+- on-chain y network fundamentals;
+- derivados: funding, open interest, liquidaciones;
+- macro;
+- modelos por horizonte, probabilidades y fan charts;
+- Time Machine PIT.
 
 ### AI Audit / Model Review Export
-Exportará todo lo necesario para que una IA externa audite:
-- predicciones, errores y calibración;
-- features, contribuciones y drift;
-- historical analogues y procedencia;
-- Champion vs Challenger y outcomes realizados.
+Exportación para auditoría externa por IA, de una predicción individual, de un lote, o de
+Champion vs Challenger.
 
-Salida en Markdown/PDF legible más JSON/CSV procesable. Nunca expone secretos ni el
-holdout sellado.
+Contenido:
+- versiones, snapshot, features y contribuciones;
+- probabilidades y calibración;
+- expected/excess return y escenarios;
+- historical analogues y riesgos;
+- cobertura de datos, procedencia y avisos;
+- outcome realizado, drift y cambio respecto a la predicción anterior.
+
+Formatos: Markdown, PDF, JSON y CSV. Nunca expone secretos ni el holdout sellado.
 
 ### También pendientes
 - BUY/HOLD/SELL y pesos definitivos.
 - Optimización.
 - ML predictivo.
 - Champion/Challenger productivo.
-- Price targets.
+- Price targets y expected returns.

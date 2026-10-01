@@ -36,7 +36,7 @@ temporal, se rechaza.
 - No dar una funcionalidad por terminada porque "ejecuta": correcta, testeada, tipada,
   documentada, reproducible, point-in-time.
 - Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0020).
-- Migraciones: `0001` (base) y `0002` (identidad) fijadas; **todo cambio de esquema = revisión nueva**.
+- Migraciones: `0001` (base), `0002` (identidad) y `0003` (CNMV) fijadas; **todo cambio de esquema = revisión nueva**.
 
 ## Comandos
 
@@ -69,44 +69,30 @@ Hecho:
 - Suite de contrato D-05.
 - Jobs SEC (`sec-stress-scan`, `sec-ingest`).
 
-**Datos reales (sólo en local, en `data/pitquant.db` SQLite y `data/archive/`, sin versionar):**
-- **SEC EDGAR, MSFT y AAPL:**
-  - 126 filings y 51.538 versiones de hechos, con headers e instancias archivados;
-  - demostración en `docs/REAL_DATA_SEC_DEMO.md`;
-  - `data-readiness`: escaneo PIT PASS (51.664 filas) y procedencia PASS.
-- **BME:** PDF «Composición histórica – IBEX 35» (sep-2026) archivado; calibración
-  `COMPOIBEX_2026_09`. Sin membership build: faltan la composición inicial o actual y 7
-  avisos.
-- **User-Agent SEC:** **no se persiste**. Hay que exportar `PITQUANT_SEC_USER_AGENT` en la
-  sesión; nunca escribirlo en el repositorio.
-
-Bloqueos externos:
-- GitHub: `gh` sin autenticar.
-- Docker no instalado: build 3.12 sin verificar.
-- Licencia S&P DJI.
-- Decisión D-05.
-- Documentos CNMV del slice (por identificar y aprobar).
-- BME: `Constituents.pdf` y avisos (por aprobar).
+**Datos reales** (sólo en local: `data/pitquant.db` SQLite y `data/archive/`, sin versionar;
+la base previa se conserva en `data/pitquant_dev_v0.db`):
+- **SEC (MSFT, AAPL):** 127 filings y 51.538 hechos. ADR-0019 cierra la semántica temporal:
+  header en hora del Este con DST, submissions en UTC; *fail closed* ante discrepancias.
+- **IBEX 35:** build real desde documentos BME (`scripts/build_ibex_real.py`, informe en
+  `docs/IBEX_COVERAGE_REPORT.md`). 138 intervalos, todos `IDENTITY_UNRESOLVED`, y 7 eventos
+  con tipo no demostrado.
+- **CNMV (Enagás 2017S1–2019S1):** 5 informes y ~4.600 hechos (`docs/REAL_DATA_CNMV_DEMO.md`).
+- **D-05:** 20 casos de contrato, 11 VERIFIED (`docs/D05_MARKET_DATA_ACCEPTANCE.md`).
+- **GitHub:** `jpaneq/pitquant` (PRIVADO). CI verde: lint, tests, PostgreSQL y Docker.
+- **User-Agent SEC:** no se persiste. Exportar `PITQUANT_SEC_USER_AGENT` en la sesión.
 
 ## Pendiente (por orden)
-
-1. `gh auth login` → subir el repo (privado) → CI en verde, incluido el build Docker en 3.12.
-2. **D-01:**
-   - filings que companyfacts no cita (`filing_not_cited_by_companyfacts`, p. ej. el 10-Q
-     original de MSFT 0001193125-12-017029): ingerirlos desde su propia instancia XBRL;
-   - job sobre el universo.
-3. **D-03:**
-   - archivar la composición actual oficial (`Constituents.pdf`, con ISIN) y los 7 avisos;
-   - reconstruir hacia atrás validando 35 miembros por fecha. Los miembros invertidos
-     siguen `IDENTITY_UNRESOLVED` salvo ISIN fechado;
-   - parser de avisos.
-4. **D-04:** vertical slice CNMV (ADR-0018).
-5. **D-02:** adaptador del fichero licenciado S&P DJI.
-6. **D-05:**
-   - verificar los 13 casos `UNVERIFIED`;
-   - ejecutar la suite contra los candidatos;
+1. **IBEX:** ISIN fechados por miembro y fecha (boletines BME / CNMV) para resolver
+   identidades; los avisos de las 7 filas (no están en el índice público de avisos);
+   vínculo CIF ↔ ISIN.
+2. **D-05:**
+   - leer la licencia de Sharadar y la respuesta de BME Market Data (consulta preparada);
+   - ejecutar la suite contra un candidato por mercado;
+   - verificar los 9 casos `UNVERIFIED`;
    - ADR de aceptación.
-7. `pitquant data-readiness` READY con datos reales. Sólo después: Feature Engine.
+3. **CNMV:** ampliar el slice (ESEF anual, más emisores); verificar la zona horaria de OIR.
+4. **D-02:** fichero licenciado S&P DJI.
+5. `pitquant data-readiness` READY con datos reales. Sólo después: Feature Engine.
 
 ## Limitaciones conocidas
 
