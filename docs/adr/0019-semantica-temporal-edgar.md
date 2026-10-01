@@ -21,7 +21,7 @@ para 10 filings reales de MSFT y AAPL, todas las representaciones disponibles:
 | H header `.hdr.sgml` | `<ACCEPTANCE-DATETIME>YYYYMMDDHHMMSS` | ninguna |
 | I página índice `-index.htm` | «Accepted» `YYYY-MM-DD HH:MM:SS` | ninguna |
 | S `submissions` JSON | `acceptanceDateTime` `…T…Z` | sufijo `Z` |
-| A feed Atom de la compañía (`browse-edgar … output=atom`) | `<updated>` | **desfase explícito** (`-05:00`/`-04:00`) |
+| A feed Atom de la compañía (`browse-edgar … output=atom`) | `<updated>` | **desfase explícito** (`-05:00`/`-04:00`): es la propia SEC declarando la zona del mismo instante, no un reloj independiente |
 | L HTTP de `{acc}.txt` | `Last-Modified` | GMT (RFC 7231) |
 | F submissions / índice | `filingDate` / «Filing Date» | fecha (sin hora) |
 
@@ -60,8 +60,10 @@ Además:
    como UTC (`submissions_acceptance_utc`). Se elimina la tolerancia doble anterior (UTC o
    Este). Un valor sin zona o ilegible no es de confianza.
 3. **Página índice I:** el mismo reloj de pared que H. No se usa como fuente.
-4. **Feed Atom A:** reloj independiente con desfase explícito. Se usa en la investigación y
-   en los tests de regresión, no en la ingestión.
+4. **Feed Atom A:** representación de la propia SEC del mismo instante, con el desfase
+   explícito. Es la prueba principal de la zona. La corroboración **independiente** es el
+   cambio de `filingDate` en el corte de las 17:30 hora del Este. Se usa en la
+   investigación y en los tests de regresión, no en la ingestión.
 5. **`filingDate` F:** fecha de presentación según el corte de las 17:30 hora del Este.
    **Nunca** determina la disponibilidad.
 6. **HTTP `Last-Modified` L:** no es una marca de aceptación (los ficheros se reescriben). No
@@ -88,7 +90,7 @@ Además:
 - leer S como hora del Este da discrepancia;
 - se cumple el corte de las 17:30;
 - L ≥ H;
-- casos DST ambiguos o inexistentes;
+- casos DST ambiguos o inexistentes (sólo con fixtures: ningún filing real cae en esa hora);
 - valores ilegibles.
 
 Los 126 filings reales ya ingeridos cumplen la comprobación estricta (0 discrepancias), así

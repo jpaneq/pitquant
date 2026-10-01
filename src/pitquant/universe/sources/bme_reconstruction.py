@@ -128,7 +128,10 @@ def events_from_official_documents(
     rep.unresolved_events = res.unresolved_events
     src = EventSource(
         SOURCE,
-        SourceConfidence.CANONICAL,  # official BME documents only
+        # The change history is official and complete, but the ANCHOR (current composition)
+        # is a transcription of JS-rendered official pages whose raw bytes cannot be
+        # archived — same structure as the S&P snapshot reconstruction: provisional.
+        SourceConfidence.PROVISIONAL_RESEARCH_SOURCE,
         res.events,
         content_hash([history_sha256, current.archive_sha256]),
         warnings=tuple(res.warnings),

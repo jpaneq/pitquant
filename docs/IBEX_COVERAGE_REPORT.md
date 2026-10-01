@@ -1,10 +1,12 @@
 # IBEX 35 — informe de cobertura del universo real
 
-Generado con `scripts/build_ibex_real.py` exclusivamente desde documentos oficiales BME archivados (SHA-256):
+Generado con `scripts/build_ibex_real.py`. Fuentes:
 - Composición histórica IBEX 35: `5c028420d39c9d6e2205fa88d15627865dc217de867bc86987ca8f9fddba3695`.
-- Composición vigente observada el 2026-10-01 (página oficial de cotizaciones y fichas, ticker + ISIN): `9d2f010701a50c42de9d5d5bcac6fd3aa4b57cb253b1cd7533740c78b159c28d`.
+- Composición vigente observada el 2026-10-01: **transcripción** de la página oficial de cotizaciones y de las fichas (renderizadas por JavaScript; sus bytes no contienen los valores y no pueden archivarse) — `9d2f010701a50c42de9d5d5bcac6fd3aa4b57cb253b1cd7533740c78b159c28d`. Por eso el build es PROVISIONAL_RESEARCH_SOURCE.
 
-Build `867c60d3-fcae-4f4f-ab75-b22a42dff778`: estado **ok**, 339 eventos, 138 intervalos.
+GAS→NTGY (fila 108) y REE→RED (fila 122) están entre las 7 filas sin marcador de leyenda: se cargan como rotación UNRESOLVED_EVENT_TYPE con identidades nuevas. **No están demostradas como cambios de ticker**; lo demostraría un ISIN fechado del código antiguo y del nuevo.
+
+Build `5342edb0-88b7-4307-a61a-4602a5b76ef7`: estado **ok**, 339 eventos, 138 intervalos.
 Elegible para validación final: **False**.
 Intervalos con identidad sin resolver: **138/138**.
 
@@ -16,7 +18,10 @@ Fecha fiable más temprana: 1995-01-02 (inicio del calendario XMAD). La composic
 - **2018-07-02** (GAS -> NTGY effective): 35 miembros — ACS, ACX, AENA, AMS, ANA, BBVA, BKIA, BKT, CABK, CIE, CLNX, COL, DIA, ELE, ENG, FER, GRF, IAG, IBE, IDR, ITX, MAP, MEL, MRL, MTS, NTGY, REE, REP, SAB, SAN, SGRE, TEF, TL5, TRE, VIS
 - **2022-06-10** (before REE -> RED (row 122, 2022-06-13)): 35 miembros — ACS, ACX, AENA, ALM, AMS, ANA, BBVA, BKT, CABK, CIE, CLNX, COL, ELE, ENG, FDR, FER, GRF, IAG, IBE, IDR, ITX, MAP, MEL, MRL, MTS, NTGY, PHM, REE, REP, ROVI, SAB, SAN, SGRE, SLR, TEF
 - **2022-06-13** (REE -> RED effective): 35 miembros — ACS, ACX, AENA, ALM, AMS, ANA, BBVA, BKT, CABK, CIE, CLNX, COL, ELE, ENG, FDR, FER, GRF, IAG, IBE, IDR, ITX, MAP, MEL, MRL, MTS, NTGY, PHM, RED, REP, ROVI, SAB, SAN, SGRE, SLR, TEF
-- **2012-06-29** (before ordinary review row 86 (2012-07-02, no changes)): 35 miembros — ABE, ABG, ACS, ACX, AMS, ANA, BBVA, BKIA, BKT, BME, CABK, DIA, ELE, ENG, FCC, FER, GAM, GAS, GRF, IAG, IBE, IDR, ITX, MAP, MTS, OHL, POP, REE, REP, SAB, SAN, SYV, TEF, TL5, TRE
+- **2019-06-21** (before ordinary review row 112 (2019-06-24: MAS in, TRE out)): 35 miembros — ACS, ACX, AENA, AMS, ANA, BBVA, BKIA, BKT, CABK, CIE, CLNX, COL, ELE, ENC, ENG, FER, GRF, IAG, IBE, IDR, ITX, MAP, MEL, MRL, MTS, NTGY, REE, REP, SAB, SAN, SGRE, TEF, TL5, TRE, VIS
+- **2019-06-24** (ordinary review row 112 effective): 35 miembros — ACS, ACX, AENA, AMS, ANA, BBVA, BKIA, BKT, CABK, CIE, CLNX, COL, ELE, ENC, ENG, FER, GRF, IAG, IBE, IDR, ITX, MAP, MAS, MEL, MRL, MTS, NTGY, REE, REP, SAB, SAN, SGRE, TEF, TL5, VIS
+- **1998-12-31** (before re-entry of ANA (row 22, 1999-01-04; ANA left 1997-07-01)): 35 miembros — ACE, ACR, ACS, ACX, AGS, AMP, ARG, AUM, AZC, BBV, BCH, BKT, CAN, CTE, CTG, DRC, ELE, FCC, IBE, MAP, POP, PRY, PUL, REP, SAN, SEV, SOL, TAB, TEF, TPZ, TUB, UNF, URA, VAL, VIS
+- **1999-01-04** (ANA re-enters (new identity, IDENTITY_UNRESOLVED)): 35 miembros — ACE, ACR, ACS, ACX, AGS, ALB, AMP, ANA, ARG, AUM, BBV, BCH, BKT, CAN, CTE, CTG, DRC, ELE, FCC, IBE, MAP, NHH, POP, PRY, PUL, REP, SAN, SOL, TAB, TEF, TPZ, UNF, URA, VAL, VIS
 - **2017-06-06** (before extraordinary exclusion of POP (row 104, 2017-06-07)): 35 miembros — ABE, ACS, ACX, AENA, AMS, ANA, BBVA, BKIA, BKT, CABK, CLNX, DIA, ELE, ENG, FER, GAM, GAS, GRF, IAG, IBE, IDR, ITX, MAP, MEL, MRL, MTS, POP, REE, REP, SAB, SAN, TEF, TL5, TRE, VIS
 - **2017-06-07** (POP excluded (Banco Popular resolution)): 34 miembros — ABE, ACS, ACX, AENA, AMS, ANA, BBVA, BKIA, BKT, CABK, CLNX, DIA, ELE, ENG, FER, GAM, GAS, GRF, IAG, IBE, IDR, ITX, MAP, MEL, MRL, MTS, REE, REP, SAB, SAN, TEF, TL5, TRE, VIS
 - **2006-07-28** (33-member window (rows 55-58)): 33 miembros — A3TV, ABE, ACS, ACX, ALT, ANA, BBVA, BKT, CIN, ELE, ENG, FAD, FCC, FER, GAM, GAS, IBE, IBLA, IDR, ITX, MAP, MVC, POP, PRS, REE, REP, SAB, SAN, SGC, SYV, TEF, TL5, UNF

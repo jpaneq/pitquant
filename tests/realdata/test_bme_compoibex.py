@@ -115,6 +115,7 @@ def test_real_ibex_build_from_official_documents(rows, session, settings) -> Non
         session, src, exchange="XMAD", currency="EUR", country="ES", expected_size=size
     )
     assert rep.status == "ok" and rep.n_intervals == 138
+    assert src.confidence.value == "PROVISIONAL_RESEARCH_SOURCE"  # transcribed anchor
     assert rep.n_identity_unresolved == 138 and not rep.eligible_for_final_model_validation
     assert len(rec.unresolved_events) == 7
     u, sm = IndexUniverse(session), SecurityMaster(session)

@@ -5,6 +5,7 @@ PITQUANT_SEC_USER_AGENT. Output: docs/d05_contract_evidence.json."""
 from __future__ import annotations
 
 import html
+import io
 import json
 import os
 import re
@@ -15,6 +16,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
+
+import pdfplumber  # noqa: E402
 
 from pitquant.config.settings import get_settings  # noqa: E402
 from pitquant.data.archive import ArchiveStore, archive_document  # noqa: E402
@@ -62,6 +65,21 @@ DOCS = {
         A + "868809/000087666110000228/ruleprovisionnotice.htm",
         [r"[^.]{0,120}"],
     ),
+    "ES-MERGER-BKIA-2021": (
+        "https://www.caixabank.com/deployedfiles/caixabank_com/Estaticos/PDFs/"
+        "Accionistasinversores/Informacion_General/"
+        "20210319_Algarve-Anuncio-de-canje_con-firmas_v-final_limpia.pdf",
+        [
+            r"tipo de canje es de 0,6845[^.]{0,120}",
+            r"Fecha de Canje será el último día[^.]{0,120}",
+            r"[^.]{0,120}26 de marzo de 2021[^.]{0,80}",
+        ],
+    ),
+    "ES-SPLIT-ITX-2014": (
+        "https://www.cnmv.es/WebServices/VerDocumento/Ver?e=%2FlSbfe04j58P1DtZ5v+r2Lojc5caDacz"
+        "WitwUsYwRmRQSRh0dt1K2vXNhAR3mLSV",
+        [r"cinco acciones nuevas por cada acción antigua[^.]{0,80}"],
+    ),
     "US-BANKRUPTCY-LEH-2008": (
         A + "806085/000110465908059632/a08-22764_48k.htm",
         [r"Chapter 11[^.]{0,200}", r"New York Stock Exchange[^.]{0,200}", r"delist[^.]{0,200}"],
@@ -82,27 +100,31 @@ def main() -> int:
             body = urllib.request.urlopen(
                 urllib.request.Request(url, headers={"User-Agent": ua}), timeout=60
             ).read()
+            is_pdf = body[:5] == b"%PDF-"
             row = archive_document(
                 ses,
                 store,
-                provider="SEC_EDGAR_CONTRACT_EVIDENCE",
+                provider="CONTRACT_EVIDENCE",
                 source_identifier=url,
                 data=body,
-                mime_type="text/html",
+                mime_type="application/pdf" if is_pdf else "text/html",
                 parser_version="d05-evidence-1",
             )
-            text = re.sub(
-                r"\s+",
-                " ",
-                html.unescape(re.sub(r"<[^>]+>", " ", body.decode("utf-8", errors="replace"))),
-            )
+            if is_pdf:
+                with pdfplumber.open(io.BytesIO(body)) as doc:
+                    raw = " ".join(pg.extract_text() or "" for pg in doc.pages)
+            else:
+                raw = html.unescape(re.sub(r"<[^>]+>", " ", body.decode("utf-8", errors="replace")))
+            text = re.sub(r"\s+", " ", raw)
             hits = []
             for p in pats:
                 hits += [m.group(0).strip()[:220] for m in re.finditer(p, text, flags=re.I)][:3]
             out[case] = {"url": url, "sha256": row.sha256, "excerpts": hits[:6]}
             time.sleep(0.3)
         ses.commit()
-    (ROOT / "docs" / "d05_contract_evidence.json").write_text(json.dumps(out, indent=2) + "\n")
+    (ROOT / "docs" / "d05_contract_evidence.json").write_text(
+        json.dumps(out, indent=2, ensure_ascii=False) + "\n"
+    )
     for k, v in out.items():
         print("==", k)
         for h in v["excerpts"]:

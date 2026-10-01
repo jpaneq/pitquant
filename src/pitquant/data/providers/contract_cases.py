@@ -1,6 +1,8 @@
 """Known historical events every D-05 candidate must reproduce.
 
-VERIFIED cases cite the official document read to confirm every value in ``expect``.
+VERIFIED cases cite the official document read to confirm every value in ``expect``. When
+the document states an anchor date other than the ex-date (record or distribution date),
+``expect["date_basis"]`` says so; the ex-date must then fall within ``tolerance_days``.
 UNVERIFIED cases were written from general knowledge: their values are expectations to be
 CONFIRMED against an official source (issuer IR, SEC filing, CNMV/BME notice) before a
 provider can be accepted on them. Never promote a case to VERIFIED without reading the
@@ -73,7 +75,7 @@ CASES: tuple[ContractCase, ...] = (
         Category.SPIN_OFF,
         "ABT",
         date(2012, 12, 3),
-        {"ex_date": date(2013, 1, 1), "ratio": 1.0},
+        {"ex_date": date(2013, 1, 1), "ratio": 1.0, "date_basis": "distribution_date"},
         V,
         "https://www.sec.gov/Archives/edgar/data/1800/000104746913000015/a2212294zex-99_1.htm",
         "Abbott 8-K ex.99.1 (2013-01-02): 'For every 1 share of Abbott ... received 1 share of "
@@ -133,7 +135,7 @@ CASES: tuple[ContractCase, ...] = (
         Category.ORDINARY_DIVIDEND,
         "AAPL",
         date(2020, 8, 3),
-        {"ex_date": date(2020, 8, 10), "amount": 0.82},
+        {"ex_date": date(2020, 8, 10), "amount": 0.82, "date_basis": "record_date"},
         V,
         "https://www.sec.gov/Archives/edgar/data/320193/000032019320000060/a8-kexhibit991q3202062.htm",
         "Apple 8-K ex.99.1 (2020-07-30): $0.82 cash dividend (pre-split), record date "

@@ -204,3 +204,10 @@ def test_rejected_report_can_be_reparsed_without_new_filing_row(
     assert session.query(CnmvFiling).count() == 1  # the filing (provenance) stays
     assert ingest_cnmv_report(session, prov, "A").status == "rejected"  # same bytes, same verdict
     assert session.query(CnmvFiling).count() == 1
+
+
+def test_taxonomy_version_is_part_of_the_key() -> None:
+    """IPP codes are only comparable within one taxonomy version (2016-06-01 vs 2019-01-01
+    both occur in Enagás reports): no silent cross-version linking."""
+    facts = parse_ipp_xbrl(H1_17)
+    assert {f.taxonomy for f in facts} == {"ipp_ge@2016-06-01"}

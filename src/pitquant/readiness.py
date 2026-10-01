@@ -433,7 +433,7 @@ def data_readiness(session: Session, settings: Settings) -> ReadinessReport:
         session, "S&P membership", "SP500", Status.PROVISIONAL
     )
     ibex, ibex_build, ibex_ivs = _membership_component(
-        session, "IBEX membership", "IBEX35", Status.PARTIAL
+        session, "IBEX membership", "IBEX35", Status.PROVISIONAL
     )
     sec = _fundamentals_component(
         session,

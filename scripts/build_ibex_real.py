@@ -42,7 +42,10 @@ CHECK_DATES = [
     (date(2018, 7, 2), "GAS -> NTGY effective"),
     (date(2022, 6, 10), "before REE -> RED (row 122, 2022-06-13)"),
     (date(2022, 6, 13), "REE -> RED effective"),
-    (date(2012, 6, 29), "before ordinary review row 86 (2012-07-02, no changes)"),
+    (date(2019, 6, 21), "before ordinary review row 112 (2019-06-24: MAS in, TRE out)"),
+    (date(2019, 6, 24), "ordinary review row 112 effective"),
+    (date(1998, 12, 31), "before re-entry of ANA (row 22, 1999-01-04; ANA left 1997-07-01)"),
+    (date(1999, 1, 4), "ANA re-enters (new identity, IDENTITY_UNRESOLVED)"),
     (date(2017, 6, 6), "before extraordinary exclusion of POP (row 104, 2017-06-07)"),
     (date(2017, 6, 7), "POP excluded (Banco Popular resolution)"),
     (date(2006, 7, 28), "33-member window (rows 55-58)"),
@@ -85,11 +88,17 @@ def main() -> int:
         lines = [
             "# IBEX 35 — informe de cobertura del universo real",
             "",
-            "Generado con `scripts/build_ibex_real.py` exclusivamente desde documentos oficiales "
-            "BME archivados (SHA-256):",
+            "Generado con `scripts/build_ibex_real.py`. Fuentes:",
             f"- Composición histórica IBEX 35: `{COMPOIBEX_2026_09_SHA256}`.",
-            f"- Composición vigente observada el {current.observed_on} (página oficial de "
-            f"cotizaciones y fichas, ticker + ISIN): `{obs_row.sha256}`.",
+            f"- Composición vigente observada el {current.observed_on}: **transcripción** de la "
+            "página oficial de cotizaciones y de las fichas (renderizadas por JavaScript; sus "
+            f"bytes no contienen los valores y no pueden archivarse) — `{obs_row.sha256}`. "
+            "Por eso el build es PROVISIONAL_RESEARCH_SOURCE.",
+            "",
+            "GAS→NTGY (fila 108) y REE→RED (fila 122) están entre las 7 filas sin marcador de "
+            "leyenda: se cargan como rotación UNRESOLVED_EVENT_TYPE con identidades nuevas. "
+            "**No están demostradas como cambios de ticker**; lo demostraría un ISIN fechado del "
+            "código antiguo y del nuevo.",
             "",
             f"Build `{rep.build_id}`: estado **{rep.status}**, {rep.n_events} eventos, "
             f"{rep.n_intervals} intervalos.",

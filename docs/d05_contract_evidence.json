@@ -79,27 +79,32 @@
       "25 2 ruleprovisionnotice"
     ]
   },
-  "US-BANKRUPTCY-LEH-2008": {
-    "url": "https://www.sec.gov/Archives/edgar/data/806085/000110465908059632/a08-22764_48k.htm",
-    "sha256": "c7166e9387c5c8066bd70d28a01c7495355c13a6ae440c0f52fdb6a14d49405e",
-    "excerpts": [
-      "Chapter 11 of Title 11 of the United States Code (the “Bankruptcy Code”) in the United States Bankruptcy Court for the Southern District of New York (the “Court”) and on September 16, 2008, LB 745 LLC filed a v",
-      "Chapter 11 of the Bankruptcy Code in the Court ( In re Lehman Brothers Holdings Inc"
-    ]
-  },
   "ES-MERGER-BKIA-2021": {
     "url": "https://www.caixabank.com/deployedfiles/caixabank_com/Estaticos/PDFs/Accionistasinversores/Informacion_General/20210319_Algarve-Anuncio-de-canje_con-firmas_v-final_limpia.pdf",
     "sha256": "49e7b039bde6be2c983269b5966aab18d161494b9daa2775bbc1ca3e8d8f6685",
     "excerpts": [
-      "tipo de canje es de 0,6845 acciones de nueva emisión de CaixaBank por cada acción (una) de Bankia",
-      "La Fecha de Canje será el último día en el que cotizarán las acciones de Bankia ... el día 26 de marzo de 2021"
+      "tipo de canje es de 0,6845 acciones de nueva emisión de CaixaBank por cada acción (una) de Bankia una acción ordinaria de CaixaBank, al término de",
+      "Fecha de Canje será el último día en el que cotizarán las acciones de Bankia en las Bolsas de Valores españolas (last trading date)",
+      "omete la efectividad de la fusión, la inscripción de la escritura de fusión en el Registro Mercantil de València sea el 26 de marzo de 2021, la “Fecha de Canje”), y que figuren como accionistas de Bankia en los registro",
+      ", el día 26 de marzo de 2021), cada accionista de Bankia que, por aplicación de dicho tipo de canje y según",
+      "kia en las Bolsas de Valores españolas hasta la Fecha de Canje, inclusive (que está previsto que sean los días 24, 25 y 26 de marzo de 2021), redondeando al alza o a la baja, a la cifra más próxima, el resultado hasta c"
     ]
   },
   "ES-SPLIT-ITX-2014": {
     "url": "https://www.cnmv.es/WebServices/VerDocumento/Ver?e=%2FlSbfe04j58P1DtZ5v+r2Lojc5caDaczWitwUsYwRmRQSRh0dt1K2vXNhAR3mLSV",
     "sha256": "ce0812ff5831df11027149e394680962950e1ee215aa15506d8fb00e6fb8888e",
     "excerpts": [
-      "a razón de cinco acciones nuevas por cada acción antigua (ratio confirmed; ex-date NOT stated)"
+      "cinco acciones nuevas por cada acción antigua, sin variación de la cifra de capital social; consiguiente modificación del art",
+      "cinco acciones nuevas por cada acción antigua, sin 2 variación de la cifra de capital social, y consiguiente modificación del",
+      "cinco acciones nuevas por cada acción antigua, mediante la reducción del valor nominal unitario de las acciones de quince cén"
+    ]
+  },
+  "US-BANKRUPTCY-LEH-2008": {
+    "url": "https://www.sec.gov/Archives/edgar/data/806085/000110465908059632/a08-22764_48k.htm",
+    "sha256": "c7166e9387c5c8066bd70d28a01c7495355c13a6ae440c0f52fdb6a14d49405e",
+    "excerpts": [
+      "Chapter 11 of Title 11 of the United States Code (the “Bankruptcy Code”) in the United States Bankruptcy Court for the Southern District of New York (the “Court”) and on September 16, 2008, LB 745 LLC filed a v",
+      "Chapter 11 of the Bankruptcy Code in the Court ( In re Lehman Brothers Holdings Inc"
     ]
   }
 }

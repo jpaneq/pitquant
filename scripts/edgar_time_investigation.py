@@ -10,7 +10,9 @@ assumptions:
 * A  company Atom feed      ``<updated>`` — carries an EXPLICIT UTC offset
 * L  HTTP ``Last-Modified`` of the complete submission ``.txt`` — RFC 7231, GMT by spec
 
-A and L are the independent clocks that state their zone explicitly. The test of each
+A is SEC's own rendering of the same instant WITH an explicit offset (the zone proof); L is
+GMT by spec but a weak clock (files are rewritten). The independent corroboration is the
+filingDate rollover at the 17:30 Eastern cutoff. The test of each
 hypothesis is arithmetic on raw values, recorded in ``docs/edgar_time_investigation.json``.
 
 Needs PITQUANT_SEC_USER_AGENT (contact e-mail). Usage:

@@ -20,7 +20,7 @@ from datetime import date
 
 from pitquant.core.errors import DataQualityError
 
-PARSER_VERSION = "cnmv-ipp-2"
+PARSER_VERSION = "cnmv-ipp-3"
 _XBRLI = "{http://www.xbrl.org/2003/instance}"
 _XBRLDI = "{http://xbrl.org/2006/xbrldi}"
 
@@ -131,7 +131,7 @@ _RELATIVE_SUFFIX = re.compile(
 
 @dataclass(frozen=True)
 class IppFact:
-    taxonomy: str  # namespace prefix family, e.g. "ipp_ge"
+    taxonomy: str  # family@version, e.g. "ipp_ge@2016-06-01"
     concept: str  # code + normalised dimensions, e.g. "I1205[ImportePorcentaje=Importe]"
     period_start: date | None
     period_end: date
@@ -195,7 +195,10 @@ def parse_ipp_xbrl(data: bytes) -> list[IppFact]:
             continue
         dims, start, end = contexts[ctx]
         concept = local + ("[" + ",".join(f"{a}={b}" for a, b in dims) + "]" if dims else "")
-        taxonomy = "ipp_" + ns.rstrip("/").split("/ipp/")[1].split("/")[0]
+        # family AND version (e.g. "ipp_ge@2016-06-01"): codes are only comparable within one
+        # taxonomy version; cross-version linking would need an explicit mapping.
+        family_version = ns.rstrip("/").split("/ipp/")[1].split("/")
+        taxonomy = f"ipp_{family_version[0]}@{family_version[1]}"
         unit_name = units.get(unit, unit)
         key = (taxonomy, concept, start, end, unit_name)
         prev = out.get(key)

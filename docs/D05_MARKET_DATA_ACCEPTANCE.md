@@ -34,7 +34,7 @@ La aceptación se registra en un ADR nuevo y sólo entonces se añade el proveed
 uno se acepta por separado con los casos de su mercado. No se asume que un único proveedor
 sirva para los dos.
 
-## Casos de contrato (20; 11 VERIFIED)
+## Casos de contrato (20; 11 VERIFIED: 9 con la fecha exacta + 2 sobre una fecha ancla declarada)
 La evidencia (URL, SHA-256 y extracto de cada documento archivado) está en
 `docs/d05_contract_evidence.json` (`scripts/verify_contract_cases.py`).
 
@@ -42,9 +42,9 @@ La evidencia (URL, SHA-256 y extracto de cada documento archivado) está en
 |---|---|---|
 | AAPL split 7×1 (2014-06-09) | VERIFIED | Apple 8-K ex.99.1 (2014-04-23) |
 | AAPL split 4×1 (2020-08-31) | VERIFIED | Apple 8-K ex.99.1 (2020-07-30) |
-| AAPL dividendo ordinario 0,82 $ (registro 2020-08-10) | VERIFIED | Apple 8-K ex.99.1 (2020-07-30) |
+| AAPL dividendo ordinario 0,82 $ (fecha ancla = registro 2020-08-10; ex dentro de tolerancia) | VERIFIED (ancla) | Apple 8-K ex.99.1 (2020-07-30) |
 | C contra-split 1×10 (2011-05-09) | VERIFIED | Citigroup 8-K ex.99.1 |
-| ABT→ABBV spin-off 1:1 (2013-01-01) | VERIFIED | Abbott 8-K ex.99.1 |
+| ABT→ABBV spin-off 1:1 (fecha ancla = distribución 2013-01-01) | VERIFIED (ancla) | Abbott 8-K ex.99.1 |
 | MSFT dividendo especial 3,00 $ (ex 2004-11-15) | VERIFIED | Microsoft 8-K (2004-11-15) |
 | HNZ adquisición en efectivo 72,50 $ (última sesión 2013-06-07) | VERIFIED | Heinz 8-K ex.99.1 |
 | XTO adquisición en acciones 0,7098 (2010-06-25) | VERIFIED | XTO 8-K |
@@ -61,11 +61,11 @@ Leyenda: ✔ confirmado en la documentación oficial del proveedor · ✖ no ofr
 
 | Proveedor | US | España | Deslistadas | OHLCV raw | Corporate actions | Identidad histórica | Licencia | Coste | Contract tests | Limitaciones |
 |---|---|---|---|---|---|---|---|---|---|---|
-| **Sharadar SEP** | ✔ | ✖ | ✔ «active and delisted» | ✔ «Close Price – Unadjusted» y ajustado | ✔ splits, dividendos, spin-offs, adquisiciones, motivos de baja, cambios de ticker | `permaticker` (UNVERIFIED en contrato) | «Personal Use License»; texto UNVERIFIED | Precios 99 $/año; paquete 299 $/año (5 años) o 69 $/mes (historia completa) | No ejecutado (requiere suscripción) | Historia desde dic-1997; delisting return explícito UNVERIFIED |
-| **Norgate** | ✔ | ✖ | ✔ 25.222 deslistadas, cobertura completa desde 1992 | UNVERIFIED | UNVERIFIED | UNVERIFIED | UNVERIFIED | UNVERIFIED (calculadora dinámica) | No ejecutado | Acceso programático en macOS UNVERIFIED |
-| **EODHD** | ✔ | ✔ (MC) | ✔, pero antes de 2018 sólo EOD | ✔ EOD | Sólo splits y dividendos; derechos, scrip, fusiones y OPAs UNVERIFIED | UNVERIFIED | Personal frente a comercial interno | Personal 19,99–99,99 €/mes; comercial interno desde 3.990 €/año | No ejecutado | Deslistadas españolas UNVERIFIED |
-| **CRSP** (WRDS) | ✔ (referencia) | ✖ | ✔ | ✔ | ✔ y delisting returns | ✔ PERMNO | Institucional; personal UNVERIFIED | UNVERIFIED | No ejecutado | Acceso vía institución |
-| **BME Market Data** | ✖ | ✔ fuente oficial | Maestro de Valores (1100): altas y bajas; profundidad UNVERIFIED | ✔ Precios y Volúmenes (2100) | ✔ Hechos Relevantes Back Office (1200): ampliaciones, dividendos, fusiones, escisiones | ISIN oficial | Sólo usuario final, **sin redifusión** | Catálogo jul-2025: maestro renta variable ~1.050–3.500 €; precios ~93–933 €; hechos relevantes ~183–5.001 € (significado de las columnas UNVERIFIED) | No ejecutado | Formato e histórico pendientes de consulta |
+| **Sharadar SEP** | ✔ | ✖ | ✔ «active and delisted» | ✔ «Close Price – Unadjusted» y ajustado | ✔ splits, dividendos, spin-offs, adquisiciones, motivos de baja, cambios de ticker | UNVERIFIED | «Personal Use License»; texto UNVERIFIED | Precios 99 $/año; paquete 299 $/año (5 años) o 69 $/mes (historia completa) | No ejecutado (requiere suscripción) | Historia desde dic-1997; delisting return explícito UNVERIFIED |
+| **Norgate** | ✔ | ✖ | ✔ según la página de paquetes («delisted securities»); cifra de 25.222 y «complete since 1992»: extracto de búsqueda, UNVERIFIED | UNVERIFIED | UNVERIFIED | UNVERIFIED | UNVERIFIED | UNVERIFIED (calculadora dinámica) | No ejecutado | Acceso programático en macOS UNVERIFIED |
+| **EODHD** | ✔ | ✔ (MC) | ✔, pero antes de 2018 sólo EOD | ✔ EOD | Sólo splits y dividendos; derechos, scrip, fusiones y OPAs UNVERIFIED | UNVERIFIED | Personal frente a comercial interno | Personal 19,99–99,99 €/mes (leído); comercial interno 3.990 €/año: extracto de búsqueda, UNVERIFIED | No ejecutado | Deslistadas españolas UNVERIFIED |
+| **CRSP** (WRDS) | ✔ (referencia) | ✖ | extracto de búsqueda (>36.000 valores activos/inactivos), UNVERIFIED | UNVERIFIED | extracto de búsqueda (ficheros de delisting con código, precio y return), UNVERIFIED | UNVERIFIED | Institucional; personal UNVERIFIED | UNVERIFIED | No ejecutado | Acceso vía institución |
+| **BME Market Data** | ✖ | ✔ fuente oficial | Maestro de Valores (1100): altas y bajas; profundidad UNVERIFIED | ✔ Precios y Volúmenes (2100) | ✔ Hechos Relevantes Back Office (1200): ampliaciones, dividendos, fusiones, escisiones | UNVERIFIED | Sólo usuario final, **sin redifusión** | Catálogo jul-2025: maestro renta variable ~1.050–3.500 €; precios ~93–933 €; hechos relevantes ~183–5.001 € (significado de las columnas UNVERIFIED) | No ejecutado | Formato e histórico pendientes de consulta |
 
 Fuentes:
 - [Sharadar prices](https://sharadar.com/prices)
