@@ -25,6 +25,16 @@ arquitectura: el código funciona con cualquier opción gracias a las interfaces
 
 ### D-04 — Fundamentales point-in-time del IBEX 35 (no bloquea EDGAR)
 
+**Actualización:** ADR-0018 fija la parte arquitectónica.
+- Fuente oficial: CNMV, con `nreg` como accession.
+- Documentos archivados: XBRL IPP y ESEF iXBRL.
+- Política `DATE_ONLY`: primera apertura XMAD estrictamente posterior al final del día de
+  publicación.
+
+Sigue abierto:
+- el proveedor comercial para la historia previa (opción b/c);
+- la implementación del vertical slice, que necesita aprobar las descargas CNMV.
+
 Es bastante más difícil que EDGAR: no hay un equivalente directo a un header con hora de
 aceptación ni a companyfacts, la cobertura estructurada es más reciente y la frecuencia de
 reporte es menor.
@@ -46,6 +56,11 @@ Opciones (a verificar coste, cobertura y condiciones actuales):
 fundamental y cualquier resultado lo indica explícitamente (no se rellenan huecos).
 
 ### D-05 — Precios, dividendos, corporate actions y delisting returns (EE. UU. y España)
+
+**Actualización:** la especificación de aceptación, la suite de contrato
+(`tests/contracts/`) y la matriz de proveedores están en `docs/D05_MARKET_DATA_ACCEPTANCE.md`.
+La decisión sigue **ABIERTA**: depende de una decisión económica del propietario y de
+verificar los casos de contrato.
 
 Decisiva: un motor fundamental excelente sobre precios contaminados o sin empresas
 desaparecidas reintroduce sesgo de supervivencia.
