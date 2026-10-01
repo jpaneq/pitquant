@@ -92,13 +92,31 @@ las tablas inmutables, migración = modelos, timestamps UTC.
 | Universo desde constituyentes actuales | `test_non_point_in_time_membership_provider_rejected` |
 | Reexpresiones contables | `test_restatement_only_visible_after_publication` |
 | Corporate action anunciada después de `as_of` | `test_adjustment_ignores_events_not_yet_announced` |
-| Fecha sin hora de publicación | `test_date_only_publication_is_conservative` |
+| Fecha sin hora de publicación (DATE_ONLY, ADR-0018) | `test_date_only_publication_is_conservative`, `test_xmad_date_only_policy` |
 | `+180 días` en lugar de calendario | `test_horizon_uses_calendar_months_and_rolls_to_session` |
 | Datetimes naive | `test_naive_datetime_rejected`, `test_naive_observation_times_rejected`, API `test_naive_datetime_rejected_by_api` |
 | Hiperparámetros elegidos con labels futuros | `test_validation_labels_known_at_decision_time` |
 | Normalización cross-sectional con otras fechas | `test_cross_sectional_transforms_never_mix_dates` |
 | Retornos perdidos al deslistar | `test_bankruptcy_delisting_return_is_minus_100pct`, `test_missing_history_without_terminal_event_fails_loudly` |
 | Mutación por SQL directo | `tests/integration/test_postgres.py` (triggers) |
+
+## Añadidos en la iteración «real data readiness»
+
+| Riesgo | Test |
+|---|---|
+| Disponibilidad SEC en bordes del calendario XNYS (pre-market, retardo que cae justo en el cierre, viernes, cierres anticipados, festivos, DST) | `test_conservative_session_edges` |
+| `filingDate` usado como disponibilidad | `test_availability_never_derives_from_filed_date` |
+| Deriva de companyfacts aplicada en silencio | `test_companyfacts_drift_is_reported_never_applied` |
+| Segunda ingestión sin revalidar | `test_second_ingestion_revalidates_from_archived_instance` |
+| Archivo crudo manipulado | `test_corrupted_archive_object_fails_revalidation` |
+| Mismo ticker = misma emisión | `test_reentry_without_isin_is_a_new_unresolved_identity`, `test_every_event_and_interval_without_isin_is_unresolved` |
+| Ticker moderno proyectado hacia atrás (S&P provisional) | `test_reconstruction_provider_is_provisional` |
+| Backtest con identidad sin resolver | `test_membership_without_isin_is_identity_unresolved` (`backtest_universe` falla cerrado) |
+| Linaje provisional que toca el holdout | `test_holdout_refuses_non_eligible_universe_lineage` |
+| No poder explicar por qué se conocía o no un valor | `tests/integration/test_explain.py` |
+| READY con fixtures o sin datos | `tests/unit/test_readiness.py` |
+| Proveedor D-05 con sesgo de supervivencia o precios ajustados | `tests/contracts/test_d05_contract.py` |
+| Suite PostgreSQL filtrada sin los tests críticos | `tests/conftest.py` (`_CRITICAL_PG_TESTS`) |
 
 ## Propiedades (Hypothesis, §81)
 

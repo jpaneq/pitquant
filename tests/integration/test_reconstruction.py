@@ -113,3 +113,65 @@ def test_reconstruction_at_T_is_auditable_and_immune_to_later_data(
     assert ids(now) == ids(r1)  # same securities/tickers; entry events come from the new build
     assert now["fundamentals"] == r1["fundamentals"]
     assert now["report_hash"] != r1["report_hash"]  # different data_version is recorded
+
+
+def test_full_audit_chain_security_to_snapshot_to_explain(
+    session: Session, tmp_path: Path, settings: Settings
+) -> None:
+    """security → ticker at T → filing → raw source → fact → available_at → PITContext →
+    frozen snapshot → reconstruction → explain, all agreeing on the same version."""
+    from pitquant.audit.explain import explain_fact
+    from pitquant.data.point_in_time.context import PITContext
+    from pitquant.data.point_in_time.engine import latest_for_period
+    from pitquant.db.models import RawSourceArchive, SecFiling
+    from pitquant.features.snapshot import FeatureValue, SnapshotBuilder
+    from tests.fixtures.sec_edgar import D
+
+    _load_history(session, tmp_path, HISTORY_V1, "licensed://spdji/chain")
+    fixc = SecurityMaster(session).resolve("FIXC", "XNYS", date(2024, 1, 2))
+    ingest_sec_company(session, _sec(tmp_path, settings, {A, B, C}), CIK, fixc)
+    session.flush()
+    time.sleep(0.01)
+    v1 = current_data_version(session, ["SP500"])
+
+    ctx = PITContext(session, T, ingested_before=v1.ingested_before)
+    fact = latest_for_period(ctx.facts(fixc, ["Revenues"]), "Revenues", date(2023, 12, 31))
+    assert fact is not None and fact.accession_number == A
+    builder = SnapshotBuilder(fixc, T, "fv-test", "dv-test", "code-test")
+    builder.add(FeatureValue("revenue_fy", fact.value, fact.available_at, fact.fact_id))
+    snap = builder.freeze()
+
+    ex = explain_fact(
+        session, fixc, "Revenues", date(2023, 12, 31), T, ingested_before=v1.ingested_before
+    )
+    assert ex.known is not None and ex.known.fact_id == fact.fact_id
+    assert snap.availability["revenue_fy"]["source_ref"] == ex.known.fact_id
+    assert ex.ticker_at_as_of == "FIXC"
+    filing = session.get_one(SecFiling, A)
+    assert (
+        ex.known.header_sha256 == session.get_one(RawSourceArchive, filing.header_archive_id).sha256
+    )
+
+    rec = reconstruct(session, T, "SP500", "XNYS", v1, ["Revenues"])
+    row = next(
+        r
+        for r in rec["fundamentals"][fixc]
+        if r["period_end"] == date(2023, 12, 31) and r["period_start"] == date(2023, 1, 1)
+    )
+    assert (row["fact_id"], row["accession_number"], row["available_at"]) == (
+        ex.known.fact_id,
+        ex.known.accession_number,
+        ex.known.effective_available_at,
+    )
+
+    # A later restatement (D) changes neither the snapshot built at T nor the explanation.
+    ingest_sec_company(session, _sec(tmp_path, settings, {A, B, C, D}), CIK, fixc)
+    rebuilt = SnapshotBuilder(fixc, T, "fv-test", "dv-test", "code-test")
+    again = latest_for_period(
+        PITContext(session, T, ingested_before=v1.ingested_before).facts(fixc, ["Revenues"]),
+        "Revenues",
+        date(2023, 12, 31),
+    )
+    assert again is not None and again.fact_id == fact.fact_id
+    rebuilt.add(FeatureValue("revenue_fy", again.value, again.available_at, again.fact_id))
+    assert rebuilt.freeze().content_hash == snap.content_hash

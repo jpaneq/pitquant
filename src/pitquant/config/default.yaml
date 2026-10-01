@@ -40,7 +40,8 @@ fundamentals:
     forms: ["10-K", "10-K/A", "10-Q", "10-Q/A", "20-F", "20-F/A", "40-F", "40-F/A"]
 
 pit:
-  # When a source only gives a publication DATE, available_at = session close + this lag.
+  # Lag added to records with an exact publication INSTANT. Date-only records ignore it:
+  # they become available at the first open strictly after the end of that date (ADR-0018).
   default_publication_lag_minutes: 60
   label_data_lag_minutes: 60
 

@@ -32,11 +32,11 @@ La aceptación se registra en un ADR nuevo y sólo entonces se añade el proveed
 ## Casos de contrato (14)
 
 **VERIFIED** contra fuente oficial:
-- AAPL 7×1, 2014-06-09 (Apple IR FAQ).
 - FB→META, 2022-06-09 (nota de prensa de Meta IR).
 
 **UNVERIFIED** (valores a confirmar en el documento oficial antes de contar para la
 aceptación):
+- AAPL 7×1 de 2014: el FAQ de Apple IR confirma el ratio pero no si el 9-jun es la fecha ex.
 - AAPL 4×1 de 2020 (fecha ex).
 - C 1×10 de 2011.
 - Spin-off ABT→ABBV.

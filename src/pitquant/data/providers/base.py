@@ -96,7 +96,7 @@ class FactRecord:
     value: float | None
     unit: str
     currency: str | None
-    published_at: datetime | date  # date-only => conservative availability at close + lag
+    published_at: datetime | date  # date-only => next open after the end of that date
     revision_id: int = 0
     filing_ref: str | None = None
     provenance: Provenance | None = None

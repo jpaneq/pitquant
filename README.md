@@ -32,7 +32,9 @@ exclusivamente la información que un inversor podía conocer en el instante ana
 
 ```bash
 pip install -e ".[dev]"
-make test              # 108 tests en SQLite + 12 de PostgreSQL (con PITQUANT_PG_URL)
+make ci                # lint + mypy + suite pit + suite completa + PostgreSQL embebido
+make pg-local          # suite PostgreSQL estricta sin Docker (pip install -e ".[localpg]")
+pitquant data-readiness   # ¿datos reales listos? (exit 1 si no READY)
 make pit               # sólo la suite anti-leakage
 python scripts/demo_time_machine.py      # reconstrucción PIT sobre datos sintéticos
 make demo              # API en http://127.0.0.1:8000/docs con datos sintéticos

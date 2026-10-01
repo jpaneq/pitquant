@@ -216,6 +216,7 @@ def classify_rows(
                     new_ticker=new,
                     announced_at=announced,
                     reason="cambio de código",
+                    identity_resolved=key.startswith("ISIN:"),
                 )
             )
             del lineage_of[old]
@@ -237,6 +238,7 @@ def classify_rows(
                     announced_at=announced,
                     reason=style.value,
                     parent_source_event_id=parent_id,
+                    identity_resolved=key.startswith("ISIN:"),
                 )
             )
         for t in adds:

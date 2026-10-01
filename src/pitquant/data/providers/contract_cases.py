@@ -24,9 +24,10 @@ CASES: tuple[ContractCase, ...] = (
         "AAPL",
         date(2014, 6, 2),
         {"ex_date": date(2014, 6, 9), "ratio": 7.0},
-        V,
+        U,
         "https://investor.apple.com/faq/default.aspx",
-        "IR FAQ: 'a 7-for-1 basis on June 9, 2014' (first split-adjusted session).",
+        "IR FAQ: 'a 7-for-1 basis on June 9, 2014' confirms the ratio; it does not say "
+        "whether June 9 is the ex-date (first split-adjusted session) — confirm.",
     ),
     ContractCase(
         "US-SPLIT-AAPL-2020",

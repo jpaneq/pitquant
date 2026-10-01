@@ -383,3 +383,13 @@ def test_reentry_with_same_isin_is_the_same_security(session: Session, settings:
     )
     assert rep.n_identity_unresolved == 0
     assert _sid(session, "T05", D_INIT) == _sid(session, "T05", D_EFF)
+
+
+def test_every_event_and_interval_without_isin_is_unresolved(
+    session: Session, ibex: BuildReport
+) -> None:
+    keyed = session.scalars(select(IndexEvent).where(IndexEvent.security_id.is_not(None))).all()
+    assert {e.event_type for e in keyed} >= {"INDEX_DELETE", "TICKER_CHANGE", "INDEX_ADD"}
+    assert {e.identity_status for e in keyed} == {"IDENTITY_UNRESOLVED"}
+    ivs = session.scalars(select(IndexMembership)).all()
+    assert {i.identity_status for i in ivs} == {"IDENTITY_UNRESOLVED"}
