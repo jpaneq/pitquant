@@ -121,13 +121,19 @@ class MarketCalendar:
         """Conservative availability for a record published on ``publication``.
 
         * aware datetime → that instant + lag.
-        * date only → close of the first session on/after that date + lag (we do not
-          assume pre-market publication without evidence).
+        * date only (``availability_precision = DATE_ONLY``) → see ``date_only_available_at``.
+          ``lag_minutes`` does not apply: no hour is invented.
         """
         if isinstance(publication, datetime):
             return require_aware(publication, "publication") + timedelta(minutes=lag_minutes)
-        session = self.session_on_or_after(publication)
-        return self.session_close(session) + timedelta(minutes=lag_minutes)
+        return self.date_only_available_at(publication)
+
+    def date_only_available_at(self, publication_date: date) -> datetime:
+        """First session open STRICTLY after the END of ``publication_date`` in the market's
+        local time (ADR-0018). A document dated D may have been published at 23:59 local,
+        so it is never usable on D itself — not even after D's close."""
+        end_of_day = pd.Timestamp(publication_date + timedelta(days=1)).tz_localize(self.tz)
+        return self.next_session_open(_to_dt(end_of_day) - timedelta(microseconds=1))
 
     def first_sessions_of_months(self, start: date, end: date) -> list[date]:
         out: list[date] = []

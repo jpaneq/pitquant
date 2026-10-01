@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 import pytest
 
@@ -76,9 +76,32 @@ def test_horizon_uses_calendar_months_and_rolls_to_session() -> None:
 
 def test_date_only_publication_is_conservative() -> None:
     nyse = get_calendar("XNYS")
-    assert nyse.available_after_publication(date(2020, 11, 5), 60) == utc(2020, 11, 5, 22, 0)
-    # weekend filing -> Monday close + lag
-    assert nyse.available_after_publication(date(2020, 11, 7), 0) == utc(2020, 11, 9, 21, 0)
+    # Never the publication day itself (an undated hour could be 23:59): next open.
+    assert nyse.available_after_publication(date(2020, 11, 5), 60) == ny(2020, 11, 6, 9, 30)
+    # weekend publication -> Monday open
+    assert nyse.available_after_publication(date(2020, 11, 7), 0) == ny(2020, 11, 9, 9, 30)
+    # an aware instant keeps instant + lag
+    assert nyse.available_after_publication(ny(2020, 11, 5, 8), 60) == ny(2020, 11, 5, 9)
+
+
+@pytest.mark.parametrize(
+    ("published", "expected", "case"),
+    [
+        (date(2024, 5, 6), (2024, 5, 7, 9, 0), "Monday -> Tuesday open"),
+        (date(2024, 5, 10), (2024, 5, 13, 9, 0), "Friday -> Monday open"),
+        (date(2024, 5, 11), (2024, 5, 13, 9, 0), "Saturday -> Monday open"),
+        (date(2024, 12, 24), (2024, 12, 27, 9, 0), "Christmas Eve -> after 25/26 Dec"),
+        (date(2024, 3, 29), (2024, 4, 2, 9, 0), "Good Friday / Easter Monday closed"),
+        (date(2024, 3, 30), (2024, 4, 2, 9, 0), "DST switch weekend (31 March)"),
+        (date(2024, 10, 25), (2024, 10, 28, 9, 0), "Friday before DST end"),
+    ],
+)
+def test_xmad_date_only_policy(published, expected, case) -> None:  # type: ignore[no-untyped-def]
+    xmad = get_calendar("XMAD")
+    got = xmad.date_only_available_at(published)
+    assert got == datetime(*expected, tzinfo=MAD), case
+    end_of_day = datetime(published.year, published.month, published.day, tzinfo=MAD)
+    assert got > end_of_day + timedelta(days=1) - timedelta(microseconds=1)
 
 
 def test_out_of_range_dates_fail() -> None:
