@@ -1,8 +1,11 @@
-"""initial schema
+"""baseline schema
+
+Regenerated on 2026-10-01 for D-01..D-03 before any deployment existed (no data to
+migrate). From now on every change is a new revision.
 
 Revision ID: 0001
 Revises:
-Create Date: 2026-10-01 11:05:14.176615
+Create Date: 2026-10-01 11:36:53.608666
 """
 
 from __future__ import annotations
@@ -16,6 +19,7 @@ branch_labels = None
 depends_on = None
 
 
+# Must equal pitquant.db.models.IMMUTABLE_TABLES (checked by tests/integration/test_postgres.py).
 IMMUTABLE_TABLES = (
     "raw_records",
     "feature_snapshots",
@@ -24,6 +28,13 @@ IMMUTABLE_TABLES = (
     "backtest_observations",
     "realized_returns",
     "holdout_access_log",
+    "holdout_evaluations",
+    "raw_source_archive",
+    "sec_filings",
+    "fundamental_facts",
+    "index_events",
+    "membership_builds",
+    "index_membership",
 )
 
 
@@ -108,6 +119,20 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("issuer_id", name=op.f("pk_issuers")),
     )
     op.create_table(
+        "membership_builds",
+        sa.Column("build_id", sa.String(length=36), nullable=False),
+        sa.Column("index_code", sa.String(length=20), nullable=False),
+        sa.Column("membership_source", sa.String(length=100), nullable=False),
+        sa.Column("source_confidence", sa.String(length=40), nullable=False),
+        sa.Column("raw_source_hash", sa.String(length=64), nullable=False),
+        sa.Column("events_hash", sa.String(length=64), nullable=False),
+        sa.Column("n_events", sa.Integer(), nullable=False),
+        sa.Column("status", sa.String(length=20), nullable=False),
+        sa.Column("report", sa.JSON(), nullable=False),
+        sa.Column("built_at", sa.DateTime(timezone=True), nullable=False),
+        sa.PrimaryKeyConstraint("build_id", name=op.f("pk_membership_builds")),
+    )
+    op.create_table(
         "models",
         sa.Column("model_id", sa.String(length=50), nullable=False),
         sa.Column("horizon", sa.String(length=5), nullable=False),
@@ -116,6 +141,24 @@ def upgrade() -> None:
         sa.Column("description", sa.Text(), nullable=True),
         sa.PrimaryKeyConstraint("model_id", name=op.f("pk_models")),
     )
+    op.create_table(
+        "raw_source_archive",
+        sa.Column("archive_id", sa.String(length=36), nullable=False),
+        sa.Column("provider", sa.String(length=100), nullable=False),
+        sa.Column("source_identifier", sa.String(length=1000), nullable=False),
+        sa.Column("retrieved_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("published_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("sha256", sa.String(length=64), nullable=False),
+        sa.Column("mime_type", sa.String(length=100), nullable=False),
+        sa.Column("size_bytes", sa.Integer(), nullable=False),
+        sa.Column("storage_uri", sa.String(length=500), nullable=False),
+        sa.Column("parser_version", sa.String(length=50), nullable=True),
+        sa.Column("notes", sa.Text(), nullable=True),
+        sa.PrimaryKeyConstraint("archive_id", name=op.f("pk_raw_source_archive")),
+    )
+    with op.batch_alter_table("raw_source_archive", schema=None) as batch_op:
+        batch_op.create_index(batch_op.f("ix_raw_source_archive_sha256"), ["sha256"], unique=False)
+
     op.create_table(
         "benchmark_levels",
         sa.Column("benchmark_code", sa.String(length=30), nullable=False),
@@ -522,36 +565,56 @@ def upgrade() -> None:
         )
 
     op.create_table(
-        "index_membership",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("security_id", sa.String(length=36), nullable=False),
+        "index_events",
+        sa.Column("event_id", sa.String(length=36), nullable=False),
         sa.Column("index_code", sa.String(length=20), nullable=False),
-        sa.Column("ticker_at_inclusion", sa.String(length=20), nullable=True),
-        sa.Column("inclusion_date", sa.Date(), nullable=False),
-        sa.Column("exclusion_date", sa.Date(), nullable=True),
-        sa.Column("inclusion_reason", sa.String(length=200), nullable=True),
-        sa.Column("exclusion_reason", sa.String(length=200), nullable=True),
+        sa.Column("event_type", sa.String(length=30), nullable=False),
+        sa.Column("parent_event_id", sa.String(length=36), nullable=True),
+        sa.Column("security_id", sa.String(length=36), nullable=True),
+        sa.Column("ticker", sa.String(length=20), nullable=True),
+        sa.Column("new_ticker", sa.String(length=20), nullable=True),
+        sa.Column("identifier", sa.String(length=20), nullable=True),
+        sa.Column("effective_date", sa.Date(), nullable=False),
         sa.Column("announced_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("source_id", sa.Integer(), nullable=True),
+        sa.Column("reason", sa.String(length=300), nullable=True),
+        sa.Column("membership_source", sa.String(length=100), nullable=False),
+        sa.Column("source_event_id", sa.String(length=200), nullable=False),
+        sa.Column("source_confidence", sa.String(length=40), nullable=False),
+        sa.Column("raw_source_hash", sa.String(length=64), nullable=False),
+        sa.Column("archive_id", sa.String(length=36), nullable=True),
+        sa.Column("ingested_at", sa.DateTime(timezone=True), nullable=False),
         sa.CheckConstraint(
-            "exclusion_date IS NULL OR exclusion_date > inclusion_date",
-            name=op.f("ck_index_membership_interval"),
+            "event_type IN ('INDEX_ADD','INDEX_DELETE','TICKER_CHANGE','ORDINARY_REVIEW','EXTRAORDINARY_REVIEW','INITIAL_SNAPSHOT')",
+            name=op.f("ck_index_events_event_type_values"),
+        ),
+        sa.ForeignKeyConstraint(
+            ["archive_id"],
+            ["raw_source_archive.archive_id"],
+            name=op.f("fk_index_events_archive_id_raw_source_archive"),
+        ),
+        sa.ForeignKeyConstraint(
+            ["parent_event_id"],
+            ["index_events.event_id"],
+            name=op.f("fk_index_events_parent_event_id_index_events"),
         ),
         sa.ForeignKeyConstraint(
             ["security_id"],
             ["securities.security_id"],
-            name=op.f("fk_index_membership_security_id_securities"),
+            name=op.f("fk_index_events_security_id_securities"),
         ),
-        sa.ForeignKeyConstraint(
-            ["source_id"],
-            ["data_sources.source_id"],
-            name=op.f("fk_index_membership_source_id_data_sources"),
+        sa.PrimaryKeyConstraint("event_id", name=op.f("pk_index_events")),
+        sa.UniqueConstraint(
+            "membership_source",
+            "source_event_id",
+            "raw_source_hash",
+            name=op.f("uq_index_events_membership_source_source_event_id_raw_source_hash"),
         ),
-        sa.PrimaryKeyConstraint("id", name=op.f("pk_index_membership")),
     )
-    with op.batch_alter_table("index_membership", schema=None) as batch_op:
+    with op.batch_alter_table("index_events", schema=None) as batch_op:
         batch_op.create_index(
-            "ix_membership_asof", ["index_code", "inclusion_date", "exclusion_date"], unique=False
+            "ix_index_events_seq",
+            ["index_code", "membership_source", "effective_date"],
+            unique=False,
         )
 
     op.create_table(
@@ -602,6 +665,46 @@ def upgrade() -> None:
             "source_id", "provider_key", name=op.f("uq_provider_keys_source_id_provider_key")
         ),
     )
+    op.create_table(
+        "sec_filings",
+        sa.Column("accession_number", sa.String(length=25), nullable=False),
+        sa.Column("cik", sa.String(length=10), nullable=False),
+        sa.Column("security_id", sa.String(length=36), nullable=False),
+        sa.Column("form", sa.String(length=20), nullable=False),
+        sa.Column("is_amendment", sa.Boolean(), nullable=False),
+        sa.Column("filed_date", sa.Date(), nullable=False),
+        sa.Column("report_period", sa.Date(), nullable=True),
+        sa.Column("accepted_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("submissions_acceptance_raw", sa.String(length=40), nullable=True),
+        sa.Column("available_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("availability_policy", sa.String(length=40), nullable=False),
+        sa.Column("primary_document", sa.String(length=300), nullable=True),
+        sa.Column("header_archive_id", sa.String(length=36), nullable=False),
+        sa.Column("xbrl_archive_id", sa.String(length=36), nullable=True),
+        sa.Column("ingested_at", sa.DateTime(timezone=True), nullable=False),
+        sa.CheckConstraint(
+            "available_at >= accepted_at", name=op.f("ck_sec_filings_available_after_acceptance")
+        ),
+        sa.ForeignKeyConstraint(
+            ["header_archive_id"],
+            ["raw_source_archive.archive_id"],
+            name=op.f("fk_sec_filings_header_archive_id_raw_source_archive"),
+        ),
+        sa.ForeignKeyConstraint(
+            ["security_id"],
+            ["securities.security_id"],
+            name=op.f("fk_sec_filings_security_id_securities"),
+        ),
+        sa.ForeignKeyConstraint(
+            ["xbrl_archive_id"],
+            ["raw_source_archive.archive_id"],
+            name=op.f("fk_sec_filings_xbrl_archive_id_raw_source_archive"),
+        ),
+        sa.PrimaryKeyConstraint("accession_number", name=op.f("pk_sec_filings")),
+    )
+    with op.batch_alter_table("sec_filings", schema=None) as batch_op:
+        batch_op.create_index(batch_op.f("ix_sec_filings_cik"), ["cik"], unique=False)
+
     op.create_table(
         "sector_classification",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
@@ -662,19 +765,36 @@ def upgrade() -> None:
         "fundamental_facts",
         sa.Column("fact_id", sa.String(length=36), nullable=False),
         sa.Column("security_id", sa.String(length=36), nullable=False),
-        sa.Column("concept", sa.String(length=100), nullable=False),
-        sa.Column("fiscal_period", sa.String(length=10), nullable=False),
+        sa.Column("taxonomy", sa.String(length=30), nullable=False),
+        sa.Column("concept", sa.String(length=200), nullable=False),
+        sa.Column("fiscal_period", sa.String(length=10), nullable=True),
         sa.Column("period_start", sa.Date(), nullable=True),
         sa.Column("period_end", sa.Date(), nullable=False),
         sa.Column("value", sa.Float(), nullable=True),
-        sa.Column("unit", sa.String(length=20), nullable=False),
+        sa.Column("unit", sa.String(length=30), nullable=False),
         sa.Column("currency", sa.String(length=3), nullable=True),
         sa.Column("available_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("revision_id", sa.Integer(), nullable=False),
+        sa.Column("cik", sa.String(length=10), nullable=True),
+        sa.Column("accession_number", sa.String(length=25), nullable=True),
+        sa.Column("form", sa.String(length=20), nullable=True),
+        sa.Column("filed_date", sa.Date(), nullable=True),
+        sa.Column("accepted_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("is_amendment", sa.Boolean(), nullable=False),
+        sa.Column("source_document", sa.String(length=500), nullable=True),
         sa.Column("statement_id", sa.String(length=36), nullable=True),
         sa.Column("source_id", sa.Integer(), nullable=True),
         sa.Column("raw_record_id", sa.String(length=36), nullable=True),
         sa.Column("ingested_at", sa.DateTime(timezone=True), nullable=False),
+        sa.CheckConstraint(
+            "accepted_at IS NULL OR available_at >= accepted_at",
+            name=op.f("ck_fundamental_facts_available_after_acceptance"),
+        ),
+        sa.ForeignKeyConstraint(
+            ["accession_number"],
+            ["sec_filings.accession_number"],
+            name=op.f("fk_fundamental_facts_accession_number_sec_filings"),
+        ),
         sa.ForeignKeyConstraint(
             ["raw_record_id"],
             ["raw_records.raw_record_id"],
@@ -698,18 +818,100 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("fact_id", name=op.f("pk_fundamental_facts")),
         sa.UniqueConstraint(
             "security_id",
+            "taxonomy",
             "concept",
+            "unit",
+            "period_start",
+            "period_end",
             "fiscal_period",
             "revision_id",
+            "accession_number",
             "source_id",
             name=op.f(
-                "uq_fundamental_facts_security_id_concept_fiscal_period_revision_id_source_id"
+                "uq_fundamental_facts_security_id_taxonomy_concept_unit_period_start_period_end_fiscal_period_revision_id_accession_number_source_id"
             ),
         ),
     )
     with op.batch_alter_table("fundamental_facts", schema=None) as batch_op:
         batch_op.create_index(
             "ix_fact_asof", ["security_id", "concept", "period_end", "available_at"], unique=False
+        )
+        batch_op.create_index(
+            batch_op.f("ix_fundamental_facts_accession_number"), ["accession_number"], unique=False
+        )
+
+    op.create_table(
+        "holdout_evaluations",
+        sa.Column("evaluation_id", sa.String(length=36), nullable=False),
+        sa.Column("access_id", sa.String(length=36), nullable=False),
+        sa.Column("model_version", sa.String(length=80), nullable=False),
+        sa.Column("holdout_start", sa.Date(), nullable=False),
+        sa.Column("holdout_end", sa.Date(), nullable=False),
+        sa.Column("metrics", sa.JSON(), nullable=False),
+        sa.Column("n_observations", sa.Integer(), nullable=False),
+        sa.Column("metrics_hash", sa.String(length=64), nullable=False),
+        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
+        sa.ForeignKeyConstraint(
+            ["access_id"],
+            ["holdout_access_log.id"],
+            name=op.f("fk_holdout_evaluations_access_id_holdout_access_log"),
+        ),
+        sa.ForeignKeyConstraint(
+            ["model_version"],
+            ["model_versions.model_version"],
+            name=op.f("fk_holdout_evaluations_model_version_model_versions"),
+        ),
+        sa.PrimaryKeyConstraint("evaluation_id", name=op.f("pk_holdout_evaluations")),
+        sa.UniqueConstraint("access_id", name=op.f("uq_holdout_evaluations_access_id")),
+    )
+    op.create_table(
+        "index_membership",
+        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column("build_id", sa.String(length=36), nullable=False),
+        sa.Column("security_id", sa.String(length=36), nullable=False),
+        sa.Column("index_code", sa.String(length=20), nullable=False),
+        sa.Column("ticker_at_inclusion", sa.String(length=20), nullable=True),
+        sa.Column("effective_from", sa.Date(), nullable=False),
+        sa.Column("effective_to", sa.Date(), nullable=True),
+        sa.Column("inclusion_reason", sa.String(length=300), nullable=True),
+        sa.Column("exclusion_reason", sa.String(length=300), nullable=True),
+        sa.Column("announced_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("membership_source", sa.String(length=100), nullable=False),
+        sa.Column("source_event_id", sa.String(length=36), nullable=False),
+        sa.Column("exclusion_event_id", sa.String(length=36), nullable=True),
+        sa.Column("source_confidence", sa.String(length=40), nullable=False),
+        sa.Column("raw_source_hash", sa.String(length=64), nullable=False),
+        sa.CheckConstraint(
+            "effective_to IS NULL OR effective_to > effective_from",
+            name=op.f("ck_index_membership_interval"),
+        ),
+        sa.ForeignKeyConstraint(
+            ["build_id"],
+            ["membership_builds.build_id"],
+            name=op.f("fk_index_membership_build_id_membership_builds"),
+        ),
+        sa.ForeignKeyConstraint(
+            ["exclusion_event_id"],
+            ["index_events.event_id"],
+            name=op.f("fk_index_membership_exclusion_event_id_index_events"),
+        ),
+        sa.ForeignKeyConstraint(
+            ["security_id"],
+            ["securities.security_id"],
+            name=op.f("fk_index_membership_security_id_securities"),
+        ),
+        sa.ForeignKeyConstraint(
+            ["source_event_id"],
+            ["index_events.event_id"],
+            name=op.f("fk_index_membership_source_event_id_index_events"),
+        ),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_index_membership")),
+    )
+    with op.batch_alter_table("index_membership", schema=None) as batch_op:
+        batch_op.create_index(
+            "ix_membership_asof",
+            ["build_id", "index_code", "effective_from", "effective_to"],
+            unique=False,
         )
 
     op.create_table(
@@ -900,7 +1102,13 @@ def downgrade() -> None:
         batch_op.drop_index("ix_prediction_lookup")
 
     op.drop_table("predictions")
+    with op.batch_alter_table("index_membership", schema=None) as batch_op:
+        batch_op.drop_index("ix_membership_asof")
+
+    op.drop_table("index_membership")
+    op.drop_table("holdout_evaluations")
     with op.batch_alter_table("fundamental_facts", schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f("ix_fundamental_facts_accession_number"))
         batch_op.drop_index("ix_fact_asof")
 
     op.drop_table("fundamental_facts")
@@ -913,12 +1121,16 @@ def downgrade() -> None:
         batch_op.drop_index(batch_op.f("ix_sector_classification_security_id"))
 
     op.drop_table("sector_classification")
+    with op.batch_alter_table("sec_filings", schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f("ix_sec_filings_cik"))
+
+    op.drop_table("sec_filings")
     op.drop_table("provider_keys")
     op.drop_table("prices")
-    with op.batch_alter_table("index_membership", schema=None) as batch_op:
-        batch_op.drop_index("ix_membership_asof")
+    with op.batch_alter_table("index_events", schema=None) as batch_op:
+        batch_op.drop_index("ix_index_events_seq")
 
-    op.drop_table("index_membership")
+    op.drop_table("index_events")
     with op.batch_alter_table("identifier_history", schema=None) as batch_op:
         batch_op.drop_index("ix_identifier_lookup")
         batch_op.drop_index(batch_op.f("ix_identifier_history_security_id"))
@@ -956,7 +1168,12 @@ def downgrade() -> None:
 
     op.drop_table("macro_data")
     op.drop_table("benchmark_levels")
+    with op.batch_alter_table("raw_source_archive", schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f("ix_raw_source_archive_sha256"))
+
+    op.drop_table("raw_source_archive")
     op.drop_table("models")
+    op.drop_table("membership_builds")
     op.drop_table("issuers")
     op.drop_table("data_sources")
     op.drop_table("benchmarks")

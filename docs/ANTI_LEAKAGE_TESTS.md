@@ -1,8 +1,14 @@
 # Catálogo de tests anti-leakage
 
-Todos llevan el marcador `pit` y CI los ejecuta en un paso propio que **no puede omitirse**
-(`pytest -m pit`). Estado a 2026-10-01: **69 tests pasan, 1 omitido localmente**
-(`test_postgres`, requiere PostgreSQL; corre en CI).
+Todos llevan el marcador `pit` y CI los ejecuta en un paso propio que falla si alguno se
+omite. Estado a 2026-10-01:
+
+- **108 tests pasan sobre SQLite** (87 marcados `pit`).
+- **12 tests de PostgreSQL** se omiten sin `PITQUANT_PG_URL`. Se han ejecutado aquí en
+  **modo estricto contra PostgreSQL 16.2 real** y pasan; aun así **no se consideran
+  verificados hasta que el job `postgres` de CI los ejecute**. En ese job
+  (`PITQUANT_REQUIRE_POSTGRES=1`) la ejecución falla si la URL no es PostgreSQL, si se
+  recogen o ejecutan cero tests `postgres`, o si cualquiera queda *skipped*.
 
 ## Tests exigidos en §80
 
@@ -26,6 +32,56 @@ Todos llevan el marcador `pit` y CI los ejecuta en un paso propio que **no puede
 | `test_imputer_train_only` | `test_snapshots_and_immutability.py::test_imputer_train_only` | ✅ |
 | `test_holdout_never_used_for_training` | `test_validation_splits.py::test_holdout_never_used_for_training` (+ unlock sólo con modelo congelado y registrado) | ✅ |
 | `test_model_version_immutability` | `test_snapshots_and_immutability.py::test_model_version_immutability` + `test_predictions_and_snapshots_are_append_only` | ✅ |
+
+## D-01 — SEC EDGAR (`tests/unit/test_sec_edgar.py`, fixtures ficticias)
+
+| Test exigido | Qué demuestra |
+|---|---|
+| `test_later_restatement_does_not_rewrite_history` | FY2023 = 100 en un snapshot de 2024 aunque el 10-K de 2025 lo reexprese a 95; ambas versiones conservadas; editar una versión falla |
+| `test_companyfacts_later_fact_not_visible_early` | companyfacts descargado hoy no adelanta un hecho antes de `accepted_at + lag` |
+| `test_fact_bound_to_accession` | cada hecho lleva cik, accession, form, filed_date, accepted_at, taxonomía, unidad, documento; header archivado con `published_at`; accession huérfano rechazado |
+| `test_amended_filing_visibility` | el 10-Q/A sólo sustituye al 10-Q desde su aceptación |
+| `test_acceptance_datetime_controls_availability` | aceptado 16:15 ET → no visible al cierre ni esa noche; visible en la siguiente apertura; pre-market visible esa mañana; sábado → lunes |
+| `test_same_period_multiple_filings` | varias versiones del mismo hecho; se elige la disponible en cada `as_of` |
+| extra | validación contra la instancia XBRL del filing, cobertura 2011+, idempotencia (con revalidación desde el archivo), DST del header, User-Agent y reintentos |
+
+## D-02 — S&P 500 (`tests/unit/test_sp500_history.py`)
+
+Construcción canónica desde fichero licenciado, causa obligatoria en altas/bajas,
+reconstrucción provisional etiquetada como tal, anuncios inconsistentes → error, sin
+duplicados, tamaño validado, fuentes `CROSSCHECK_ONLY` rechazadas, detección de
+discrepancias.
+
+## D-03 — IBEX 35 (`tests/unit/test_ibex_history.py`, fechas ilustrativas)
+
+| Test exigido | Qué demuestra |
+|---|---|
+| `test_ibex_ticker_change_preserves_security_id` | mismo `security_id`, dos filas en `ticker_history` |
+| `test_gas_to_ntgy_not_membership_turnover` | marcador ilegible → resuelto por aviso BME, un único intervalo continuo |
+| `test_ree_to_red_not_membership_turnover` | marcador visual de cambio de código → `TICKER_CHANGE`, sin altas/bajas |
+| `test_ibex_extraordinary_review` | evento padre `EXTRAORDINARY_REVIEW` con sus altas/bajas hijas |
+| `test_announcement_date_not_effective_date` | anunciado 4-jun, efectivo 22-jun: el universo cambia sólo el 22; `announced_changes` lo expone antes |
+| `test_ibex_membership_reconstruction_from_events` | 35 miembros tras cada evento, salidas con fecha efectiva exclusiva |
+| extra | fila ambigua sin aviso → `UnresolvedSourceEventError`; marcador que contradice al aviso → error; tamaño fuera de rango → build fallido; extracción PDF con calibración (y sin calibración → `UNKNOWN`); archivo detecta manipulación |
+
+## Criterio de terminación (`tests/integration/test_reconstruction.py`)
+
+Para T = 28-jun-2024 16:00 ET: universo, ticker en T, fundamentales publicados en T con su
+accession y `available_at`, evento de entrada de cada miembro; repetir da el mismo hash;
+tras ingerir una reexpresión posterior **y** una corrección del proveedor del índice, la
+reconstrucción con el mismo `DataVersion` es idéntica.
+
+## Holdout sellado (`tests/unit/test_holdout_sealed.py`)
+
+Modelo no congelado → rechazado; una evaluación por versión; acceso y lectura registrados;
+analytics de desarrollo no pueden tocar el rango; ninguna ruta de la API lo expone.
+
+## Inmutabilidad en PostgreSQL (`tests/integration/test_postgres.py`)
+
+`test_prediction_update_rejected`, `test_prediction_delete_rejected`,
+`test_snapshot_update_rejected`, `test_snapshot_delete_rejected` (también en versión ORM),
+más hechos, eventos de índice, versión de modelo congelada, triggers presentes en todas
+las tablas inmutables, migración = modelos, timestamps UTC.
 
 ## Tests adicionales
 

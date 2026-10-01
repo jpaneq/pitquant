@@ -39,6 +39,25 @@ class MarketConfig(_Frozen):
 class UniverseConfig(_Frozen):
     code: str
     calendar: str
+    expected_size: tuple[int, int]
+    canonical_source: str
+
+
+class ArchiveConfig(_Frozen):
+    root: str
+
+
+class SecConfig(_Frozen):
+    user_agent: str
+    max_requests_per_second: float = Field(gt=0, le=10)
+    coverage_start: date
+    availability_policy: Literal["conservative_session", "accepted_plus_lag"]
+    lag_minutes: int = Field(ge=0)
+    forms: list[str]
+
+
+class FundamentalsConfig(_Frozen):
+    sec: SecConfig
 
 
 class PITConfig(_Frozen):
@@ -120,6 +139,8 @@ class Settings(_Frozen):
     database: DatabaseConfig
     markets: dict[str, MarketConfig]
     universes: list[UniverseConfig]
+    archive: ArchiveConfig
+    fundamentals: FundamentalsConfig
     pit: PITConfig
     horizons: list[Horizon]
     execution: ExecutionConfig
@@ -136,6 +157,12 @@ class Settings(_Frozen):
                 raise ValueError(f"universe {u.code} references unknown market {u.calendar}")
         return self
 
+    def universe(self, code: str) -> UniverseConfig:
+        for u in self.universes:
+            if u.code == code:
+                return u
+        raise KeyError(code)
+
     @property
     def config_hash(self) -> str:
         return content_hash(self.model_dump(mode="json"))
@@ -146,6 +173,9 @@ def load_settings(path: Path | str | None = None) -> Settings:
     db_url = os.environ.get("PITQUANT_DATABASE_URL")
     if db_url:
         raw["database"]["url"] = db_url
+    ua = os.environ.get("PITQUANT_SEC_USER_AGENT")
+    if ua:
+        raw["fundamentals"]["sec"]["user_agent"] = ua
     return Settings.model_validate(raw)
 
 

@@ -5,6 +5,7 @@ All market data used in tests is SYNTHETIC (see pitquant.data.providers.syntheti
 
 from __future__ import annotations
 
+import os as _os
 from collections.abc import Iterator
 from datetime import UTC, datetime
 from zoneinfo import ZoneInfo
@@ -80,3 +81,45 @@ def market(market_factory: sessionmaker[Session]) -> Iterator[Session]:
     finally:
         s.rollback()
         s.close()
+
+
+# ───────────────────── strict PostgreSQL mode (CI job "postgres") ─────────────────────
+# With PITQUANT_REQUIRE_POSTGRES=1 the run FAILS if: the URL is missing or not PostgreSQL,
+# zero postgres tests are collected/executed, or any postgres test is skipped.
+
+
+_REQUIRE_PG = _os.environ.get("PITQUANT_REQUIRE_POSTGRES") == "1"
+_pg_executed: list[str] = []
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    if _REQUIRE_PG:
+        url = _os.environ.get("PITQUANT_PG_URL", "")
+        if not url.startswith("postgresql"):
+            raise pytest.UsageError(
+                "PITQUANT_REQUIRE_POSTGRES=1 but PITQUANT_PG_URL is not a PostgreSQL URL "
+                "(SQLite is not an acceptable substitute)"
+            )
+
+
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+    if _REQUIRE_PG and not any(i.get_closest_marker("postgres") for i in items):
+        raise pytest.UsageError("strict PostgreSQL mode: zero postgres tests collected")
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo[None]):  # type: ignore[no-untyped-def]
+    outcome = yield
+    rep = outcome.get_result()
+    if item.get_closest_marker("postgres") is None:
+        return
+    if rep.when == "call" and rep.passed:
+        _pg_executed.append(item.nodeid)
+    if _REQUIRE_PG and rep.skipped:
+        rep.outcome = "failed"
+        rep.longrepr = f"strict PostgreSQL mode: {item.nodeid} was skipped"
+
+
+def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
+    if _REQUIRE_PG and not _pg_executed and exitstatus == 0:
+        session.exitstatus = 1

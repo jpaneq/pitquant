@@ -20,8 +20,24 @@ markets:
 universes:
   - code: "SP500"
     calendar: "XNYS"
+    expected_size: [495, 510]     # >500 rows allowed: multiple share classes
+    canonical_source: "SPDJI_LICENSED"
   - code: "IBEX35"
     calendar: "XMAD"
+    expected_size: [34, 36]
+    canonical_source: "BME_HISTORICAL_COMPOSITION"
+
+archive:
+  root: "data/archive"           # content-addressed raw source archive (SHA-256)
+
+fundamentals:
+  sec:
+    user_agent: "PITQuant research (set PITQUANT_SEC_USER_AGENT)"   # SEC requires a contact
+    max_requests_per_second: 8
+    coverage_start: "2011-01-01"    # XBRL era; earlier backfill possible later
+    availability_policy: "conservative_session"   # conservative_session | accepted_plus_lag
+    lag_minutes: 15
+    forms: ["10-K", "10-K/A", "10-Q", "10-Q/A", "20-F", "20-F/A", "40-F", "40-F/A"]
 
 pit:
   # When a source only gives a publication DATE, available_at = session close + this lag.

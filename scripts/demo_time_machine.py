@@ -16,6 +16,7 @@ from pitquant.config.settings import load_settings
 from pitquant.core.types import Horizon
 from pitquant.data.calendars.market_calendar import get_calendar
 from pitquant.data.point_in_time.context import PITContext
+from pitquant.data.point_in_time.engine import latest_for_period
 from pitquant.db.session import create_all, make_engine, make_session_factory
 from pitquant.jobs.demo import load_synthetic_market
 
@@ -39,7 +40,7 @@ def main() -> None:
         bars = ctx.raw_bars(sec_id)
         adj = ctx.adjusted_closes(sec_id)
         facts = ctx.facts(sec_id, ["revenue"])
-        latest = max(facts.items(), key=lambda kv: kv[0][1])
+        latest_key, latest_fact = max(facts.items(), key=lambda kv: kv[0].period_end)
         universe = ctx.universe("SYN_SP500", "XNYS")
 
         print(f"\n=== TIME MACHINE — as_of {as_of.isoformat()} — {view.name} [{view.ticker}] ===")
@@ -50,11 +51,11 @@ def main() -> None:
             f"bars available        : {len(bars)}; adjusted (as-of) first close {adj.iloc[0]:.4f}"
         )
         print(
-            f"latest revenue known  : {latest[0][1]} = {latest[1].value} "
-            f"(available {latest[1].available_at.isoformat()})"
+            f"latest revenue known  : {latest_key.period_end} = {latest_fact.value} "
+            f"(available {latest_fact.available_at.isoformat()})"
         )
-        q3 = ("revenue", date(2020, 9, 30))
-        print(f"Q3-2020 revenue known?: {q3 in facts}  (published 2020-11-05 -> must be False)")
+        q3_known = latest_for_period(facts, "revenue", date(2020, 9, 30)) is not None
+        print(f"Q3-2020 revenue known?: {q3_known}  (published 2020-11-05 -> must be False)")
         for h in (Horizon.M6, Horizon.M12):
             w = label_window(cal, as_of, h, data_lag_minutes=cfg.pit.label_data_lag_minutes)
             print(

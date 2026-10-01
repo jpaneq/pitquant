@@ -10,7 +10,12 @@ from sqlalchemy.orm import Session
 
 from pitquant.core.errors import LookAheadError
 from pitquant.data.point_in_time.context import PITContext
-from pitquant.data.point_in_time.engine import PITGuard, PITRecord, as_of_view
+from pitquant.data.point_in_time.engine import (
+    PITGuard,
+    PITRecord,
+    as_of_view,
+    latest_for_period,
+)
 from tests.conftest import ny, sid, utc
 
 pytestmark = pytest.mark.pit
@@ -19,22 +24,25 @@ pytestmark = pytest.mark.pit
 def test_no_future_financial_data(market: Session) -> None:
     """Exactly the prompt's example: Q3 2020 published 5-Nov-2020 is invisible on 31-Oct-2020."""
     a = sid(market, "S-A")
-    q3 = ("revenue", date(2020, 9, 30))
+    q3 = date(2020, 9, 30)
     before = PITContext(market, ny(2020, 10, 31, 16, 0)).facts(a, ["revenue"])
     after = PITContext(market, ny(2020, 11, 5, 16, 0)).facts(a, ["revenue"])
-    assert q3 not in before
-    assert q3 in after
+    assert latest_for_period(before, "revenue", q3) is None
+    hit = latest_for_period(after, "revenue", q3)
+    assert hit is not None
     assert max(f.available_at for f in before.values()) <= ny(2020, 10, 31, 16, 0)
     # published 07:30 NY + 60 min lag -> available 08:30 NY, not before
-    assert after[q3].available_at == ny(2020, 11, 5, 8, 30)
-    assert q3 not in PITContext(market, ny(2020, 11, 5, 8, 29)).facts(a, ["revenue"])
+    assert hit.available_at == ny(2020, 11, 5, 8, 30)
+    early = PITContext(market, ny(2020, 11, 5, 8, 29)).facts(a, ["revenue"])
+    assert latest_for_period(early, "revenue", q3) is None
 
 
 def test_restatement_only_visible_after_publication(market: Session) -> None:
     a = sid(market, "S-A")
-    key = ("revenue", date(2010, 12, 31))
-    original = PITContext(market, ny(2011, 6, 1, 16, 0)).facts(a, ["revenue"])[key]
-    restated = PITContext(market, ny(2012, 1, 3, 16, 0)).facts(a, ["revenue"])[key]
+    pe = date(2010, 12, 31)
+    original = latest_for_period(PITContext(market, ny(2011, 6, 1, 16, 0)).facts(a), "revenue", pe)
+    restated = latest_for_period(PITContext(market, ny(2012, 1, 3, 16, 0)).facts(a), "revenue", pe)
+    assert original is not None and restated is not None
     assert original.revision_id == 0 and restated.revision_id == 1
     assert restated.value == 1111.0 and original.value != 1111.0
 

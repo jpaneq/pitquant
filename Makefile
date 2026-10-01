@@ -1,4 +1,4 @@
-.PHONY: install lint type test pit migrate demo docs
+.PHONY: install lint type test pit pg migrate demo docs
 
 install:      ## dev install
 	pip install -e ".[dev]"
@@ -16,3 +16,5 @@ demo:         ## API on SYNTHETIC data at http://127.0.0.1:8000/docs
 	PITQUANT_DEMO=1 uvicorn pitquant.api.main:app --reload
 docs:         ## regenerate docs/DATA_MODEL.md from the ORM
 	python scripts/gen_data_model_doc.py
+pg:           ## strict PostgreSQL suite (needs PITQUANT_PG_URL)
+	PITQUANT_REQUIRE_POSTGRES=1 pytest -m postgres -rA

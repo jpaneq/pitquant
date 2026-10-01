@@ -108,11 +108,14 @@ def create_app(factory: sessionmaker[Session], settings: Settings | None = None)
             "index": index_code,
             "as_of": on.isoformat(),
             "count": len(members),
+            "source_status": IndexUniverse(s).source_status(index_code) if members else None,
             "members": [
                 {
                     "security_id": m.security_id,
                     "ticker": sm.ticker_as_of(m.security_id, on),
-                    "since": m.inclusion_date.isoformat(),
+                    "since": m.effective_from.isoformat(),
+                    "source_event_id": m.source_event_id,
+                    "source_confidence": m.source_confidence,
                 }
                 for m in members
             ],

@@ -10,7 +10,12 @@ from pitquant.db.base import Base
 from pitquant.db.models import IMMUTABLE_TABLES
 
 GROUPS = {
-    "Procedencia y calidad": ["data_sources", "raw_records", "data_quality_issues"],
+    "Procedencia y calidad": [
+        "data_sources",
+        "raw_records",
+        "raw_source_archive",
+        "data_quality_issues",
+    ],
     "Security Master": [
         "issuers",
         "securities",
@@ -19,10 +24,11 @@ GROUPS = {
         "identifier_history",
         "sector_classification",
     ],
-    "Universo": ["index_membership"],
+    "Universo": ["index_events", "membership_builds", "index_membership"],
     "Mercado": ["prices", "corporate_actions", "dividends", "benchmarks", "benchmark_levels"],
     "Fundamentales, estimaciones y macro": [
         "financial_statements",
+        "sec_filings",
         "fundamental_facts",
         "analyst_estimates",
         "macro_data",
@@ -41,6 +47,7 @@ GROUPS = {
         "experiments",
         "error_analysis",
         "holdout_access_log",
+        "holdout_evaluations",
     ],
 }
 

@@ -3,7 +3,8 @@
 Plataforma de análisis bursátil, scoring y backtesting **point-in-time**: cada cálculo usa
 exclusivamente la información que un inversor podía conocer en el instante analizado.
 
-> ⚠️ **Estado:** fases 0–1 completas y base de las fases 2–4 y 8 (ver `docs/ROADMAP.md`).
+> ⚠️ **Estado:** fases 0–1 y D-01…D-03 implementadas y probadas con *fixtures*; los
+> conectores aún no se han ejecutado contra SEC, S&P DJI ni BME (ver `docs/ROADMAP.md`).
 > Todavía **no** genera señales BUY/HOLD/SELL: el motor de scoring es la fase 5 y la API
 > responde explícitamente que no hay señal en lugar de inventarla.
 >
@@ -20,13 +21,18 @@ exclusivamente la información que un inversor podía conocer en el instante ana
 - **Validación temporal**: walk-forward expanding/rolling, label availability, purging, embargo, holdout final bloqueado con registro de accesos.
 - **Snapshots inmutables** con hash SHA-256 canónico; predicciones append-only (guard ORM + triggers PostgreSQL).
 - **Ingestión idempotente** con lineage (`raw_records`) y motor de calidad de datos.
+- **Archivo de fuentes crudas** direccionado por SHA-256 (`raw_source_archive`).
+- **SEC EDGAR por accession**: header ACCEPTANCE-DATETIME, versiones de hechos inmutables, validación contra la instancia XBRL, política de disponibilidad conservadora.
+- **Universos por eventos** (S&P DJI licenciado / reconstrucción provisional; BME + avisos), con `TICKER_CHANGE` explícito y builds reproducibles.
+- **Holdout sellado**: sólo `evaluate_candidate_on_holdout`, registrado y una vez por modelo.
+- **Reconstrucción auditable** en una fecha T con `DataVersion` fijado (`audit/reconstruction.py`).
 - **API FastAPI**, Docker, CI (lint, mypy strict, tests PIT, migraciones, build).
 
 ## Uso rápido
 
 ```bash
 pip install -e ".[dev]"
-make test              # 69 tests (48 marcados `pit`)
+make test              # 108 tests en SQLite + 12 de PostgreSQL (con PITQUANT_PG_URL)
 make pit               # sólo la suite anti-leakage
 python scripts/demo_time_machine.py      # reconstrucción PIT sobre datos sintéticos
 make demo              # API en http://127.0.0.1:8000/docs con datos sintéticos
@@ -38,11 +44,12 @@ docker compose up -d   # PostgreSQL + API (migraciones Alembic al arrancar)
 | Documento | Contenido |
 |---|---|
 | `docs/ARCHITECTURE.md` | Arquitectura técnica y modelo temporal |
-| `docs/adr/` | 12 decisiones arquitectónicas |
-| `docs/DATA_MODEL.md` | Esquema completo (30 tablas, generado desde el ORM) |
+| `docs/adr/` | 16 decisiones arquitectónicas |
+| `docs/BME_PARSER.md` | Calibración del parser del histórico IBEX 35 |
+| `docs/DATA_MODEL.md` | Esquema completo (35 tablas, generado desde el ORM) |
 | `docs/PIT_AND_BACKTEST_FLOWS.md` | Flujo point-in-time y flujo de backtest |
 | `docs/ANTI_LEAKAGE_TESTS.md` | Catálogo de tests y su estado |
-| `docs/PENDING_DECISIONS.md` | Decisiones que requieren al propietario (fuentes de datos) |
+| `docs/PENDING_DECISIONS.md` | Decisiones de datos: resueltas (D-01…D-03, D-09) y abiertas (D-04, D-05) |
 | `docs/ROADMAP.md` | Fases y estado |
 
 ## Regla de oro

@@ -9,3 +9,4 @@ dev.db
 data/
 *.egg-info/
 .env
+x.db

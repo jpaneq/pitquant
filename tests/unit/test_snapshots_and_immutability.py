@@ -161,3 +161,42 @@ def test_cross_sectional_transforms_never_mix_dates() -> None:
     w1 = winsorize_cross_section(df.iloc[:4], ["x"], lower=0.0, upper=0.75)
     w_all = winsorize_cross_section(df, ["x"], lower=0.0, upper=0.75)
     assert w1["x"].tolist() == w_all["x"].iloc[:4].tolist()
+
+
+# ORM-level counterparts of the PostgreSQL trigger tests (tests/integration/test_postgres.py).
+
+
+def _committed_prediction(session: Session) -> Prediction:
+    sec_id, mv = _seed_model(session, frozen=True)
+    p = _prediction(session, sec_id, mv)
+    session.commit()
+    return p
+
+
+def test_prediction_update_rejected(session: Session) -> None:
+    p = _committed_prediction(session)
+    p.probability = 0.9
+    with pytest.raises(ImmutableRecordError):
+        session.flush()
+
+
+def test_prediction_delete_rejected(session: Session) -> None:
+    p = _committed_prediction(session)
+    session.delete(p)
+    with pytest.raises(ImmutableRecordError):
+        session.flush()
+
+
+def test_snapshot_update_rejected(session: Session) -> None:
+    p = _committed_prediction(session)
+    snap = session.get_one(FeatureSnapshotRow, p.snapshot_id)
+    snap.features = {"pe": 99.0}
+    with pytest.raises(ImmutableRecordError):
+        session.flush()
+
+
+def test_snapshot_delete_rejected(session: Session) -> None:
+    p = _committed_prediction(session)
+    session.delete(session.get_one(FeatureSnapshotRow, p.snapshot_id))
+    with pytest.raises(ImmutableRecordError):
+        session.flush()

@@ -15,18 +15,17 @@ from datetime import date
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from pitquant.core.errors import ProviderContractError
 from pitquant.core.hashing import canonical_json, content_hash
 from pitquant.core.timeutils import utc_now
 from pitquant.data.calendars.market_calendar import get_calendar
 from pitquant.data.providers.base import (
     CorporateActionsProvider,
     FundamentalProvider,
-    IndexMembershipProvider,
     PriceProvider,
     ProviderInfo,
     SecurityProvider,
 )
+from pitquant.data.providers.synthetic import SyntheticMarket
 from pitquant.data.validation.quality import check_bar, check_price_jump
 from pitquant.db.models import (
     CorporateAction,
@@ -34,14 +33,14 @@ from pitquant.db.models import (
     DataSource,
     Dividend,
     FundamentalFact,
-    IndexMembership,
+    MembershipBuild,
     Price,
     ProviderKey,
     RawRecord,
     Security,
 )
 from pitquant.security_master.service import SecurityMaster
-from pitquant.universe.index_membership import IndexUniverse
+from pitquant.universe.events import BuildReport, build_membership
 
 
 @dataclass
@@ -166,47 +165,23 @@ def ingest_securities(session: Session, provider: SecurityProvider) -> IngestRep
 # ───────────────────────────── membership ─────────────────────────────
 
 
-def ingest_memberships(
-    session: Session, provider: IndexMembershipProvider, index_code: str
-) -> IngestReport:
-    if not provider.info.is_point_in_time:
-        raise ProviderContractError(
-            f"{provider.info.name} is not point-in-time: refusing to build historical universes "
-            "from current constituents (survivorship bias)"
+def ingest_synthetic_index(
+    session: Session, provider: SyntheticMarket, index_code: str
+) -> BuildReport:
+    """SYNTHETIC index → event stream → membership build (same path as real sources)."""
+    src_id = ensure_source(session, provider.info)
+    keys = _key_map(session, src_id)
+    src = provider.index_events(index_code)
+    existing = session.scalars(
+        select(MembershipBuild).where(
+            MembershipBuild.index_code == index_code,
+            MembershipBuild.raw_source_hash == src.raw_source_hash,
+            MembershipBuild.status == "ok",
         )
-    rep = IngestReport()
-    src = ensure_source(session, provider.info)
-    keys = _key_map(session, src)
-    uni = IndexUniverse(session)
-    for m in provider.memberships(index_code):
-        sid = keys.get(m.provider_security_key)
-        if sid is None:
-            rep.rejected += 1
-            rep.issues.append(f"unknown security {m.provider_security_key}")
-            continue
-        exists = session.scalars(
-            select(IndexMembership).where(
-                IndexMembership.security_id == sid,
-                IndexMembership.index_code == m.index_code,
-                IndexMembership.inclusion_date == m.inclusion_date,
-            )
-        ).first()
-        if exists:
-            rep.skipped_existing += 1
-            continue
-        uni.add_membership(
-            security_id=sid,
-            index_code=m.index_code,
-            inclusion_date=m.inclusion_date,
-            exclusion_date=m.exclusion_date,
-            inclusion_reason=m.inclusion_reason,
-            exclusion_reason=m.exclusion_reason,
-            announced_at=m.announced_at,
-            ticker_at_inclusion=m.ticker_at_inclusion,
-            source_id=src,
-        )
-        rep.inserted += 1
-    return rep
+    ).first()
+    if existing is not None:  # idempotent: same source bytes -> same build
+        return BuildReport(existing.build_id, "ok", existing.n_events, 0)
+    return build_membership(session, src, keys)
 
 
 # ───────────────────────────── corporate actions ─────────────────────────────

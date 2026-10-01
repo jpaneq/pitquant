@@ -71,14 +71,18 @@ def test_ingestion_is_idempotent(factory: sessionmaker[Session], settings: Setti
     second = load_synthetic_market(
         factory, settings, start=date(2019, 1, 1), end=date(2019, 12, 31)
     )
-    assert first["prices"].inserted > 0
-    assert second["prices"].inserted == 0
-    assert second["securities"].inserted == 0
-    assert second["fundamentals"].inserted == 0
-    assert second["membership_sp"].inserted == 0
+    assert first["prices"].inserted > 0  # type: ignore[union-attr]
+    assert second["prices"].inserted == 0  # type: ignore[union-attr]
+    assert second["securities"].inserted == 0  # type: ignore[union-attr]
+    assert second["fundamentals"].inserted == 0  # type: ignore[union-attr]
+    assert second["membership_sp"].build_id == first["membership_sp"].build_id  # type: ignore[union-attr]
+    with factory() as s:
+        from pitquant.db.models import MembershipBuild
+
+        assert s.scalar(select(func.count()).select_from(MembershipBuild)) == 2
     with factory() as s:
         n = s.scalar(select(func.count()).select_from(Price))
-        assert n == first["prices"].inserted
+        assert n == first["prices"].inserted  # type: ignore[union-attr]
 
 
 class _BadBars(SyntheticMarket):

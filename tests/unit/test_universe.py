@@ -7,9 +7,14 @@ from datetime import date
 import pytest
 from sqlalchemy.orm import Session
 
-from pitquant.core.errors import OverlappingIntervalError, ProviderContractError
-from pitquant.data.providers.base import IndexMembershipProvider, MembershipRecord, ProviderInfo
-from pitquant.jobs.ingest import ingest_memberships
+from pitquant.core.errors import ProviderContractError
+from pitquant.universe.events import (
+    EventSource,
+    EventType,
+    IndexEventRecord,
+    SourceConfidence,
+    build_membership,
+)
 from pitquant.universe.index_membership import IndexUniverse, UniverseMember
 from tests.conftest import sid
 
@@ -40,7 +45,7 @@ def test_universe_member_does_not_expose_future_exit(market: Session) -> None:
     members = IndexUniverse(market).universe("SYN_SP500", date(2008, 1, 2))
     assert all(isinstance(m, UniverseMember) for m in members)
     for m in members:
-        assert not hasattr(m, "exclusion_date")
+        assert not hasattr(m, "effective_to")
         assert not hasattr(m, "exclusion_reason")
 
 
@@ -52,22 +57,31 @@ def test_reinclusion_creates_gap(market: Session) -> None:
     assert n in u.universe_ids("SYN_IBEX35", date(2019, 1, 2))
 
 
-def test_overlapping_membership_rejected(market: Session) -> None:
-    with pytest.raises(OverlappingIntervalError):
-        IndexUniverse(market).add_membership(
-            security_id=sid(market, "S-A"), index_code="SYN_SP500", inclusion_date=date(2010, 1, 4)
-        )
+def test_membership_is_derived_from_events_with_causes(market: Session) -> None:
+    """Every interval starts and ends with a sourced event (no cause-less entries/exits)."""
+    from sqlalchemy import select
+
+    from pitquant.db.models import IndexEvent, IndexMembership
+
+    rows = market.scalars(
+        select(IndexMembership).where(IndexMembership.index_code == "SYN_SP500")
+    ).all()
+    assert rows
+    for r in rows:
+        start = market.get_one(IndexEvent, r.source_event_id)
+        assert start.event_type in ("INDEX_ADD", "INITIAL_SNAPSHOT")
+        if r.effective_to is not None:
+            assert r.exclusion_event_id is not None
+            end = market.get_one(IndexEvent, r.exclusion_event_id)
+            assert end.event_type == "INDEX_DELETE" and end.effective_date == r.effective_to
 
 
-class _CurrentOnly(IndexMembershipProvider):
-    @property
-    def info(self) -> ProviderInfo:
-        return ProviderInfo("current-constituents-scraper", False, is_point_in_time=False)
-
-    def memberships(self, index_code: str) -> list[MembershipRecord]:
-        return []
-
-
-def test_non_point_in_time_membership_provider_rejected(session: Session) -> None:
+def test_crosscheck_only_sources_cannot_build_membership(session: Session) -> None:
+    src = EventSource(
+        "WIKIPEDIA",
+        SourceConfidence.CROSSCHECK_ONLY,
+        [IndexEventRecord("SP500", EventType.INDEX_ADD, date(2020, 1, 2), "w1", "k", "X")],
+        "h",
+    )
     with pytest.raises(ProviderContractError):
-        ingest_memberships(session, _CurrentOnly(), "SP500")
+        build_membership(session, src, {"k": "irrelevant"})

@@ -73,6 +73,29 @@ class RawRecord(Base):
     )
 
 
+class RawSourceArchive(Base):
+    """Verbatim copy of every important external document (filings, index histories, avisos).
+
+    Content is stored content-addressed (SHA-256) by ``pitquant.data.archive``; this row
+    records one RETRIEVAL. The same bytes fetched twice produce two rows and one file.
+    We never depend on an external URL still existing or still serving the same bytes.
+    """
+
+    __tablename__ = "raw_source_archive"
+
+    archive_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    provider: Mapped[str] = mapped_column(String(100))
+    source_identifier: Mapped[str] = mapped_column(String(1000))  # URL or document id
+    retrieved_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    published_at: Mapped[datetime | None] = mapped_column(UTCDateTime)  # publication/acceptance
+    sha256: Mapped[str] = mapped_column(String(64), index=True)
+    mime_type: Mapped[str] = mapped_column(String(100))
+    size_bytes: Mapped[int] = mapped_column(Integer)
+    storage_uri: Mapped[str] = mapped_column(String(500))
+    parser_version: Mapped[str | None] = mapped_column(String(50))
+    notes: Mapped[str | None] = mapped_column(Text)
+
+
 class DataQualityIssue(Base):
     __tablename__ = "data_quality_issues"
 
@@ -192,25 +215,92 @@ class SectorClassification(Base):
 # ───────────────────────────── universe ─────────────────────────────
 
 
+class IndexEvent(Base):
+    """Immutable index event stream: the ONLY source from which membership is derived.
+
+    event_type: INDEX_ADD | INDEX_DELETE | TICKER_CHANGE | ORDINARY_REVIEW |
+    EXTRAORDINARY_REVIEW | INITIAL_SNAPSHOT. Review events are parents of the adds/deletes
+    they caused (``parent_event_id``). A TICKER_CHANGE never changes membership.
+    """
+
+    __tablename__ = "index_events"
+
+    event_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    index_code: Mapped[str] = mapped_column(String(20))
+    event_type: Mapped[str] = mapped_column(String(30))
+    parent_event_id: Mapped[str | None] = mapped_column(ForeignKey("index_events.event_id"))
+    security_id: Mapped[str | None] = mapped_column(ForeignKey("securities.security_id"))
+    ticker: Mapped[str | None] = mapped_column(String(20))  # symbol as written in the source
+    new_ticker: Mapped[str | None] = mapped_column(String(20))  # TICKER_CHANGE only
+    identifier: Mapped[str | None] = mapped_column(
+        String(20)
+    )  # ISIN/CUSIP when the source gives it
+    effective_date: Mapped[date] = mapped_column(Date)  # first session the change applies
+    announced_at: Mapped[datetime | None] = mapped_column(UTCDateTime)  # NOT the effective date
+    reason: Mapped[str | None] = mapped_column(String(300))
+    membership_source: Mapped[str] = mapped_column(String(100))
+    source_event_id: Mapped[str] = mapped_column(String(200))
+    source_confidence: Mapped[str] = mapped_column(String(40))
+    raw_source_hash: Mapped[str] = mapped_column(String(64))
+    archive_id: Mapped[str | None] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        UniqueConstraint("membership_source", "source_event_id", "raw_source_hash"),
+        Index("ix_index_events_seq", "index_code", "membership_source", "effective_date"),
+        CheckConstraint(
+            "event_type IN ('INDEX_ADD','INDEX_DELETE','TICKER_CHANGE','ORDINARY_REVIEW',"
+            "'EXTRAORDINARY_REVIEW','INITIAL_SNAPSHOT')",
+            name="event_type_values",
+        ),
+    )
+
+
+class MembershipBuild(Base):
+    """One reconstruction of an index's membership from a fixed set of events.
+
+    Builds are never edited. A provider correction produces a NEW build; old snapshots stay
+    reproducible by pinning ``build_id`` in their data_version.
+    """
+
+    __tablename__ = "membership_builds"
+
+    build_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    index_code: Mapped[str] = mapped_column(String(20))
+    membership_source: Mapped[str] = mapped_column(String(100))
+    source_confidence: Mapped[str] = mapped_column(String(40))
+    raw_source_hash: Mapped[str] = mapped_column(String(64))
+    events_hash: Mapped[str] = mapped_column(String(64))
+    n_events: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20))  # ok | failed
+    report: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    built_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
 class IndexMembership(Base):
+    """Derived intervals ``[effective_from, effective_to)`` belonging to one build."""
+
     __tablename__ = "index_membership"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    build_id: Mapped[str] = mapped_column(ForeignKey("membership_builds.build_id"))
     security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"))
     index_code: Mapped[str] = mapped_column(String(20))
     ticker_at_inclusion: Mapped[str | None] = mapped_column(String(20))
-    inclusion_date: Mapped[date] = mapped_column(Date)  # effective, inclusive
-    exclusion_date: Mapped[date | None] = mapped_column(Date)  # effective, exclusive
-    inclusion_reason: Mapped[str | None] = mapped_column(String(200))
-    exclusion_reason: Mapped[str | None] = mapped_column(String(200))
+    effective_from: Mapped[date] = mapped_column(Date)  # inclusive
+    effective_to: Mapped[date | None] = mapped_column(Date)  # exclusive
+    inclusion_reason: Mapped[str | None] = mapped_column(String(300))
+    exclusion_reason: Mapped[str | None] = mapped_column(String(300))
     announced_at: Mapped[datetime | None] = mapped_column(UTCDateTime)
-    source_id: Mapped[int | None] = mapped_column(ForeignKey("data_sources.source_id"))
+    membership_source: Mapped[str] = mapped_column(String(100))
+    source_event_id: Mapped[str] = mapped_column(ForeignKey("index_events.event_id"))
+    exclusion_event_id: Mapped[str | None] = mapped_column(ForeignKey("index_events.event_id"))
+    source_confidence: Mapped[str] = mapped_column(String(40))
+    raw_source_hash: Mapped[str] = mapped_column(String(64))
 
     __table_args__ = (
-        Index("ix_membership_asof", "index_code", "inclusion_date", "exclusion_date"),
-        CheckConstraint(
-            "exclusion_date IS NULL OR exclusion_date > inclusion_date", name="interval"
-        ),
+        Index("ix_membership_asof", "build_id", "index_code", "effective_from", "effective_to"),
+        CheckConstraint("effective_to IS NULL OR effective_to > effective_from", name="interval"),
     )
 
 
@@ -333,20 +423,65 @@ class FinancialStatement(Base):
     )
 
 
+class SecFiling(Base):
+    """One EDGAR filing (accession). ``accepted_at`` comes from the filing HEADER
+    (ACCEPTANCE-DATETIME, US/Eastern), never from companyfacts."""
+
+    __tablename__ = "sec_filings"
+
+    accession_number: Mapped[str] = mapped_column(String(25), primary_key=True)
+    cik: Mapped[str] = mapped_column(String(10), index=True)
+    security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"))
+    form: Mapped[str] = mapped_column(String(20))
+    is_amendment: Mapped[bool] = mapped_column(Boolean)
+    filed_date: Mapped[date] = mapped_column(Date)
+    report_period: Mapped[date | None] = mapped_column(Date)
+    accepted_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    submissions_acceptance_raw: Mapped[str | None] = mapped_column(String(40))  # cross-check only
+    available_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    availability_policy: Mapped[str] = mapped_column(String(40))
+    primary_document: Mapped[str | None] = mapped_column(String(300))
+    header_archive_id: Mapped[str] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    xbrl_archive_id: Mapped[str | None] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        CheckConstraint("available_at >= accepted_at", name="available_after_acceptance"),
+    )
+
+
 class FundamentalFact(Base):
+    """Append-only fact versions. Each row is ONE value as reported in ONE filing.
+
+    The same economic fact (concept, period, unit) appears once per filing that reports it
+    (original, amendments, later comparatives). ``facts_as_of`` picks the version that was
+    actually available at ``as_of``; nothing is ever updated in place.
+    """
+
     __tablename__ = "fundamental_facts"
 
     fact_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
     security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"))
-    concept: Mapped[str] = mapped_column(String(100))  # normalised: revenue, ebit, total_debt…
-    fiscal_period: Mapped[str] = mapped_column(String(10))
-    period_start: Mapped[date | None] = mapped_column(Date)
+    taxonomy: Mapped[str] = mapped_column(String(30), default="internal")  # us-gaap, dei, ifrs-full
+    concept: Mapped[str] = mapped_column(String(200))
+    fiscal_period: Mapped[str | None] = mapped_column(String(10))
+    period_start: Mapped[date | None] = mapped_column(Date)  # None for instants
     period_end: Mapped[date] = mapped_column(Date)
     value: Mapped[float | None] = mapped_column(Float)
-    unit: Mapped[str] = mapped_column(String(20))
+    unit: Mapped[str] = mapped_column(String(30))
     currency: Mapped[str | None] = mapped_column(String(3))
     available_at: Mapped[datetime] = mapped_column(UTCDateTime)
     revision_id: Mapped[int] = mapped_column(Integer, default=0)
+    # filing provenance (mandatory for SEC facts, enforced by the SEC ingestor)
+    cik: Mapped[str | None] = mapped_column(String(10))
+    accession_number: Mapped[str | None] = mapped_column(
+        ForeignKey("sec_filings.accession_number"), index=True
+    )
+    form: Mapped[str | None] = mapped_column(String(20))
+    filed_date: Mapped[date | None] = mapped_column(Date)
+    accepted_at: Mapped[datetime | None] = mapped_column(UTCDateTime)
+    is_amendment: Mapped[bool] = mapped_column(Boolean, default=False)
+    source_document: Mapped[str | None] = mapped_column(String(500))
     statement_id: Mapped[str | None] = mapped_column(
         ForeignKey("financial_statements.statement_id")
     )
@@ -356,7 +491,21 @@ class FundamentalFact(Base):
 
     __table_args__ = (
         Index("ix_fact_asof", "security_id", "concept", "period_end", "available_at"),
-        UniqueConstraint("security_id", "concept", "fiscal_period", "revision_id", "source_id"),
+        UniqueConstraint(
+            "security_id",
+            "taxonomy",
+            "concept",
+            "unit",
+            "period_start",
+            "period_end",
+            "fiscal_period",
+            "revision_id",
+            "accession_number",
+            "source_id",
+        ),
+        CheckConstraint(
+            "accepted_at IS NULL OR available_at >= accepted_at", name="available_after_acceptance"
+        ),
     )
 
 
@@ -611,6 +760,23 @@ class HoldoutAccessLog(Base):
     accessed_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
 
 
+class HoldoutEvaluation(Base):
+    """SEALED holdout results. Written only by ``evaluate_candidate_on_holdout``; never read
+    by analytics, the API or the dashboard during development (see validation.holdout)."""
+
+    __tablename__ = "holdout_evaluations"
+
+    evaluation_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    access_id: Mapped[str] = mapped_column(ForeignKey("holdout_access_log.id"), unique=True)
+    model_version: Mapped[str] = mapped_column(ForeignKey("model_versions.model_version"))
+    holdout_start: Mapped[date] = mapped_column(Date)
+    holdout_end: Mapped[date] = mapped_column(Date)
+    metrics: Mapped[dict[str, Any]] = mapped_column(JSON)
+    n_observations: Mapped[int] = mapped_column(Integer)
+    metrics_hash: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
 IMMUTABLE_TABLES: frozenset[str] = frozenset(
     {
         "raw_records",
@@ -620,5 +786,12 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "backtest_observations",
         "realized_returns",
         "holdout_access_log",
+        "holdout_evaluations",
+        "raw_source_archive",
+        "sec_filings",
+        "fundamental_facts",
+        "index_events",
+        "membership_builds",
+        "index_membership",
     }
 )

@@ -138,7 +138,7 @@ class SecurityMaster:
         valid_to: date | None = None,
     ) -> IdentifierHistory:
         id_type = id_type.upper()
-        if id_type not in {"ISIN", "CUSIP", "FIGI"}:
+        if id_type not in {"ISIN", "CUSIP", "FIGI", "CIK"}:
             raise ValueError(f"unsupported identifier type {id_type}")
         clash = self.s.scalars(
             select(IdentifierHistory).where(

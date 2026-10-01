@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **30**.
+Tablas: **35**.
 
 ## Procedencia y calidad
 
@@ -33,6 +33,24 @@ Tablas: **30**.
 | `payload_hash` | VARCHAR(64) | no |  |
 
 - UNIQUE (source_id, original_identifier, payload_hash)
+
+### `raw_source_archive` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `archive_id` | VARCHAR(36) | no | PK |
+| `provider` | VARCHAR(100) | no |  |
+| `source_identifier` | VARCHAR(1000) | no |  |
+| `retrieved_at` | DATETIME | no |  |
+| `published_at` | DATETIME | sí |  |
+| `sha256` | VARCHAR(64) | no |  |
+| `mime_type` | VARCHAR(100) | no |  |
+| `size_bytes` | INTEGER | no |  |
+| `storage_uri` | VARCHAR(500) | no |  |
+| `parser_version` | VARCHAR(50) | sí |  |
+| `notes` | TEXT | sí |  |
+
+- INDEX ix_raw_source_archive_sha256 (sha256)
 
 ### `data_quality_issues`
 
@@ -140,23 +158,69 @@ Tablas: **30**.
 
 ## Universo
 
-### `index_membership`
+### `index_events` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `event_id` | VARCHAR(36) | no | PK |
+| `index_code` | VARCHAR(20) | no |  |
+| `event_type` | VARCHAR(30) | no |  |
+| `parent_event_id` | VARCHAR(36) | sí | FK→`index_events.event_id` |
+| `security_id` | VARCHAR(36) | sí | FK→`securities.security_id` |
+| `ticker` | VARCHAR(20) | sí |  |
+| `new_ticker` | VARCHAR(20) | sí |  |
+| `identifier` | VARCHAR(20) | sí |  |
+| `effective_date` | DATE | no |  |
+| `announced_at` | DATETIME | sí |  |
+| `reason` | VARCHAR(300) | sí |  |
+| `membership_source` | VARCHAR(100) | no |  |
+| `source_event_id` | VARCHAR(200) | no |  |
+| `source_confidence` | VARCHAR(40) | no |  |
+| `raw_source_hash` | VARCHAR(64) | no |  |
+| `archive_id` | VARCHAR(36) | sí | FK→`raw_source_archive.archive_id` |
+| `ingested_at` | DATETIME | no |  |
+
+- CHECK `event_type IN ('INDEX_ADD','INDEX_DELETE','TICKER_CHANGE','ORDINARY_REVIEW','EXTRAORDINARY_REVIEW','INITIAL_SNAPSHOT')`
+- INDEX ix_index_events_seq (index_code, membership_source, effective_date)
+- UNIQUE (membership_source, source_event_id, raw_source_hash)
+
+### `membership_builds` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `build_id` | VARCHAR(36) | no | PK |
+| `index_code` | VARCHAR(20) | no |  |
+| `membership_source` | VARCHAR(100) | no |  |
+| `source_confidence` | VARCHAR(40) | no |  |
+| `raw_source_hash` | VARCHAR(64) | no |  |
+| `events_hash` | VARCHAR(64) | no |  |
+| `n_events` | INTEGER | no |  |
+| `status` | VARCHAR(20) | no |  |
+| `report` | JSON | no |  |
+| `built_at` | DATETIME | no |  |
+
+### `index_membership` 🔒
 
 | Columna | Tipo | Nulo | Clave |
 |---|---|---|---|
 | `id` | INTEGER | no | PK |
+| `build_id` | VARCHAR(36) | no | FK→`membership_builds.build_id` |
 | `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
 | `index_code` | VARCHAR(20) | no |  |
 | `ticker_at_inclusion` | VARCHAR(20) | sí |  |
-| `inclusion_date` | DATE | no |  |
-| `exclusion_date` | DATE | sí |  |
-| `inclusion_reason` | VARCHAR(200) | sí |  |
-| `exclusion_reason` | VARCHAR(200) | sí |  |
+| `effective_from` | DATE | no |  |
+| `effective_to` | DATE | sí |  |
+| `inclusion_reason` | VARCHAR(300) | sí |  |
+| `exclusion_reason` | VARCHAR(300) | sí |  |
 | `announced_at` | DATETIME | sí |  |
-| `source_id` | INTEGER | sí | FK→`data_sources.source_id` |
+| `membership_source` | VARCHAR(100) | no |  |
+| `source_event_id` | VARCHAR(36) | no | FK→`index_events.event_id` |
+| `exclusion_event_id` | VARCHAR(36) | sí | FK→`index_events.event_id` |
+| `source_confidence` | VARCHAR(40) | no |  |
+| `raw_source_hash` | VARCHAR(64) | no |  |
 
-- CHECK `exclusion_date IS NULL OR exclusion_date > inclusion_date`
-- INDEX ix_membership_asof (index_code, inclusion_date, exclusion_date)
+- CHECK `effective_to IS NULL OR effective_to > effective_from`
+- INDEX ix_membership_asof (build_id, index_code, effective_from, effective_to)
 
 ## Mercado
 
@@ -265,28 +329,61 @@ Tablas: **30**.
 - CHECK `available_at >= published_at`
 - INDEX ix_financial_statements_security_id (security_id)
 
-### `fundamental_facts`
+### `sec_filings` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `accession_number` | VARCHAR(25) | no | PK |
+| `cik` | VARCHAR(10) | no |  |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `form` | VARCHAR(20) | no |  |
+| `is_amendment` | BOOLEAN | no |  |
+| `filed_date` | DATE | no |  |
+| `report_period` | DATE | sí |  |
+| `accepted_at` | DATETIME | no |  |
+| `submissions_acceptance_raw` | VARCHAR(40) | sí |  |
+| `available_at` | DATETIME | no |  |
+| `availability_policy` | VARCHAR(40) | no |  |
+| `primary_document` | VARCHAR(300) | sí |  |
+| `header_archive_id` | VARCHAR(36) | no | FK→`raw_source_archive.archive_id` |
+| `xbrl_archive_id` | VARCHAR(36) | sí | FK→`raw_source_archive.archive_id` |
+| `ingested_at` | DATETIME | no |  |
+
+- CHECK `available_at >= accepted_at`
+- INDEX ix_sec_filings_cik (cik)
+
+### `fundamental_facts` 🔒
 
 | Columna | Tipo | Nulo | Clave |
 |---|---|---|---|
 | `fact_id` | VARCHAR(36) | no | PK |
 | `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
-| `concept` | VARCHAR(100) | no |  |
-| `fiscal_period` | VARCHAR(10) | no |  |
+| `taxonomy` | VARCHAR(30) | no |  |
+| `concept` | VARCHAR(200) | no |  |
+| `fiscal_period` | VARCHAR(10) | sí |  |
 | `period_start` | DATE | sí |  |
 | `period_end` | DATE | no |  |
 | `value` | FLOAT | sí |  |
-| `unit` | VARCHAR(20) | no |  |
+| `unit` | VARCHAR(30) | no |  |
 | `currency` | VARCHAR(3) | sí |  |
 | `available_at` | DATETIME | no |  |
 | `revision_id` | INTEGER | no |  |
+| `cik` | VARCHAR(10) | sí |  |
+| `accession_number` | VARCHAR(25) | sí | FK→`sec_filings.accession_number` |
+| `form` | VARCHAR(20) | sí |  |
+| `filed_date` | DATE | sí |  |
+| `accepted_at` | DATETIME | sí |  |
+| `is_amendment` | BOOLEAN | no |  |
+| `source_document` | VARCHAR(500) | sí |  |
 | `statement_id` | VARCHAR(36) | sí | FK→`financial_statements.statement_id` |
 | `source_id` | INTEGER | sí | FK→`data_sources.source_id` |
 | `raw_record_id` | VARCHAR(36) | sí | FK→`raw_records.raw_record_id` |
 | `ingested_at` | DATETIME | no |  |
 
+- CHECK `accepted_at IS NULL OR available_at >= accepted_at`
 - INDEX ix_fact_asof (security_id, concept, period_end, available_at)
-- UNIQUE (security_id, concept, fiscal_period, revision_id, source_id)
+- INDEX ix_fundamental_facts_accession_number (accession_number)
+- UNIQUE (security_id, taxonomy, concept, unit, period_start, period_end, fiscal_period, revision_id, accession_number, source_id)
 
 ### `analyst_estimates`
 
@@ -518,3 +615,19 @@ Tablas: **30**.
 | `reason` | TEXT | no |  |
 | `requested_by` | VARCHAR(100) | no |  |
 | `accessed_at` | DATETIME | no |  |
+
+### `holdout_evaluations` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `evaluation_id` | VARCHAR(36) | no | PK |
+| `access_id` | VARCHAR(36) | no | FK→`holdout_access_log.id` |
+| `model_version` | VARCHAR(80) | no | FK→`model_versions.model_version` |
+| `holdout_start` | DATE | no |  |
+| `holdout_end` | DATE | no |  |
+| `metrics` | JSON | no |  |
+| `n_observations` | INTEGER | no |  |
+| `metrics_hash` | VARCHAR(64) | no |  |
+| `created_at` | DATETIME | no |  |
+
+- UNIQUE (access_id)
