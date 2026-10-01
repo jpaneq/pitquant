@@ -93,6 +93,38 @@ def _sec_ingest(args: argparse.Namespace) -> int:
     return 0
 
 
+def _universe(args: argparse.Namespace) -> int:
+    from pitquant.db.models import IndexEvent, IndexMembership
+    from pitquant.security_master.service import SecurityMaster
+    from pitquant.universe.index_membership import IndexUniverse
+
+    settings = get_settings()
+    factory = make_session_factory(make_engine(settings.database.url))
+    on = date.fromisoformat(args.date)
+    with factory() as session:
+        u, sm = IndexUniverse(session), SecurityMaster(session)
+        build = u.active_build(args.index)
+        members = u.universe(args.index, on)
+        print(
+            f"{args.index} @ {on}: {len(members)} members — build {build.build_id} "
+            f"({build.membership_source}, {build.source_confidence}, eligible for final "
+            f"validation: {build.eligible_for_final_model_validation})"
+        )
+        for m in members:
+            iv = session.get_one(IndexEvent, m.source_event_id)
+            row = (
+                session.query(IndexMembership)
+                .filter_by(build_id=build.build_id, source_event_id=m.source_event_id)
+                .one()
+            )
+            print(
+                f"  {sm.ticker_as_of(m.security_id, on) or '?':<6} {m.security_id}  "
+                f"in since {m.effective_from} ({iv.reason})  identity={m.identity_status}  "
+                f"source={iv.source_event_id} raw={row.raw_source_hash[:12]}"
+            )
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="pitquant")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -107,6 +139,10 @@ def main(argv: list[str] | None = None) -> int:
     e.add_argument("--period-start")
     e.add_argument("--unit")
     e.set_defaults(func=_explain)
+    un = sub.add_parser("universe", help="index members at a date, with their provenance")
+    un.add_argument("index")
+    un.add_argument("date", help="YYYY-MM-DD")
+    un.set_defaults(func=_universe)
     sc = sub.add_parser("sec-stress-scan", help="pick stress-test filings from submissions")
     sc.add_argument("ciks", nargs="+")
     sc.set_defaults(func=_sec_scan)

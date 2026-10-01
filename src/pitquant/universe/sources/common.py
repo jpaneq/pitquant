@@ -37,8 +37,9 @@ def register_event_securities(
 ) -> tuple[dict[str, str], RegistrationReport]:
     """Map every ``security_key`` in the stream to a permanent security_id.
 
-    New keys create a security whose ticker history starts at its first event. Ticker
-    changes are applied by ``apply_ticker_changes`` (same security_id, new ticker row).
+    New keys create a security whose ticker history is derived from the stream and BOUNDED
+    to its membership periods (``membership_ticker_periods``): an index source only proves
+    which code a security had while it was a member.
     If a ticker is still open for ANOTHER security that is not referenced at that date,
     its interval is closed and a warning is recorded (to be confirmed with D-05 data).
     """
@@ -54,24 +55,24 @@ def register_event_securities(
         if e.security_key and e.security_key not in first_seen:
             first_seen[e.security_key] = (e.effective_date, e.ticker)
     observed = {k: (t, d) for k, t, d in src.ticker_observations}
+    periods = membership_ticker_periods(src)
     for key, (d0, ticker) in sorted(first_seen.items(), key=lambda kv: (kv[1][0], kv[0])):
         if key in keys:
             rep.reused += 1
             continue
-        if ticker is None and key in observed:
+        spans = [sp for sp in periods.get(key, []) if sp[0]]
+        if ticker is None and key in observed and not spans:
             ticker, d0_ticker = observed[key]
-        else:
-            d0_ticker = d0
-        if ticker is not None:
-            _close_clashing_ticker(session, ticker, exchange, d0_ticker, rep)
+            spans = [(ticker, d0_ticker, None)]
         sec = sm.register(
             name=f"{ticker or key} ({src.membership_source})",
             exchange=exchange,
             currency=currency,
             country=country,
         )
-        if ticker is not None:
-            sm.add_ticker(sec.security_id, ticker, exchange, d0_ticker)
+        for tick, start, end in spans:
+            _close_clashing_ticker(session, tick, exchange, start, rep)
+            sm.add_ticker(sec.security_id, tick, exchange, start, end)
         if key.startswith("ISIN:"):
             sm.add_identifier(sec.security_id, "ISIN", key.removeprefix("ISIN:"), d0)
         session.add(ProviderKey(source_id=source_id, provider_key=key, security_id=sec.security_id))
@@ -98,3 +99,36 @@ def _close_clashing_ticker(
             f"ticker {ticker} reassigned on {d0}: closed for {clash.security_id} (verify with D-05)"
         )
         session.flush()
+
+
+def membership_ticker_periods(src: EventSource) -> dict[str, list[tuple[str, date, date | None]]]:
+    """(ticker, from, to) per security key while it was a member: opened by an inclusion,
+    split by each TICKER_CHANGE, closed by the exclusion. Open-ended while still a member."""
+    from pitquant.universe.events import EventType
+
+    order = {
+        EventType.INDEX_DELETE: 0,
+        EventType.TICKER_CHANGE: 1,
+        EventType.INITIAL_SNAPSHOT: 2,
+        EventType.INDEX_ADD: 2,
+    }
+    out: dict[str, list[tuple[str, date, date | None]]] = {}
+    open_: dict[str, tuple[str, date]] = {}
+    evs = [e for e in src.events if e.security_key and e.event_type in order]
+    for e in sorted(evs, key=lambda e: (e.effective_date, order[e.event_type])):
+        k = e.security_key or ""
+        if e.event_type in (EventType.INITIAL_SNAPSHOT, EventType.INDEX_ADD):
+            if e.ticker:
+                open_[k] = (e.ticker.upper(), e.effective_date)
+        elif e.event_type is EventType.TICKER_CHANGE and k in open_:
+            t, start = open_.pop(k)
+            if start < e.effective_date:
+                out.setdefault(k, []).append((t, start, e.effective_date))
+            open_[k] = ((e.new_ticker or "").upper(), e.effective_date)
+        elif e.event_type is EventType.INDEX_DELETE and k in open_:
+            t, start = open_.pop(k)
+            if start < e.effective_date:
+                out.setdefault(k, []).append((t, start, e.effective_date))
+    for k, (t, start) in open_.items():
+        out.setdefault(k, []).append((t, start, None))
+    return out

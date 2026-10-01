@@ -38,14 +38,32 @@
 - La fila 1 (02/01/1991) ya tiene bajas: **el documento no contiene la composición
   inicial**.
 
-## Por qué todavía no hay membership build del IBEX
-`classify_rows` sobre el documento real falla cerrado
-(`tests/realdata/test_bme_compoibex.py`). Falta:
-1. **Composición inicial** oficial, o la composición actual oficial (con ISIN) para
-   reconstruir hacia atrás con el histórico completo, validando 35 miembros en cada fecha.
-2. **Avisos BME** de las 7 filas sin marcador de leyenda.
-3. **ISIN oficiales** por miembro y fecha (`identities`). Sin ellos los intervalos son
-   `IDENTITY_UNRESOLVED` (ADR-0017).
+## Membership build real (2026-10-01)
+`scripts/build_ibex_real.py` construye el universo sólo desde documentos oficiales
+archivados. El informe está en `docs/IBEX_COVERAGE_REPORT.md`.
+
+**Composición vigente.** `Constituents.pdf` ya no existe: la URL redirige a la página de
+cotizaciones del IBEX 35. El aviso 15/2026 remite a un CSV de SIX que requiere licencia
+(«Access denied»). Por eso la composición vigente es una **observación fechada** de la
+página oficial de cotizaciones y de las 35 fichas (ticker + ISIN), archivada con su SHA-256.
+
+**Reconstrucción.** Se recorre hacia atrás el histórico completo desde 2026-10-01 hasta
+1995-01-02 (inicio del calendario XMAD):
+- cada paso se valida;
+- el tamaño se mantiene en [33, 36]: hubo 33 miembros entre el 2006-07-25 y el 2006-07-31
+  (filas 55–58) y 36 en 2012 (alta de DIA sin baja).
+
+**Las 7 filas sin marcador de leyenda** se cargan como rotación `UNRESOLVED_EVENT_TYPE`.
+La membresía es idéntica bajo ambas lecturas (cambio de código o rotación); la continuidad
+de identidad no se supone. Los avisos de 2007–2022 no están en el índice público de avisos
+de BME (sólo 2026).
+
+**Identidad.** Las 138/138 membresías históricas son `IDENTITY_UNRESOLVED`. Los ISIN
+vigentes se registran sólo desde 2026-10-01 (ej.: FER pasó de ISIN español a neerlandés).
+El build no es elegible para validación final y `backtest_universe()` falla cerrado.
+
+**Tickers.** Derivados del índice y acotados a los periodos de pertenencia. Caso real:
+CUB→ANA en 1997, ANA sale y vuelve a entrar en 1999.
 
 ## Prioridad de fuentes
 1. Aviso BME: autoritativo para el tipo de evento, `announced_at` e ISIN si lo da.

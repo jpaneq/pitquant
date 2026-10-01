@@ -90,3 +90,43 @@ def test_membership_cannot_be_built_from_this_document_alone(rows) -> None:  # t
     msg = str(exc.value)
     assert "deletion of non-member" in msg
     assert "visual marker unknown and no BME aviso" in msg
+
+
+OBS = Path("data/sources/bme_ibex35_current_constituents_20261001.json")
+
+
+@pytest.mark.skipif(not OBS.exists(), reason="BME current-composition observation absent")
+def test_real_ibex_build_from_official_documents(rows, session, settings) -> None:  # type: ignore[no-untyped-def]
+    import json
+
+    from pitquant.jobs.index_ingest import ingest_event_source
+    from pitquant.security_master.service import SecurityMaster
+    from pitquant.universe.index_membership import IdentityUnresolvedError, IndexUniverse
+    from pitquant.universe.sources.bme_reconstruction import (
+        CurrentComposition,
+        events_from_official_documents,
+    )
+
+    obs = json.loads(OBS.read_text())
+    cur = CurrentComposition(date(2026, 10, 1), tuple(map(tuple, obs["constituents"])), "obs")
+    size = settings.universe("IBEX35").expected_size
+    src, rec = events_from_official_documents(rows, cur, date(1995, 1, 2), SHA, size)
+    rep = ingest_event_source(
+        session, src, exchange="XMAD", currency="EUR", country="ES", expected_size=size
+    )
+    assert rep.status == "ok" and rep.n_intervals == 138
+    assert rep.n_identity_unresolved == 138 and not rep.eligible_for_final_model_validation
+    assert len(rec.unresolved_events) == 7
+    u, sm = IndexUniverse(session), SecurityMaster(session)
+
+    def tickers(d: date) -> set[str]:
+        return {sm.ticker_as_of(m.security_id, d) or "?" for m in u.universe("IBEX35", d)}
+
+    assert "GAS" in tickers(date(2018, 6, 29)) and "NTGY" not in tickers(date(2018, 6, 29))
+    assert "NTGY" in tickers(date(2018, 7, 2)) and "GAS" not in tickers(date(2018, 7, 2))
+    assert "REE" in tickers(date(2022, 6, 10)) and "RED" in tickers(date(2022, 6, 13))
+    assert "POP" in tickers(date(2017, 6, 6)) and "POP" not in tickers(date(2017, 6, 7))
+    assert len(tickers(date(2006, 7, 28))) == 33 and len(tickers(date(2012, 3, 1))) == 36
+    assert tickers(date(2026, 9, 30)) == {t for t, _ in cur.constituents}
+    with pytest.raises(IdentityUnresolvedError):
+        u.backtest_universe("IBEX35", date(2018, 7, 2))

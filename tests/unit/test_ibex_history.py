@@ -418,3 +418,77 @@ def test_cell_level_code_change_inside_a_review_row() -> None:
     assert not any(
         e.event_type.value == "ORDINARY_REVIEW" and e.effective_date == D_ORD for e in ev
     )
+
+
+def test_archive_refuses_mislabelled_content(tmp_path: object, session: Session) -> None:
+    """Real case (2026-10-01): BME's Constituents.pdf URL served the IBEX quote HTML page."""
+    from pathlib import Path
+
+    from pitquant.core.errors import DataQualityError
+    from pitquant.data.archive import archive_document
+
+    store = ArchiveStore(Path(str(tmp_path)))
+    html = b'<!doctype html>\n<html lang="es"><title>IBEX 35</title></html>'
+    with pytest.raises(DataQualityError, match="content is HTML"):
+        archive_document(
+            session,
+            store,
+            provider="X",
+            source_identifier="https://x/Constituents.pdf",
+            data=html,
+            mime_type="application/pdf",
+        )
+    row = archive_document(
+        session,
+        store,
+        provider="X",
+        source_identifier="https://x/a.pdf",
+        data=b"%PDF-1.7 ...",
+        mime_type="application/pdf",
+    )
+    assert row.mime_type == "application/pdf"
+
+
+def test_index_derived_tickers_are_bounded_to_membership(
+    session: Session, settings: Settings
+) -> None:
+    """Real shape (BME rows 16, 17, 22): CUB -> ANA code change, ANA leaves, 'ANA'
+    re-enters later without ISIN. The first security's ticker must end at its exit."""
+    rs = (
+        BMEHistoryRow(D_INIT, BASE, (), RowStyle.UNKNOWN, "p1:r1"),
+        BMEHistoryRow(D_ORD, (), (), RowStyle.ORDINARY, "p2:r1", ticker_changes=(("T05", "ANA"),)),
+        BMEHistoryRow(D_EXTRA, ("N01",), ("ANA",), RowStyle.ORDINARY, "p2:r2"),
+        BMEHistoryRow(D_EFF, ("ANA",), ("N01",), RowStyle.ORDINARY, "p3:r1"),
+    )
+    src = events_from_rows(rs, (), raw_source_hash="fixture-bme-bounded")
+    ingest_event_source(
+        session,
+        src,
+        exchange="XMAD",
+        currency="EUR",
+        country="ES",
+        expected_size=settings.universe("IBEX35").expected_size,
+    )
+    sm = SecurityMaster(session)
+    first = _sid(session, "T05", D_INIT)
+    assert sm.ticker_as_of(first, D_ORD) == "ANA"
+    assert sm.ticker_as_of(first, D_EXTRA) is None  # left the index: ticker no longer proven
+    again = _sid(session, "ANA", D_EFF)
+    assert again != first
+
+
+def test_reconstruction_rejects_inconsistent_history() -> None:
+    from pitquant.universe.events import MembershipSequenceError
+    from pitquant.universe.sources.bme_reconstruction import (
+        CurrentComposition,
+        membership_before,
+    )
+
+    rows = [BMEHistoryRow(D_ORD, ("N01",), ("T01",), RowStyle.ORDINARY, "p2:r1", review_number=1)]
+    now = [t for t in BASE if t != "T01"] + ["N01"]
+    ok = CurrentComposition(D_EFF, tuple((t, f"X{t}") for t in now), "h")
+    members, _ = membership_before(rows, ok, D_INIT, (33, 36))
+    assert "T01" in members and "N01" not in members
+    bad = CurrentComposition(D_EFF, tuple((t, f"X{t}") for t in BASE), "h")  # N01 missing
+    with pytest.raises(MembershipSequenceError, match="undoing inclusion"):
+        membership_before(rows, bad, D_INIT, (33, 36))

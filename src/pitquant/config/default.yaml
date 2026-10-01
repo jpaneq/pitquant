@@ -24,7 +24,7 @@ universes:
     canonical_source: "SPDJI_LICENSED"
   - code: "IBEX35"
     calendar: "XMAD"
-    expected_size: [34, 36]
+    expected_size: [33, 36]       # BME history: 33 members 2006-07-25..31 (rows 55-58), 36 in 2012 (DIA)
     canonical_source: "BME_HISTORICAL_COMPOSITION"
 
 archive:

@@ -90,6 +90,7 @@ class BMEAviso:
 class ParseResult:
     events: list[IndexEventRecord]
     warnings: list[str]
+    unresolved_events: list[str] = field(default_factory=list)
 
 
 def classify_rows(
@@ -97,8 +98,16 @@ def classify_rows(
     avisos: Sequence[BMEAviso] = (),
     index_code: str = INDEX,
     identities: Mapping[tuple[str, date], str] | None = None,
+    *,
+    unproven_as_unresolved_turnover: bool = False,
 ) -> ParseResult:
     """Turn history rows into events, resolving ambiguity ONLY with avisos.
+
+    ``unproven_as_unresolved_turnover``: a row whose type cannot be proven (no legend
+    marker, no aviso) is loaded as an exclusion + inclusion flagged UNRESOLVED_EVENT_TYPE.
+    Membership is identical under both readings (code change or turnover); only identity
+    differs, and the new code gets a NEW identity that stays IDENTITY_UNRESOLVED — the
+    continuity a code change would imply is never assumed. Default: refuse (raise).
 
     Identity is kept separate from membership. A member is ``RESOLVED`` only when an
     official document gives its ISIN (the aviso, or ``identities[(ticker, date)]`` taken
@@ -114,6 +123,7 @@ def classify_rows(
     events: list[IndexEventRecord] = []
     warnings: list[str] = []
     unresolved: list[str] = []
+    unresolved_events: list[str] = []
     lineage_of: dict[str, str] = {}  # current ticker -> lineage key (security identity)
     members: set[str] = set()  # lineage keys currently in the index
 
@@ -185,11 +195,17 @@ def classify_rows(
             changes = [(dels[0], adds[0])]
             adds, dels = [], []
         elif style is RowStyle.UNKNOWN and not (not members and not dels):
-            unresolved.append(
-                f"{row.row_ref} {d}: visual marker unknown and no BME aviso — "
-                f"cannot tell ticker change from turnover ({dels} -> {adds})"
+            if not unproven_as_unresolved_turnover:
+                unresolved.append(
+                    f"{row.row_ref} {d}: visual marker unknown and no BME aviso — "
+                    f"cannot tell ticker change from turnover ({dels} -> {adds})"
+                )
+                continue
+            unresolved_events.append(f"{row.row_ref} {d}: {dels} -> {adds}")
+            warnings.append(
+                f"{row.row_ref} {d}: UNRESOLVED_EVENT_TYPE {dels}->{adds} loaded as turnover "
+                "(membership exact; identity continuity not assumed)"
             )
-            continue
 
         if not members and not dels and not changes:
             style = RowStyle.INITIAL
@@ -246,7 +262,7 @@ def classify_rows(
                     key,
                     t,
                     announced_at=announced,
-                    reason=style.value,
+                    reason=_reason(style),
                     parent_source_event_id=parent_id,
                     identity_resolved=key.startswith("ISIN:"),
                 )
@@ -268,7 +284,7 @@ def classify_rows(
                     t,
                     identifier=key.removeprefix("ISIN:") if key.startswith("ISIN:") else None,
                     announced_at=announced,
-                    reason=style.value,
+                    reason=_reason(style),
                     parent_source_event_id=parent_id,
                     identity_resolved=key.startswith("ISIN:"),
                 )
@@ -278,7 +294,13 @@ def classify_rows(
             f"{len(unresolved)} BME row(s) could not be resolved without guessing:\n  "
             + "\n  ".join(unresolved[:50])
         )
-    return ParseResult(events, warnings)
+    return ParseResult(events, warnings, unresolved_events)
+
+
+def _reason(style: RowStyle) -> str:
+    if style is RowStyle.UNKNOWN:
+        return "UNRESOLVED_EVENT_TYPE: code change or turnover not proven (no aviso)"
+    return style.value
 
 
 # ───────────────────────────── PDF extraction ─────────────────────────────

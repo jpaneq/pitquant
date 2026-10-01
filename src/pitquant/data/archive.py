@@ -68,7 +68,9 @@ def archive_document(
     notes: str | None = None,
 ) -> RawSourceArchive:
     """Store bytes and record the retrieval. Identical (source, hash) retrievals are reused
-    so re-running an ingestion is idempotent."""
+    so re-running an ingestion is idempotent. The declared MIME type must match the content
+    (a URL ending in .pdf can serve an HTML page): a mismatch is refused, not archived."""
+    check_mime(data, mime_type, source_identifier)
     sha, path = store.put(data)
     if published_at is not None:
         require_aware(published_at, "published_at")
@@ -96,6 +98,26 @@ def archive_document(
     session.add(row)
     session.flush()
     return row
+
+
+_MAGIC = {
+    "application/pdf": (b"%PDF-",),
+    "application/zip": (b"PK\x03\x04",),
+}
+
+
+def check_mime(data: bytes, mime_type: str, source: str = "") -> None:
+    head = data[:1024].lstrip()
+    magic = _MAGIC.get(mime_type)
+    if magic and not any(head.startswith(m) for m in magic):
+        kind = "HTML" if head[:15].lower().startswith((b"<!doctype html", b"<html")) else "other"
+        raise DataQualityError(
+            f"{source}: declared {mime_type} but content is {kind} — refusing to archive"
+        )
+    if mime_type in ("application/json", "text/csv", "text/plain", "application/xml") and (
+        head[:15].lower().startswith((b"<!doctype html", b"<html"))
+    ):
+        raise DataQualityError(f"{source}: declared {mime_type} but content is HTML")
 
 
 def load_archived(session: Session, store: ArchiveStore, archive_id: str) -> bytes:
