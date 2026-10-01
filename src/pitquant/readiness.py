@@ -26,11 +26,13 @@ from pitquant.data.archive import sha256_hex
 from pitquant.data.calendars.market_calendar import get_calendar
 from pitquant.data.point_in_time.availability import filing_available_at
 from pitquant.db.models import (
+    CnmvFiling,
     CorporateAction,
     DataQualityIssue,
     DataSource,
     Dividend,
     FundamentalFact,
+    IndexEvent,
     IndexMembership,
     MembershipBuild,
     Price,
@@ -65,6 +67,27 @@ class Component:
     sources: list[str] = field(default_factory=list)
     gaps: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
+    # v2: maturity / source / coverage detail
+    maturity: list[str] = field(default_factory=list)  # CODE_READY, FIXTURE_TESTED, ...
+    source_status: str = "NONE"  # SOURCE_CANONICAL | SOURCE_PROVISIONAL | NONE
+    active: int | None = None
+    delisted: int | None = None
+    unresolved_identities: int = 0
+    unresolved_events: int = 0
+    source_version: str | None = None
+
+
+# What the CODE can do (true independently of the database). Market data has the contract
+# suite and provider roles but NO vendor adapter yet, so it is not CODE_READY.
+_CODE = {
+    "SEC fundamentals": ("CODE_READY", "FIXTURE_TESTED"),
+    "CNMV fundamentals": ("CODE_READY", "FIXTURE_TESTED"),
+    "S&P membership": ("CODE_READY", "FIXTURE_TESTED"),
+    "IBEX membership": ("CODE_READY", "FIXTURE_TESTED"),
+    "US market data": ("CONTRACT_SUITE_ONLY",),
+    "ES market data": ("CONTRACT_SUITE_ONLY",),
+    "Corporate actions": ("CONTRACT_SUITE_ONLY",),
+}
 
 
 @dataclass
@@ -94,6 +117,17 @@ class ReadinessReport:
         for c in self.components:
             cov = f"{c.coverage_from}..{c.coverage_to}" if c.coverage_from else "-"
             out.append(f"  {c.name:<22} {c.status:<12} securities={c.securities:<6} coverage={cov}")
+            out.append(
+                f"      {' / '.join([c.source_status, *c.maturity])}"
+                + (
+                    f"  current={c.active} former_members={c.delisted}"
+                    if c.active is not None
+                    else ""
+                )
+                + f"  unresolved identities={c.unresolved_identities}"
+                f" events={c.unresolved_events}"
+                + (f"  version={c.source_version}" if c.source_version else "")
+            )
             for g in c.gaps:
                 out.append(f"      gap: {g}")
             for w in c.warnings:
@@ -298,6 +332,15 @@ def _corporate_actions_component(
     return comp
 
 
+def _latest_parser(session: Session, provider: str) -> str | None:
+    row = session.scalars(
+        select(RawSourceArchive.parser_version)
+        .where(RawSourceArchive.provider == provider)
+        .order_by(RawSourceArchive.retrieved_at.desc())
+    ).first()
+    return row
+
+
 # ───────────────────────────── invariant scans ─────────────────────────────
 
 
@@ -336,6 +379,23 @@ def scan_pit(session: Session, settings: Settings) -> Scan:
             )
         if fact.accepted_at is not None and fact.available_at < fact.accepted_at:
             v.append(f"fact {fact.fact_id}: available_at < accepted_at")
+    xmad = get_calendar("XMAD")
+    for c in session.scalars(select(CnmvFiling)):
+        n += 1
+        latest = max(d for d in (c.publication_date, c.last_modification_date) if d is not None)
+        if c.availability_precision == "DATE_ONLY" and c.effective_available_at != (
+            xmad.date_only_available_at(latest)
+        ):
+            v.append(f"cnmv {c.nreg}: effective_available_at differs from the DATE_ONLY rule")
+        if c.publication_time is not None and c.availability_precision == "DATE_ONLY":
+            v.append(f"cnmv {c.nreg}: a time is stored but precision is DATE_ONLY")
+    for cfact in session.scalars(
+        select(FundamentalFact).where(FundamentalFact.cnmv_filing_id.is_not(None))
+    ):
+        n += 1
+        cf = session.get(CnmvFiling, cfact.cnmv_filing_id)
+        if cf is None or cfact.available_at != cf.effective_available_at:
+            v.append(f"fact {cfact.fact_id}: availability differs from its CNMV filing")
     return Scan("PIT validation", Check.FAIL if v else Check.PASS, n, v)
 
 
@@ -401,6 +461,54 @@ def data_readiness(session: Session, settings: Settings) -> ReadinessReport:
     )
     ca = _corporate_actions_component(session, cfg.accepted_corporate_action_sources, synthetic)
     components = [sec, cnmv, sp, ibex, us, es, ca]
+    for c in components:
+        c.maturity = list(_CODE[c.name])
+        if c.securities:
+            c.maturity.append("REAL_DATA_TESTED")
+        if c.status is Status.PARTIAL:
+            c.maturity.append("COVERAGE_PARTIAL")
+        if c.status is Status.BLOCKED:
+            c.maturity.append("BLOCKED")
+    for c, b in ((sp, sp_build), (ibex, ibex_build)):
+        if b is not None:
+            c.source_status = (
+                "SOURCE_CANONICAL" if b.source_confidence == "CANONICAL" else "SOURCE_PROVISIONAL"
+            )
+            c.source_version = f"build {b.build_id[:8]} ({b.membership_source})"
+            c.unresolved_events = int(
+                session.scalar(
+                    select(func.count())
+                    .select_from(IndexEvent)
+                    .where(
+                        IndexEvent.membership_source == b.membership_source,
+                        IndexEvent.raw_source_hash == b.raw_source_hash,
+                        IndexEvent.event_type == "INDEX_ADD",
+                        IndexEvent.reason.like("UNRESOLVED_EVENT_TYPE%"),
+                    )
+                )
+                or 0
+            )
+    sp.unresolved_identities = sum(1 for i in sp_ivs if i.identity_status != "RESOLVED")
+    ibex.unresolved_identities = sum(1 for i in ibex_ivs if i.identity_status != "RESOLVED")
+    for c in (sec, cnmv):
+        if c.securities:
+            c.source_status = "SOURCE_CANONICAL"  # official filings (D-01 / D-04)
+    sec.source_version = _latest_parser(session, "SEC_EDGAR")
+    cnmv.source_version = _latest_parser(session, "CNMV")
+    for c, ivs in ((sp, sp_ivs), (ibex, ibex_ivs)):
+        if ivs:
+            current = {i.security_id for i in ivs if i.effective_to is None}
+            c.active = len(current)
+            c.delisted = len({i.security_id for i in ivs} - current)  # left the INDEX
+            c.warnings.append(
+                "exchange delisting status of former members is UNKNOWN until D-05 market data"
+            )
+    for c in (us, es, ca):
+        c.source_status = (
+            "SOURCE_CANONICAL"
+            if c.status is Status.READY
+            else ("SOURCE_PROVISIONAL" if c.sources else "NONE")
+        )
 
     all_ivs = sp_ivs + ibex_ivs
     identity = (

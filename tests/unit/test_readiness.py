@@ -186,3 +186,18 @@ def test_cli_exit_code(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys) 
         assert '"overall": "BLOCKED"' in capsys.readouterr().out
     finally:
         settings_mod.get_settings.cache_clear()
+
+
+def test_v2_maturity_and_source_labels(
+    session: Session, tmp_path: Path, settings: Settings
+) -> None:
+    lic = SPDJILicensedFileProvider(LICENSED, "licensed://test-v2", ArchiveStore(tmp_path))
+    _ingest_sp(session, lic.load(session))
+    rep = data_readiness(session, settings)
+    sp = _by_name(rep, "S&P membership")
+    assert sp.source_status == "SOURCE_CANONICAL"
+    assert {"CODE_READY", "FIXTURE_TESTED", "REAL_DATA_TESTED"} <= set(sp.maturity)
+    assert sp.active is not None and sp.unresolved_identities == 0
+    us = _by_name(rep, "US market data")
+    assert us.maturity[0] == "CONTRACT_SUITE_ONLY" and "BLOCKED" in us.maturity
+    assert "CODE_READY" not in us.maturity  # no vendor adapter exists
