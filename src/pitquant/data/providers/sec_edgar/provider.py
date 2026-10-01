@@ -218,18 +218,18 @@ def ingest_sec_company(
     # (e.g. an original 10-Q whose facts companyfacts attributes to the later 10-Q/A) is
     # not ingested. No leak (the data shows up later, not earlier) but a coverage gap:
     # made visible, never silent.
-    for acc, meta in sorted(filings.items()):
+    for acc, uncited in sorted(filings.items()):
         if acc not in by_acc:
             _issue(
                 session,
                 security_id,
                 "filing_not_cited_by_companyfacts",
                 "medium",
-                f"{acc} {meta.form} filed {meta.filing_date}: in scope but cited by no "
+                f"{acc} {uncited.form} filed {uncited.filing_date}: in scope but cited by no "
                 "companyfacts value; its facts are first known from a later filing",
                 accession=acc,
-                form=meta.form,
-                filed_date=meta.filing_date,
+                form=uncited.form,
+                filed_date=uncited.filing_date,
             )
             rep.filings_not_cited += 1
     sec_rows: dict[str, SecFiling] = {}
