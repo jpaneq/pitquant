@@ -44,6 +44,7 @@ addopts = "-q --strict-markers"
 markers = [
     "pit: point-in-time / anti-leakage tests (must never be skipped)",
     "postgres: requires a live PostgreSQL (CI service)",
+    "realdata: needs a real source document archived locally under data/ (skipped if absent)",
 ]
 
 [tool.ruff]

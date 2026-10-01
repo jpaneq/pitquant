@@ -393,3 +393,28 @@ def test_every_event_and_interval_without_isin_is_unresolved(
     assert {e.identity_status for e in keyed} == {"IDENTITY_UNRESOLVED"}
     ivs = session.scalars(select(IndexMembership)).all()
     assert {i.identity_status for i in ivs} == {"IDENTITY_UNRESOLVED"}
+
+
+def test_cell_level_code_change_inside_a_review_row() -> None:
+    """Shape of BME row 42: a review row whose only content is two code changes, and of
+    row 25: turnover plus one code change on the same row."""
+    rs = [
+        BMEHistoryRow(D_INIT, BASE, (), RowStyle.UNKNOWN, "p1:r1"),
+        BMEHistoryRow(D_ORD, (), (), RowStyle.ORDINARY, "p2:r1", ticker_changes=(("T05", "U05"),)),
+        BMEHistoryRow(
+            D_EFF, ("N01",), ("T06",), RowStyle.ORDINARY, "p3:r1", ticker_changes=(("T07", "U07"),)
+        ),
+    ]
+    ev = classify_rows(rs).events
+    kinds = [(e.event_type.value, e.ticker, e.new_ticker) for e in ev if e.effective_date != D_INIT]
+    assert ("TICKER_CHANGE", "T05", "U05") in kinds
+    assert ("TICKER_CHANGE", "T07", "U07") in kinds
+    assert ("INDEX_ADD", "N01", None) in kinds and ("INDEX_DELETE", "T06", None) in kinds
+    # The code change keeps the lineage: same key before and after.
+    chg = next(e for e in ev if e.ticker == "T05" and e.event_type.value == "TICKER_CHANGE")
+    init = next(e for e in ev if e.ticker == "T05" and e.event_type.value == "INITIAL_SNAPSHOT")
+    assert chg.security_key == init.security_key
+    # A code-change-only row is not a review (no ORDINARY_REVIEW parent event).
+    assert not any(
+        e.event_type.value == "ORDINARY_REVIEW" and e.effective_date == D_ORD for e in ev
+    )

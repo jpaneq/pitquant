@@ -20,6 +20,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from enum import StrEnum
+from typing import Any
 
 from sqlalchemy.orm import Session
 
@@ -58,6 +59,10 @@ class BMEHistoryRow:
     style: RowStyle
     row_ref: str  # page/line reference into the archived PDF
     raw_text: str = ""
+    # (old, new) pairs marked as code changes CELL BY CELL inside a row (the BME document
+    # can mix turnover and code changes in one review row)
+    ticker_changes: tuple[tuple[str, str], ...] = ()
+    review_number: int | None = None  # «Nº» column of the document
 
 
 @dataclass(frozen=True)
@@ -139,16 +144,21 @@ def classify_rows(
             continue
 
         style = row.style
-        changes: list[tuple[str, str]] = []
+        # Code changes marked cell by cell in the document (calibrated layouts only).
+        changes: list[tuple[str, str]] = list(row.ticker_changes)
         adds, dels = list(row.additions), list(row.deletions)
+        if changes and not adds and not dels and style is RowStyle.ORDINARY:
+            style = RowStyle.TICKER_CHANGE  # nothing but code changes on that row
         announced = aviso.announced_at if aviso else None
 
         if aviso is not None:
             # The aviso is authoritative; the row must agree with it.
+            row_adds = set(adds) | {n for _, n in changes}
+            row_dels = set(dels) | {o for o, _ in changes}
             changes = list(aviso.ticker_changes)
             a_adds = set(aviso.additions) | {n for _, n in changes}
             a_dels = set(aviso.deletions) | {o for o, _ in changes}
-            if set(adds) != a_adds or set(dels) != a_dels:
+            if row_adds != a_adds or row_dels != a_dels:
                 unresolved.append(
                     f"{row.row_ref} {d}: row {adds}/{dels} disagrees with "
                     f"aviso {aviso.aviso_id} {sorted(a_adds)}/{sorted(a_dels)}"
@@ -165,7 +175,7 @@ def classify_rows(
             style = aviso_style
             adds = sorted(aviso.additions)
             dels = sorted(aviso.deletions)
-        elif style is RowStyle.TICKER_CHANGE:
+        elif style is RowStyle.TICKER_CHANGE and not changes:
             if len(adds) != 1 or len(dels) != 1:
                 unresolved.append(
                     f"{row.row_ref} {d}: ticker-change row must pair exactly one "
@@ -297,11 +307,20 @@ class BMELayoutCalibration:
     Must be produced once by inspecting the official PDF (docs/BME_PARSER.md). An empty
     calibration — or one made for a different document hash — yields UNKNOWN styles, which
     then require avisos. This is deliberate: the default is to refuse, not to guess.
+
+    * ``style_by_color``: fill/text colour of the row marker (number/date cells, or the
+      text itself) → row style.
+    * ``change_cell_color``: fill of an INDIVIDUAL ticker cell marking a code change; the
+      highlighted addition and deletion cells of a row are paired left to right.
+    * ``neutral_colors``: grid/header/empty-cell fills that carry no meaning.
+    Any other colour found on a row makes it UNKNOWN (never silently ORDINARY).
     """
 
     header_additions: str = "Altas"
     header_deletions: str = "Bajas"
     style_by_color: dict[Color, RowStyle] = field(default_factory=dict)
+    change_cell_color: Color | None = None
+    neutral_colors: frozenset[Color] = frozenset()
     calibrated_for_sha256: str | None = None
     color_tolerance: float = 0.02
 
@@ -316,23 +335,59 @@ def _norm(c: object) -> Color | None:
     return None
 
 
+def _close_color(a: Color, b: Color, tol: float) -> bool:
+    return len(a) == len(b) and all(abs(x - y) <= tol for x, y in zip(a, b, strict=True))
+
+
 def _match(color: Color | None, cal: BMELayoutCalibration) -> RowStyle | None:
     if color is None:
         return None
     for ref, style in cal.style_by_color.items():
-        if len(ref) == len(color) and all(
-            abs(a - b) <= cal.color_tolerance for a, b in zip(ref, color, strict=True)
-        ):
+        if _close_color(ref, color, cal.color_tolerance):
             return style
     return None
 
 
-def extract_rows_from_pdf(pdf: bytes, cal: BMELayoutCalibration) -> list[BMEHistoryRow]:
-    """Extract (date, additions, deletions, visual style) rows from the BME PDF.
+def _neutral(color: Color | None, cal: BMELayoutCalibration) -> bool:
+    if color is None or all(x == 0.0 for x in color) or color in ((1.0,), (1.0, 1.0, 1.0)):
+        return True  # no fill / white
+    if len(color) == 4 and color[:3] == (0.0, 0.0, 0.0) and color[3] == 1.0:
+        return True  # black text
+    if len(color) in (1, 3) and all(x == 0.0 for x in color):
+        return True
+    return any(_close_color(color, n, cal.color_tolerance) for n in cal.neutral_colors)
 
-    Columns are located from the header words; each word is assigned to the column whose
-    x-range contains it. The style of a row comes from the colour of its characters or of
-    a filled rectangle behind it, mapped through the calibration.
+
+def _column_starts(
+    page: Any, hdr_add: dict[str, Any], hdr_del: dict[str, Any]
+) -> tuple[float, float]:
+    """x where the additions / deletions columns start: the header CELL containing each
+    header word (headers are centred over their cells). Falls back to the word itself."""
+
+    def cell_x0(w: dict[str, Any]) -> float:
+        cx = (float(w["x0"]) + float(w["x1"])) / 2
+        cy = (float(w["top"]) + float(w["bottom"])) / 2
+        cells = [
+            r
+            for r in page.rects
+            if float(r["x0"]) <= cx <= float(r["x1"])
+            and float(r["top"]) <= cy <= float(r["bottom"])
+        ]
+        if not cells:
+            return float(w["x0"])
+        # the most specific cell: a table-wide background rect also contains the word
+        best = min(cells, key=lambda r: float(r["x1"]) - float(r["x0"]))
+        return float(best["x0"])
+
+    return cell_x0(hdr_add), cell_x0(hdr_del)
+
+
+def extract_rows_from_pdf(pdf: bytes, cal: BMELayoutCalibration) -> list[BMEHistoryRow]:
+    """Extract (date, additions, deletions, style, cell-level code changes) rows.
+
+    Columns start at the header cells; a leading review number («Nº») is kept apart; «—»
+    or «-» mean "no change". Styles are read only with a calibration made for THIS
+    document (by hash); anything not explained by the calibration yields UNKNOWN.
     """
     import pdfplumber
 
@@ -348,47 +403,47 @@ def extract_rows_from_pdf(pdf: bytes, cal: BMELayoutCalibration) -> list[BMEHist
             hdr_del = next((w for w in words if w["text"] == cal.header_deletions), None)
             if hdr_add is None or hdr_del is None:
                 continue
-            x_add, x_del = float(hdr_add["x0"]), float(hdr_del["x0"])
-            lines: dict[int, list[dict[str, object]]] = {}
+            x_add, x_del = _column_starts(page, hdr_add, hdr_del)
+            lo, hi = min(x_add, x_del), max(x_add, x_del)
+            header_bottom = max(float(hdr_add["bottom"]), float(hdr_del["bottom"]))
+            lines: dict[int, list[dict[str, Any]]] = {}
             for w in words:
-                if float(w["top"]) <= float(hdr_add["bottom"]):
+                if float(w["top"]) <= header_bottom:
                     continue
                 lines.setdefault(round(float(w["top"])), []).append(w)
-            rects = page.rects
             for top in sorted(lines):
-                ws = sorted(lines[top], key=lambda w: float(w["x0"]))  # type: ignore[arg-type]
+                ws = sorted(lines[top], key=lambda w: float(w["x0"]))
+                number: int | None = None
+                if len(ws) > 1 and str(ws[0]["text"]).isdigit() and _parse_date(str(ws[1]["text"])):
+                    number = int(str(ws[0]["text"]))
+                    ws = ws[1:]
                 d = _parse_date(str(ws[0]["text"]))
                 if d is None:
                     continue
-                adds: list[str] = []
-                dels: list[str] = []
-                lo, hi = min(x_add, x_del), max(x_add, x_del)
+                y0 = min(float(w["top"]) for w in ws)
+                y1 = max(float(w["bottom"]) for w in ws)
+                tickers: list[tuple[str, float, float, str]] = []  # (tok, x0, x1, column)
                 for w in ws[1:]:
                     tok = str(w["text"]).strip(",;")
                     if not _TICKER.match(tok):
-                        continue
-                    x = float(w["x0"])  # type: ignore[arg-type]
+                        continue  # «—», «-», notes
+                    x = float(w["x0"])
                     if x >= hi - 1:
-                        (dels if hi == x_del else adds).append(tok)
+                        col = "del" if hi == x_del else "add"
                     elif x >= lo - 1:
-                        (adds if lo == x_add else dels).append(tok)
+                        col = "add" if lo == x_add else "del"
+                    else:
+                        continue
+                    tickers.append((tok, x, float(w["x1"]), col))
+                adds = [t for t, _, _, c in tickers if c == "add"]
+                dels = [t for t, _, _, c in tickers if c == "del"]
                 style = RowStyle.UNKNOWN
+                changes: tuple[tuple[str, str], ...] = ()
                 if trusted:
-                    found: set[RowStyle] = set()
-                    for w in ws:
-                        s = _match(_norm(w.get("non_stroking_color")), cal)
-                        if s:
-                            found.add(s)
-                    y0, y1 = float(ws[0]["top"]), float(ws[0]["bottom"])  # type: ignore[arg-type]
-                    for r in rects:
-                        if float(r["top"]) <= y1 and float(r["bottom"]) >= y0:
-                            s = _match(_norm(r.get("non_stroking_color")), cal)
-                            if s:
-                                found.add(s)
-                    if len(found) == 1:
-                        style = found.pop()
-                    elif not found:
-                        style = RowStyle.ORDINARY
+                    style, changes = _row_style(page, ws, tickers, y0, y1, lo, cal)
+                    for old, new in changes:
+                        dels.remove(old)
+                        adds.remove(new)
                 rows.append(
                     BMEHistoryRow(
                         d,
@@ -397,9 +452,61 @@ def extract_rows_from_pdf(pdf: bytes, cal: BMELayoutCalibration) -> list[BMEHist
                         style,
                         f"p{pno}:y{top}",
                         " ".join(str(w["text"]) for w in ws),
+                        changes,
+                        number,
                     )
                 )
     return rows
+
+
+def _row_style(
+    page: Any,
+    ws: list[dict[str, Any]],
+    tickers: list[tuple[str, float, float, str]],
+    y0: float,
+    y1: float,
+    first_col_x: float,
+    cal: BMELayoutCalibration,
+) -> tuple[RowStyle, tuple[tuple[str, str], ...]]:
+    found: set[RowStyle] = set()
+    unexplained = False
+    for w in ws:  # coloured text
+        c = _norm(w.get("non_stroking_color"))
+        s = _match(c, cal)
+        if s:
+            found.add(s)
+        elif not _neutral(c, cal):
+            unexplained = True
+    hl_add: list[tuple[float, str]] = []
+    hl_del: list[tuple[float, str]] = []
+    for r in page.rects:
+        if not (float(r["top"]) <= y1 and float(r["bottom"]) >= y0):
+            continue
+        c = _norm(r.get("non_stroking_color"))
+        rx0, rx1 = float(r["x0"]), float(r["x1"])
+        if (
+            cal.change_cell_color
+            and c
+            and _close_color(c, cal.change_cell_color, cal.color_tolerance)
+        ):
+            inside = [t for t in tickers if rx0 - 1 <= (t[1] + t[2]) / 2 <= rx1 + 1]
+            if len(inside) != 1:
+                return RowStyle.UNKNOWN, ()  # a highlighted cell must hold exactly one code
+            tok, x, _, col = inside[0]
+            (hl_add if col == "add" else hl_del).append((x, tok))
+            continue
+        s = _match(c, cal)
+        if s and rx1 <= first_col_x + 1:
+            found.add(s)
+        elif not _neutral(c, cal):
+            unexplained = True
+    if unexplained or len(found) > 1 or len(hl_add) != len(hl_del):
+        return RowStyle.UNKNOWN, ()
+    changes = tuple(
+        (old, new) for (_, old), (_, new) in zip(sorted(hl_del), sorted(hl_add), strict=True)
+    )
+    style = found.pop() if found else RowStyle.ORDINARY
+    return style, changes
 
 
 @dataclass
@@ -478,3 +585,26 @@ def events_from_rows(
         raw_source_hash,
         warnings=tuple(res.warnings),
     )
+
+
+# ───────────────────────────── calibrations (versioned, one per document hash) ──────────
+
+COMPOIBEX_2026_09_SHA256 = "5c028420d39c9d6e2205fa88d15627865dc217de867bc86987ca8f9fddba3695"
+
+# «Composición histórica – IBEX 35», BME, Last-Modified 2026-09-21 (rows 1–137, 3 pages).
+# Measured on the archived PDF (docs/BME_PARSER.md):
+# * legend «Revisión extraordinaria»: fill CMYK (0.149, 0.13, 0, 0) on the Nº/fecha cells;
+# * legend «Cambio de código»: fill 0.5 on INDIVIDUAL ticker cells (rows 16, 18, 25, 32, 34,
+#   42 — sometimes inside an ordinary review row);
+# * neutral: (0, 0, 0, 0.15) header/empty-cell grey.
+# A third fill, CMYK (0.048, 0.176, 0.285, 0), marks the Nº/fecha cells of rows 62, 76, 80,
+# 91, 106, 108 and 122 but is NOT in the legend: it is deliberately left unmapped, so those
+# rows come out UNKNOWN and need their BME aviso.
+COMPOIBEX_2026_09 = BMELayoutCalibration(
+    header_additions="Inclusiones",
+    header_deletions="Exclusiones",
+    style_by_color={(0.149, 0.13, 0.0, 0.0): RowStyle.EXTRAORDINARY},
+    change_cell_color=(0.5,),
+    neutral_colors=frozenset({(0.0, 0.0, 0.0, 0.15), (0.0, 0.0, 0.0, 0.75)}),
+    calibrated_for_sha256=COMPOIBEX_2026_09_SHA256,
+)
