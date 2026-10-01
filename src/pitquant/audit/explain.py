@@ -28,7 +28,13 @@ from sqlalchemy.orm import Session
 from pitquant.core.timeutils import require_aware, utc_now
 from pitquant.data.calendars.market_calendar import get_calendar
 from pitquant.data.point_in_time.engine import FactKey, facts_as_of
-from pitquant.db.models import DataQualityIssue, FundamentalFact, RawSourceArchive, SecFiling
+from pitquant.db.models import (
+    CnmvFiling,
+    DataQualityIssue,
+    FundamentalFact,
+    RawSourceArchive,
+    SecFiling,
+)
 from pitquant.security_master.service import SecurityMaster
 
 
@@ -102,6 +108,8 @@ class FactExplanation:
 
 
 def _provenance(session: Session, f: FundamentalFact) -> FactProvenance:
+    if f.cnmv_filing_id:
+        return _cnmv_provenance(session, f)
     filing = session.get(SecFiling, f.accession_number) if f.accession_number else None
     hdr = session.get(RawSourceArchive, filing.header_archive_id) if filing else None
     xbrl = (
@@ -130,6 +138,35 @@ def _provenance(session: Session, f: FundamentalFact) -> FactProvenance:
         header_sha256=hdr.sha256 if hdr else None,
         xbrl_sha256=xbrl.sha256 if xbrl else None,
         parser_version=(hdr.parser_version if hdr else None),
+    )
+
+
+def _cnmv_provenance(session: Session, f: FundamentalFact) -> FactProvenance:
+    c = session.get_one(CnmvFiling, f.cnmv_filing_id)
+    page = session.get(RawSourceArchive, c.detail_archive_id)
+    mods = f", modified {c.last_modification_date}" if c.last_modification_date else ""
+    return FactProvenance(
+        fact_id=f.fact_id,
+        taxonomy=f.taxonomy,
+        concept=f.concept,
+        unit=f.unit,
+        period_start=f.period_start,
+        period_end=f.period_end,
+        fiscal_period=f.fiscal_period,
+        value=f.value,
+        accession_number=f"CNMV nreg {c.nreg}",
+        form=f"{c.doc_kind} {c.period_label} (published {c.publication_date}{mods}, "
+        f"{c.availability_precision})",
+        is_amendment=c.last_modification_date is not None,
+        filed_date=c.publication_date,
+        accepted_at=None,  # the CNMV states no hour: never invented
+        effective_available_at=f.available_at,
+        availability_policy=c.availability_rule,
+        ingested_at=f.ingested_at,
+        source_document=c.source_url,
+        header_sha256=page.sha256 if page else None,
+        xbrl_sha256=c.data_sha256,
+        parser_version=c.parser_version,
     )
 
 

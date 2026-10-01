@@ -187,7 +187,7 @@ class IdentifierHistory(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"), index=True)
-    id_type: Mapped[str] = mapped_column(String(10))  # ISIN | CUSIP | FIGI
+    id_type: Mapped[str] = mapped_column(String(10))  # ISIN | CUSIP | FIGI | CIK | CIF
     value: Mapped[str] = mapped_column(String(20))
     valid_from: Mapped[date] = mapped_column(Date)
     valid_to: Mapped[date | None] = mapped_column(Date)
@@ -470,6 +470,45 @@ class SecFiling(Base):
     )
 
 
+class CnmvFiling(Base):
+    """One CNMV regulated-information document VERSION (ADR-0018). ``nreg`` is the CNMV
+    registry number (accession analogue). The CNMV publishes only DATES: the content we can
+    download is the CURRENT version (after any modification), so it is usable only from the
+    next session open after the LATEST publication/modification date (fail closed)."""
+
+    __tablename__ = "cnmv_filings"
+
+    filing_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    nreg: Mapped[str] = mapped_column(String(20), index=True)
+    doc_kind: Mapped[str] = mapped_column(String(30))  # IFI_IPP (periodic, IPP XBRL) | IFA_ESEF
+    cif: Mapped[str] = mapped_column(String(20))
+    company: Mapped[str] = mapped_column(String(300))
+    security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"))
+    period_start: Mapped[date | None] = mapped_column(Date)
+    period_end: Mapped[date] = mapped_column(Date)
+    period_label: Mapped[str | None] = mapped_column(String(60))
+    publication_date: Mapped[date] = mapped_column(Date)  # «Publicación inicial»
+    publication_time: Mapped[str | None] = mapped_column(String(8))  # only if officially stated
+    last_modification_date: Mapped[date | None] = mapped_column(Date)
+    modifications: Mapped[list[Any]] = mapped_column(JSON, default=list)
+    availability_precision: Mapped[str] = mapped_column(String(20))  # DATE_ONLY | DATETIME
+    effective_available_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    availability_rule: Mapped[str] = mapped_column(String(80))
+    source_url: Mapped[str] = mapped_column(String(500))
+    detail_archive_id: Mapped[str] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    data_archive_id: Mapped[str | None] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    data_sha256: Mapped[str | None] = mapped_column(String(64))
+    parser_version: Mapped[str] = mapped_column(String(50))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        UniqueConstraint("nreg", "data_sha256", name="uq_cnmv_nreg_content"),
+        CheckConstraint(
+            "availability_precision IN ('DATE_ONLY','DATETIME')", name="precision_values"
+        ),
+    )
+
+
 class FundamentalFact(Base):
     """Append-only fact versions. Each row is ONE value as reported in ONE filing.
 
@@ -504,6 +543,9 @@ class FundamentalFact(Base):
     source_document: Mapped[str | None] = mapped_column(String(500))
     statement_id: Mapped[str | None] = mapped_column(
         ForeignKey("financial_statements.statement_id")
+    )
+    cnmv_filing_id: Mapped[str | None] = mapped_column(
+        ForeignKey("cnmv_filings.filing_id"), index=True
     )
     source_id: Mapped[int | None] = mapped_column(ForeignKey("data_sources.source_id"))
     raw_record_id: Mapped[str | None] = mapped_column(ForeignKey("raw_records.raw_record_id"))
@@ -809,6 +851,7 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "holdout_evaluations",
         "raw_source_archive",
         "sec_filings",
+        "cnmv_filings",
         "fundamental_facts",
         "index_events",
         "membership_builds",

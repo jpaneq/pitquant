@@ -29,6 +29,7 @@ GROUPS = {
     "Fundamentales, estimaciones y macro": [
         "financial_statements",
         "sec_filings",
+        "cnmv_filings",
         "fundamental_facts",
         "analyst_estimates",
         "macro_data",

@@ -4,7 +4,7 @@ Generado con `scripts/build_ibex_real.py` exclusivamente desde documentos oficia
 - Composición histórica IBEX 35: `5c028420d39c9d6e2205fa88d15627865dc217de867bc86987ca8f9fddba3695`.
 - Composición vigente observada el 2026-10-01 (página oficial de cotizaciones y fichas, ticker + ISIN): `9d2f010701a50c42de9d5d5bcac6fd3aa4b57cb253b1cd7533740c78b159c28d`.
 
-Build `4e958845-f1ac-4c32-b541-60be80e66c2a`: estado **ok**, 339 eventos, 138 intervalos.
+Build `867c60d3-fcae-4f4f-ab75-b22a42dff778`: estado **ok**, 339 eventos, 138 intervalos.
 Elegible para validación final: **False**.
 Intervalos con identidad sin resolver: **138/138**.
 

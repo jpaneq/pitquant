@@ -174,12 +174,16 @@ def test_migration_matches_models(pg: Engine) -> None:
 
 
 def test_trigger_list_matches_models() -> None:
-    path = next((ROOT / "migrations" / "versions").glob("0001_*.py"))
-    spec = importlib.util.spec_from_file_location("m0001", path)
-    assert spec and spec.loader
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    assert set(mod.IMMUTABLE_TABLES) == set(IMMUTABLE_TABLES)
+    """0001's list plus every later revision's ADDED_IMMUTABLE_TABLES == the models."""
+    declared: set[str] = set()
+    for path in sorted((ROOT / "migrations" / "versions").glob("0*.py")):
+        spec = importlib.util.spec_from_file_location(path.stem, path)
+        assert spec and spec.loader
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        declared |= set(getattr(mod, "IMMUTABLE_TABLES", ()))
+        declared |= set(getattr(mod, "ADDED_IMMUTABLE_TABLES", ()))
+    assert declared == set(IMMUTABLE_TABLES)
 
 
 def test_triggers_installed_on_every_immutable_table(pg: Engine) -> None:
@@ -273,3 +277,14 @@ def test_new_build_not_eligible_by_default(pg: Engine) -> None:
             )
         ).scalar_one()
     assert eligible is False
+
+
+def test_cnmv_filing_is_append_only(pg: Engine) -> None:
+    with pg.connect() as c:
+        trig = c.execute(
+            text(
+                "SELECT count(*) FROM information_schema.triggers "
+                "WHERE event_object_table='cnmv_filings' AND trigger_name LIKE '%_append_only'"
+            )
+        ).scalar_one()
+    assert trig >= 1

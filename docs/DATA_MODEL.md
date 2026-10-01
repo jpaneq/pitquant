@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **35**.
+Tablas: **36**.
 
 ## Procedencia y calidad
 
@@ -357,6 +357,37 @@ Tablas: **35**.
 - CHECK `available_at >= accepted_at`
 - INDEX ix_sec_filings_cik (cik)
 
+### `cnmv_filings` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `filing_id` | VARCHAR(36) | no | PK |
+| `nreg` | VARCHAR(20) | no |  |
+| `doc_kind` | VARCHAR(30) | no |  |
+| `cif` | VARCHAR(20) | no |  |
+| `company` | VARCHAR(300) | no |  |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `period_start` | DATE | sí |  |
+| `period_end` | DATE | no |  |
+| `period_label` | VARCHAR(60) | sí |  |
+| `publication_date` | DATE | no |  |
+| `publication_time` | VARCHAR(8) | sí |  |
+| `last_modification_date` | DATE | sí |  |
+| `modifications` | JSON | no |  |
+| `availability_precision` | VARCHAR(20) | no |  |
+| `effective_available_at` | DATETIME | no |  |
+| `availability_rule` | VARCHAR(80) | no |  |
+| `source_url` | VARCHAR(500) | no |  |
+| `detail_archive_id` | VARCHAR(36) | no | FK→`raw_source_archive.archive_id` |
+| `data_archive_id` | VARCHAR(36) | sí | FK→`raw_source_archive.archive_id` |
+| `data_sha256` | VARCHAR(64) | sí |  |
+| `parser_version` | VARCHAR(50) | no |  |
+| `ingested_at` | DATETIME | no |  |
+
+- CHECK `availability_precision IN ('DATE_ONLY','DATETIME')`
+- INDEX ix_cnmv_filings_nreg (nreg)
+- UNIQUE (nreg, data_sha256)
+
 ### `fundamental_facts` 🔒
 
 | Columna | Tipo | Nulo | Clave |
@@ -381,6 +412,7 @@ Tablas: **35**.
 | `is_amendment` | BOOLEAN | no |  |
 | `source_document` | VARCHAR(500) | sí |  |
 | `statement_id` | VARCHAR(36) | sí | FK→`financial_statements.statement_id` |
+| `cnmv_filing_id` | VARCHAR(36) | sí | FK→`cnmv_filings.filing_id` |
 | `source_id` | INTEGER | sí | FK→`data_sources.source_id` |
 | `raw_record_id` | VARCHAR(36) | sí | FK→`raw_records.raw_record_id` |
 | `ingested_at` | DATETIME | no |  |
@@ -388,6 +420,7 @@ Tablas: **35**.
 - CHECK `accepted_at IS NULL OR available_at >= accepted_at`
 - INDEX ix_fact_asof (security_id, concept, period_end, available_at)
 - INDEX ix_fundamental_facts_accession_number (accession_number)
+- INDEX ix_fundamental_facts_cnmv_filing_id (cnmv_filing_id)
 - UNIQUE (security_id, taxonomy, concept, unit, period_start, period_end, fiscal_period, revision_id, accession_number, source_id)
 
 ### `analyst_estimates`
