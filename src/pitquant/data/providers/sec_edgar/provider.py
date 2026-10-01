@@ -71,7 +71,15 @@ class SecIngestReport:
     facts_skipped_existing: int = 0
     facts_rejected: int = 0
     facts_out_of_coverage: int = 0
-    filings_not_cited: int = 0
+    # coverage metrics (submissions decides which filings exist)
+    filings_detected: int = 0
+    filings_with_xbrl: int = 0
+    filings_cited_by_companyfacts: int = 0
+    filings_recovered_from_instance: int = 0
+    filings_unresolved: int = 0
+    facts_companyfacts: int = 0
+    facts_from_instance: int = 0
+    facts_unresolved: int = 0
     issues: list[str] = field(default_factory=list)
 
 
@@ -215,27 +223,16 @@ def ingest_sec_company(
             continue
         by_acc[f.accession_number].append(f)
 
-    # companyfacts attributes a value to ONE filing; an in-scope filing it never cites
-    # (e.g. an original 10-Q whose facts companyfacts attributes to the later 10-Q/A) is
-    # not ingested. No leak (the data shows up later, not earlier) but a coverage gap:
-    # made visible, never silent.
-    for acc, uncited in sorted(filings.items()):
-        if acc not in by_acc:
-            _issue(
-                session,
-                security_id,
-                "filing_not_cited_by_companyfacts",
-                "medium",
-                f"{acc} {uncited.form} filed {uncited.filing_date}: in scope but cited by no "
-                "companyfacts value; its facts are first known from a later filing",
-                accession=acc,
-                form=uncited.form,
-                filed_date=uncited.filing_date,
-            )
-            rep.filings_not_cited += 1
+    # submissions (not companyfacts) decides which filings exist. companyfacts attributes a
+    # value to ONE filing, so an in-scope filing it never cites (e.g. an original 10-Q whose
+    # facts it attributes to the later 10-Q/A) is RECOVERED from its own XBRL instance.
+    uncited = {acc for acc in filings if acc not in by_acc}
+    rep.filings_detected = len(filings)
+    rep.filings_cited_by_companyfacts = len(set(filings) & set(by_acc))
+    rep.facts_companyfacts = sum(len(v) for a, v in by_acc.items() if a in filings)
     sec_rows: dict[str, SecFiling] = {}
     instances: dict[str, dict[tuple[str, str, date | None, date, str], float]] = {}
-    for acc in sorted(by_acc):
+    for acc in sorted(set(by_acc) | uncited):
         meta = filings.get(acc)
         if meta is None:
             continue  # handled below as fact_without_filing (not in submissions / not in scope)
@@ -312,6 +309,46 @@ def ingest_sec_company(
         session.flush()
         sec_rows[acc] = row
         rep.filings_inserted += 1
+
+    for acc in sorted(uncited):
+        filing = sec_rows.get(acc)
+        inst_vals = instances.get(acc)
+        if filing is None or inst_vals is None:
+            rep.filings_unresolved += 1
+            _issue(
+                session,
+                security_id,
+                "filing_not_cited_by_companyfacts",
+                "medium",
+                f"{acc} {filings[acc].form}: cited by no companyfacts value and its own XBRL "
+                "instance is unavailable; its facts are first known from a later filing",
+                accession=acc,
+                form=filings[acc].form,
+                filed_date=filings[acc].filing_date,
+            )
+            continue
+        rep.filings_recovered_from_instance += 1
+        for (tax, concept, start, end, unit), value in sorted(inst_vals.items(), key=str):
+            if math.isnan(value):
+                rep.facts_unresolved += 1  # conflicting duplicates inside the instance
+                continue
+            by_acc[acc].append(
+                CompanyFact(
+                    tax,
+                    concept,
+                    unit,
+                    start,
+                    end,
+                    value,
+                    acc,
+                    filing.form,
+                    filing.filed_date,
+                    None,
+                    None,
+                )
+            )
+            rep.facts_from_instance += 1
+    rep.filings_with_xbrl = sum(1 for a in filings if a in instances)
 
     open_rejections = _open_rejections(session, security_id)
     for acc, rows in sorted(by_acc.items()):

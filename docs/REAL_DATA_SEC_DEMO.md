@@ -45,7 +45,9 @@ NOT KNOWN: 16798000000.0 from 0001564590-17-014900 — superseded_by:a8dedfba-6e
 
 ## Enmienda real: MSFT 10-Q/A 0001193125-12-026864 (Q2 FY2012)
 
-El 10-Q original (0001193125-12-017029, presentado el 2012-01-19) no lo cita ningún valor de companyfacts: este atribuye los hechos a la enmienda. Por eso el sistema sólo los conoce desde la enmienda, aceptada el viernes 2012-01-27 a las 15:04 ET. No hay fuga (se conocen más tarde, no antes), pero sí un hueco de cobertura, que queda registrado como incidencia `filing_not_cited_by_companyfacts`.
+El 10-Q original (0001193125-12-017029, presentado el 2012-01-19) no lo cita ningún valor de companyfacts: este atribuye los hechos a la enmienda. Por eso el sistema sólo los conoce desde la enmienda, aceptada el viernes 2012-01-27 a las 15:04 ET. No hay fuga: se conocen más tarde, no antes.
+
+**Actualización (recuperación desde la instancia):** la ingestión ya no depende de companyfacts para saber qué filings existen. Al intentar recuperar el 10-Q original desde su propia instancia XBRL se comprobó que **no tenía XBRL**: su directorio sólo contiene HTML. Microsoft presentó el 10-Q/A el 2012-01-27 para aportar el anexo XBRL. El filing queda registrado con su header (aceptado el 2012-01-19 16:09 ET) y marcado `filing_not_cited_by_companyfacts` + `xbrl_instance_missing`: sus cifras no eran legibles por máquina hasta la enmienda.
 
 ### as_of 2012-01-26T16:00:00-05:00
 ```

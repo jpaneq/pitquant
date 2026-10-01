@@ -52,6 +52,7 @@ FY24 = ("2024-01-01", "2024-12-31")
 Q1_24 = ("2024-01-01", "2024-03-31")
 Q1_23 = ("2023-01-01", "2023-03-31")
 Q2_24 = ("2024-04-01", "2024-06-30")
+Q3_24 = ("2024-07-01", "2024-09-30")
 
 # (concept, unit, start, end, val, accn, form, filed)
 FACTS = [
@@ -72,6 +73,7 @@ INSTANCE_FACTS = {  # accession -> [(concept, start, end, value)]
     A: [("Revenues", *FY23, 100.0)],
     B: [("Revenues", *Q1_24, 30.0), ("NetIncomeLoss", *Q1_24, 6.0)],
     E: [("Revenues", *Q2_24, 33.0)],
+    UNCITED: [("Revenues", *Q3_24, 31.0)],
     D: [("Revenues", *FY24, 120.0), ("Revenues", *FY23, 95.0)],
 }
 
@@ -179,6 +181,7 @@ class FakeSEC:
     # (accession, concept) pairs not yet present
     overrides: dict[tuple[str, str, str, str], float] = field(default_factory=dict)
     hidden_facts: set[tuple[str, str]] = field(default_factory=set)
+    no_instance: set[str] = field(default_factory=set)  # filings whose XBRL is missing
 
     def get(self, url: str, headers: dict[str, str]) -> HttpResponse:
         self.calls.append((url, headers))
@@ -206,7 +209,10 @@ class FakeSEC:
                 if url.endswith(".hdr.sgml"):
                     return HttpResponse(200, header(acc), "text/plain")
                 if url.endswith("index.json"):
-                    return HttpResponse(200, index_json(acc), "application/json")
+                    body = index_json(acc)
+                    if acc in self.no_instance:
+                        body = body.replace(b"_htm.xml", b"_htm.txt")
+                    return HttpResponse(200, body, "application/json")
                 if url.endswith("_htm.xml"):
                     return HttpResponse(200, instance_xml(acc), "application/xml")
         return HttpResponse(404, b"", "text/plain")

@@ -420,13 +420,29 @@ def test_previously_rejected_fact_accepted_later_resolves_its_issue(
     assert issue.resolved_at is not None
 
 
-def test_filing_not_cited_by_companyfacts_is_reported(
+def test_filing_not_cited_by_companyfacts_is_recovered_from_its_instance(
     session: Session, tmp_path: Path, settings: Settings
 ) -> None:
     sid, rep = _ingest(session, tmp_path, settings)
-    assert rep.filings_not_cited == 1
-    assert session.get(SecFiling, UNCITED) is None  # not ingested: no facts cite it
+    assert rep.filings_recovered_from_instance == 1 and rep.filings_unresolved == 0
+    assert rep.filings_detected == rep.filings_cited_by_companyfacts + 1
+    assert rep.facts_from_instance == 1
+    filing = session.get_one(SecFiling, UNCITED)
+    q3 = latest_for_period(
+        facts_as_of(session, sid, ny(2024, 11, 1, 12), ["Revenues"]), "Revenues", date(2024, 9, 30)
+    )
+    assert q3 is not None and (q3.value, q3.accession_number) == (31.0, UNCITED)
+    assert q3.available_at == filing.available_at  # header acceptance, not companyfacts
+    assert _issues(session, "filing_not_cited_by_companyfacts") == []
+
+
+def test_uncited_filing_without_instance_stays_unresolved_and_visible(
+    session: Session, tmp_path: Path, settings: Settings
+) -> None:
+    sid = _security(session)
+    rep = ingest_sec_company(
+        session, _provider(tmp_path, settings, FakeSEC(no_instance={UNCITED})), CIK, sid
+    )
+    assert rep.filings_unresolved == 1 and rep.filings_recovered_from_instance == 0
     (issue,) = _issues(session, "filing_not_cited_by_companyfacts")
     assert issue.details["accession"] == UNCITED and issue.details["form"] == "10-Q"
-    _ingest(session, tmp_path, settings, sid=sid)  # re-run: not duplicated
-    assert len(_issues(session, "filing_not_cited_by_companyfacts")) == 1
