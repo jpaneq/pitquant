@@ -6,7 +6,7 @@ __pycache__/
 .pytest_cache/
 .hypothesis/
 dev.db
-data/
+/data/
 *.egg-info/
 .env
 x.db
