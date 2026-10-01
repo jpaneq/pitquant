@@ -1,5 +1,11 @@
 # D-05 — Especificación de aceptación y matriz de proveedores (market data y corporate actions)
 
+> **Actualización 2026-10-01:** los proveedores están fijados por el propietario y se
+> gestionan externamente: Sharadar SEP (EE. UU.), EODHD y la capa oficial BME/CNMV (España)
+> y Alpha Vantage sólo para QA (ADR-0021). La matriz de costes y la consulta a BME de abajo
+> son **históricas** y ya no se mantienen. Lo vigente son los casos de contrato y la suite,
+> que se ejecutarán sobre datos reales cuando existan las claves.
+
 **Estado:** ABIERTA. Ningún proveedor está aceptado.
 `data_readiness.accepted_market_data_sources` sigue vacío, así que US/ES market data y
 corporate actions no pueden salir READY.

@@ -1,4 +1,4 @@
-"""Command line: data-readiness, explain, sec-stress-scan, sec-ingest."""
+"""Command line: data-readiness, explain, universe, coverage, sec-stress-scan, sec-ingest."""
 
 from __future__ import annotations
 
@@ -125,6 +125,29 @@ def _universe(args: argparse.Namespace) -> int:
     return 0
 
 
+def _coverage(args: argparse.Namespace) -> int:
+    from pitquant.analyzer.eligibility import support_decision
+    from pitquant.coverage import security_coverage
+
+    settings = get_settings()
+    factory = make_session_factory(make_engine(settings.database.url))
+    with factory() as session:
+        cov = security_coverage(
+            session,
+            args.security_id,
+            date.fromisoformat(args.start),
+            date.fromisoformat(args.end),
+            benchmark_code=args.benchmark,
+            accepted_ca_sources=settings.data_readiness.accepted_corporate_action_sources,
+        )
+    print(f"{cov.security_id} {cov.start}..{cov.end}: {cov.status}")
+    for name, st, detail in cov.as_rows():
+        print(f"  {name:<18} {st:<20} {detail}")
+    dec = support_decision(cov)
+    print(f"analyzer: {dec.status}" + (f" — {'; '.join(dec.reasons)}" if dec.reasons else ""))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="pitquant")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -143,6 +166,12 @@ def main(argv: list[str] | None = None) -> int:
     un.add_argument("index")
     un.add_argument("date", help="YYYY-MM-DD")
     un.set_defaults(func=_universe)
+    cv = sub.add_parser("coverage", help="data coverage of one security over a period")
+    cv.add_argument("security_id")
+    cv.add_argument("start", help="YYYY-MM-DD")
+    cv.add_argument("end", help="YYYY-MM-DD")
+    cv.add_argument("--benchmark")
+    cv.set_defaults(func=_coverage)
     sc = sub.add_parser("sec-stress-scan", help="pick stress-test filings from submissions")
     sc.add_argument("ciks", nargs="+")
     sc.set_defaults(func=_sec_scan)

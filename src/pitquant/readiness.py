@@ -77,16 +77,22 @@ class Component:
     source_version: str | None = None
 
 
-# What the CODE can do (true independently of the database). Market data has the contract
-# suite and provider roles but NO vendor adapter yet, so it is not CODE_READY.
+# What the CODE can do (true independently of the database). An adapter that is CODE_READY
+# and CONTRACT_TESTED does NOT make its source READY: only real data does.
 _CODE = {
-    "SEC fundamentals": ("CODE_READY", "FIXTURE_TESTED"),
-    "CNMV fundamentals": ("CODE_READY", "FIXTURE_TESTED"),
-    "S&P membership": ("CODE_READY", "FIXTURE_TESTED"),
-    "IBEX membership": ("CODE_READY", "FIXTURE_TESTED"),
-    "US market data": ("CONTRACT_SUITE_ONLY",),
-    "ES market data": ("CONTRACT_SUITE_ONLY",),
-    "Corporate actions": ("CONTRACT_SUITE_ONLY",),
+    "SEC fundamentals": ("CODE_READY", "CONTRACT_TESTED"),
+    "CNMV fundamentals": ("CODE_READY", "CONTRACT_TESTED"),
+    "US identity": ("CODE_READY",),
+    "ES identity": ("CODE_READY", "CONTRACT_TESTED"),
+    "ES identity (pre-2011, archival)": ("CODE_READY", "CONTRACT_TESTED"),
+    "S&P membership": ("CODE_READY", "CONTRACT_TESTED"),
+    "IBEX membership": ("CODE_READY", "CONTRACT_TESTED"),
+    "US market adapter": ("CODE_READY", "CONTRACT_TESTED"),
+    "ES market adapter": ("CODE_READY", "CONTRACT_TESTED"),
+    "US real market data": ("CODE_READY", "CONTRACT_TESTED"),
+    "ES real market data": ("CODE_READY", "CONTRACT_TESTED"),
+    "Corporate actions": ("CODE_READY", "CONTRACT_TESTED"),
+    "Total return engine": ("CODE_READY", "CONTRACT_TESTED"),
 }
 
 
@@ -425,6 +431,85 @@ def scan_provenance(session: Session) -> Scan:
 # ───────────────────────────── report ─────────────────────────────
 
 
+def _us_identity_component(sp_build: MembershipBuild | None) -> Component:
+    c = Component("US identity", Status.BLOCKED)
+    if sp_build is None:
+        c.gaps.append(
+            "no S&P membership source to resolve against (S&P DJI file D-02; SHARADAR_SP500 "
+            "candidate BLOCKED_BY_CREDENTIAL)"
+        )
+    c.warnings.append(
+        "SEC issuers are identified by CIK (issuer level); share-class identity "
+        "(CUSIP/permaticker) needs the D-05 security master"
+    )
+    return c
+
+
+def _es_identity_components(
+    session: Session, ibex_build: MembershipBuild | None, min_cov: float
+) -> tuple[Component, Component]:
+    from pitquant.security_master.identity_store import latest_run
+
+    canon = Component("ES identity", Status.BLOCKED)
+    pre = Component("ES identity (pre-2011, archival)", Status.BLOCKED, critical=False)
+    run = latest_run(session, ibex_build.build_id) if ibex_build is not None else None
+    if run is None:
+        canon.gaps.append("no identity-resolution run for the IBEX build (ADR-0020)")
+        pre.gaps.append("no identity-resolution run")
+        return canon, pre
+    for comp, key, label in (
+        (canon, "canonical", "IBEX_IDENTITY_2011_PLUS"),
+        (pre, "pre_canonical", "IBEX_IDENTITY_PRE_2011"),
+    ):
+        m = run.metrics.get(key, {})
+        pct = float(m.get("coverage_percentage", 0.0))
+        total = int(m.get("intervals_total", 0))
+        comp.securities = int(m.get("resolved_exact", 0)) + int(m.get("resolved_multi_source", 0))
+        comp.unresolved_identities = int(m.get("provisional", 0)) + int(m.get("unresolved", 0))
+        comp.status = (
+            Status.READY
+            if total and pct / 100 >= min_cov
+            else Status.PARTIAL
+            if comp.securities
+            else Status.BLOCKED
+        )
+        comp.source_status = "SOURCE_CANONICAL"  # CNMV ANCV official snapshots
+        comp.source_version = f"{label}: {pct:.1f}% of {total} intervals (run {run.run_id[:8]})"
+        comp.maturity = [label]
+        if comp.status is not Status.READY:
+            comp.gaps.append(
+                f"{label}: {m.get('provisional', 0)} provisional + {m.get('unresolved', 0)} "
+                f"unresolved of {total} intervals (see docs/IBEX_COVERAGE_REPORT.md)"
+            )
+    return canon, pre
+
+
+def _adapter_component(name: str) -> Component:
+    """A finished adapter is CODE_READY + CONTRACT_TESTED; without a key it is
+    BLOCKED_BY_CREDENTIAL. It never makes the SOURCE ready (see '... real market data')."""
+    from pitquant.market.credentials import SourceStatus
+    from pitquant.market.providers.alphavantage import CREDENTIAL as AV
+    from pitquant.market.providers.eodhd import CREDENTIAL as EOD
+    from pitquant.market.providers.sharadar import CREDENTIAL as SHR
+
+    creds = {
+        "US market adapter": [("SHARADAR", SHR), ("ALPHAVANTAGE(QA)", AV)],
+        "ES market adapter": [("EODHD", EOD)],
+    }[name]
+    c = Component(name, Status.PARTIAL, critical=False)
+    c.sources = [n for n, _ in creds]
+    missing = [n for n, cr in creds if cr.status() is SourceStatus.SOURCE_NOT_CONFIGURED]
+    if missing:
+        c.status = Status.BLOCKED
+        c.maturity.append("BLOCKED_BY_CREDENTIAL")
+        c.gaps.append(f"SOURCE_NOT_CONFIGURED: {', '.join(missing)} (ADAPTER_CONTRACT_TESTED only)")
+    else:
+        c.gaps.append(
+            "configured; REAL_DATA_FULLY_VALIDATED pending the contract suite on real data"
+        )
+    return c
+
+
 def data_readiness(session: Session, settings: Settings) -> ReadinessReport:
     cfg = settings.data_readiness
     synthetic = _synthetic_security_ids(session)
@@ -454,15 +539,39 @@ def data_readiness(session: Session, settings: Settings) -> ReadinessReport:
         synthetic,
     )
     us = _market_component(
-        session, "US market data", "XNYS", cfg.accepted_market_data_sources.get("US", []), synthetic
+        session,
+        "US real market data",
+        "XNYS",
+        cfg.accepted_market_data_sources.get("US", []),
+        synthetic,
     )
     es = _market_component(
-        session, "ES market data", "XMAD", cfg.accepted_market_data_sources.get("ES", []), synthetic
+        session,
+        "ES real market data",
+        "XMAD",
+        cfg.accepted_market_data_sources.get("ES", []),
+        synthetic,
     )
     ca = _corporate_actions_component(session, cfg.accepted_corporate_action_sources, synthetic)
-    components = [sec, cnmv, sp, ibex, us, es, ca]
+    us_id = _us_identity_component(sp_build)
+    es_id, es_pre = _es_identity_components(session, ibex_build, cfg.min_universe_coverage)
+    us_ad, es_ad = _adapter_component("US market adapter"), _adapter_component("ES market adapter")
+    tr = Component(
+        "Total return engine",
+        Status.PARTIAL,
+        critical=False,
+        gaps=[
+            "validated on FIXTURES (splits, dividends, special, spin-off, acquisitions, "
+            "bankruptcy); real-data validation needs real prices"
+        ],
+    )
+    sp.warnings.append(
+        "candidate SHARADAR_SP500: ADAPTER_CONTRACT_TESTED, BLOCKED_BY_CREDENTIAL "
+        "(not canonical; S&P DJI file stays the canonical target)"
+    )
+    components = [sec, cnmv, us_id, es_id, es_pre, sp, ibex, us_ad, es_ad, us, es, ca, tr]
     for c in components:
-        c.maturity = list(_CODE[c.name])
+        c.maturity = list(_CODE[c.name]) + [m for m in c.maturity if m not in _CODE[c.name]]
         if c.securities:
             c.maturity.append("REAL_DATA_TESTED")
         if c.status is Status.PARTIAL:
@@ -490,6 +599,12 @@ def data_readiness(session: Session, settings: Settings) -> ReadinessReport:
             )
     sp.unresolved_identities = sum(1 for i in sp_ivs if i.identity_status != "RESOLVED")
     ibex.unresolved_identities = sum(1 for i in ibex_ivs if i.identity_status != "RESOLVED")
+    if es_id.source_version:  # identity resolved by ADR-0020 segments, not in the code build
+        ibex.unresolved_identities = es_id.unresolved_identities
+        ibex.warnings.append(
+            f"identity in code space: {sum(1 for i in ibex_ivs if i.identity_status != 'RESOLVED')}"
+            f" intervals; resolved by ADR-0020 segments (2011+: {es_id.source_version})"
+        )
     for c in (sec, cnmv):
         if c.securities:
             c.source_status = "SOURCE_CANONICAL"  # official filings (D-01 / D-04)
@@ -503,6 +618,8 @@ def data_readiness(session: Session, settings: Settings) -> ReadinessReport:
             c.warnings.append(
                 "exchange delisting status of former members is UNKNOWN until D-05 market data"
             )
+    for c in (us_ad, es_ad, tr):
+        c.source_status = "NONE"
     for c in (us, es, ca):
         c.source_status = (
             "SOURCE_CANONICAL"
@@ -510,12 +627,18 @@ def data_readiness(session: Session, settings: Settings) -> ReadinessReport:
             else ("SOURCE_PROVISIONAL" if c.sources else "NONE")
         )
 
-    all_ivs = sp_ivs + ibex_ivs
-    identity = (
-        100.0 * sum(1 for i in all_ivs if i.identity_status == "RESOLVED") / len(all_ivs)
-        if all_ivs
-        else None
-    )
+    for c in components:
+        lab = {"SOURCE_CANONICAL": "CANONICAL", "SOURCE_PROVISIONAL": "PROVISIONAL"}.get(
+            c.source_status
+        )
+        if lab and lab not in c.maturity:
+            c.maturity.append(lab)
+
+    # V1 canonical-period identity: S&P intervals (code build) + IBEX 2011+ (ADR-0020 run)
+    sp_ok = sum(1 for i in sp_ivs if i.identity_status == "RESOLVED")
+    es_total = es_id.securities + es_id.unresolved_identities
+    denom = len(sp_ivs) + es_total
+    identity = 100.0 * (sp_ok + es_id.securities) / denom if denom else None
     scans = [scan_pit(session, settings), scan_provenance(session)]
 
     issues = Counter(
@@ -558,7 +681,7 @@ def data_readiness(session: Session, settings: Settings) -> ReadinessReport:
         if not blockers
         else (
             Status.BLOCKED
-            if all(c.status is Status.BLOCKED for c in components)
+            if all(c.status is Status.BLOCKED for c in components if c.critical)
             else Status.PARTIAL
         )
     )

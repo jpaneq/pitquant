@@ -39,7 +39,8 @@ def _by_name(rep, name):  # type: ignore[no-untyped-def]
 def test_empty_database_is_blocked(session: Session, settings: Settings) -> None:
     rep = data_readiness(session, settings)
     assert rep.overall is Status.BLOCKED
-    assert {c.status for c in rep.components} == {Status.BLOCKED}
+    # every DATA component is blocked; only code components (total-return engine) are not
+    assert {c.status for c in rep.components if c.critical} == {Status.BLOCKED}
     assert "invariant scans ran over zero real rows (vacuous PASS)" in rep.blockers
 
 
@@ -196,8 +197,9 @@ def test_v2_maturity_and_source_labels(
     rep = data_readiness(session, settings)
     sp = _by_name(rep, "S&P membership")
     assert sp.source_status == "SOURCE_CANONICAL"
-    assert {"CODE_READY", "FIXTURE_TESTED", "REAL_DATA_TESTED"} <= set(sp.maturity)
+    assert {"CODE_READY", "CONTRACT_TESTED", "REAL_DATA_TESTED"} <= set(sp.maturity)
     assert sp.active is not None and sp.unresolved_identities == 0
-    us = _by_name(rep, "US market data")
-    assert us.maturity[0] == "CONTRACT_SUITE_ONLY" and "BLOCKED" in us.maturity
-    assert "CODE_READY" not in us.maturity  # no vendor adapter exists
+    us = _by_name(rep, "US real market data")
+    assert "BLOCKED" in us.maturity and "REAL_DATA_TESTED" not in us.maturity
+    ad = _by_name(rep, "US market adapter")  # a finished adapter never makes the SOURCE ready
+    assert {"CODE_READY", "CONTRACT_TESTED"} <= set(ad.maturity) and not ad.critical

@@ -25,6 +25,8 @@ exclusivamente la información que un inversor podía conocer en el instante ana
 - **Archivo de fuentes crudas** direccionado por SHA-256 (`raw_source_archive`).
 - **SEC EDGAR por accession**: header ACCEPTANCE-DATETIME, versiones de hechos inmutables, validación contra la instancia XBRL, política de disponibilidad conservadora.
 - **Universos por eventos** (S&P DJI licenciado / reconstrucción provisional; BME + avisos), con `TICKER_CHANGE` explícito y builds reproducibles.
+- **Emisor ≠ security** e **identidad por evidencia** (ADR-0020): snapshots semestrales ANCV de la CNMV desde 2010, `IdentityResolutionEngine` (EXACT / MULTI_SOURCE / PROVISIONAL / UNRESOLVED) y `backtest_universe` que falla cerrado por fecha.
+- **Market data normalizada** (ADR-0021): adapters Sharadar (SEP, ACTIONS, TICKERS, SP500), EODHD y Alpha Vantage (sólo QA), modelo de corporate actions, motor de total return y Data Coverage Engine. Sin clave: `SOURCE_NOT_CONFIGURED`.
 - **Holdout sellado**: sólo `evaluate_candidate_on_holdout`, registrado y una vez por modelo.
 - **Reconstrucción auditable** en una fecha T con `DataVersion` fijado (`audit/reconstruction.py`).
 - **API FastAPI**, Docker, CI (lint, mypy strict, tests PIT, migraciones, build).
@@ -47,12 +49,14 @@ docker compose up -d   # PostgreSQL + API (migraciones Alembic al arrancar)
 | Documento | Contenido |
 |---|---|
 | `docs/ARCHITECTURE.md` | Arquitectura técnica y modelo temporal |
-| `docs/adr/` | 16 decisiones arquitectónicas |
+| `docs/adr/` | 21 decisiones arquitectónicas |
 | `docs/BME_PARSER.md` | Calibración del parser del histórico IBEX 35 |
-| `docs/DATA_MODEL.md` | Esquema completo (35 tablas, generado desde el ORM) |
+| `docs/DATA_MODEL.md` | Esquema completo (42 tablas, generado desde el ORM) |
+| `docs/IBEX_COVERAGE_REPORT.md` | Universo IBEX real e identidad 2011+ |
+| `docs/REAL_DATA_SPANISH_IDENTITY_DEMO.md` | Enagás de extremo a extremo (emisor → ISIN → security → ticker → membership → fundamentales) |
 | `docs/PIT_AND_BACKTEST_FLOWS.md` | Flujo point-in-time y flujo de backtest |
 | `docs/ANTI_LEAKAGE_TESTS.md` | Catálogo de tests y su estado |
-| `docs/PENDING_DECISIONS.md` | Decisiones de datos: resueltas (D-01…D-03, D-09) y abiertas (D-04, D-05) |
+| `docs/PENDING_DECISIONS.md` | Decisiones de datos: resueltas (D-01…D-03, proveedores, periodo V1, D-09) y abiertas |
 | `docs/ROADMAP.md` | Fases y estado |
 
 ## Regla de oro

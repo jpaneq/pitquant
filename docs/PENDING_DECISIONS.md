@@ -10,6 +10,8 @@ arquitectura: el código funciona con cualquier opción gracias a las interfaces
 | D-01 | Fundamentales PIT EE. UU. | **SEC EDGAR**, procedencia por accession + header ACCEPTANCE-DATETIME; companyfacts sólo descubrimiento/validación; política de disponibilidad conservadora; cobertura 2011+ | ADR-0015, `data/providers/sec_edgar/` |
 | D-02 | Constituyentes S&P 500 | **Histórico oficial/licenciado S&P DJI** como canónico; reconstrucción desde anuncios como `PROVISIONAL_RESEARCH_SOURCE`; fuentes comunitarias sólo QA | ADR-0013, `universe/sources/spdji.py` |
 | D-03 | Constituyentes IBEX 35 | **PDF oficial BME «Composición histórica – IBEX 35»** como flujo de eventos + **avisos BME** para verificar, actualizar, resolver ambigüedades y aportar `announced_at`; `TICKER_CHANGE` nunca inferido | ADR-0013, `universe/sources/bme.py`, `docs/BME_PARSER.md` |
+| D-05 (arquitectura) | Proveedores de market data | **Fijados por el propietario** (gestión externa): EE. UU. → Sharadar SEP para market data y SHARADAR/SP500 como candidato técnico de membership (no canónico); fundamentales siguen en SEC EDGAR. España → EODHD para precios; corporate actions complejas desde BME/CNMV oficial; identidad CNMV ANCV + BME. Alpha Vantage sólo QA de ciclo de vida. Validación con datos reales pendiente de claves | ADR-0020, ADR-0021, `market/` |
+| Periodo V1 | Periodo canónico inicial | **2011-01-01 → presente**; lo anterior se conserva como `ARCHIVAL / NON_CANONICAL_FOR_V1`. No cambia el holdout | `canonical_period` en config, ADR-0020 |
 | D-09 | Holdout final | **oct-2022 → sep-2025**, fijado antes de ver resultados y ahora **sellado**: sólo `evaluate_candidate_on_holdout` (modelo congelado, una vez por versión, registrado); invisible en analytics/API/dashboard | ADR-0014, `validation/holdout.py` |
 
 ### Pendiente de acción del propietario para D-01…D-03
@@ -60,10 +62,11 @@ fundamental y cualquier resultado lo indica explícitamente (no se rellenan huec
 
 ### D-05 — Precios, dividendos, corporate actions y delisting returns (EE. UU. y España)
 
-**Actualización:** la especificación de aceptación, la suite de contrato
-(`tests/contracts/`) y la matriz de proveedores están en `docs/D05_MARKET_DATA_ACCEPTANCE.md`.
-La decisión sigue **ABIERTA**: depende de una decisión económica del propietario y de
-verificar los casos de contrato.
+**Actualización (iteración «identidad + adapters»):** la elección de proveedores está FIJADA
+y se gestiona externamente (ver la tabla de resueltas). Queda abierta sólo la **validación
+técnica con datos reales**, bloqueada por credenciales (`BLOCKED_BY_CREDENTIAL`): ejecutar la
+suite de contrato y los 9 casos `UNVERIFIED` sobre Sharadar y EODHD reales. La matriz de
+costes de `docs/D05_MARKET_DATA_ACCEPTANCE.md` queda como histórico; ya no se mantiene.
 
 Decisiva: un motor fundamental excelente sobre precios contaminados o sin empresas
 desaparecidas reintroduce sesgo de supervivencia.

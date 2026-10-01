@@ -6,8 +6,9 @@
 | 1 | Infraestructura + Security Master + universo histórico | ✅ |
 | 1b | D-01…D-03: archivo de fuentes, SEC por accession, universos por eventos, holdout sellado, CI PostgreSQL estricto | ✅ en código y tests con fixtures · ⏳ pendiente: ejecución real contra SEC/S&P/BME y job `postgres` de CI en verde |
 | 1d | ADR-0019 (zona horaria EDGAR), GitHub privado con CI verde (incl. PostgreSQL y Docker 3.12), universo IBEX real desde documentos BME, recuperación SEC desde instancia, slice CNMV real (Enagás), bake-off D-05 (11/20 casos verificados), readiness v2 | ✅ · ⏳ identidades IBEX históricas (ISIN fechados), D-05 (decisión económica), S&P DJI (licencia) |
+| 1e | Emisor ≠ security y snapshots ANCV (ADR-0020, migración 0004), `IdentityResolutionEngine`, identidad IBEX 2011+ (61/68 intervalos), 5 de 7 filas BME resueltas, Enagás de extremo a extremo; capa de market data normalizada, adapters Sharadar (SEP, ACTIONS, TICKERS, SP500), EODHD y Alpha Vantage (sólo QA), modelo de corporate actions, motor de total return, Data Coverage Engine y elegibilidad del analizador (ADR-0021); readiness v3 | ✅ en código y tests · ✅ ANCV real (33 snapshots) · ⏳ claves de API (BLOCKED_BY_CREDENTIAL) · ⏳ 7 intervalos IBEX sin probar (MTS y FER con ISIN extranjero, ABG.P, ventanas REE/GRF, borde PHM) |
 | 1c | Verificación real de la toolchain, PostgreSQL local estricto, identidad ≠ membership (ADR-0017), `audit.explain`, `pitquant data-readiness`, contrato D-05, política DATE_ONLY (ADR-0018), jobs SEC | ✅ en código y tests · ✅ SEC real (MSFT y AAPL) · 🟡 BME: PDF real calibrado, sin build (falta composición inicial o actual y 7 avisos) · ⏳ CNMV (documentos por identificar y aprobar) · ⏳ D-05 (decisión económica) |
-| 2 | Market data + corporate actions + calendarios | 🟡 calendarios, precios raw, ajuste as-of, total return, DQ e ingestión idempotente hechos. Falta: stock-for-stock M&A, spin-offs, derechos, FX, almacén Parquet/DuckDB para histórico masivo, benchmarks TR |
+| 2 | Market data + corporate actions + calendarios | 🟡 calendarios, precios raw, ajuste as-of, ingestión idempotente; capa normalizada, adapters y total return con spin-offs y adquisiciones en efectivo y en acciones (ADR-0021). Falta: datos reales (claves), capa oficial BME/CNMV de corporate actions españolas, FX, almacén Parquet/DuckDB para histórico masivo, benchmarks TR |
 | 3 | Fundamentales PIT | 🟡 modelo bitemporal, `facts_as_of`, reexpresiones, latencia conservadora. Falta: conector real (D-01/D-04), normalización de conceptos XBRL, macro vintages |
 | 4 | Feature store | 🟡 `FeatureSnapshot` inmutable con hash, preprocesado sin fugas. Falta: motores fundamental/técnico/régimen y caché |
 | 5 | Baseline scoring + calibración | ⬜ |
@@ -18,15 +19,24 @@
 | 10 | Challengers ML | ⬜ (sólo tras el baseline) |
 | 11 | Forward paper test | 🟡 tabla `live_predictions` |
 
-**Siguiente paso:** cargas reales, que requieren red y licencias:
-1. Fijar `PITQUANT_SEC_USER_AGENT`; después `pitquant sec-stress-scan` y `pitquant sec-ingest`
-   sobre unos pocos CIK, y revisar `pitquant explain`.
-2. Calibrar el parser BME con el PDF oficial y sus avisos, y aportar los ISIN oficiales.
-3. Vertical slice CNMV (ADR-0018).
-4. Ejecutar la suite D-05 contra los candidatos y verificar sus casos.
+**Siguiente paso** (sólo técnico):
+1. Cerrar la identidad IBEX 2011+ con evidencia oficial: código BME ↔ ISIN extranjero para MTS
+   y FER (NL desde 2023), clase B de Abengoa (ABG.P), fechas de cambio de ISIN de REE y GRF
+   en 2016 y borde de PHM en 2020. Hoy, en fallo cerrado por fecha, MTS bloquea todas las
+   fechas.
+2. Con las claves de API: suite D-05 y contract tests sobre datos reales (Sharadar, EODHD),
+   resolver las semánticas sin verificar y cruzar SHARADAR/SP500 con anuncios S&P DJI.
+3. Capa oficial BME/CNMV de corporate actions españolas complejas.
 
-El Feature/Scoring Engine no empieza hasta que `pitquant data-readiness` salga READY con
-datos reales.
+Criterio para iniciar el Feature Engine:
+- identidad IBEX 2011+ prácticamente resuelta;
+- emisor y security separados (hecho);
+- provider S&P validable (adapter hecho; falta clave);
+- adapters de market data listos (hecho);
+- total return validado (con fixtures; falta con datos reales);
+- que sólo falten claves e ingestión.
+
+No se declara DATA READY sin precios reales suficientes.
 
 ## Requisitos de producto ya acordados (no implementar todavía)
 
