@@ -81,4 +81,10 @@ reporting:
   base_currency: "EUR"
   excess_return_currency: "local"
 
+data_readiness:
+  # Only the D-05 ADR may add providers here, after they pass tests/contracts/.
+  accepted_market_data_sources: {US: [], ES: []}
+  accepted_corporate_action_sources: []
+  min_universe_coverage: 0.95
+
 seed: 20261001

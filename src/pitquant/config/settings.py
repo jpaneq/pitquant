@@ -129,6 +129,14 @@ class ScoringConfig(_Frozen):
     winsorize: tuple[float, float]
 
 
+class DataReadinessConfig(_Frozen):
+    # Filled ONLY by the D-05 ADR once a provider passes the contract suite
+    # (tests/contracts/). Until then market data / corporate actions can never be READY.
+    accepted_market_data_sources: dict[str, list[str]] = Field(default_factory=dict)
+    accepted_corporate_action_sources: list[str] = Field(default_factory=list)
+    min_universe_coverage: float = Field(default=0.95, gt=0, le=1)
+
+
 class ReportingConfig(_Frozen):
     base_currency: str
     excess_return_currency: Literal["local", "base"]
@@ -148,6 +156,7 @@ class Settings(_Frozen):
     validation: ValidationConfig
     scoring: ScoringConfig
     reporting: ReportingConfig
+    data_readiness: DataReadinessConfig = Field(default_factory=DataReadinessConfig)
     seed: int
 
     @model_validator(mode="after")
