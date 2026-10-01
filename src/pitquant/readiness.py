@@ -427,11 +427,16 @@ def data_readiness(session: Session, settings: Settings) -> ReadinessReport:
         if b is not None:
             label = f"{b.index_code}:{b.membership_source}"
             (definitive if b.source_confidence == "CANONICAL" else provisional).append(label)
-    for c in (sec, cnmv, us, es, ca):
-        if c.status is Status.READY:
-            definitive += c.sources
-        elif c.sources:
-            provisional += c.sources
+    # By the NATURE of the source, not by component status: official filings (D-01/D-04)
+    # are definitive even while coverage is partial; market data only once accepted by
+    # the D-05 contract (config).
+    definitive += sec.sources + cnmv.sources
+    accepted = set(cfg.accepted_corporate_action_sources)
+    for names in cfg.accepted_market_data_sources.values():
+        accepted |= set(names)
+    for c in (us, es, ca):
+        for name in c.sources:
+            (definitive if name in accepted else provisional).append(name)
 
     blockers = [
         f"{c.name}: {c.status} — {'; '.join(c.gaps) or 'see warnings'}"

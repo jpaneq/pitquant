@@ -30,7 +30,7 @@ from pitquant.db.models import (
 )
 from pitquant.security_master.service import SecurityMaster
 from tests.conftest import ny, utc
-from tests.fixtures.sec_edgar import CIK, A, B, C, D, E, FakeSEC, P, X
+from tests.fixtures.sec_edgar import CIK, UNCITED, A, B, C, D, E, FakeSEC, P, X
 
 pytestmark = pytest.mark.pit
 UA = "PITQuant tests fixture@example.invalid"
@@ -403,3 +403,15 @@ def test_previously_rejected_fact_accepted_later_resolves_its_issue(
     assert rep.facts_inserted == 1
     (issue,) = _issues(session, "companyfacts_xbrl_mismatch")
     assert issue.resolved_at is not None
+
+
+def test_filing_not_cited_by_companyfacts_is_reported(
+    session: Session, tmp_path: Path, settings: Settings
+) -> None:
+    sid, rep = _ingest(session, tmp_path, settings)
+    assert rep.filings_not_cited == 1
+    assert session.get(SecFiling, UNCITED) is None  # not ingested: no facts cite it
+    (issue,) = _issues(session, "filing_not_cited_by_companyfacts")
+    assert issue.details["accession"] == UNCITED and issue.details["form"] == "10-Q"
+    _ingest(session, tmp_path, settings, sid=sid)  # re-run: not duplicated
+    assert len(_issues(session, "filing_not_cited_by_companyfacts")) == 1

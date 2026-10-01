@@ -13,13 +13,16 @@ arquitectura: el código funciona con cualquier opción gracias a las interfaces
 | D-09 | Holdout final | **oct-2022 → sep-2025**, fijado antes de ver resultados y ahora **sellado**: sólo `evaluate_candidate_on_holdout` (modelo congelado, una vez por versión, registrado); invisible en analytics/API/dashboard | ADR-0014, `validation/holdout.py` |
 
 ### Pendiente de acción del propietario para D-01…D-03
-- **D-01:** fijar `PITQUANT_SEC_USER_AGENT` con un contacto real y lista de CIKs del universo.
-  El conector no se ha ejecutado contra la SEC desde aquí (red bloqueada en este entorno);
-  sólo contra fixtures.
-- **D-02:** obtener la licencia/fichero histórico de S&P DJI y escribir el adaptador a su
-  formato real (hoy se acepta el «formato normalizado» documentado en `spdji.py`).
-- **D-03:** descargar el PDF y los avisos de BME y **calibrar** el parser
-  (`docs/BME_PARSER.md`). Sin calibración, cada fila no inicial exige su aviso.
+
+- **D-01:** ejecutado contra la SEC real para MSFT y AAPL (`docs/REAL_DATA_SEC_DEMO.md`).
+  - Hay que exportar `PITQUANT_SEC_USER_AGENT` en cada sesión; nunca se guarda en el
+    repositorio.
+  - Falta la lista de CIK del universo y el job completo.
+- **D-02:** obtener la licencia o el fichero histórico de S&P DJI y escribir el adaptador a
+  su formato real (hoy se acepta el «formato normalizado» documentado en `spdji.py`).
+- **D-03:** PDF oficial archivado y parser calibrado (`docs/BME_PARSER.md`). Faltan:
+  - la composición inicial o la actual oficial con ISIN;
+  - los avisos de las filas 62, 76, 80, 91, 106, 108 y 122.
 
 ## Abiertas
 

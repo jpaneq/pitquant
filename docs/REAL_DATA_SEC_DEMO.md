@@ -42,3 +42,48 @@ KNOWN: 20539000000.0 USD (us-gaap:NetIncomeLoss 2015-07-01..2016-06-30, 2018FY)
 NOT KNOWN: 16798000000.0 from 0001193125-16-662209 — superseded_by:a8dedfba-6e3a-4d6f-a1be-f628396fd789: a later version (0001564590-18-019062, available 2018-08-03T15:18:33+00:00) was also known at as_of
 NOT KNOWN: 16798000000.0 from 0001564590-17-014900 — superseded_by:a8dedfba-6e3a-4d6f-a1be-f628396fd789: a later version (0001564590-18-019062, available 2018-08-03T15:18:33+00:00) was also known at as_of
 ```
+
+## Enmienda real: MSFT 10-Q/A 0001193125-12-026864 (Q2 FY2012)
+
+El 10-Q original (0001193125-12-017029, presentado el 2012-01-19) no lo cita ningún valor de companyfacts: este atribuye los hechos a la enmienda. Por eso el sistema sólo los conoce desde la enmienda, aceptada el viernes 2012-01-27 a las 15:04 ET. No hay fuga (se conocen más tarde, no antes), pero sí un hueco de cobertura, que queda registrado como incidencia `filing_not_cited_by_companyfacts`.
+
+### as_of 2012-01-26T16:00:00-05:00
+```
+SalesRevenueNet @ 2011-12-31 for b5996a6e-9873-4988-b0c9-1a9a4452660e (ticker then: unknown) as of 2012-01-26T21:00:00+00:00
+KNOWN: nothing — no version was available at that instant.
+NOT KNOWN: 20885000000.0 from 0001193125-12-026864 — available_after_as_of: available_at 2012-01-27T20:19:25+00:00 > as_of (accepted 2012-01-27T20:04:25+00:00)
+NOT KNOWN: 20885000000.0 from 0001193125-12-316848 — available_after_as_of: available_at 2012-07-27T13:30:00+00:00 > as_of (accepted 2012-07-26T20:12:48+00:00)
+NOT KNOWN: 20885000000.0 from 0001193125-13-022207 — available_after_as_of: available_at 2013-01-25T14:30:00+00:00 > as_of (accepted 2013-01-24T21:10:59+00:00)
+NOT KNOWN: 20885000000.0 from 0001193125-13-310206 — available_after_as_of: available_at 2013-07-31T13:30:00+00:00 > as_of (accepted 2013-07-30T20:14:49+00:00)
+```
+
+### as_of 2012-01-27T15:30:00-05:00
+```
+SalesRevenueNet @ 2011-12-31 for b5996a6e-9873-4988-b0c9-1a9a4452660e (ticker then: unknown) as of 2012-01-27T20:30:00+00:00
+KNOWN: 20885000000.0 USD (us-gaap:SalesRevenueNet 2011-10-01..2011-12-31, 2012Q2)
+  filing      10-Q/A 0001193125-12-026864 filed 2012-01-27 (amendment)
+  document    https://www.sec.gov/Archives/edgar/data/789019/000119312512026864/d266753d10qa.htm
+  accepted_at 2012-01-27T20:04:25+00:00 (header)
+  available   2012-01-27T20:19:25+00:00 (conservative_session)
+  parser      sec-edgar-1  header sha256 bf802702babdca992fc80f455061603603570a9c721e30d4b9d32afd72379acd
+  xbrl sha256 8ba9ee847bec0ac77bc561da7394b8cd30a731c037c15289cc3ca45d0ba618b9
+NOT KNOWN: 20885000000.0 from 0001193125-12-316848 — available_after_as_of: available_at 2012-07-27T13:30:00+00:00 > as_of (accepted 2012-07-26T20:12:48+00:00)
+NOT KNOWN: 20885000000.0 from 0001193125-13-022207 — available_after_as_of: available_at 2013-01-25T14:30:00+00:00 > as_of (accepted 2013-01-24T21:10:59+00:00)
+NOT KNOWN: 20885000000.0 from 0001193125-13-310206 — available_after_as_of: available_at 2013-07-31T13:30:00+00:00 > as_of (accepted 2013-07-30T20:14:49+00:00)
+```
+
+## «¿Por qué NO se conocía?» con datos reales: valor rechazado (AAPL)
+
+companyfacts da 0.0 como valor nominal por acción. La instancia XBRL del propio 10-Q dice 1e-05. El valor de companyfacts se rechaza y nunca se almacena; la incidencia de calidad es su rastro.
+```
+CommonStockParOrStatedValuePerShare @ 2014-03-29 for dd082daa-fdce-41c4-90b9-9593a7b7a98c (ticker then: unknown) as of 2014-12-31T21:00:00+00:00
+KNOWN: 1e-05 USD/shares (us-gaap:CommonStockParOrStatedValuePerShare ..2014-03-29, 2014FY)
+  filing      10-K 0001193125-14-383437 filed 2014-10-27
+  document    https://www.sec.gov/Archives/edgar/data/320193/000119312514383437/d783162d10k.htm
+  accepted_at 2014-10-27T21:11:55+00:00 (header)
+  available   2014-10-28T13:30:00+00:00 (conservative_session)
+  parser      sec-edgar-1  header sha256 9012e5a00e197d68e151d1fa1e713ab89636f7ca0a4a53be5093f2f612350e13
+  xbrl sha256 3f425ef38234796a8961f454db3818d7052f0a43fae27cf1675951f816703ac4
+NOT KNOWN: 1e-05 from 0001193125-14-277160 — superseded_by:af430688-2889-469a-bac9-5c322c437d6f: a later version (0001193125-14-383437, available 2014-10-28T13:30:00+00:00) was also known at as_of
+NOT KNOWN: value never stored — rejected:companyfacts_xbrl_mismatch:fb6675c4-a391-4c02-b80b-daf4c0aace09: 0001193125-14-157311 CommonStockParOrStatedValuePerShare None..2014-03-29: companyfacts 0.0 != instance 1e-05
+```

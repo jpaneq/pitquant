@@ -3,13 +3,15 @@
 Plataforma de análisis bursátil, scoring y backtesting **point-in-time**: cada cálculo usa
 exclusivamente la información que un inversor podía conocer en el instante analizado.
 
-> ⚠️ **Estado:** fases 0–1 y D-01…D-03 implementadas y probadas con *fixtures*; los
-> conectores aún no se han ejecutado contra SEC, S&P DJI ni BME (ver `docs/ROADMAP.md`).
-> Todavía **no** genera señales BUY/HOLD/SELL: el motor de scoring es la fase 5 y la API
-> responde explícitamente que no hay señal en lugar de inventarla.
->
-> Los únicos datos incluidos son **SINTÉTICOS** (`SYN*`, índices `SYN_SP500`/`SYN_IBEX35`),
-> generados para ejercitar casos límite. No representan ningún mercado real.
+> ⚠️ **Estado (2026-10-01):**
+> - **SEC EDGAR real:** ingeridos MSFT y AAPL. Detalle en `docs/REAL_DATA_SEC_DEMO.md`.
+> - **BME:** el PDF oficial del histórico IBEX 35 está archivado y el parser calibrado
+>   contra él, pero todavía **no hay membership build** (`docs/BME_PARSER.md`).
+> - **S&P DJI, CNMV y market data (D-05):** sin datos reales.
+> - **Señales:** no se generan BUY/HOLD/SELL. El scoring es la fase 5 y la API responde
+>   explícitamente que no hay señal en lugar de inventarla.
+> - **Datos versionados en el repositorio:** sólo **SINTÉTICOS** (`SYN*`) y fixtures. Los
+>   datos reales viven en `data/` local, que no se versiona.
 
 ## Qué hay
 

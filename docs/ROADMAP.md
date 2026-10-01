@@ -5,7 +5,7 @@
 | 0 | Arquitectura, ADRs, esquema de datos, flujos, catálogo de tests | ✅ |
 | 1 | Infraestructura + Security Master + universo histórico | ✅ |
 | 1b | D-01…D-03: archivo de fuentes, SEC por accession, universos por eventos, holdout sellado, CI PostgreSQL estricto | ✅ en código y tests con fixtures · ⏳ pendiente: ejecución real contra SEC/S&P/BME y job `postgres` de CI en verde |
-| 1c | Verificación real de la toolchain, PostgreSQL local estricto, identidad ≠ membership (ADR-0017), `audit.explain`, `pitquant data-readiness`, contrato D-05, política DATE_ONLY (ADR-0018), jobs SEC | ✅ en código y tests · ⏳ ingestión real SEC (falta User-Agent), BME (falta aprobar descargas), CNMV (falta aprobar descargas), D-05 (decisión económica) |
+| 1c | Verificación real de la toolchain, PostgreSQL local estricto, identidad ≠ membership (ADR-0017), `audit.explain`, `pitquant data-readiness`, contrato D-05, política DATE_ONLY (ADR-0018), jobs SEC | ✅ en código y tests · ✅ SEC real (MSFT y AAPL) · 🟡 BME: PDF real calibrado, sin build (falta composición inicial o actual y 7 avisos) · ⏳ CNMV (documentos por identificar y aprobar) · ⏳ D-05 (decisión económica) |
 | 2 | Market data + corporate actions + calendarios | 🟡 calendarios, precios raw, ajuste as-of, total return, DQ e ingestión idempotente hechos. Falta: stock-for-stock M&A, spin-offs, derechos, FX, almacén Parquet/DuckDB para histórico masivo, benchmarks TR |
 | 3 | Fundamentales PIT | 🟡 modelo bitemporal, `facts_as_of`, reexpresiones, latencia conservadora. Falta: conector real (D-01/D-04), normalización de conceptos XBRL, macro vintages |
 | 4 | Feature store | 🟡 `FeatureSnapshot` inmutable con hash, preprocesado sin fugas. Falta: motores fundamental/técnico/régimen y caché |

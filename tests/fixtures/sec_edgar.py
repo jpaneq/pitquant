@@ -11,6 +11,8 @@ Timeline (US/Eastern):
   D  10-K   FY2024   filed 2025-02-18, accepted 07:00:00 (pre-market; restates FY2023 100 -> 95)
   E  10-Q   Q2-2024  accepted Thu 2024-08-01 17:45:00, filingDate Fri 2024-08-02 (EDGAR
      dates submissions accepted after 17:30 ET on the next business day)
+  UNCITED  10-Q   Q3-2024  in submissions, cited by NO companyfacts value (shape of MSFT
+     0001193125-12-017029, whose facts companyfacts attributes to the later 10-Q/A)
   X  orphan accession cited by companyfacts but absent from submissions
   P  10-K   FY2009   filed 2010-03-01 (before XBRL coverage start)
 """
@@ -31,6 +33,7 @@ A, B, C, D = (
 )
 X, P = "0000999999-24-000099", "0000999999-10-000001"
 E = "0000999999-24-000040"
+UNCITED = "0000999999-24-000050"
 
 # submissions acceptanceDateTime is UTC (verified on real EDGAR data, 2026-10-01); D's is
 # deliberately inconsistent with its header to exercise acceptance_mismatch.
@@ -39,6 +42,7 @@ FILINGS = [  # accession, form, filed, report, accepted (ET wall), submissions a
     (B, "10-Q", "2024-05-01", "2024-03-31", "20240501101500", "2024-05-01T14:15:00.000Z"),
     (C, "10-Q/A", "2024-06-10", "2024-03-31", "20240610120000", "2024-06-10T16:00:00.000Z"),
     (E, "10-Q", "2024-08-02", "2024-06-30", "20240801174500", "2024-08-01T21:45:00.000Z"),
+    (UNCITED, "10-Q", "2024-11-01", "2024-09-30", "20241101100000", "2024-11-01T14:00:00.000Z"),
     (D, "10-K", "2025-02-18", "2024-12-31", "20250218070000", "2025-02-18T09:00:00.000Z"),
     (P, "10-K", "2010-03-01", "2009-12-31", "20100301120000", "2010-03-01T17:00:00.000Z"),
 ]
@@ -168,7 +172,7 @@ class FakeSEC:
     """Offline transport serving the fixtures. ``visible`` limits which filings exist yet,
     so tests can ingest history in stages (the world as it looked at different times)."""
 
-    visible: set[str] = field(default_factory=lambda: {A, B, C, D, E, X, P})
+    visible: set[str] = field(default_factory=lambda: {A, B, C, D, E, UNCITED, X, P})
     calls: list[tuple[str, dict[str, str]]] = field(default_factory=list)
     fail_once: set[str] = field(default_factory=set)
     # companyfacts as served "later": (accession, concept, start, end) -> new value, and

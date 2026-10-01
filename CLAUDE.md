@@ -69,34 +69,44 @@ Hecho:
 - Suite de contrato D-05.
 - Jobs SEC (`sec-stress-scan`, `sec-ingest`).
 
-**No hay datos reales ingeridos.** Bloqueos externos:
-- `PITQUANT_SEC_USER_AGENT` sin definir;
-- aprobación para descargar los documentos BME y CNMV;
-- decisión y licencia D-05;
-- fichero licenciado S&P DJI.
+**Datos reales (sólo en local, en `data/pitquant.db` SQLite y `data/archive/`, sin versionar):**
+- **SEC EDGAR, MSFT y AAPL:**
+  - 126 filings y 51.538 versiones de hechos, con headers e instancias archivados;
+  - demostración en `docs/REAL_DATA_SEC_DEMO.md`;
+  - `data-readiness`: escaneo PIT PASS (51.664 filas) y procedencia PASS.
+- **BME:** PDF «Composición histórica – IBEX 35» (sep-2026) archivado; calibración
+  `COMPOIBEX_2026_09`. Sin membership build: faltan la composición inicial o actual y 7
+  avisos.
+- **User-Agent SEC:** **no se persiste**. Hay que exportar `PITQUANT_SEC_USER_AGENT` en la
+  sesión; nunca escribirlo en el repositorio.
 
-El job `docker` y GitHub Actions no están verificados: no hay Docker ni remoto.
+Bloqueos externos:
+- GitHub: `gh` sin autenticar.
+- Docker no instalado: build 3.12 sin verificar.
+- Licencia S&P DJI.
+- Decisión D-05.
+- Documentos CNMV del slice (por identificar y aprobar).
+- BME: `Constituents.pdf` y avisos (por aprobar).
 
 ## Pendiente (por orden)
 
-1. Subir a GitHub y ver la CI en verde, incluido el build Docker en 3.12.
-2. **D-01 real:**
-   - definir el User-Agent;
-   - `pitquant sec-stress-scan` y `pitquant sec-ingest` sobre pocos CIK;
-   - revisar `data_quality_issues` y `pitquant explain`;
-   - después, el job sobre el universo.
-3. **D-03 real:**
-   - archivar el PDF BME y los avisos, y calibrar `BMELayoutCalibration`;
-   - aportar ISIN oficiales (`identities`), sin los cuales el IBEX es `IDENTITY_UNRESOLVED`;
+1. `gh auth login` → subir el repo (privado) → CI en verde, incluido el build Docker en 3.12.
+2. **D-01:**
+   - filings que companyfacts no cita (`filing_not_cited_by_companyfacts`, p. ej. el 10-Q
+     original de MSFT 0001193125-12-017029): ingerirlos desde su propia instancia XBRL;
+   - job sobre el universo.
+3. **D-03:**
+   - archivar la composición actual oficial (`Constituents.pdf`, con ISIN) y los 7 avisos;
+   - reconstruir hacia atrás validando 35 miembros por fecha. Los miembros invertidos
+     siguen `IDENTITY_UNRESOLVED` salvo ISIN fechado;
    - parser de avisos.
 4. **D-04:** vertical slice CNMV (ADR-0018).
 5. **D-02:** adaptador del fichero licenciado S&P DJI.
 6. **D-05:**
-   - verificar los casos `UNVERIFIED`;
+   - verificar los 13 casos `UNVERIFIED`;
    - ejecutar la suite contra los candidatos;
-   - ADR de aceptación y `data_readiness.accepted_*`.
-7. `pitquant data-readiness` READY con datos reales. Sólo después: Feature Engine y fases
-   siguientes.
+   - ADR de aceptación.
+7. `pitquant data-readiness` READY con datos reales. Sólo después: Feature Engine.
 
 ## Limitaciones conocidas
 
@@ -105,6 +115,8 @@ El job `docker` y GitHub Actions no están verificados: no hay Docker ni remoto.
   para validación final/holdout. El IBEX necesita ISIN oficiales por miembro y fecha.
 - `register_event_securities` cierra el ticker de otra emisión si se reasigna (aviso DQ).
 - Conceptos XBRL sin normalizar todavía.
+- Emisores registrados desde SEC usan `exchange="XNYS"` como código de calendario aunque
+  coticen en NASDAQ (mismo horario); su ticker queda vacío hasta una fuente fechada.
 
 ## Entorno del propietario
 

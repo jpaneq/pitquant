@@ -137,6 +137,9 @@ def test_partial_coverage_and_scans(session: Session, tmp_path: Path, settings: 
     assert any("of universe members have facts" in g for g in sec.gaps)
     assert {s.result for s in rep.scans} == {Check.PASS}
     assert rep.overall is Status.PARTIAL
+    # Official filings are a definitive source even while coverage is partial.
+    assert "SEC_EDGAR" in rep.definitive_sources
+    assert "SEC_EDGAR" not in rep.provisional_sources
 
 
 def test_scans_detect_pit_and_provenance_violations(
