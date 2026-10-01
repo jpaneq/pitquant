@@ -17,7 +17,9 @@ cannot be tied to an archived header is rejected (``fact_without_filing``).
 
 from __future__ import annotations
 
+import math
 from collections import defaultdict
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import date, datetime
 
@@ -27,6 +29,7 @@ from sqlalchemy.orm import Session
 from pitquant.config.settings import SecConfig
 from pitquant.core.errors import DataQualityError
 from pitquant.core.hashing import content_hash
+from pitquant.core.timeutils import utc_now
 from pitquant.data.archive import ArchiveStore, archive_document, load_archived
 from pitquant.data.calendars.market_calendar import get_calendar
 from pitquant.data.point_in_time.availability import filing_available_at
@@ -283,6 +286,7 @@ def ingest_sec_company(
         sec_rows[acc] = row
         rep.filings_inserted += 1
 
+    open_rejections = _open_rejections(session, security_id)
     for acc, rows in sorted(by_acc.items()):
         filing = sec_rows.get(acc)
         if filing is None and acc in all_filings and acc not in filings:
@@ -340,10 +344,25 @@ def ingest_sec_company(
                         companyfacts_value=f.value,
                     )
                     rep.issues.append(f"{acc}: value drift on {f.concept}")
+                else:
+                    _resolve_rejections(open_rejections, ident)
                 rep.facts_skipped_existing += 1
                 continue
             if inst_facts is not None:
                 v = inst_facts.get((f.taxonomy, f.concept, f.start, f.end, f.unit))
+                if v is not None and math.isnan(v):
+                    rep.facts_rejected += 1
+                    _issue(
+                        session,
+                        security_id,
+                        "xbrl_inconsistent_duplicates",
+                        "high",
+                        f"{acc} {f.concept} {f.start}..{f.end}: the instance reports "
+                        "conflicting values for this fact",
+                        **ident,
+                        companyfacts_value=f.value,
+                    )
+                    continue
                 if v is not None and not _close(v, f.value):
                     rep.facts_rejected += 1
                     _issue(
@@ -396,8 +415,43 @@ def ingest_sec_company(
             )
             seen[key] = f.value
             rep.facts_inserted += 1
+            _resolve_rejections(open_rejections, ident)
     session.flush()
     return rep
+
+
+_REJECTION_CHECKS = ("companyfacts_xbrl_mismatch", "xbrl_inconsistent_duplicates")
+
+
+def _open_rejections(
+    session: Session, sid: str
+) -> dict[tuple[object, ...], list[DataQualityIssue]]:
+    out: dict[tuple[object, ...], list[DataQualityIssue]] = defaultdict(list)
+    for issue in session.scalars(
+        select(DataQualityIssue).where(
+            DataQualityIssue.security_id == sid,
+            DataQualityIssue.check_name.in_(_REJECTION_CHECKS),
+            DataQualityIssue.resolved_at.is_(None),
+        )
+    ):
+        out[_ident_key(issue.details)].append(issue)
+    return out
+
+
+def _ident_key(d: Mapping[str, object]) -> tuple[object, ...]:
+    return tuple(
+        _jsonable(d.get(k))
+        for k in ("accession", "taxonomy", "concept", "unit", "period_start", "period_end")
+    )
+
+
+def _resolve_rejections(
+    open_: dict[tuple[object, ...], list[DataQualityIssue]], ident: Mapping[str, object]
+) -> None:
+    """A fact once rejected and now accepted (e.g. after a parser fix) closes its open DQ
+    issues. The issue rows stay (audit trail); only ``resolved_at`` is set."""
+    for issue in open_.pop(_ident_key(ident), []):
+        issue.resolved_at = utc_now()
 
 
 def _close(a: float, b: float) -> bool:

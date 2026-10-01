@@ -388,3 +388,18 @@ def test_availability_never_derives_from_filed_date(
 
 
 Q2 = (date(2024, 4, 1), date(2024, 6, 30))
+
+
+def test_previously_rejected_fact_accepted_later_resolves_its_issue(
+    session: Session, tmp_path: Path, settings: Settings
+) -> None:
+    sid, _ = _ingest(session, tmp_path, settings)
+    (issue,) = _issues(session, "companyfacts_xbrl_mismatch")
+    assert issue.resolved_at is None
+    # companyfacts later agrees with the filing's instance (6): the fact is accepted and
+    # the old rejection is closed, not deleted.
+    fixed = FakeSEC(overrides={(B, "NetIncomeLoss", "2024-01-01", "2024-03-31"): 6.0})
+    rep = ingest_sec_company(session, _provider(tmp_path, settings, fixed), CIK, sid)
+    assert rep.facts_inserted == 1
+    (issue,) = _issues(session, "companyfacts_xbrl_mismatch")
+    assert issue.resolved_at is not None

@@ -66,7 +66,10 @@ def _sec_scan(args: argparse.Namespace) -> int:
     with factory() as session:
         for cik in args.ciks:
             scan = scan_stress_cases(
-                cik, provider.submissions(session, cik), settings.fundamentals.sec.forms
+                cik,
+                provider.submissions(session, cik),
+                settings.fundamentals.sec.forms,
+                settings.fundamentals.sec.coverage_start,
             )
             print(f"CIK {scan.cik}")
             for tag, accs in scan.by_tag.items():

@@ -12,9 +12,10 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import date, datetime, time
+from datetime import UTC, date, datetime, time
 from zoneinfo import ZoneInfo
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from pitquant.config.settings import Settings
@@ -27,6 +28,7 @@ from pitquant.data.providers.sec_edgar.provider import (
     SecIngestReport,
     ingest_sec_company,
 )
+from pitquant.db.models import SecFiling
 from pitquant.security_master.service import SecurityMaster
 
 ET = ZoneInfo("America/New_York")
@@ -92,20 +94,51 @@ STRESS_TAGS = (
 
 
 def _acceptance_hint(f: SubmissionFiling) -> datetime | None:
+    """submissions ``acceptanceDateTime`` read as UTC. Verified on real data (2026-10-01):
+    126/126 MSFT+AAPL filings matched the header ACCEPTANCE-DATETIME (US/Eastern) converted
+    to UTC to the second. Still only a hint: the header is authoritative."""
     if not f.acceptance_raw:
         return None
     naive = datetime.fromisoformat(f.acceptance_raw.replace("Z", "")).replace(tzinfo=None)
-    return naive.replace(tzinfo=ET)  # EDGAR wall time; header confirms at ingestion
+    return naive.replace(tzinfo=UTC)
 
 
-def scan_stress_cases(cik: str, filings: list[SubmissionFiling], forms: list[str]) -> StressScan:
+@dataclass(frozen=True)
+class _Row:
+    accession: str
+    form: str
+    filing_date: date
+    report_date: date | None
+    accepted: datetime | None
+
+
+def scan_stress_cases(
+    cik: str, filings: list[SubmissionFiling], forms: list[str], coverage_start: date
+) -> StressScan:
+    """Pre-ingestion selection from submissions metadata (acceptance = hint)."""
+    rows = [
+        _Row(f.accession_number, f.form, f.filing_date, f.report_date, _acceptance_hint(f))
+        for f in filings
+        if f.form in forms and f.filing_date >= coverage_start
+    ]
+    return _scan(cik, rows)
+
+
+def scan_ingested(session: Session, cik: str) -> StressScan:
+    """Post-ingestion tags from the archived HEADER acceptance (authoritative)."""
+    rows = [
+        _Row(f.accession_number, f.form, f.filed_date, f.report_period, f.accepted_at)
+        for f in session.scalars(select(SecFiling).where(SecFiling.cik == cik10(cik)))
+    ]
+    return _scan(cik, rows)
+
+
+def _scan(cik: str, rows: list[_Row]) -> StressScan:
     cal = get_calendar("XNYS")
     scan = StressScan(cik10(cik))
     periods: dict[tuple[str, date], list[str]] = defaultdict(list)
-    for f in filings:
-        if f.form not in forms:
-            continue
-        acc = f.accession_number
+    for f in rows:
+        acc = f.accession
         base = f.form.removesuffix("/A")
         if base in ("10-K", "10-Q"):
             scan.by_tag[base].append(acc)
@@ -113,18 +146,18 @@ def scan_stress_cases(cik: str, filings: list[SubmissionFiling], forms: list[str
             scan.by_tag["amendment"].append(acc)
         if f.report_date:
             periods[(base, f.report_date)].append(acc)
-        hint = _acceptance_hint(f)
-        if hint is None:
+        if f.accepted is None:
             continue
-        day = hint.date()
-        if hint.date() < f.filing_date:
+        local = f.accepted.astimezone(ET)
+        day = local.date()
+        if day < f.filing_date:
             scan.by_tag["filing_date_after_acceptance_day"].append(acc)
         if not cal.is_session(day):
             continue
         open_, close = cal.session_open(day), cal.session_close(day)
-        if hint < open_:
+        if f.accepted < open_:
             scan.by_tag["pre_market"].append(acc)
-        elif hint < close:
+        elif f.accepted < close:
             scan.by_tag["intraday"].append(acc)
         else:
             scan.by_tag["after_close"].append(acc)

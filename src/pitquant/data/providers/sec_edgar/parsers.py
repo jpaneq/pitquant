@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
@@ -218,6 +219,7 @@ def parse_xbrl_instance(data: bytes) -> dict[InstanceKey, float]:
         elif measures:
             units[u.attrib["id"]] = measures[0]
     out: dict[InstanceKey, float] = {}
+    precision: dict[InstanceKey, float] = {}
     for el in root:
         ctx_id, unit_id = el.attrib.get("contextRef"), el.attrib.get("unitRef")
         if not ctx_id or not unit_id or ctx_id not in contexts or el.text is None:
@@ -231,5 +233,32 @@ def parse_xbrl_instance(data: bytes) -> dict[InstanceKey, float]:
         except ValueError:
             continue
         start, end = contexts[ctx_id]
-        out[(taxonomy, concept, start, end, units.get(unit_id, unit_id))] = val
+        key = (taxonomy, concept, start, end, units.get(unit_id, unit_id))
+        dec = _decimals(el.attrib.get("decimals"))
+        if key not in out:
+            out[key], precision[key] = val, dec
+            continue
+        # XBRL allows the same fact reported more than once at different precision
+        # (e.g. 25808000000 @ -6 in a statement and 25800000000 @ -8 in a note). They must
+        # agree once rounded to the coarser precision; keep the most precise value.
+        prev, prev_dec = out[key], precision[key]
+        if math.isnan(prev):
+            continue
+        coarse = min(dec, prev_dec)
+        if not math.isinf(coarse) and _round(prev, coarse) != _round(val, coarse):
+            out[key] = math.nan  # inconsistent duplicates: nothing can be validated
+        elif math.isinf(coarse) and prev != val:
+            out[key] = math.nan
+        elif dec > prev_dec:
+            out[key], precision[key] = val, dec
     return out
+
+
+def _decimals(raw: str | None) -> float:
+    if raw is None or raw.strip().upper() == "INF":
+        return math.inf
+    return float(int(raw))
+
+
+def _round(v: float, decimals: float) -> float:
+    return round(v, int(decimals))

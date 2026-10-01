@@ -25,7 +25,7 @@ import pandas as pd
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from pitquant.core.timeutils import require_aware
+from pitquant.core.timeutils import require_aware, utc_now
 from pitquant.data.calendars.market_calendar import get_calendar
 from pitquant.data.point_in_time.engine import FactKey, facts_as_of
 from pitquant.db.models import DataQualityIssue, FundamentalFact, RawSourceArchive, SecFiling
@@ -224,6 +224,9 @@ def explain_fact(
             continue
         if cutoff is not None and issue.detected_at > cutoff:
             continue
+        resolved_by = cutoff or utc_now()
+        if issue.resolved_at is not None and issue.resolved_at <= resolved_by:
+            continue  # rejected once, accepted later (e.g. parser fix): not a reason now
         out.not_known.append(
             NotKnown(
                 f"rejected:{issue.check_name}:{issue.issue_id}",

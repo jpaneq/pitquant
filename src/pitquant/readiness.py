@@ -413,7 +413,9 @@ def data_readiness(session: Session, settings: Settings) -> ReadinessReport:
     issues = Counter(
         name
         for name, sid in session.execute(
-            select(DataQualityIssue.check_name, DataQualityIssue.security_id)
+            select(DataQualityIssue.check_name, DataQualityIssue.security_id).where(
+                DataQualityIssue.resolved_at.is_(None)
+            )
         )
         if sid not in synthetic
     )
