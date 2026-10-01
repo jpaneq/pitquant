@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: pitquant
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      POSTGRES_DB: pitquant
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pitquant"]
+      interval: 5s
+      retries: 10
+  api:
+    build: .
+    environment:
+      PITQUANT_DATABASE_URL: postgresql+psycopg://pitquant:${POSTGRES_PASSWORD:-change-me}@db:5432/pitquant
+    ports: ["127.0.0.1:8000:8000"]
+    depends_on:
+      db: {condition: service_healthy}
+    volumes: [./data:/app/data]
+  demo:
+    # Self-contained demo on in-memory SQLite with SYNTHETIC data only.
+    build: .
+    environment:
+      PITQUANT_DEMO: "1"
+    command: ["uvicorn", "pitquant.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports: ["127.0.0.1:8001:8000"]
+    profiles: ["demo"]
+volumes:
+  pgdata:

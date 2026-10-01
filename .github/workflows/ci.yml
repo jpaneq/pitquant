@@ -1,0 +1,35 @@
+name: ci
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: {POSTGRES_USER: pit, POSTGRES_PASSWORD: pit, POSTGRES_DB: pit}
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U pit" --health-interval 5s --health-retries 10
+    env:
+      PITQUANT_PG_URL: postgresql+psycopg://pit:pit@localhost:5432/pit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11", cache: pip}
+      - run: pip install -e ".[dev,postgres]"
+      - name: Lint
+        run: ruff check src tests migrations scripts && ruff format --check src tests migrations scripts
+      - name: Type check
+        run: mypy
+      - name: Point-in-time / anti-leakage tests (must never be skipped)
+        run: pytest -m pit
+      - name: Unit + property + integration tests
+        run: pytest
+      - name: Migration matches models
+        run: |
+          PITQUANT_DATABASE_URL=$PITQUANT_PG_URL alembic upgrade head
+          PITQUANT_DATABASE_URL=$PITQUANT_PG_URL alembic check
+          PITQUANT_DATABASE_URL=$PITQUANT_PG_URL alembic downgrade base
+      - name: Docker build
+        run: docker build -t pitquant:ci .

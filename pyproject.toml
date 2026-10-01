@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pitquant"
+version = "0.1.0"
+description = "Point-in-time equity analysis, scoring and backtesting platform"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+    "pydantic>=2.6",
+    "pydantic-settings>=2.2",
+    "pyyaml>=6.0",
+    "pandas>=2.2",
+    "polars>=1.0",
+    "pyarrow>=15",
+    "duckdb>=1.0",
+    "exchange_calendars>=4.5",
+    "fastapi>=0.110",
+    "structlog>=24.1",
+]
+
+[project.optional-dependencies]
+postgres = ["psycopg[binary]>=3.1"]
+orchestration = ["prefect>=3.0"]
+ml = ["scikit-learn>=1.4", "xgboost>=2.0", "mlflow>=2.12"]
+dev = ["pytest>=8", "hypothesis>=6.100", "httpx>=0.27", "mypy>=1.10", "ruff>=0.5", "uvicorn>=0.29"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pitquant"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+addopts = "-q --strict-markers"
+markers = [
+    "pit: point-in-time / anti-leakage tests (must never be skipped)",
+    "postgres: requires a live PostgreSQL (CI service)",
+]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "DTZ", "SIM", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["DTZ001"]
+"migrations/**" = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+mypy_path = "src"
+packages = ["pitquant"]
+plugins = ["pydantic.mypy"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "pitquant.jobs.flows"
+disallow_untyped_decorators = false
