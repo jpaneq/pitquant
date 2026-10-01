@@ -244,7 +244,8 @@ def explain_fact(
             out.not_known.append(
                 NotKnown(
                     f"superseded_by:{chosen.fact_id}",
-                    f"a later version ({chosen.accession_number}, available "
+                    f"a later version ({out.known.accession_number if out.known else '?'}, "
+                    "available "
                     f"{chosen.available_at.isoformat()}) was also known at as_of",
                     prov,
                 )
