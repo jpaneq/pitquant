@@ -5,7 +5,7 @@ Generado con `scripts/build_ibex_real.py` (ADR-0017, ADR-0020). Fuentes:
 - Composición vigente observada el 2026-10-01: **transcripción** de páginas oficiales renderizadas por JavaScript — `9d2f010701a50c42de9d5d5bcac6fd3aa4b57cb253b1cd7533740c78b159c28d`. Por eso el build es PROVISIONAL_RESEARCH_SOURCE.
 - Identidad: 33 snapshots semestrales ANCV de la CNMV (2010-06-30 → 2026-06-30), hash del conjunto `e22b3703e8f78e7988c05a1a9e4957f7b3ce6570d9735fa06d46c925f1b2efca`.
 
-Build `9a6aeaa0-d168-428e-903a-7b73b8a80274`: estado **ok**, 334 eventos, 133 intervalos. Run de identidad `2c69abd9-15d7-409a-b0e6-5ddaa92eee46` (`identity-engine-1`).
+Build `8f4716ed-5562-4368-84f9-36e11fc0ef11`: estado **ok**, 334 eventos, 133 intervalos. Run de identidad `52ff0be6-2b4c-48ea-bdb3-472dd9ee7222` (`identity-engine-1`).
 
 ## Identidad IBEX 2011+ (periodo canónico V1, desde 2011-01-01)
 
@@ -28,6 +28,12 @@ ISIN del motor en 2026-06-30 frente a la composición BME observada el 2026-10-0
 |---|---|---|
 | FER | NL0015001FS8 | — (sin ISIN probado) |
 | MTS | LU1598757687 | — (sin ISIN probado) |
+
+### Fechas backtestables (fallo cerrado por fecha)
+
+`backtest_universe` en el primer día hábil de cada mes desde 2011-01-01: **0/190 fechas pasan**. Basta UN miembro sin identidad probada para que la fecha falle (descartarlo sería sesgo de supervivencia).
+
+Códigos que bloquean (número de fechas): MTS (190), FER (46), ABG.P (25), GRF (6), REE (6), PHM (3)
 
 ## Las 7 filas sin marcador de leyenda
 

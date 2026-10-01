@@ -158,13 +158,28 @@ def run_identity_resolution(
         pre_spans,
         date.min,
     )
+    ihash = content_hash(
+        [
+            inputs_hash,
+            *(f"{o.code}:{o.isin}:{o.source_hash}" for o in official),
+            *(f"{k}>{v}" for k, v in sorted(issuer_links.items())),
+        ]
+    )
+    same = session.scalars(
+        select(IdentityResolutionRun).where(
+            IdentityResolutionRun.build_id == build_id,
+            IdentityResolutionRun.engine_version == ENGINE_VERSION,
+            IdentityResolutionRun.inputs_hash == ihash,
+            IdentityResolutionRun.canonical_start == canonical_start,
+        )
+    ).first()
+    if same is not None:  # deterministic engine, same inputs: reuse (append-only, idempotent)
+        return IdentityRunResult(same, raw, spans, metrics, metrics_pre)
     run = IdentityResolutionRun(
         index_code=index_code,
         build_id=build_id,
         engine_version=ENGINE_VERSION,
-        inputs_hash=content_hash(
-            [inputs_hash, *(f"{o.code}:{o.isin}:{o.source_hash}" for o in official)]
-        ),
+        inputs_hash=ihash,
         canonical_start=canonical_start,
         metrics={"canonical": metrics, "pre_canonical": metrics_pre},
     )
@@ -172,13 +187,17 @@ def run_identity_resolution(
     session.flush()
     sm = SecurityMaster(session)
     proven: dict[tuple[str, str], list[tuple[date, date | None]]] = defaultdict(list)
-    for mid, segs in raw.items():
+    owners: dict[str, str] = {}  # ISIN -> the ONE security that owns it (first proven)
+    for mid in sorted(raw, key=lambda k: (spans[k].effective_from, k)):
+        segs = raw[mid]
         iv = session.get_one(IndexMembership, mid)
         for seg in [x for s in segs for x in _split_at(s, canonical_start)]:
             sid: str | None = None
             issuer_id: str | None = None
             if seg.status in BACKTESTABLE and seg.isin:
-                sid = _owner_of(session, seg.isin) or iv.security_id
+                if seg.isin not in owners:
+                    owners[seg.isin] = _owner_of(session, seg.isin) or iv.security_id
+                sid = owners[seg.isin]
                 sec = session.get_one(Security, sid)
                 last = engine.ix.latest_line(seg.isin)
                 issuer_id = _issuer_for(

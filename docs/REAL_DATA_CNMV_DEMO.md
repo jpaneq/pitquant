@@ -6,7 +6,7 @@ Concepto `I2235[SegmentosIngresos=IngresosOrdinariosClientesExternos]` a 30-06-2
 
 ## as_of 2017-07-27T17:30:00+02:00
 ```
-I2235[SegmentosIngresos=IngresosOrdinariosClientesExternos] @ 2017-06-30 for 1b8d4885-154e-434b-bfb4-34a24086d797 (ticker then: ENG) as of 2017-07-27T15:30:00+00:00
+I2235[SegmentosIngresos=IngresosOrdinariosClientesExternos] @ 2017-06-30 for ce79cc0a-00dd-4bcb-a653-9909fe94aa72 (ticker then: ENG) as of 2017-07-27T15:30:00+00:00
   identity    ISIN on that day: ES0130960018 (proven 2010-06-30..open)
   identity    issuer ENAGAS, S.A. (CIF A-28294726 [CNMV IFI page (NIF field)])
 KNOWN: nothing — no version was available at that instant.
@@ -16,7 +16,7 @@ NOT KNOWN: 682573000.0 from CNMV nreg 2018085463 — available_after_as_of: avai
 
 ## as_of 2018-07-17T17:30:00+02:00
 ```
-I2235[SegmentosIngresos=IngresosOrdinariosClientesExternos] @ 2017-06-30 for 1b8d4885-154e-434b-bfb4-34a24086d797 (ticker then: ENG) as of 2018-07-17T15:30:00+00:00
+I2235[SegmentosIngresos=IngresosOrdinariosClientesExternos] @ 2017-06-30 for ce79cc0a-00dd-4bcb-a653-9909fe94aa72 (ticker then: ENG) as of 2018-07-17T15:30:00+00:00
   identity    ISIN on that day: ES0130960018 (proven 2010-06-30..open)
   identity    issuer ENAGAS, S.A. (CIF A-28294726 [CNMV IFI page (NIF field)])
 KNOWN: 688034000.0 EUR (ipp_ge@2016-06-01:I2235[SegmentosIngresos=IngresosOrdinariosClientesExternos] ..2017-06-30, 2017 S1)
@@ -24,14 +24,14 @@ KNOWN: 688034000.0 EUR (ipp_ge@2016-06-01:I2235[SegmentosIngresos=IngresosOrdina
   document    https://www.cnmv.es/Portal/AlDia/DetalleIFIAlDia?nreg=2017082262
   accepted_at - (header)
   available   2017-07-28T07:00:00+00:00 (DATE_ONLY: next XMAD open after end of latest(publication, modifications))
-  parser      cnmv-ipp-3  header sha256 93a9897b3c5c3fe7f4aef0311a17b246cb397ad452319ef4233a8fa73c6a8b86
+  parser      cnmv-ipp-3  header sha256 cfc674b5d01075d4b2c1c842db9cda14f030daae7466c2de9b98192a2b7d2068
   xbrl sha256 c87ea2b3558d001907397742541fceb3604b95f1a85bc430cfcf1603df3bf77a
 NOT KNOWN: 682573000.0 from CNMV nreg 2018085463 — available_after_as_of: available_at 2018-07-18T07:00:00+00:00 > as_of (accepted -)
 ```
 
 ## as_of 2018-07-18T09:00:00+02:00
 ```
-I2235[SegmentosIngresos=IngresosOrdinariosClientesExternos] @ 2017-06-30 for 1b8d4885-154e-434b-bfb4-34a24086d797 (ticker then: ENG) as of 2018-07-18T07:00:00+00:00
+I2235[SegmentosIngresos=IngresosOrdinariosClientesExternos] @ 2017-06-30 for ce79cc0a-00dd-4bcb-a653-9909fe94aa72 (ticker then: ENG) as of 2018-07-18T07:00:00+00:00
   identity    ISIN on that day: ES0130960018 (proven 2010-06-30..open)
   identity    issuer ENAGAS, S.A. (CIF A-28294726 [CNMV IFI page (NIF field)])
 KNOWN: 682573000.0 EUR (ipp_ge@2016-06-01:I2235[SegmentosIngresos=IngresosOrdinariosClientesExternos] ..2017-06-30, 2018 S1)
@@ -39,7 +39,7 @@ KNOWN: 682573000.0 EUR (ipp_ge@2016-06-01:I2235[SegmentosIngresos=IngresosOrdina
   document    https://www.cnmv.es/Portal/AlDia/DetalleIFIAlDia?nreg=2018085463
   accepted_at - (header)
   available   2018-07-18T07:00:00+00:00 (DATE_ONLY: next XMAD open after end of publication date)
-  parser      cnmv-ipp-3  header sha256 456798cc70947c3f38f43abb5afd8ece414e08f29ed4f84f5b857c9499ab2d62
+  parser      cnmv-ipp-3  header sha256 eee463890aa0480936d91f84d52949dd7732accad4046fb00f42ff829e6be015
   xbrl sha256 734fcffab760dc70db541b1c21850e0e0bdb63b1f97a6925ba2417f6af5326f3
-NOT KNOWN: 688034000.0 from CNMV nreg 2017082262 — superseded_by:9076256b-4524-4fb9-a6d4-1ef0428739ce: a later version (CNMV nreg 2018085463, available 2018-07-18T07:00:00+00:00) was also known at as_of
+NOT KNOWN: 688034000.0 from CNMV nreg 2017082262 — superseded_by:6ea831dc-5f94-4284-add0-30bf85e73f35: a later version (CNMV nreg 2018085463, available 2018-07-18T07:00:00+00:00) was also known at as_of
 ```

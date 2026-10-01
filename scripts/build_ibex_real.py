@@ -271,6 +271,41 @@ def main() -> int:
         ]
         if calib:
             L += ["| Código | ISIN BME | Motor |", "|---|---|---|", *calib, ""]
+        # date-level: backtest_universe fails closed if ANY member is not proven
+        from collections import Counter
+
+        from pitquant.data.calendars.market_calendar import get_calendar
+        from pitquant.universe.index_membership import IdentityUnresolvedError
+
+        firsts = get_calendar("XMAD").first_sessions_of_months(canon, current.observed_on)
+        ok_dates, blockers = 0, Counter()
+        for d in firsts:
+            try:
+                u.backtest_universe("IBEX35", d, rep.build_id, canonical_start=canon)
+                ok_dates += 1
+            except IdentityUnresolvedError:
+                for mm in u.universe("IBEX35", d, rep.build_id):
+                    seg = next(
+                        (
+                            x
+                            for x in res.segments.get(mm.membership_id or -1, [])
+                            if x.start <= d and (x.end is None or d < x.end)
+                        ),
+                        None,
+                    )
+                    if seg is None or seg.status not in BACKTESTABLE:
+                        blockers[sm.ticker_as_of(mm.security_id, d) or "?"] += 1
+        L += [
+            "### Fechas backtestables (fallo cerrado por fecha)",
+            "",
+            f"`backtest_universe` en el primer día hábil de cada mes desde {canon}: "
+            f"**{ok_dates}/{len(firsts)} fechas pasan**. Basta UN miembro sin identidad "
+            "probada para que la fecha falle (descartarlo sería sesgo de supervivencia).",
+            "",
+            "Códigos que bloquean (número de fechas): "
+            + (", ".join(f"{k} ({v})" for k, v in blockers.most_common()) or "ninguno"),
+            "",
+        ]
         L += [
             "## Las 7 filas sin marcador de leyenda",
             "",

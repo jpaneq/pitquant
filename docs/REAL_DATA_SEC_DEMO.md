@@ -8,7 +8,7 @@ Generado con `scripts/gen_real_demos.py` (`pitquant explain`) sobre la base loca
 
 ## as_of 2016-07-28T16:00:00-04:00
 ```
-NetIncomeLoss @ 2016-06-30 for 00fa4a88-910c-44c7-8608-0f442eac5fa8 (ticker then: unknown) as of 2016-07-28T20:00:00+00:00
+NetIncomeLoss @ 2016-06-30 for d224cb0b-ddae-45ed-8412-9092f17db14b (ticker then: unknown) as of 2016-07-28T20:00:00+00:00
   identity    ISIN on that day: none proven
   identity    issuer not linked: issuer-level facts cannot be attributed
 KNOWN: nothing — no version was available at that instant.
@@ -19,7 +19,7 @@ NOT KNOWN: 20539000000.0 from 0001564590-18-019062 — available_after_as_of: av
 
 ## as_of 2018-08-03T11:15:00-04:00
 ```
-NetIncomeLoss @ 2016-06-30 for 00fa4a88-910c-44c7-8608-0f442eac5fa8 (ticker then: unknown) as of 2018-08-03T15:15:00+00:00
+NetIncomeLoss @ 2016-06-30 for d224cb0b-ddae-45ed-8412-9092f17db14b (ticker then: unknown) as of 2018-08-03T15:15:00+00:00
   identity    ISIN on that day: none proven
   identity    issuer not linked: issuer-level facts cannot be attributed
 KNOWN: 16798000000.0 USD (us-gaap:NetIncomeLoss 2015-07-01..2016-06-30, 2017FY)
@@ -29,13 +29,13 @@ KNOWN: 16798000000.0 USD (us-gaap:NetIncomeLoss 2015-07-01..2016-06-30, 2017FY)
   available   2017-08-03T13:30:00+00:00 (conservative_session)
   parser      sec-edgar-1  header sha256 155030c37cfb71ee5461f6cb1b05ba034df2513370802bd1c785b8da12aad8cf
   xbrl sha256 8ad519cb071368833b3dabd33c4cb3c92af2cc42b5dd71fab0c7a5a9212a1205
-NOT KNOWN: 16798000000.0 from 0001193125-16-662209 — superseded_by:9138c37d-203b-404e-b2e4-5070179d286b: a later version (0001564590-17-014900, available 2017-08-03T13:30:00+00:00) was also known at as_of
+NOT KNOWN: 16798000000.0 from 0001193125-16-662209 — superseded_by:69dc1510-88c4-41d9-bc19-16086cb026d6: a later version (0001564590-17-014900, available 2017-08-03T13:30:00+00:00) was also known at as_of
 NOT KNOWN: 20539000000.0 from 0001564590-18-019062 — available_after_as_of: available_at 2018-08-03T15:18:33+00:00 > as_of (accepted 2018-08-03T15:03:33+00:00)
 ```
 
 ## as_of 2018-08-03T11:20:00-04:00
 ```
-NetIncomeLoss @ 2016-06-30 for 00fa4a88-910c-44c7-8608-0f442eac5fa8 (ticker then: unknown) as of 2018-08-03T15:20:00+00:00
+NetIncomeLoss @ 2016-06-30 for d224cb0b-ddae-45ed-8412-9092f17db14b (ticker then: unknown) as of 2018-08-03T15:20:00+00:00
   identity    ISIN on that day: none proven
   identity    issuer not linked: issuer-level facts cannot be attributed
 KNOWN: 20539000000.0 USD (us-gaap:NetIncomeLoss 2015-07-01..2016-06-30, 2018FY)
@@ -45,8 +45,8 @@ KNOWN: 20539000000.0 USD (us-gaap:NetIncomeLoss 2015-07-01..2016-06-30, 2018FY)
   available   2018-08-03T15:18:33+00:00 (conservative_session)
   parser      sec-edgar-1  header sha256 263cafcc1b312909ced9fe9183b8def23edfd8198b373a2117d819a979feeaac
   xbrl sha256 a6def703863717bcb3c0b95505492dd5dce9b2de0ee5b427522da7e5f23e9635
-NOT KNOWN: 16798000000.0 from 0001193125-16-662209 — superseded_by:a74a1421-7910-4fc9-a64c-ca5c64aed6c2: a later version (0001564590-18-019062, available 2018-08-03T15:18:33+00:00) was also known at as_of
-NOT KNOWN: 16798000000.0 from 0001564590-17-014900 — superseded_by:a74a1421-7910-4fc9-a64c-ca5c64aed6c2: a later version (0001564590-18-019062, available 2018-08-03T15:18:33+00:00) was also known at as_of
+NOT KNOWN: 16798000000.0 from 0001193125-16-662209 — superseded_by:14c4539b-c855-4f4a-a144-54cf181859fc: a later version (0001564590-18-019062, available 2018-08-03T15:18:33+00:00) was also known at as_of
+NOT KNOWN: 16798000000.0 from 0001564590-17-014900 — superseded_by:14c4539b-c855-4f4a-a144-54cf181859fc: a later version (0001564590-18-019062, available 2018-08-03T15:18:33+00:00) was also known at as_of
 ```
 
 ### 2. Enmienda real: MSFT 10-Q/A 0001193125-12-026864
@@ -55,7 +55,7 @@ El 10-Q original (0001193125-12-017029, aceptado el 2012-01-19) **no tenía XBRL
 
 ## as_of 2012-01-26T16:00:00-05:00
 ```
-SalesRevenueNet @ 2011-12-31 for 00fa4a88-910c-44c7-8608-0f442eac5fa8 (ticker then: unknown) as of 2012-01-26T21:00:00+00:00
+SalesRevenueNet @ 2011-12-31 for d224cb0b-ddae-45ed-8412-9092f17db14b (ticker then: unknown) as of 2012-01-26T21:00:00+00:00
   identity    ISIN on that day: none proven
   identity    issuer not linked: issuer-level facts cannot be attributed
 KNOWN: nothing — no version was available at that instant.
@@ -67,7 +67,7 @@ NOT KNOWN: 20885000000.0 from 0001193125-13-310206 — available_after_as_of: av
 
 ## as_of 2012-01-27T15:30:00-05:00
 ```
-SalesRevenueNet @ 2011-12-31 for 00fa4a88-910c-44c7-8608-0f442eac5fa8 (ticker then: unknown) as of 2012-01-27T20:30:00+00:00
+SalesRevenueNet @ 2011-12-31 for d224cb0b-ddae-45ed-8412-9092f17db14b (ticker then: unknown) as of 2012-01-27T20:30:00+00:00
   identity    ISIN on that day: none proven
   identity    issuer not linked: issuer-level facts cannot be attributed
 KNOWN: 20885000000.0 USD (us-gaap:SalesRevenueNet 2011-10-01..2011-12-31, 2012Q2)
@@ -88,7 +88,7 @@ companyfacts da 0.0 como valor nominal; la instancia XBRL del propio 10-Q dice 1
 
 ## as_of 2014-12-31T16:00:00-05:00
 ```
-CommonStockParOrStatedValuePerShare @ 2014-03-29 for f9dc24da-c9f6-4bb6-8af8-6a91f7f38606 (ticker then: unknown) as of 2014-12-31T21:00:00+00:00
+CommonStockParOrStatedValuePerShare @ 2014-03-29 for cd8b8a8f-e550-49ee-86af-4370b15d03ec (ticker then: unknown) as of 2014-12-31T21:00:00+00:00
   identity    ISIN on that day: none proven
   identity    issuer not linked: issuer-level facts cannot be attributed
 KNOWN: 1e-05 USD/shares (us-gaap:CommonStockParOrStatedValuePerShare ..2014-03-29, 2014FY)
@@ -98,6 +98,6 @@ KNOWN: 1e-05 USD/shares (us-gaap:CommonStockParOrStatedValuePerShare ..2014-03-2
   available   2014-10-28T13:30:00+00:00 (conservative_session)
   parser      sec-edgar-1  header sha256 9012e5a00e197d68e151d1fa1e713ab89636f7ca0a4a53be5093f2f612350e13
   xbrl sha256 3f425ef38234796a8961f454db3818d7052f0a43fae27cf1675951f816703ac4
-NOT KNOWN: 1e-05 from 0001193125-14-277160 — superseded_by:13650264-924c-4923-9bfd-608483840626: a later version (0001193125-14-383437, available 2014-10-28T13:30:00+00:00) was also known at as_of
-NOT KNOWN: value never stored — rejected:companyfacts_xbrl_mismatch:b2441e9f-2749-474b-9e14-3ecff4407bf1: 0001193125-14-157311 CommonStockParOrStatedValuePerShare None..2014-03-29: companyfacts 0.0 != instance 1e-05
+NOT KNOWN: 1e-05 from 0001193125-14-277160 — superseded_by:4edcfbf5-d483-4bcc-8bb5-e88333180740: a later version (0001193125-14-383437, available 2014-10-28T13:30:00+00:00) was also known at as_of
+NOT KNOWN: value never stored — rejected:companyfacts_xbrl_mismatch:1b79a5e2-d883-4f29-9088-fed7192a83a5: 0001193125-14-157311 CommonStockParOrStatedValuePerShare None..2014-03-29: companyfacts 0.0 != instance 1e-05
 ```
