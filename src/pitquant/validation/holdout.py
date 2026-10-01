@@ -9,7 +9,7 @@ the dashboard. Reading them back is itself an explicit, logged operation.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from datetime import date
 from typing import Any
@@ -20,7 +20,7 @@ from sqlalchemy.orm import Session
 from pitquant.config.settings import Settings
 from pitquant.core.errors import HoldoutAccessError
 from pitquant.core.hashing import content_hash
-from pitquant.db.models import HoldoutAccessLog, HoldoutEvaluation, ModelVersion
+from pitquant.db.models import HoldoutAccessLog, HoldoutEvaluation, MembershipBuild, ModelVersion
 from pitquant.validation.splits import HoldoutAccess, HoldoutGuard
 
 MAX_CANDIDATES_WARNING = 5  # beyond this, the holdout is turning into a validation set
@@ -54,11 +54,28 @@ def evaluate_candidate_on_holdout(
     requested_by: str,
     reason: str,
     evaluate: Callable[[date, date], tuple[dict[str, Any], int]],
+    membership_build_ids: Sequence[str],
 ) -> HoldoutResult:
-    """The ONLY way to compute holdout metrics. Logged, once per frozen model version."""
+    """The ONLY way to compute holdout metrics. Logged, once per frozen model version.
+
+    ``membership_build_ids`` are the universe builds the candidate's data lineage relies
+    on. Every one must be ``eligible_for_final_model_validation`` (CANONICAL source, all
+    identities resolved); a provisional/synthetic/identity-incomplete lineage is refused
+    BEFORE the holdout is unlocked, so it leaves no evaluation behind.
+    """
     mv = session.get(ModelVersion, model_version)
     if mv is None:
         raise HoldoutAccessError(f"unknown model version {model_version}")
+    if not membership_build_ids:
+        raise HoldoutAccessError("the candidate's universe lineage (membership builds) is required")
+    for build_id in membership_build_ids:
+        b = session.get(MembershipBuild, build_id)
+        if b is None or b.status != "ok" or not b.eligible_for_final_model_validation:
+            label = "unknown" if b is None else f"{b.source_confidence}/{b.status}"
+            raise HoldoutAccessError(
+                f"build {build_id} ({label}) is not eligible for final model validation; "
+                "provisional or identity-unresolved universes cannot touch the holdout"
+            )
     if (
         session.scalars(
             select(HoldoutEvaluation).where(HoldoutEvaluation.model_version == model_version)
@@ -84,7 +101,7 @@ def evaluate_candidate_on_holdout(
     guard.unlock(
         model_version=model_version,
         model_frozen=mv.frozen,
-        reason=reason,
+        reason=f"{reason} [builds: {', '.join(sorted(membership_build_ids))}]",
         requested_by=requested_by,
     )
     metrics, n = evaluate(h.start, h.end)

@@ -11,7 +11,13 @@ from sqlalchemy.orm import Session
 
 from pitquant.config.settings import Settings
 from pitquant.core.errors import HoldoutAccessError
-from pitquant.db.models import HoldoutAccessLog, HoldoutEvaluation, ModelRow, ModelVersion
+from pitquant.db.models import (
+    HoldoutAccessLog,
+    HoldoutEvaluation,
+    MembershipBuild,
+    ModelRow,
+    ModelVersion,
+)
 from pitquant.validation.holdout import (
     evaluate_candidate_on_holdout,
     guard_analytics_range,
@@ -39,6 +45,22 @@ def _model(session: Session, version: str, frozen: bool) -> None:
     session.flush()
 
 
+def _build(session: Session, confidence: str, eligible: bool) -> str:
+    b = MembershipBuild(
+        index_code="SP500",
+        membership_source="FIXTURE",
+        source_confidence=confidence,
+        raw_source_hash="h",
+        events_hash="e",
+        n_events=0,
+        status="ok",
+        eligible_for_final_model_validation=eligible,
+    )
+    session.add(b)
+    session.flush()
+    return b.build_id
+
+
 def _eval(start: date, end: date) -> tuple[dict[str, Any], int]:
     assert (start, end) == (date(2022, 10, 1), date(2025, 9, 30))
     return {"ic_mean": 0.031, "brier": 0.247}, 1234
@@ -54,6 +76,7 @@ def test_holdout_requires_frozen_model(session: Session, settings: Settings) -> 
             requested_by="jairo",
             reason="final",
             evaluate=_eval,
+            membership_build_ids=[_build(session, "CANONICAL", True)],
         )
     assert session.scalars(select(HoldoutEvaluation)).all() == []
 
@@ -67,10 +90,11 @@ def test_holdout_evaluation_logged_and_once_per_model(session: Session, settings
         requested_by="jairo",
         reason="promotion review",
         evaluate=_eval,
+        membership_build_ids=[_build(session, "CANONICAL", True)],
     )
     assert res.metrics["ic_mean"] == 0.031 and res.candidates_evaluated_so_far == 1
     logs = session.scalars(select(HoldoutAccessLog)).all()
-    assert len(logs) == 1 and logs[0].reason == "promotion review"
+    assert len(logs) == 1 and logs[0].reason.startswith("promotion review [builds: ")
     with pytest.raises(HoldoutAccessError):  # no re-rolling the dice on the same model
         evaluate_candidate_on_holdout(
             session,
@@ -79,6 +103,7 @@ def test_holdout_evaluation_logged_and_once_per_model(session: Session, settings
             requested_by="jairo",
             reason="again",
             evaluate=_eval,
+            membership_build_ids=[_build(session, "CANONICAL", True)],
         )
     ev = read_sealed_evaluation(
         session, res.evaluation_id, requested_by="auditor", reason="committee"
@@ -98,3 +123,42 @@ def test_api_exposes_no_holdout_metrics(market_factory, settings: Settings) -> N
     app = create_app(market_factory, settings)
     paths = [getattr(r, "path", "") for r in app.routes]
     assert not any("holdout" in p.lower() for p in paths)
+
+
+@pytest.mark.parametrize(
+    ("confidence", "eligible"),
+    [
+        ("PROVISIONAL_RESEARCH_SOURCE", False),
+        ("SYNTHETIC", False),
+        ("CANONICAL", False),  # canonical source but identities unresolved
+    ],
+)
+def test_holdout_refuses_non_eligible_universe_lineage(
+    session: Session, settings: Settings, confidence: str, eligible: bool
+) -> None:
+    _model(session, "v-prov", frozen=True)
+    ok = _build(session, "CANONICAL", True)
+    bad = _build(session, confidence, eligible)
+    with pytest.raises(HoldoutAccessError, match="not eligible"):
+        evaluate_candidate_on_holdout(
+            session,
+            settings,
+            model_version="v-prov",
+            requested_by="jairo",
+            reason="final",
+            evaluate=_eval,
+            membership_build_ids=[ok, bad],
+        )
+    with pytest.raises(HoldoutAccessError, match="lineage"):
+        evaluate_candidate_on_holdout(
+            session,
+            settings,
+            model_version="v-prov",
+            requested_by="jairo",
+            reason="final",
+            evaluate=_eval,
+            membership_build_ids=[],
+        )
+    # Refused before unlocking: nothing logged, nothing evaluated.
+    assert session.scalars(select(HoldoutAccessLog)).all() == []
+    assert session.scalars(select(HoldoutEvaluation)).all() == []

@@ -42,6 +42,14 @@ class SourceConfidence(StrEnum):
     CROSSCHECK_ONLY = "CROSSCHECK_ONLY"  # Wikipedia, Kaggle, community repos: QA only
 
 
+class IdentityStatus(StrEnum):
+    """Kept separate from membership: a source can prove that "the company quoted as XYZ"
+    was a member while not proving WHICH security that was. Same ticker != same security."""
+
+    RESOLVED = "RESOLVED"
+    IDENTITY_UNRESOLVED = "IDENTITY_UNRESOLVED"
+
+
 BUILDABLE = {
     SourceConfidence.CANONICAL,
     SourceConfidence.PROVISIONAL_RESEARCH_SOURCE,
@@ -75,6 +83,17 @@ class IndexEventRecord:
     announced_at: datetime | None = None
     reason: str | None = None
     parent_source_event_id: str | None = None
+    # False when the source proves membership but not the security's identity (no ISIN /
+    # CUSIP / permanent id). Such intervals are built but flagged IDENTITY_UNRESOLVED.
+    identity_resolved: bool = True
+
+    @property
+    def identity_status(self) -> IdentityStatus:
+        return (
+            IdentityStatus.RESOLVED
+            if self.identity_resolved
+            else IdentityStatus.IDENTITY_UNRESOLVED
+        )
 
     def __post_init__(self) -> None:
         if self.announced_at is not None:
@@ -97,6 +116,10 @@ class EventSource:
     raw_source_hash: str  # SHA-256 of the archived source document(s)
     archive_id: str | None = None
     warnings: tuple[str, ...] = ()
+    # (security_key, ticker, observed_on): tickers the source states on a date for keys
+    # whose events carry no ticker (e.g. a constituent snapshot). Registered from that date
+    # only — never projected backwards.
+    ticker_observations: tuple[tuple[str, str, date], ...] = ()
 
 
 class IndexEventProvider(ABC):
@@ -129,6 +152,8 @@ class BuildReport:
     errors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     size_by_event_date: dict[str, int] = field(default_factory=dict)
+    n_identity_unresolved: int = 0
+    eligible_for_final_model_validation: bool = False
 
 
 def events_hash(events: Sequence[IndexEventRecord]) -> str:
@@ -169,6 +194,7 @@ def persist_events(
                 source_confidence=src.confidence.value,
                 raw_source_hash=src.raw_source_hash,
                 archive_id=src.archive_id,
+                identity_status=e.identity_status.value,
             )
             session.add(existing)
             session.flush()
@@ -284,8 +310,22 @@ def build_membership(
     for sid, (start, ticker) in open_.items():
         intervals.append({"sid": sid, "start": start, "end": None, "ticker": ticker})
 
+    n_unresolved = sum(1 for iv in intervals if not iv["start"].identity_resolved)
+    if n_unresolved:
+        warnings.append(
+            f"{n_unresolved} interval(s) IDENTITY_UNRESOLVED: membership known, security not "
+            "proven — excluded from backtests until resolved"
+        )
     build.status = "failed" if errors else "ok"
-    build.report = {"errors": errors[:200], "warnings": warnings, "n_intervals": len(intervals)}
+    build.eligible_for_final_model_validation = (
+        not errors and src.confidence is SourceConfidence.CANONICAL and n_unresolved == 0
+    )
+    build.report = {
+        "errors": errors[:200],
+        "warnings": warnings,
+        "n_intervals": len(intervals),
+        "n_identity_unresolved": n_unresolved,
+    }
     session.add(build)
     session.flush()
     if errors and not allow_failed:
@@ -310,11 +350,20 @@ def build_membership(
                     exclusion_event_id=stored[end.source_event_id].event_id if end else None,
                     source_confidence=src.confidence.value,
                     raw_source_hash=src.raw_source_hash,
+                    identity_status=first.identity_status.value,
                 )
             )
         session.flush()
     return BuildReport(
-        build.build_id, build.status, len(events), len(intervals), errors, warnings, sizes
+        build.build_id,
+        build.status,
+        len(events),
+        len(intervals),
+        errors,
+        warnings,
+        sizes,
+        n_unresolved,
+        build.eligible_for_final_model_validation,
     )
 
 

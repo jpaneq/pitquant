@@ -237,3 +237,39 @@ def test_timestamps_round_trip_as_utc(pg: Engine) -> None:
     with Session(pg) as s:
         row = s.get_one(FeatureSnapshotRow, "snap-1")
         assert row.as_of == T and row.as_of.utcoffset().total_seconds() == 0  # type: ignore[union-attr]
+
+
+def test_identity_status_check_and_default(pg: Engine) -> None:
+    with pg.connect() as c:
+        status = c.execute(
+            text("SELECT identity_status FROM index_events WHERE event_id='ev-1'")
+        ).scalar_one()
+    assert status == "RESOLVED"  # server default for rows predating 0002
+    with pytest.raises(DBAPIError), pg.begin() as c:
+        c.execute(
+            text(
+                "INSERT INTO index_events (event_id, index_code, event_type, effective_date, "
+                "membership_source, source_event_id, source_confidence, raw_source_hash, "
+                "ingested_at, identity_status) VALUES ('ev-bad', 'X', 'INDEX_ADD', "
+                "'2020-01-02', 'S', 'bad', 'CANONICAL', 'h', now(), 'PROBABLY_SAME')"
+            )
+        )
+
+
+def test_new_build_not_eligible_by_default(pg: Engine) -> None:
+    with pg.begin() as c:
+        c.execute(
+            text(
+                "INSERT INTO membership_builds (build_id, index_code, membership_source, "
+                "source_confidence, raw_source_hash, events_hash, n_events, status, report, "
+                "built_at) VALUES ('b-default', 'X', 'S', 'CANONICAL', 'h', 'e', 0, 'ok', "
+                "'{}', now())"
+            )
+        )
+        eligible = c.execute(
+            text(
+                "SELECT eligible_for_final_model_validation FROM membership_builds "
+                "WHERE build_id='b-default'"
+            )
+        ).scalar_one()
+    assert eligible is False

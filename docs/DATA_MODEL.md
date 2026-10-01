@@ -178,9 +178,11 @@ Tablas: **35**.
 | `source_confidence` | VARCHAR(40) | no |  |
 | `raw_source_hash` | VARCHAR(64) | no |  |
 | `archive_id` | VARCHAR(36) | sí | FK→`raw_source_archive.archive_id` |
+| `identity_status` | VARCHAR(30) | no |  |
 | `ingested_at` | DATETIME | no |  |
 
 - CHECK `event_type IN ('INDEX_ADD','INDEX_DELETE','TICKER_CHANGE','ORDINARY_REVIEW','EXTRAORDINARY_REVIEW','INITIAL_SNAPSHOT')`
+- CHECK `identity_status IN ('RESOLVED','IDENTITY_UNRESOLVED')`
 - INDEX ix_index_events_seq (index_code, membership_source, effective_date)
 - UNIQUE (membership_source, source_event_id, raw_source_hash)
 
@@ -196,6 +198,7 @@ Tablas: **35**.
 | `events_hash` | VARCHAR(64) | no |  |
 | `n_events` | INTEGER | no |  |
 | `status` | VARCHAR(20) | no |  |
+| `eligible_for_final_model_validation` | BOOLEAN | no |  |
 | `report` | JSON | no |  |
 | `built_at` | DATETIME | no |  |
 
@@ -218,8 +221,10 @@ Tablas: **35**.
 | `exclusion_event_id` | VARCHAR(36) | sí | FK→`index_events.event_id` |
 | `source_confidence` | VARCHAR(40) | no |  |
 | `raw_source_hash` | VARCHAR(64) | no |  |
+| `identity_status` | VARCHAR(30) | no |  |
 
 - CHECK `effective_to IS NULL OR effective_to > effective_from`
+- CHECK `identity_status IN ('RESOLVED','IDENTITY_UNRESOLVED')`
 - INDEX ix_membership_asof (build_id, index_code, effective_from, effective_to)
 
 ## Mercado

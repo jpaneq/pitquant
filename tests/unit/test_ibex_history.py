@@ -19,7 +19,7 @@ from pitquant.db.models import IndexEvent, IndexMembership, TickerHistory
 from pitquant.jobs.index_ingest import ingest_event_source
 from pitquant.security_master.service import SecurityMaster
 from pitquant.universe.events import BuildReport, UnresolvedSourceEventError
-from pitquant.universe.index_membership import IndexUniverse
+from pitquant.universe.index_membership import IdentityUnresolvedError, IndexUniverse
 from pitquant.universe.sources.bme import (
     BMEAviso,
     BMEHistoryRow,
@@ -292,3 +292,94 @@ def test_archive_store_verifies_hashes(tmp_path: object) -> None:
     path.write_bytes(b"tampered")
     with pytest.raises(DataQualityError):
         store.get(sha)
+
+
+# ── identity vs membership (fail closed) ─────────────────────────────────────
+
+
+def test_membership_without_isin_is_identity_unresolved(
+    session: Session, ibex: BuildReport
+) -> None:
+    u = IndexUniverse(session)
+    members = u.universe("IBEX35", D_ORD)
+    assert len(members) == 35
+    assert {m.identity_status for m in members} == {"IDENTITY_UNRESOLVED"}
+    assert ibex.status == "ok" and not ibex.eligible_for_final_model_validation
+    with pytest.raises(IdentityUnresolvedError):
+        u.backtest_universe("IBEX35", D_ORD)
+
+
+def _isins(on: date, codes: tuple[str, ...]) -> dict[tuple[str, date], str]:
+    return {(c, on): f"ES0FIX{i:06d}" for i, c in enumerate(codes)}
+
+
+def test_official_isins_resolve_identity(session: Session, settings: Settings) -> None:
+    ids = _isins(D_INIT, BASE) | {("N01", D_ORD): "ES0FIXN00001", ("N03", D_EFF): "ES0FIXN00003"}
+    avs = avisos()
+    avs[0] = BMEAviso(
+        "AV-EXTRA",
+        datetime(2016, 3, 10, 18, 0, tzinfo=UTC),
+        D_EXTRA,
+        RowStyle.EXTRAORDINARY,
+        additions=("N02",),
+        deletions=("T02",),
+        identifiers={"N02": "ES0FIXN00002"},
+    )
+    src = events_from_rows(rows(), avs, raw_source_hash="fixture-bme-isin", identities=ids)
+    rep = ingest_event_source(
+        session,
+        src,
+        exchange="XMAD",
+        currency="EUR",
+        country="ES",
+        expected_size=settings.universe("IBEX35").expected_size,
+    )
+    assert rep.n_identity_unresolved == 0 and rep.eligible_for_final_model_validation
+    u = IndexUniverse(session)
+    assert len(u.backtest_universe("IBEX35", D_EFF)) == 35  # ticker changes keep identity
+
+
+REENTRY = (
+    BMEHistoryRow(D_INIT, BASE, (), RowStyle.UNKNOWN, "p1:r1"),
+    BMEHistoryRow(D_ORD, ("N01",), ("T05",), RowStyle.ORDINARY, "p2:r1"),
+    BMEHistoryRow(D_EFF, ("T05",), ("N01",), RowStyle.ORDINARY, "p4:r1"),
+)
+
+
+def test_reentry_without_isin_is_a_new_unresolved_identity(
+    session: Session, settings: Settings
+) -> None:
+    src = events_from_rows(REENTRY, (), raw_source_hash="fixture-bme-reentry")
+    assert any("re-entry without ISIN" in w for w in src.warnings)
+    ingest_event_source(
+        session,
+        src,
+        exchange="XMAD",
+        currency="EUR",
+        country="ES",
+        expected_size=settings.universe("IBEX35").expected_size,
+    )
+    first = _sid(session, "T05", D_INIT)
+    again = _sid(session, "T05", D_EFF)
+    assert first != again  # same ticker is NOT assumed to be the same security
+    u = IndexUniverse(session)
+    assert first in u.universe_ids("IBEX35", D_INIT)
+    assert first not in u.universe_ids("IBEX35", D_EFF)
+    assert again in u.universe_ids("IBEX35", D_EFF)
+
+
+def test_reentry_with_same_isin_is_the_same_security(session: Session, settings: Settings) -> None:
+    ids = _isins(D_INIT, BASE) | {("N01", D_ORD): "ES0FIXN00001"}
+    ids[("T05", D_EFF)] = ids[("T05", D_INIT)]
+    src = events_from_rows(REENTRY, (), raw_source_hash="fixture-bme-reentry-isin", identities=ids)
+    assert not any("re-entry" in w for w in src.warnings)
+    rep = ingest_event_source(
+        session,
+        src,
+        exchange="XMAD",
+        currency="EUR",
+        country="ES",
+        expected_size=settings.universe("IBEX35").expected_size,
+    )
+    assert rep.n_identity_unresolved == 0
+    assert _sid(session, "T05", D_INIT) == _sid(session, "T05", D_EFF)

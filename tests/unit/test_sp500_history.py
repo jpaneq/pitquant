@@ -14,7 +14,7 @@ from pitquant.db.models import RawSourceArchive
 from pitquant.jobs.index_ingest import ingest_event_source
 from pitquant.security_master.service import SecurityMaster
 from pitquant.universe.events import MembershipSequenceError, SourceConfidence, cross_check
-from pitquant.universe.index_membership import IndexUniverse
+from pitquant.universe.index_membership import IdentityUnresolvedError, IndexUniverse
 from pitquant.universe.sources.spdji import (
     SPDJIAnnouncementReconstructionProvider,
     SPDJILicensedFileProvider,
@@ -91,12 +91,37 @@ def test_reconstruction_provider_is_provisional(session: Session, tmp_path: Path
     _ingest(session, src)
     u = IndexUniverse(session)
     assert u.source_status("SP500") == "PROVISIONAL_RESEARCH_SOURCE"
-    # Reversing the announcements recovers the deleted company in the past.
-    early = {
-        SecurityMaster(session).ticker_as_of(s, date(2011, 1, 3))
-        for s in u.universe_ids("SP500", date(2011, 1, 3))
-    }
-    assert early == {"AAA", "BBB", "CCX"}  # snapshot ticker used for the reconstructed history
+    # Reversing the announcements recovers the deleted company in the past ...
+    early = u.universe("SP500", date(2011, 1, 3))
+    assert len(early) == 3
+    # ... but neither its identity nor its ticker at that date is proven: the modern
+    # (snapshot) ticker is NOT projected backwards and every interval is unresolved.
+    assert {m.identity_status for m in early} == {"IDENTITY_UNRESOLVED"}
+    sm = SecurityMaster(session)
+    assert {sm.ticker_as_of(m.security_id, date(2011, 1, 3)) for m in early} == {None}
+    # Tickers appear only from the date a source states them.
+    aaa = sm.resolve("AAA", "XNYS", date(2015, 1, 2))
+    assert sm.ticker_as_of(aaa, date(2015, 1, 1)) is None
+    bbb = sm.resolve("BBB", "XNYS", date(2012, 3, 9))  # observed in announcement A1
+    assert bbb in u.universe_ids("SP500", date(2011, 1, 3))
+    # Fail closed for backtests; never eligible for the holdout / final validation.
+    with pytest.raises(IdentityUnresolvedError):
+        u.backtest_universe("SP500", date(2011, 1, 3))
+    build = u.active_build("SP500")
+    assert build.eligible_for_final_model_validation is False
+    assert build.report["n_identity_unresolved"] == 3
+    # A member added by a dated announcement (with identifier) is resolved.
+    later = {m.identity_status for m in u.universe("SP500", date(2013, 1, 2))}
+    assert later == {"IDENTITY_UNRESOLVED", "RESOLVED"}
+
+
+def test_licensed_build_is_eligible_and_backtestable(session: Session, tmp_path: Path) -> None:
+    p = SPDJILicensedFileProvider(LICENSED, "licensed://spdji/h", ArchiveStore(tmp_path))
+    rep = _ingest(session, p.load(session))
+    assert rep.eligible_for_final_model_validation and rep.n_identity_unresolved == 0
+    u = IndexUniverse(session)
+    assert len(u.backtest_universe("SP500", date(2011, 1, 3))) == 3
+    assert u.is_eligible_for_final_validation(rep.build_id)
 
 
 def test_inconsistent_announcements_fail_loudly(session: Session, tmp_path: Path) -> None:

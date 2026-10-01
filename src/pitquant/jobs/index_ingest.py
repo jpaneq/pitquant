@@ -38,7 +38,12 @@ def ingest_event_source(
     ).first()
     if existing is not None:  # same bytes, same parse -> same build (idempotent)
         return BuildReport(
-            existing.build_id, "ok", existing.n_events, int(existing.report.get("n_intervals", 0))
+            existing.build_id,
+            "ok",
+            existing.n_events,
+            int(existing.report.get("n_intervals", 0)),
+            n_identity_unresolved=int(existing.report.get("n_identity_unresolved", 0)),
+            eligible_for_final_model_validation=existing.eligible_for_final_model_validation,
         )
     keys, reg = register_event_securities(
         session, src, exchange=exchange, currency=currency, country=country

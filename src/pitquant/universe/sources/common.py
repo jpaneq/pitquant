@@ -49,36 +49,29 @@ def register_event_securities(
         for r in session.scalars(select(ProviderKey).where(ProviderKey.source_id == source_id))
     }
     sm = SecurityMaster(session)
-    first_seen: dict[str, tuple[date, str]] = {}
-    for e in sorted(src.events, key=lambda x: x.effective_date):
-        if e.security_key and e.security_key not in first_seen and e.ticker:
+    first_seen: dict[str, tuple[date, str | None]] = {}
+    for e in sorted(src.events, key=lambda x: (x.effective_date, x.ticker is None)):
+        if e.security_key and e.security_key not in first_seen:
             first_seen[e.security_key] = (e.effective_date, e.ticker)
-    for key, (d0, ticker) in sorted(first_seen.items(), key=lambda kv: kv[1][0]):
+    observed = {k: (t, d) for k, t, d in src.ticker_observations}
+    for key, (d0, ticker) in sorted(first_seen.items(), key=lambda kv: (kv[1][0], kv[0])):
         if key in keys:
             rep.reused += 1
             continue
-        clash = session.scalars(
-            select(TickerHistory).where(
-                TickerHistory.ticker == ticker.upper(),
-                TickerHistory.exchange == exchange,
-                TickerHistory.valid_from <= d0,
-                or_(TickerHistory.valid_to.is_(None), TickerHistory.valid_to > d0),
-            )
-        ).first()
-        if clash is not None:
-            clash.valid_to = d0
-            rep.warnings.append(
-                f"ticker {ticker} reassigned on {d0}: closed for {clash.security_id} "
-                "(verify with D-05)"
-            )
-            session.flush()
+        if ticker is None and key in observed:
+            ticker, d0_ticker = observed[key]
+        else:
+            d0_ticker = d0
+        if ticker is not None:
+            _close_clashing_ticker(session, ticker, exchange, d0_ticker, rep)
         sec = sm.register(
-            name=f"{ticker} ({src.membership_source})",
+            name=f"{ticker or key} ({src.membership_source})",
             exchange=exchange,
             currency=currency,
             country=country,
         )
-        sm.add_ticker(sec.security_id, ticker, exchange, d0)
+        if ticker is not None:
+            sm.add_ticker(sec.security_id, ticker, exchange, d0_ticker)
         if key.startswith("ISIN:"):
             sm.add_identifier(sec.security_id, "ISIN", key.removeprefix("ISIN:"), d0)
         session.add(ProviderKey(source_id=source_id, provider_key=key, security_id=sec.security_id))
@@ -86,3 +79,22 @@ def register_event_securities(
         rep.created += 1
     session.flush()
     return keys, rep
+
+
+def _close_clashing_ticker(
+    session: Session, ticker: str, exchange: str, d0: date, rep: RegistrationReport
+) -> None:
+    clash = session.scalars(
+        select(TickerHistory).where(
+            TickerHistory.ticker == ticker.upper(),
+            TickerHistory.exchange == exchange,
+            TickerHistory.valid_from <= d0,
+            or_(TickerHistory.valid_to.is_(None), TickerHistory.valid_to > d0),
+        )
+    ).first()
+    if clash is not None:
+        clash.valid_to = d0
+        rep.warnings.append(
+            f"ticker {ticker} reassigned on {d0}: closed for {clash.security_id} (verify with D-05)"
+        )
+        session.flush()

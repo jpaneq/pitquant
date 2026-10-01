@@ -29,6 +29,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
+from sqlalchemy import false as sa_false
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from pitquant.core.timeutils import utc_now
@@ -243,6 +244,11 @@ class IndexEvent(Base):
     source_confidence: Mapped[str] = mapped_column(String(40))
     raw_source_hash: Mapped[str] = mapped_column(String(64))
     archive_id: Mapped[str | None] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    # RESOLVED: the source pins WHICH security (ISIN/CUSIP/permanent id). IDENTITY_UNRESOLVED:
+    # membership is known but the security is not (e.g. ticker only) — never backtestable.
+    identity_status: Mapped[str] = mapped_column(
+        String(30), default="RESOLVED", server_default="RESOLVED"
+    )
     ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
 
     __table_args__ = (
@@ -252,6 +258,9 @@ class IndexEvent(Base):
             "event_type IN ('INDEX_ADD','INDEX_DELETE','TICKER_CHANGE','ORDINARY_REVIEW',"
             "'EXTRAORDINARY_REVIEW','INITIAL_SNAPSHOT')",
             name="event_type_values",
+        ),
+        CheckConstraint(
+            "identity_status IN ('RESOLVED','IDENTITY_UNRESOLVED')", name="identity_status_values"
         ),
     )
 
@@ -273,6 +282,11 @@ class MembershipBuild(Base):
     events_hash: Mapped[str] = mapped_column(String(64))
     n_events: Mapped[int] = mapped_column(Integer)
     status: Mapped[str] = mapped_column(String(20))  # ok | failed
+    # True only for a CANONICAL source with every interval's identity resolved. Provisional,
+    # synthetic or identity-incomplete builds can never feed holdout evaluation/promotion.
+    eligible_for_final_model_validation: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default=sa_false()
+    )
     report: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
     built_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
 
@@ -297,10 +311,16 @@ class IndexMembership(Base):
     exclusion_event_id: Mapped[str | None] = mapped_column(ForeignKey("index_events.event_id"))
     source_confidence: Mapped[str] = mapped_column(String(40))
     raw_source_hash: Mapped[str] = mapped_column(String(64))
+    identity_status: Mapped[str] = mapped_column(
+        String(30), default="RESOLVED", server_default="RESOLVED"
+    )
 
     __table_args__ = (
         Index("ix_membership_asof", "build_id", "index_code", "effective_from", "effective_to"),
         CheckConstraint("effective_to IS NULL OR effective_to > effective_from", name="interval"),
+        CheckConstraint(
+            "identity_status IN ('RESOLVED','IDENTITY_UNRESOLVED')", name="identity_status_values"
+        ),
     )
 
 

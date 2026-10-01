@@ -162,6 +162,21 @@ def parse_announcements(data: bytes) -> list[Announcement]:
     return out
 
 
+def ticker_observations(
+    snapshot_date: date,
+    snapshot: Sequence[tuple[str, str]],
+    announcements: Sequence[Announcement],
+) -> tuple[tuple[str, str, date], ...]:
+    """Tickers actually stated by a source on a date: the snapshot (on its date) and each
+    announcement (on the day it was announced)."""
+    obs = {ident: (tick, snapshot_date) for tick, ident in snapshot}
+    for a in sorted(announcements, key=lambda x: x.announced_at, reverse=True):
+        d = a.announced_at.date()
+        if a.identifier not in obs or d < obs[a.identifier][1]:
+            obs[a.identifier] = (a.ticker, d)
+    return tuple(sorted((k, t, d) for k, (t, d) in obs.items()))
+
+
 def reconstruct_from_snapshot(
     snapshot_date: date,
     snapshot: Sequence[tuple[str, str]],  # (ticker, identifier) members ON snapshot_date
@@ -197,6 +212,9 @@ def reconstruct_from_snapshot(
             members[a.identifier] = a.ticker
         else:
             raise ProviderContractError(f"{a.announcement_id}: unsupported action {a.action}")
+    # Membership at coverage_start is derived, but neither the ticker nor the identity at
+    # that date is observed: the snapshot's (modern) ticker is NOT projected backwards and
+    # the interval stays IDENTITY_UNRESOLVED until a dated official source proves it.
     events = [
         IndexEventRecord(
             index_code,
@@ -204,9 +222,14 @@ def reconstruct_from_snapshot(
             coverage_start,
             f"initial:{ident}",
             ident,
-            tick,
+            None,
             identifier=ident,
-            reason=f"derived from snapshot {snapshot_date} by reversing announcements",
+            reason=(
+                f"derived from snapshot {snapshot_date} by reversing announcements; "
+                f"identifier {ident} observed later ({tick}), identity at {coverage_start} "
+                "not proven"
+            ),
+            identity_resolved=False,
         )
         for ident, tick in sorted(members.items())
     ]
@@ -268,12 +291,9 @@ class SPDJIAnnouncementReconstructionProvider(SP500MembershipProvider):
             (r["ticker"].strip().upper(), r["identifier"].strip())
             for r in csv.DictReader(io.StringIO(self.snapshot_csv.decode("utf-8")))
         ]
+        anns = parse_announcements(self.announcements_csv)
         events = reconstruct_from_snapshot(
-            self.snapshot_date,
-            snap,
-            parse_announcements(self.announcements_csv),
-            self.coverage_start,
-            index_code,
+            self.snapshot_date, snap, anns, self.coverage_start, index_code
         )
         return EventSource(
             self.membership_source,
@@ -281,4 +301,5 @@ class SPDJIAnnouncementReconstructionProvider(SP500MembershipProvider):
             events,
             content_hash([a1.sha256, a2.sha256]),
             a2.archive_id,
+            ticker_observations=ticker_observations(self.snapshot_date, snap, anns),
         )

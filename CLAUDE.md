@@ -35,8 +35,8 @@ temporal, se rechaza.
   "FIXTURE"). Nunca presentarlos como históricos reales.
 - No dar una funcionalidad por terminada porque "ejecuta": correcta, testeada, tipada,
   documentada, reproducible, point-in-time.
-- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0017).
-- Migraciones: la base `0001` ya está fijada; **todo cambio de esquema = revisión nueva**.
+- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0018).
+- Migraciones: `0001` (base) y `0002` (identidad) fijadas; **todo cambio de esquema = revisión nueva**.
 
 ## Comandos
 
@@ -98,8 +98,9 @@ tenía red hacia esos dominios. Todo lo D-01…D-03 está probado sólo con fixt
 
 ## Limitaciones conocidas
 
-- Reconstrucción S&P por anuncios usa el ticker del snapshot para toda la historia.
-- Reentrada en IBEX sin ISIN: se asume la misma emisión y se registra aviso de calidad.
+- Identidad ≠ membership (ADR-0017): S&P provisional e IBEX sin ISIN producen intervalos
+  `IDENTITY_UNRESOLVED`; `backtest_universe()` falla cerrado y esos builds no son elegibles
+  para validación final/holdout. El IBEX necesita ISIN oficiales por miembro y fecha.
 - `register_event_securities` cierra el ticker de otra emisión si se reasigna (aviso DQ).
 - Conceptos XBRL sin normalizar todavía.
 

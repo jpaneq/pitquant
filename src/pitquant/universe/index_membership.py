@@ -22,6 +22,10 @@ class NoMembershipBuildError(PITQuantError, LookupError):
     """No successful membership build exists for the index."""
 
 
+class IdentityUnresolvedError(PITQuantError):
+    """A backtest universe contains members whose security identity is not proven."""
+
+
 @dataclass(frozen=True)
 class UniverseMember:
     security_id: str
@@ -30,6 +34,7 @@ class UniverseMember:
     inclusion_reason: str | None
     source_event_id: str
     source_confidence: str
+    identity_status: str = "RESOLVED"
     # exclusion fields intentionally absent: they are future information as of as_of.
 
 
@@ -89,9 +94,28 @@ class IndexUniverse:
                 inclusion_reason=r.inclusion_reason,
                 source_event_id=r.source_event_id,
                 source_confidence=r.source_confidence,
+                identity_status=r.identity_status,
             )
             for r in rows
         ]
+
+    def backtest_universe(
+        self, index_code: str, as_of: date, build_id: str | None = None
+    ) -> list[UniverseMember]:
+        """Universe for a backtest observation. Fails closed: if ANY member's identity is
+        unresolved the date cannot be backtested (dropping members silently would be a
+        survivorship-style bias)."""
+        members = self.universe(index_code, as_of, build_id)
+        bad = [m for m in members if m.identity_status != "RESOLVED"]
+        if bad:
+            raise IdentityUnresolvedError(
+                f"{index_code}@{as_of}: {len(bad)} member(s) IDENTITY_UNRESOLVED "
+                f"(e.g. {bad[0].security_id}); resolve identity before backtesting"
+            )
+        return members
+
+    def is_eligible_for_final_validation(self, build_id: str) -> bool:
+        return bool(self.s.get_one(MembershipBuild, build_id).eligible_for_final_model_validation)
 
     def universe_ids(self, index_code: str, as_of: date, build_id: str | None = None) -> list[str]:
         return [m.security_id for m in self.universe(index_code, as_of, build_id)]

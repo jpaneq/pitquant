@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import io
 import re
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from enum import StrEnum
@@ -91,8 +91,17 @@ def classify_rows(
     rows: Sequence[BMEHistoryRow],
     avisos: Sequence[BMEAviso] = (),
     index_code: str = INDEX,
+    identities: Mapping[tuple[str, date], str] | None = None,
 ) -> ParseResult:
-    """Turn history rows into events, resolving ambiguity ONLY with avisos."""
+    """Turn history rows into events, resolving ambiguity ONLY with avisos.
+
+    Identity is kept separate from membership. A member is ``RESOLVED`` only when an
+    official document gives its ISIN (the aviso, or ``identities[(ticker, date)]`` taken
+    from another dated official BME/CNMV document). Otherwise membership is recorded but
+    the interval is ``IDENTITY_UNRESOLVED``. A re-entry without ISIN is NEVER assumed to be
+    the earlier security: it gets a new lineage key.
+    """
+    identities = identities or {}
     by_date: dict[date, list[BMEAviso]] = {}
     for a in avisos:
         by_date.setdefault(a.effective_date, []).append(a)
@@ -104,7 +113,7 @@ def classify_rows(
     members: set[str] = set()  # lineage keys currently in the index
 
     def lineage_for_add(ticker: str, d: date, aviso: BMEAviso | None) -> str:
-        isin = aviso.identifiers.get(ticker) if aviso else None
+        isin = (aviso.identifiers.get(ticker) if aviso else None) or identities.get((ticker, d))
         if isin:
             key = f"ISIN:{isin}"
             lineage_of[ticker] = key
@@ -112,10 +121,9 @@ def classify_rows(
         known = lineage_of.get(ticker)
         if known and known not in members:
             warnings.append(
-                f"{d} {ticker}: re-entry assumed to be the same security "
-                "(no ISIN in source) — verify"
+                f"{d} {ticker}: re-entry without ISIN — NOT assumed to be the earlier "
+                f"security ({known}); new identity, IDENTITY_UNRESOLVED"
             )
-            return known
         key = f"BME:{ticker}:{d.isoformat()}"
         lineage_of[ticker] = key
         return key
@@ -250,6 +258,7 @@ def classify_rows(
                     announced_at=announced,
                     reason=style.value,
                     parent_source_event_id=parent_id,
+                    identity_resolved=key.startswith("ISIN:"),
                 )
             )
     if unresolved:
@@ -401,6 +410,8 @@ class BMEHistoricalCompositionProvider(IndexEventProvider):
     store: ArchiveStore
     avisos: Sequence[BMEAviso] = ()
     aviso_documents: Sequence[tuple[str, bytes, datetime]] = ()  # (url, bytes, announced_at)
+    # ISIN for (ticker, effective_date) taken from dated official documents
+    identities: Mapping[tuple[str, date], str] = field(default_factory=dict)
 
     @property
     def membership_source(self) -> str:
@@ -436,7 +447,7 @@ class BMEHistoricalCompositionProvider(IndexEventProvider):
         rows = extract_rows_from_pdf(self.pdf, self.calibration)
         if not rows:
             raise ProviderContractError("no rows extracted from the BME document — layout changed?")
-        result = classify_rows(rows, self.avisos, index_code)
+        result = classify_rows(rows, self.avisos, index_code, self.identities)
         return EventSource(
             SOURCE,
             self.confidence,
@@ -452,9 +463,10 @@ def events_from_rows(
     avisos: Sequence[BMEAviso],
     raw_source_hash: str,
     index_code: str = INDEX,
+    identities: Mapping[tuple[str, date], str] | None = None,
 ) -> EventSource:
     """Build an EventSource from already-extracted rows (tests, manual corrections)."""
-    res = classify_rows(rows, avisos, index_code)
+    res = classify_rows(rows, avisos, index_code, identities)
     if not res.events:
         raise MembershipSequenceError("empty event stream")
     return EventSource(
