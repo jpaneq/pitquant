@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+  <feed xmlns="http://www.w3.org/2005/Atom">
+    <author>
+      <email>webmaster@sec.gov</email>
+      <name>Webmaster</name>
+    </author>
+    <company-info>
+      <addresses>
+        <address type="mailing">
+          <city>CUPERTINO</city>
+          <state>CA</state>
+          <street1>ONE APPLE PARK WAY</street1>
+          <zip>95014</zip>
+        </address>
+        <address type="business">
+          <city>CUPERTINO</city>
+          <phone>(408) 996-1010</phone>
+          <state>CA</state>
+          <street1>ONE APPLE PARK WAY</street1>
+          <zip>95014</zip>
+        </address>
+      </addresses>
+      <assigned-sic>3571</assigned-sic>
+      <assigned-sic-desc>ELECTRONIC COMPUTERS</assigned-sic-desc>
+      <assigned-sic-href>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;SIC=3571&amp;owner=include&amp;count=100</assigned-sic-href>
+      <cik>0000320193</cik>
+      <cik-href>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=0000320193&amp;owner=include&amp;count=100</cik-href>
+      <conformed-name>Apple Inc.</conformed-name>
+      <fiscal-year-end>0926</fiscal-year-end>
+      <formerly-names count="3">
+        <names>
+          <date>2007-01-04</date>
+          <name>APPLE COMPUTER INC</name>
+        </names>
+        <names>
+          <date>1997-07-28</date>
+          <name>APPLE COMPUTER INC/ FA</name>
+        </names>
+        <names>
+          <date>2019-08-05</date>
+          <name>APPLE INC</name>
+        </names>
+      </formerly-names>
+      <state-location>CA</state-location>
+      <state-location-href>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;State=CA&amp;owner=include&amp;count=100</state-location-href>
+      <state-of-incorporation>CA</state-of-incorporation>
+    </company-info>
+    <entry>
+      <category label="form type" scheme="https://www.sec.gov/" term="10-Q/A" />
+      <content type="text/xml">
+        <accession-number>0001193125-09-087629</accession-number>
+        <act>34</act>
+        <amend>[Amend]</amend>
+        <file-number>000-10030</file-number>
+        <file-number-href>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;filenum=000-10030&amp;owner=include&amp;count=100</file-number-href>
+        <filing-date>2009-04-27</filing-date>
+        <filing-href>https://www.sec.gov/Archives/edgar/data/320193/000119312509087629/0001193125-09-087629-index.htm</filing-href>
+        <filing-type>10-Q/A</filing-type>
+        <film-number>09771032</film-number>
+        <form-name>Quarterly report [Sections 13 or 15(d)]</form-name>
+        <size>44 KB</size>
+      </content>
+      <id>urn:tag:sec.gov,2008:accession-number=0001193125-09-087629</id>
+      <link href="https://www.sec.gov/Archives/edgar/data/320193/000119312509087629/0001193125-09-087629-index.htm" rel="alternate" type="text/html" />
+      <summary type="html"> &lt;b&gt;Filed:&lt;/b&gt; 2009-04-27 &lt;b&gt;AccNo:&lt;/b&gt; 0001193125-09-087629 &lt;b&gt;Size:&lt;/b&gt; 44 KB</summary>
+      <title>10-Q/A [Amend]  - Quarterly report [Sections 13 or 15(d)]</title>
+      <updated>2009-04-27T06:12:28-04:00</updated>
+    </entry>
+    <entry>
+      <category label="form type" scheme="https://www.sec.gov/" term="10-Q/A" />
+      <content type="text/xml">
+        <accession-number>0000320193-97-000021</accession-number>
+        <amend>[Amend]</amend>
+        <file-number>000-10030</file-number>
+        <file-number-href>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;filenum=000-10030&amp;owner=include&amp;count=100</file-number-href>
+        <filing-date>1997-10-07</filing-date>
+        <filing-href>https://www.sec.gov/Archives/edgar/data/320193/0000320193-97-000021-index.html</filing-href>
+        <filing-type>10-Q/A</filing-type>
+        <film-number>97691951</film-number>
+        <form-name>Quarterly report [Sections 13 or 15(d)]</form-name>
+        <size>8 KB</size>
+      </content>
+      <id>urn:tag:sec.gov,2008:accession-number=0000320193-97-000021</id>
+      <link href="https://www.sec.gov/Archives/edgar/data/320193/0000320193-97-000021-index.html" rel="alternate" type="text/html" />
+      <summary type="html"> &lt;b&gt;Filed:&lt;/b&gt; 1997-10-07 &lt;b&gt;AccNo:&lt;/b&gt; 0000320193-97-000021 &lt;b&gt;Size:&lt;/b&gt; 8 KB</summary>
+      <title>10-Q/A [Amend]  - Quarterly report [Sections 13 or 15(d)]</title>
+      <updated>1997-10-07T00:00:00-04:00</updated>
+    </entry>
+    <id>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=0000320193</id>
+    <link href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=320193&amp;type=10-Q/A&amp;owner=include&amp;start=0&amp;count=100" rel="alternate" type="text/html" />
+    <link href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=320193&amp;type=10-Q/A&amp;owner=include&amp;start=0&amp;count=100&amp;output=atom" rel="self" type="application/atom+xml" />
+    <title>Apple Inc.  (0000320193)</title>
+    <updated>2026-10-01T09:42:18-04:00</updated>
+  </feed>

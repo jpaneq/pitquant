@@ -161,8 +161,16 @@ def test_acceptance_datetime_controls_availability(
     assert _rev(session, sid, ny(2024, 2, 20, 16, 0), *FY23) is None
     assert _rev(session, sid, ny(2024, 2, 20, 23, 59), *FY23) is None
     assert _rev(session, sid, ny(2024, 2, 21, 9, 30), *FY23) is not None
-    # Pre-market acceptance (D, 07:00 ET) is usable the same morning.
-    assert session.get_one(SecFiling, D).available_at == ny(2025, 2, 18, 7, 15)
+    # D: pre-market header (07:00 ET) but its submissions timestamp disagrees -> residual
+    # uncertainty -> FAIL CLOSED to the next session open (ADR-0019), not 07:15.
+    d = session.get_one(SecFiling, D)
+    assert d.accepted_at == ny(2025, 2, 18, 7, 0)  # header stays canonical
+    assert d.available_at == ny(2025, 2, 18, 9, 30)
+    assert d.availability_policy == "conservative_session+mismatch_fail_closed"
+    # A consistent pre-market filing is usable the same morning.
+    assert filing_available_at(
+        get_calendar("XNYS"), ny(2025, 2, 18, 7), "conservative_session", 15
+    ) == ny(2025, 2, 18, 7, 15)
     # Intraday filing whose lag crosses the close also rolls to the next open.
     cal = get_calendar("XNYS")
     assert filing_available_at(cal, ny(2024, 5, 1, 15, 50), "conservative_session", 15) == ny(
@@ -380,9 +388,16 @@ def test_availability_never_derives_from_filed_date(
     assert filing_available_at(cal, e.accepted_at, "accepted_plus_lag", 15) == ny(2024, 8, 1, 18, 0)
     for f in session.scalars(select(SecFiling)):
         assert f.available_at >= f.accepted_at
-        assert f.available_at == filing_available_at(
-            cal, f.accepted_at, f.availability_policy, settings.fundamentals.sec.lag_minutes
+        base = filing_available_at(
+            cal,
+            f.accepted_at,
+            f.availability_policy.removesuffix("+mismatch_fail_closed"),
+            settings.fundamentals.sec.lag_minutes,
         )
+        if f.availability_policy.endswith("+mismatch_fail_closed"):
+            assert f.available_at >= base
+        else:
+            assert f.available_at == base
     assert _rev(session, sid, ny(2024, 8, 1, 23, 59), *Q2) is None
     assert _rev(session, sid, ny(2024, 8, 2, 9, 30), *Q2).value == 33.0  # type: ignore[union-attr]
 

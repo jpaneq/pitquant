@@ -35,7 +35,7 @@ temporal, se rechaza.
   "FIXTURE"). Nunca presentarlos como históricos reales.
 - No dar una funcionalidad por terminada porque "ejecuta": correcta, testeada, tipada,
   documentada, reproducible, point-in-time.
-- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0019).
+- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0020).
 - Migraciones: `0001` (base) y `0002` (identidad) fijadas; **todo cambio de esquema = revisión nueva**.
 
 ## Comandos

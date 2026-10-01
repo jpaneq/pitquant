@@ -55,6 +55,7 @@ from pitquant.data.providers.sec_edgar.parsers import (
     parse_submissions,
     parse_xbrl_instance,
     pick_xbrl_instance,
+    submissions_acceptance_utc,
 )
 from pitquant.db.models import DataQualityIssue, DataSource, FundamentalFact, SecFiling
 
@@ -253,14 +254,23 @@ def ingest_sec_company(
             _issue(session, security_id, "header_unavailable", "high", f"{acc}: {e}", accession=acc)
             rep.issues.append(f"{acc}: header unavailable")
             continue
+        available = filing_available_at(cal, accepted, cfg.availability_policy, cfg.lag_minutes)
+        policy: str = cfg.availability_policy
         if acceptance_raw_consistent(meta.acceptance_raw, accepted) is False:
+            # Residual uncertainty about the acceptance instant: FAIL CLOSED (ADR-0019).
+            # accepted_at stays the header (canonical); availability waits for the next
+            # session open after the LATEST candidate instant.
+            sub = submissions_acceptance_utc(meta.acceptance_raw)
+            latest = max(x for x in (accepted, sub) if x is not None)
+            available = max(available, cal.next_session_open(latest))
+            policy = f"{cfg.availability_policy}+mismatch_fail_closed"
             _issue(
                 session,
                 security_id,
                 "acceptance_mismatch",
                 "medium",
                 f"{acc}: submissions {meta.acceptance_raw} vs header {accepted.isoformat()} "
-                "(header used)",
+                "(header used; availability fail-closed)",
                 accession=acc,
                 submissions_acceptance_raw=meta.acceptance_raw,
                 header_accepted_at=accepted,
@@ -292,10 +302,8 @@ def ingest_sec_company(
             report_period=meta.report_date,
             accepted_at=accepted,
             submissions_acceptance_raw=meta.acceptance_raw,
-            available_at=filing_available_at(
-                cal, accepted, cfg.availability_policy, cfg.lag_minutes
-            ),
-            availability_policy=cfg.availability_policy,
+            available_at=available,
+            availability_policy=policy,
             primary_document=meta.primary_document,
             header_archive_id=hdr_id,
             xbrl_archive_id=xbrl_id,

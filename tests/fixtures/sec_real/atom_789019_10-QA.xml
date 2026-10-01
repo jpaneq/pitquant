@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+  <feed xmlns="http://www.w3.org/2005/Atom">
+    <author>
+      <email>webmaster@sec.gov</email>
+      <name>Webmaster</name>
+    </author>
+    <company-info>
+      <addresses>
+        <address type="mailing">
+          <city>REDMOND</city>
+          <state>WA</state>
+          <street1>ONE MICROSOFT WAY</street1>
+          <zip>98052-6399</zip>
+        </address>
+        <address type="business">
+          <city>REDMOND</city>
+          <phone>425-882-8080</phone>
+          <state>WA</state>
+          <street1>ONE MICROSOFT WAY</street1>
+          <zip>98052-6399</zip>
+        </address>
+      </addresses>
+      <assigned-sic>7372</assigned-sic>
+      <assigned-sic-desc>SERVICES-PREPACKAGED SOFTWARE</assigned-sic-desc>
+      <assigned-sic-href>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;SIC=7372&amp;owner=include&amp;count=100</assigned-sic-href>
+      <cik>0000789019</cik>
+      <cik-href>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=0000789019&amp;owner=include&amp;count=100</cik-href>
+      <conformed-name>MICROSOFT CORP</conformed-name>
+      <fiscal-year-end>0630</fiscal-year-end>
+      <state-location>WA</state-location>
+      <state-location-href>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;State=WA&amp;owner=include&amp;count=100</state-location-href>
+      <state-of-incorporation>WA</state-of-incorporation>
+    </company-info>
+    <entry>
+      <category label="form type" scheme="https://www.sec.gov/" term="10-Q/A" />
+      <content type="text/xml">
+        <accession-number>0001193125-12-026864</accession-number>
+        <act>34</act>
+        <amend>[Amend]</amend>
+        <file-number>000-14278</file-number>
+        <file-number-href>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;filenum=000-14278&amp;owner=include&amp;count=100</file-number-href>
+        <filing-date>2012-01-27</filing-date>
+        <filing-href>https://www.sec.gov/Archives/edgar/data/789019/000119312512026864/0001193125-12-026864-index.htm</filing-href>
+        <filing-type>10-Q/A</filing-type>
+        <film-number>12551414</film-number>
+        <form-name>Quarterly report [Sections 13 or 15(d)]</form-name>
+        <size>10 MB</size>
+        <xbrl_href>https://www.sec.gov/cgi-bin/viewer?action=view&amp;cik=789019&amp;accession_number=0001193125-12-026864&amp;xbrl_type=v</xbrl_href>
+      </content>
+      <id>urn:tag:sec.gov,2008:accession-number=0001193125-12-026864</id>
+      <link href="https://www.sec.gov/Archives/edgar/data/789019/000119312512026864/0001193125-12-026864-index.htm" rel="alternate" type="text/html" />
+      <summary type="html"> &lt;b&gt;Filed:&lt;/b&gt; 2012-01-27 &lt;b&gt;AccNo:&lt;/b&gt; 0001193125-12-026864 &lt;b&gt;Size:&lt;/b&gt; 10 MB</summary>
+      <title>10-Q/A [Amend]  - Quarterly report [Sections 13 or 15(d)]</title>
+      <updated>2012-01-27T15:04:25-05:00</updated>
+    </entry>
+    <entry>
+      <category label="form type" scheme="https://www.sec.gov/" term="10-Q/A" />
+      <content type="text/xml">
+        <accession-number>0001193125-06-045107</accession-number>
+        <act>34</act>
+        <amend>[Amend]</amend>
+        <file-number>000-14278</file-number>
+        <file-number-href>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;filenum=000-14278&amp;owner=include&amp;count=100</file-number-href>
+        <filing-date>2006-03-03</filing-date>
+        <filing-href>https://www.sec.gov/Archives/edgar/data/789019/000119312506045107/0001193125-06-045107-index.htm</filing-href>
+        <filing-type>10-Q/A</filing-type>
+        <film-number>06664428</film-number>
+        <form-name>Quarterly report [Sections 13 or 15(d)]</form-name>
+        <size>48 KB</size>
+      </content>
+      <id>urn:tag:sec.gov,2008:accession-number=0001193125-06-045107</id>
+      <link href="https://www.sec.gov/Archives/edgar/data/789019/000119312506045107/0001193125-06-045107-index.htm" rel="alternate" type="text/html" />
+      <summary type="html"> &lt;b&gt;Filed:&lt;/b&gt; 2006-03-03 &lt;b&gt;AccNo:&lt;/b&gt; 0001193125-06-045107 &lt;b&gt;Size:&lt;/b&gt; 48 KB</summary>
+      <title>10-Q/A [Amend]  - Quarterly report [Sections 13 or 15(d)]</title>
+      <updated>2006-03-03T16:40:58-05:00</updated>
+    </entry>
+    <entry>
+      <category label="form type" scheme="https://www.sec.gov/" term="10-Q/A" />
+      <content type="text/xml">
+        <accession-number>0001032210-02-000453</accession-number>
+        <amend>[Amend]</amend>
+        <file-number>000-14278</file-number>
+        <file-number-href>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;filenum=000-14278&amp;owner=include&amp;count=100</file-number-href>
+        <filing-date>2002-03-25</filing-date>
+        <filing-href>https://www.sec.gov/Archives/edgar/data/789019/000103221002000453/0001032210-02-000453-index.htm</filing-href>
+        <filing-type>10-Q/A</filing-type>
+        <film-number>02584736</film-number>
+        <form-name>Quarterly report [Sections 13 or 15(d)]</form-name>
+        <size>53 KB</size>
+      </content>
+      <id>urn:tag:sec.gov,2008:accession-number=0001032210-02-000453</id>
+      <link href="https://www.sec.gov/Archives/edgar/data/789019/000103221002000453/0001032210-02-000453-index.htm" rel="alternate" type="text/html" />
+      <summary type="html"> &lt;b&gt;Filed:&lt;/b&gt; 2002-03-25 &lt;b&gt;AccNo:&lt;/b&gt; 0001032210-02-000453 &lt;b&gt;Size:&lt;/b&gt; 53 KB</summary>
+      <title>10-Q/A [Amend]  - Quarterly report [Sections 13 or 15(d)]</title>
+      <updated>2002-03-25T00:00:00-05:00</updated>
+    </entry>
+    <entry>
+      <category label="form type" scheme="https://www.sec.gov/" term="10-Q/A" />
+      <content type="text/xml">
+        <accession-number>0001032210-02-000454</accession-number>
+        <amend>[Amend]</amend>
+        <file-number>000-14278</file-number>
+        <file-number-href>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;filenum=000-14278&amp;owner=include&amp;count=100</file-number-href>
+        <filing-date>2002-03-25</filing-date>
+        <filing-href>https://www.sec.gov/Archives/edgar/data/789019/000103221002000454/0001032210-02-000454-index.htm</filing-href>
+        <filing-type>10-Q/A</filing-type>
+        <film-number>02584747</film-number>
+        <form-name>Quarterly report [Sections 13 or 15(d)]</form-name>
+        <size>43 KB</size>
+      </content>
+      <id>urn:tag:sec.gov,2008:accession-number=0001032210-02-000454</id>
+      <link href="https://www.sec.gov/Archives/edgar/data/789019/000103221002000454/0001032210-02-000454-index.htm" rel="alternate" type="text/html" />
+      <summary type="html"> &lt;b&gt;Filed:&lt;/b&gt; 2002-03-25 &lt;b&gt;AccNo:&lt;/b&gt; 0001032210-02-000454 &lt;b&gt;Size:&lt;/b&gt; 43 KB</summary>
+      <title>10-Q/A [Amend]  - Quarterly report [Sections 13 or 15(d)]</title>
+      <updated>2002-03-25T00:00:00-05:00</updated>
+    </entry>
+    <entry>
+      <category label="form type" scheme="https://www.sec.gov/" term="10-Q/A" />
+      <content type="text/xml">
+        <accession-number>0001032210-98-000581</accession-number>
+        <amend>[Amend]</amend>
+        <file-number>000-14278</file-number>
+        <file-number-href>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;filenum=000-14278&amp;owner=include&amp;count=100</file-number-href>
+        <filing-date>1998-06-03</filing-date>
+        <filing-href>https://www.sec.gov/Archives/edgar/data/789019/0001032210-98-000581-index.html</filing-href>
+        <filing-type>10-Q/A</filing-type>
+        <film-number>98641825</film-number>
+        <form-name>Quarterly report [Sections 13 or 15(d)]</form-name>
+        <size>67 KB</size>
+      </content>
+      <id>urn:tag:sec.gov,2008:accession-number=0001032210-98-000581</id>
+      <link href="https://www.sec.gov/Archives/edgar/data/789019/0001032210-98-000581-index.html" rel="alternate" type="text/html" />
+      <summary type="html"> &lt;b&gt;Filed:&lt;/b&gt; 1998-06-03 &lt;b&gt;AccNo:&lt;/b&gt; 0001032210-98-000581 &lt;b&gt;Size:&lt;/b&gt; 67 KB</summary>
+      <title>10-Q/A [Amend]  - Quarterly report [Sections 13 or 15(d)]</title>
+      <updated>1998-06-03T00:00:00-04:00</updated>
+    </entry>
+    <entry>
+      <category label="form type" scheme="https://www.sec.gov/" term="10-Q/A" />
+      <content type="text/xml">
+        <accession-number>0000891020-94-000200</accession-number>
+        <amend>[Amend]</amend>
+        <file-number>000-14278</file-number>
+        <file-number-href>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;filenum=000-14278&amp;owner=include&amp;count=100</file-number-href>
+        <filing-date>1994-11-16</filing-date>
+        <filing-href>https://www.sec.gov/Archives/edgar/data/789019/0000891020-94-000200-index.html</filing-href>
+        <filing-type>10-Q/A</filing-type>
+        <film-number>94560457</film-number>
+        <form-name>Quarterly report [Sections 13 or 15(d)]</form-name>
+        <size>36 KB</size>
+      </content>
+      <id>urn:tag:sec.gov,2008:accession-number=0000891020-94-000200</id>
+      <link href="https://www.sec.gov/Archives/edgar/data/789019/0000891020-94-000200-index.html" rel="alternate" type="text/html" />
+      <summary type="html"> &lt;b&gt;Filed:&lt;/b&gt; 1994-11-16 &lt;b&gt;AccNo:&lt;/b&gt; 0000891020-94-000200 &lt;b&gt;Size:&lt;/b&gt; 36 KB</summary>
+      <title>10-Q/A [Amend]  - Quarterly report [Sections 13 or 15(d)]</title>
+      <updated>1994-11-16T00:00:00-05:00</updated>
+    </entry>
+    <id>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=0000789019</id>
+    <link href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=789019&amp;type=10-Q/A&amp;owner=include&amp;start=0&amp;count=100" rel="alternate" type="text/html" />
+    <link href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=789019&amp;type=10-Q/A&amp;owner=include&amp;start=0&amp;count=100&amp;output=atom" rel="self" type="application/atom+xml" />
+    <title>MICROSOFT CORP  (0000789019)</title>
+    <updated>2026-10-01T09:42:20-04:00</updated>
+  </feed>

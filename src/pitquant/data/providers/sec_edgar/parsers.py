@@ -79,25 +79,49 @@ def parse_acceptance_datetime(header: bytes, expected_accession: str | None = No
             raise DataQualityError(
                 f"header accession {a.group(1).decode()} != expected {expected_accession}"
             )
-    raw = m.group(1).decode()
-    local = datetime.strptime(raw, "%Y%m%d%H%M%S").replace(tzinfo=ET_TZ)
-    return local.astimezone(ZoneInfo("UTC"))
+    wall = datetime.strptime(m.group(1).decode(), "%Y%m%d%H%M%S")  # noqa: DTZ007 (zoned below)
+    return eastern_wall_clock_to_utc(wall)
+
+
+def eastern_wall_clock_to_utc(naive: datetime) -> datetime:
+    """EDGAR Eastern wall time (EST/EDT, DST-aware; ADR-0019) -> UTC.
+
+    Fail closed around DST transitions: a wall time that occurs twice (fall back) or never
+    (spring forward) maps to the LATER candidate instant, so availability can only be
+    delayed, never advanced.
+    """
+    if naive.tzinfo is not None:
+        raise DataQualityError("EDGAR wall-clock time must be naive before zoning")
+    utc = ZoneInfo("UTC")
+    candidates = (
+        naive.replace(tzinfo=ET_TZ, fold=0).astimezone(utc),
+        naive.replace(tzinfo=ET_TZ, fold=1).astimezone(utc),
+    )
+    return max(candidates)
+
+
+def submissions_acceptance_utc(raw: str | None) -> datetime | None:
+    """submissions ``acceptanceDateTime`` is genuine UTC (ADR-0019: equal to the Atom feed's
+    explicit-offset timestamp in 10/10 archived cases). Unparseable -> None."""
+    if not raw:
+        return None
+    try:
+        d = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return d if d.tzinfo is not None else None
 
 
 def acceptance_raw_consistent(
     raw: str | None, header_utc: datetime, tol_s: int = 120
 ) -> bool | None:
-    """Cross-check the submissions field against the header WITHOUT assuming its zone:
-    consistent if it matches either as UTC or as Eastern wall time. None if absent."""
+    """Cross-check submissions (UTC) against the header (Eastern -> UTC). Strict since
+    ADR-0019: a value that only matches under another zone reading is a MISMATCH.
+    None if the field is absent."""
     if not raw:
         return None
-    try:
-        naive = datetime.fromisoformat(raw.replace("Z", "")).replace(tzinfo=None)
-    except ValueError:
-        return False
-    as_utc = naive.replace(tzinfo=ZoneInfo("UTC"))
-    as_et = naive.replace(tzinfo=ET_TZ)
-    return any(abs((c - header_utc).total_seconds()) <= tol_s for c in (as_utc, as_et))
+    s = submissions_acceptance_utc(raw)
+    return s is not None and abs((s - header_utc).total_seconds()) <= tol_s
 
 
 # ───────────────────────────── companyfacts ─────────────────────────────
