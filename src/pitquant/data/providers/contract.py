@@ -52,6 +52,12 @@ class Category(StrEnum):
     RIGHTS_ISSUE = "RIGHTS_ISSUE"
     SCRIP_DIVIDEND = "SCRIP_DIVIDEND"
     TICKER_CHANGE = "TICKER_CHANGE"
+    ORDINARY_DIVIDEND = "ORDINARY_DIVIDEND"
+    CAPITAL_INCREASE = "CAPITAL_INCREASE"
+    BONUS_ISSUE = "BONUS_ISSUE"  # ampliación liberada
+    EXCHANGE_MOVE = "EXCHANGE_MOVE"
+    TENDER_OFFER_DELISTING = "TENDER_OFFER_DELISTING"  # OPA con exclusión
+    MERGER = "MERGER"  # absorption with share exchange
 
 
 class Verification(StrEnum):
@@ -338,6 +344,59 @@ def _check_ticker_change(
     return p
 
 
+def _check_ordinary_dividend(
+    cand: ContractCandidate, sec: SecurityRecord, c: ContractCase
+) -> list[str]:
+    lo, hi = _window(c, "ex_date")
+    hits = [
+        d
+        for d in cand.dividends([sec.provider_security_key], lo, hi)
+        if _near(d.ex_date, c.expect["ex_date"], c.tolerance_days)
+        and _close(d.gross_amount, c.expect["amount"])
+    ]
+    if not hits:
+        return [f"no dividend of {c.expect['amount']} near {c.expect['ex_date']}"]
+    if not any(d.dividend_type.lower() in {"regular", "ordinary", "cash"} for d in hits):
+        return ["dividend present but not typed regular/ordinary"]
+    return []
+
+
+def _check_typed_action(types: set[str]):  # type: ignore[no-untyped-def]
+    def check(cand: ContractCandidate, sec: SecurityRecord, c: ContractCase) -> list[str]:
+        hits = [
+            a
+            for a in _actions(cand, sec, c, "ex_date", types)
+            if _near(a.ex_date, c.expect["ex_date"], c.tolerance_days)
+        ]
+        if not hits:
+            return [f"no {'/'.join(sorted(types))} action near {c.expect['ex_date']}"]
+        if "ratio" in c.expect and not any(_close(a.ratio, c.expect["ratio"]) for a in hits):
+            return [f"ratio != {c.expect['ratio']}"]
+        return []
+
+    return check
+
+
+def _check_exchange_move(
+    cand: ContractCandidate, sec: SecurityRecord, c: ContractCase
+) -> list[str]:
+    on: date = c.expect["move_date"]
+    p = []
+    lo, hi = on - timedelta(days=40), on + timedelta(days=40)
+    acts = [
+        a
+        for a in cand.actions([sec.provider_security_key], lo, hi)
+        if a.action_type.lower() in {"exchange_change", "listing_transfer"}
+        and _near(a.ex_date, on, c.tolerance_days)
+    ]
+    if not acts:
+        p.append(f"no exchange change near {on}")
+    after = cand.security(c.symbol, on + timedelta(days=c.tolerance_days + 1), c.market)
+    if after is None or after.provider_security_key != sec.provider_security_key:
+        p.append("security identity not continuous across the exchange move")
+    return p
+
+
 _CHECKS = {
     Category.SPLIT: _check_split,
     Category.REVERSE_SPLIT: _check_split,
@@ -350,6 +409,14 @@ _CHECKS = {
     Category.RIGHTS_ISSUE: _check_rights,
     Category.SCRIP_DIVIDEND: _check_scrip,
     Category.TICKER_CHANGE: _check_ticker_change,
+    Category.ORDINARY_DIVIDEND: _check_ordinary_dividend,
+    Category.CAPITAL_INCREASE: _check_typed_action({"capital_increase", "rights_issue", "rights"}),
+    Category.BONUS_ISSUE: _check_typed_action({"bonus_issue", "scrip", "stock_dividend"}),
+    Category.EXCHANGE_MOVE: _check_exchange_move,
+    Category.TENDER_OFFER_DELISTING: lambda cand, sec, c: _check_terminal(
+        cand, sec, c, {"tender_offer", "takeover", "acquired", "delisted"}
+    ),
+    Category.MERGER: _check_stock_acq,
 }
 
 

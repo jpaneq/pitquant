@@ -1,0 +1,105 @@
+{
+  "US-SPLIT-AAPL-2014": {
+    "url": "https://www.sec.gov/Archives/edgar/data/320193/000119312514154883/d715379dex991.htm",
+    "sha256": "3d5b0fade11badb1eb647a2709b01307f3cb8b8493b7390f82a5408cdc36736c",
+    "excerpts": [
+      "split-adjusted basis on June 9, 2014",
+      "Seven-for-One Stock Split CUPERTINO, California—April 23, 2014—Apple ® today announced that i",
+      "seven-for-one stock split"
+    ]
+  },
+  "US-SPLIT-AAPL-2020": {
+    "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019320000060/a8-kexhibit991q3202062.htm",
+    "sha256": "b3b5e0f89e53b9a6c287f451853cbb63782e469c4cb16addb5048707362f885d",
+    "excerpts": [
+      "split-adjusted basis on August 31, 2020",
+      "four-for-one stock split to make the stock more accessible to a broader base of investors",
+      "four-for-one stock split; and the commitment to be carbon neutral by 2030"
+    ]
+  },
+  "US-REVSPLIT-C-2011": {
+    "url": "https://www.sec.gov/Archives/edgar/data/831001/000119312511131957/dex991.htm",
+    "sha256": "32e1ffedd3b017fd8bdc7d71a4714f49cfced121afff95d02e13e13b2999bcd4",
+    "excerpts": [
+      "1-for-10 reverse stock split of Citigroup common stock as of 4:10 p",
+      "split-adjusted basis on the New York Stock Exchange under the symbol “C” when the exchange opens this morning"
+    ]
+  },
+  "US-SPINOFF-ABT-ABBV-2013": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1800/000104746913000015/a2212294zex-99_1.htm",
+    "sha256": "2e748eaa9154fb0c4485e71c2552b2d991b71c309a2148117a72434c85534bab",
+    "excerpts": [
+      "distribution of all outstanding shares of AbbVie common stock"
+    ]
+  },
+  "US-SPECIALDIV-MSFT-2004": {
+    "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312504197513/d8k.htm",
+    "sha256": "94fabdb54feedb9426b7579ee7c1097953b8a6a5c088eca583f1499270d36ff6",
+    "excerpts": [
+      "special dividend of $3",
+      "special dividend",
+      "$3.00 per share conditionally declared July 20, 2004 has become unconditional"
+    ]
+  },
+  "US-CASHACQ-HNZ-2013": {
+    "url": "https://www.sec.gov/Archives/edgar/data/46640/000119312513258009/d555504dex991.htm",
+    "sha256": "275947e861edffa54ca591c1c073e938ecd0dae99f8cce04d70ac774696efd15",
+    "excerpts": [
+      "$72.50 in cash for each share of common stock they owned as of the effective time of the merger, without interest and less any applicable withholding taxes",
+      "completion of its previously announced acquisition by an investment consortium comprised of Berkshire Hathaway and an investment fund affiliated with 3G Capital",
+      "completion of the merger, the common stock of Heinz will no longer be listed for trading on the New York Stock Exchange and Heinz expects no further trading after the clo"
+    ]
+  },
+  "US-CASHACQ-HNZ-2013/25": {
+    "url": "https://www.sec.gov/Archives/edgar/data/46640/000087666113000400/ruleprovisionnotice.htm",
+    "sha256": "8bbc610241a409beeca6e7407b7f4d9e2104a3627dd2a5aa7366b6873ed4e95e",
+    "excerpts": [
+      "EX-99",
+      "",
+      "25 2 ruleprovisionnotice"
+    ]
+  },
+  "US-STOCKACQ-XTO-2010": {
+    "url": "https://www.sec.gov/Archives/edgar/data/868809/000095010310001867/dp18265_8k.htm",
+    "sha256": "94ecaa57572b1742b8f2599d8a1029e64b0cbfc7c0c3889661c0cc317d3a2e0f",
+    "excerpts": [
+      "0.7098 of a share of ExxonMobil common stock",
+      "0.7098 of a share of ExxonMobil common stock",
+      "June 25, 2010 XTO ENERGY INC",
+      "June 25, 2010, XTO Energy Inc",
+      "June 25, 2010, the Company notified the New York Stock Exchange (the “ NYSE ”) of the consummation of the Merger"
+    ]
+  },
+  "US-STOCKACQ-XTO-2010/25": {
+    "url": "https://www.sec.gov/Archives/edgar/data/868809/000087666110000228/ruleprovisionnotice.htm",
+    "sha256": "04b29485b253e0ce76a95957aa15269b3c13ae5906df1468cbb1a1f3ed6dc178",
+    "excerpts": [
+      "EX-99",
+      "",
+      "25 2 ruleprovisionnotice"
+    ]
+  },
+  "US-BANKRUPTCY-LEH-2008": {
+    "url": "https://www.sec.gov/Archives/edgar/data/806085/000110465908059632/a08-22764_48k.htm",
+    "sha256": "c7166e9387c5c8066bd70d28a01c7495355c13a6ae440c0f52fdb6a14d49405e",
+    "excerpts": [
+      "Chapter 11 of Title 11 of the United States Code (the “Bankruptcy Code”) in the United States Bankruptcy Court for the Southern District of New York (the “Court”) and on September 16, 2008, LB 745 LLC filed a v",
+      "Chapter 11 of the Bankruptcy Code in the Court ( In re Lehman Brothers Holdings Inc"
+    ]
+  },
+  "ES-MERGER-BKIA-2021": {
+    "url": "https://www.caixabank.com/deployedfiles/caixabank_com/Estaticos/PDFs/Accionistasinversores/Informacion_General/20210319_Algarve-Anuncio-de-canje_con-firmas_v-final_limpia.pdf",
+    "sha256": "49e7b039bde6be2c983269b5966aab18d161494b9daa2775bbc1ca3e8d8f6685",
+    "excerpts": [
+      "tipo de canje es de 0,6845 acciones de nueva emisión de CaixaBank por cada acción (una) de Bankia",
+      "La Fecha de Canje será el último día en el que cotizarán las acciones de Bankia ... el día 26 de marzo de 2021"
+    ]
+  },
+  "ES-SPLIT-ITX-2014": {
+    "url": "https://www.cnmv.es/WebServices/VerDocumento/Ver?e=%2FlSbfe04j58P1DtZ5v+r2Lojc5caDaczWitwUsYwRmRQSRh0dt1K2vXNhAR3mLSV",
+    "sha256": "ce0812ff5831df11027149e394680962950e1ee215aa15506d8fb00e6fb8888e",
+    "excerpts": [
+      "a razón de cinco acciones nuevas por cada acción antigua (ratio confirmed; ex-date NOT stated)"
+    ]
+  }
+}

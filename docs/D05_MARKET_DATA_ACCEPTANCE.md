@@ -29,67 +29,72 @@ La aceptación se registra en un ADR nuevo y sólo entonces se añade el proveed
 | Returns | Rentabilidad de precio, ajustada, total return y **delisting return** | valor terminal obligatorio en quiebras; contraprestación en adquisiciones |
 | Licencia | Almacenamiento local, caché, uso histórico, backtesting, redistribución interna, límites de API, coste | revisión documental (abajo); no automatizable |
 
-## Casos de contrato (14)
+## Arquitectura
+`USMarketDataProvider` y `ESMarketDataProvider` son roles distintos (`providers/base.py`). Cada
+uno se acepta por separado con los casos de su mercado. No se asume que un único proveedor
+sirva para los dos.
 
-**VERIFIED** contra fuente oficial:
-- FB→META, 2022-06-09 (nota de prensa de Meta IR).
+## Casos de contrato (20; 11 VERIFIED)
+La evidencia (URL, SHA-256 y extracto de cada documento archivado) está en
+`docs/d05_contract_evidence.json` (`scripts/verify_contract_cases.py`).
 
-**UNVERIFIED** (valores a confirmar en el documento oficial antes de contar para la
-aceptación):
-- AAPL 7×1 de 2014: el FAQ de Apple IR confirma el ratio pero no si el 9-jun es la fecha ex.
-- AAPL 4×1 de 2020 (fecha ex).
-- C 1×10 de 2011.
-- Spin-off ABT→ABBV.
-- Dividendo especial de MSFT de 2004.
-- HNZ en efectivo.
-- XTO en acciones.
-- Quiebra de LEH.
-- Resolución de Banco Popular.
-- Derechos de SAN en 2017.
-- Split de ITX en 2014.
-- GAS→NTGY.
-- Scrip de IBE.
+| Caso | Estado | Fuente oficial |
+|---|---|---|
+| AAPL split 7×1 (2014-06-09) | VERIFIED | Apple 8-K ex.99.1 (2014-04-23) |
+| AAPL split 4×1 (2020-08-31) | VERIFIED | Apple 8-K ex.99.1 (2020-07-30) |
+| AAPL dividendo ordinario 0,82 $ (registro 2020-08-10) | VERIFIED | Apple 8-K ex.99.1 (2020-07-30) |
+| C contra-split 1×10 (2011-05-09) | VERIFIED | Citigroup 8-K ex.99.1 |
+| ABT→ABBV spin-off 1:1 (2013-01-01) | VERIFIED | Abbott 8-K ex.99.1 |
+| MSFT dividendo especial 3,00 $ (ex 2004-11-15) | VERIFIED | Microsoft 8-K (2004-11-15) |
+| HNZ adquisición en efectivo 72,50 $ (última sesión 2013-06-07) | VERIFIED | Heinz 8-K ex.99.1 |
+| XTO adquisición en acciones 0,7098 (2010-06-25) | VERIFIED | XTO 8-K |
+| PEP cambio NYSE→Nasdaq (2017-12-20) | VERIFIED | PepsiCo 8-K (2017-12-08) |
+| FB→META (2022-06-09) | VERIFIED | Meta IR |
+| BKIA fusión en CABK 0,6845 (última sesión 2021-03-26) | VERIFIED | Anuncio de canje de CaixaBank |
+| LEH quiebra (fecha de exclusión) | UNVERIFIED | El 8-K confirma el Chapter 11, no la fecha de exclusión |
+| ITX split 5×1 (fecha ex) | UNVERIFIED | El hecho relevante CNMV confirma el ratio, no la fecha ex |
+| POP resolución, SAN derechos y ampliación, GAS→NTGY, IBE scrip, ACS liberada, ABE OPA con exclusión | UNVERIFIED | Pendiente de documentos CNMV/BME fechados |
 
-Los meta-tests demuestran que la suite **rechaza** tres tipos de proveedor defectuoso:
-- uno sin compañías muertas (sesgo de supervivencia);
-- uno con precios ya ajustados;
-- uno sin valor terminal ni continuidad de ticker.
-
-## Matriz de proveedores (2026-10-01)
-
-Leyenda: ✔ confirmado en documentación oficial del proveedor · ✖ no ofrece ·
+## Matriz comparativa (2026-10-01)
+Leyenda: ✔ confirmado en la documentación oficial del proveedor · ✖ no ofrece ·
 `UNVERIFIED` no comprobado.
 
-| Proveedor | Mercado | Deslistadas | Corporate actions | Delisting return / valor terminal | Licencia: almacenamiento local, backtesting, redistribución interna | Coste |
-|---|---|---|---|---|---|---|
-| **CRSP** (US Stock Databases) | US (NYSE, NYSE American, Arca, NASDAQ, Cboe BZX) | ✔ >36.000 valores activos e inactivos | ✔ corporate actions en ficheros diarios y mensuales | ✔ ficheros de delisting: fecha, código de motivo, precio, importe y return con y sin dividendos | UNVERIFIED (licencia académica/institucional) | UNVERIFIED |
-| **Sharadar** (Nasdaq Data Link SEP/SF1) | US | ✔ «active and delisted», >25.000 valores en precios, historia desde 1998 | ✔ cambios de ticker, splits, dividendos en efectivo, spin-offs, fechas de alta y baja, motivo de baja, contraparte de adquisición | UNVERIFIED (hay motivo y contraparte; no consta un delisting return explícito) | UNVERIFIED | UNVERIFIED |
-| **Norgate Data** | US (también AU/CA) | ✔ 25.222 deslistadas 1950–sep-2022; cobertura «essentially complete» desde finales de 1992 | Constituyentes históricos de índices (Platinum/Diamond); detalle de corporate actions UNVERIFIED | UNVERIFIED | UNVERIFIED | UNVERIFIED |
-| **EODHD** | US y **Madrid (MC)** | ✔ deslistadas; datos según año de baja: antes de 2018 sólo EOD; desde 2018 también fundamentales, dividendos y splits | Sólo splits y dividendos en endpoints; derechos, scrip y fusiones UNVERIFIED | UNVERIFIED | UNVERIFIED | UNVERIFIED |
-| BME Market Data / LSEG / Bloomberg / FactSet | ES (y global) | UNVERIFIED | UNVERIFIED | UNVERIFIED | UNVERIFIED | UNVERIFIED |
+| Proveedor | US | España | Deslistadas | OHLCV raw | Corporate actions | Identidad histórica | Licencia | Coste | Contract tests | Limitaciones |
+|---|---|---|---|---|---|---|---|---|---|---|
+| **Sharadar SEP** | ✔ | ✖ | ✔ «active and delisted» | ✔ «Close Price – Unadjusted» y ajustado | ✔ splits, dividendos, spin-offs, adquisiciones, motivos de baja, cambios de ticker | `permaticker` (UNVERIFIED en contrato) | «Personal Use License»; texto UNVERIFIED | Precios 99 $/año; paquete 299 $/año (5 años) o 69 $/mes (historia completa) | No ejecutado (requiere suscripción) | Historia desde dic-1997; delisting return explícito UNVERIFIED |
+| **Norgate** | ✔ | ✖ | ✔ 25.222 deslistadas, cobertura completa desde 1992 | UNVERIFIED | UNVERIFIED | UNVERIFIED | UNVERIFIED | UNVERIFIED (calculadora dinámica) | No ejecutado | Acceso programático en macOS UNVERIFIED |
+| **EODHD** | ✔ | ✔ (MC) | ✔, pero antes de 2018 sólo EOD | ✔ EOD | Sólo splits y dividendos; derechos, scrip, fusiones y OPAs UNVERIFIED | UNVERIFIED | Personal frente a comercial interno | Personal 19,99–99,99 €/mes; comercial interno desde 3.990 €/año | No ejecutado | Deslistadas españolas UNVERIFIED |
+| **CRSP** (WRDS) | ✔ (referencia) | ✖ | ✔ | ✔ | ✔ y delisting returns | ✔ PERMNO | Institucional; personal UNVERIFIED | UNVERIFIED | No ejecutado | Acceso vía institución |
+| **BME Market Data** | ✖ | ✔ fuente oficial | Maestro de Valores (1100): altas y bajas; profundidad UNVERIFIED | ✔ Precios y Volúmenes (2100) | ✔ Hechos Relevantes Back Office (1200): ampliaciones, dividendos, fusiones, escisiones | ISIN oficial | Sólo usuario final, **sin redifusión** | Catálogo jul-2025: maestro renta variable ~1.050–3.500 €; precios ~93–933 €; hechos relevantes ~183–5.001 € (significado de las columnas UNVERIFIED) | No ejecutado | Formato e histórico pendientes de consulta |
 
 Fuentes:
-- [CRSP US Stock Databases](https://www.crsp.org/research/crsp-us-stock-databases/)
-- [CRSP Data Descriptions Guide](https://www.crsp.org/wp-content/uploads/guides/CRSP_US_Stock_&_Indexes_Database_Data_Descriptions_Guide.pdf)
 - [Sharadar prices](https://sharadar.com/prices)
-- [Nasdaq Data Link SEP](https://data.nasdaq.com/databases/SEP)
-- [Norgate packages](https://norgatedata.com/stockmarketpackages.php)
-- [Norgate FAQ](https://norgatedata.com/data-package-faq.php)
-- [EODHD delisted data](https://eodhd.com/financial-apis/delisted-stock-companies-data-2)
-- [EODHD exchanges](https://eodhd.com/financial-apis/exchanges-api-list-of-tickers-and-trading-hours)
+- [Sharadar suscripción](https://sharadar.com/subscribe)
+- [Norgate](https://norgatedata.com/stockmarketpackages.php)
+- [EODHD pricing](https://eodhd.com/pricing)
+- [EODHD comercial](https://eodhd.com/commercial-pricing)
+- [CRSP](https://www.crsp.org/research/crsp-us-stock-databases/)
+- [BME fin de día](https://www.bolsasymercados.es/en/bme-exchange/prices-and-markets/market-data-services/end-of-day-and-historical-services.html)
+- [BME tarifas jul-2025](https://www.bolsasymercados.es/dam/descargas/servicios-de-datos/tarifas-julio-2025-informacion-fin-de-dia-es.pdf)
+
+## Consulta preparada para BME Market Data (no enviada)
+> Para uso interno y personal de backtesting (sin redifusión), solicitamos información sobre:
+> 1. Profundidad histórica de: Maestro de Valores (1100) con altas, bajas y modificaciones;
+>    Precios y Volúmenes (2100); Hechos Relevantes Back Office (1200).
+> 2. Inclusión de valores excluidos y su motivo (OPA, fusión, resolución).
+> 3. Tratamiento de derechos, ampliaciones liberadas / scrip, splits y contra-splits.
+> 4. Formato de entrega y posibilidad de un histórico completo de una vez.
+> 5. Condiciones de almacenamiento local indefinido y tarifa para un usuario final persona
+>    física.
 
 ## Lectura provisional (no es la decisión)
 
-**EE. UU.**
-- CRSP es el estándar para delisting returns.
-- Sharadar es la alternativa minorista mejor documentada en deslistadas y corporate actions.
-- Ambos deben pasar la suite.
+**EE. UU.** Sharadar SEP cumple sobre el papel los requisitos de datos a coste bajo para uso
+personal. Debe pasar los 11 casos verificados, y hay que leer su licencia personal.
 
 **España**
-- Ningún candidato documenta todavía derechos, scrip y resolución bancaria.
-- Es el punto débil: probablemente exija una fuente oficial BME o institucional. Es una
-  decisión económica del propietario.
+- BME Market Data es la única fuente oficial que documenta corporate actions españolas.
+  Tarifa de usuario final y profundidad por confirmar.
+- EODHD no documenta derechos, scrip ni OPAs.
 
-**Licencias**
-- Todas las condiciones de licencia están `UNVERIFIED`. Hay que leer los contratos antes
-  de pagar.
+**Decisión: ABIERTA.**

@@ -127,10 +127,14 @@ def reference_stub(cases: Sequence[ContractCase] = CASES) -> StubCandidate:
             Category.CASH_ACQUISITION,
             Category.STOCK_ACQUISITION,
             Category.DELISTED,
+            Category.TENDER_OFFER_DELISTING,
+            Category.MERGER,
         ):
-            reason = {Category.BANKRUPTCY: "bankruptcy", Category.DELISTED: "delisted"}.get(
-                c.category, "acquired"
-            )
+            reason = {
+                Category.BANKRUPTCY: "bankruptcy",
+                Category.DELISTED: "delisted",
+                Category.TENDER_OFFER_DELISTING: "tender_offer",
+            }.get(c.category, "acquired")
             end = e["delisted_on"]
             s.secs[(c.market, k)] = _sec(k, [(c.symbol, start, end)], end, reason)
             s.bars_ += _bars(k, end, 10.0, 10.0, last=end - timedelta(days=1))
@@ -140,12 +144,22 @@ def reference_stub(cases: Sequence[ContractCase] = CASES) -> StubCandidate:
                 s.acts.append(
                     CorporateActionRecord(k, "merger", ANN, end, cash_amount=e["cash_per_share"])
                 )
-            elif c.category is Category.STOCK_ACQUISITION:
+            elif c.category in (Category.STOCK_ACQUISITION, Category.MERGER):
                 s.acts.append(
                     CorporateActionRecord(
                         k, "merger", ANN, end, ratio=e["exchange_ratio"], target_key="ACQ"
                     )
                 )
+        elif c.category is Category.ORDINARY_DIVIDEND:
+            s.secs[(c.market, k)] = _sec(k, [(c.symbol, start, None)])
+            s.divs.append(DividendRecord(k, ANN, e["ex_date"], None, e["amount"], "USD", "regular"))
+        elif c.category in (Category.CAPITAL_INCREASE, Category.BONUS_ISSUE):
+            s.secs[(c.market, k)] = _sec(k, [(c.symbol, start, None)])
+            kind = "capital_increase" if c.category is Category.CAPITAL_INCREASE else "bonus_issue"
+            s.acts.append(CorporateActionRecord(k, kind, ANN, e["ex_date"], ratio=e.get("ratio")))
+        elif c.category is Category.EXCHANGE_MOVE:
+            s.secs[(c.market, k)] = _sec(k, [(c.symbol, start, None)])
+            s.acts.append(CorporateActionRecord(k, "exchange_change", ANN, e["move_date"]))
         elif c.category is Category.RIGHTS_ISSUE:
             s.secs[(c.market, k)] = _sec(k, [(c.symbol, start, None)])
             s.acts.append(
@@ -183,7 +197,13 @@ def test_all_categories_required_by_d05_are_covered() -> None:
 
 def test_survivorship_biased_provider_is_rejected() -> None:
     stub = reference_stub()
-    dead = {Category.BANKRUPTCY, Category.CASH_ACQUISITION, Category.STOCK_ACQUISITION}
+    dead = {
+        Category.BANKRUPTCY,
+        Category.CASH_ACQUISITION,
+        Category.STOCK_ACQUISITION,
+        Category.TENDER_OFFER_DELISTING,
+        Category.MERGER,
+    }
     dead_cases = [c for c in CASES if c.category in dead]
     dead_keys = {f"{c.market}:{c.symbol}" for c in dead_cases}
     stub.secs = {k: v for k, v in stub.secs.items() if k[1] not in dead_keys}

@@ -165,3 +165,20 @@ class AnalystEstimatesProvider(_Provider):
     def estimates(
         self, keys: Sequence[str], start: date, end: date
     ) -> Sequence[EstimateRecord]: ...
+
+
+class MarketDataProvider(PriceProvider, CorporateActionsProvider, SecurityProvider, ABC):
+    """Market data + corporate actions + security master from ONE vendor for ONE market.
+
+    D-05 does not assume one vendor serves both markets: the US and Spanish sides are
+    separate roles, each accepted (or not) by the contract suite on its own cases."""
+
+    market: str = ""
+
+
+class USMarketDataProvider(MarketDataProvider, ABC):
+    market = "US"
+
+
+class ESMarketDataProvider(MarketDataProvider, ABC):
+    market = "ES"
