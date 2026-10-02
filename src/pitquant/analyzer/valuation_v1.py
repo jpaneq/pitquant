@@ -167,4 +167,24 @@ def compute_valuation(
         "percentile": None,
         "reason": "PEER COMPARISON NOT AVAILABLE: no current peer universe with fundamentals ingested",
     }
+    # three separated readings (ADR-0030): each states what it is and what it is NOT
+    out["absolute"] = {
+        "kind": "ABSOLUTE",
+        "status": "OK" if out["status"] == "OK" else "NO_DATA",
+        "metrics": out["current"],
+        "note": "levels from price and PIT fundamentals; no judgement of cheap/expensive",
+    }
+    out["own_history_view"] = {
+        "kind": "OWN_HISTORY",
+        "status": "OK"
+        if any(v.get("percentile") is not None for v in own.values())
+        else "INSUFFICIENT_HISTORY",
+        "metrics": own,
+    }
+    out["peer_relative"] = {
+        "kind": "PEER_RELATIVE",
+        "status": "NOT_AVAILABLE",
+        "reason": out["peer_context"]["reason"],
+        "metrics": {},
+    }
     return out

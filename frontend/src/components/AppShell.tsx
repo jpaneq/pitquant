@@ -55,7 +55,11 @@ export function AppShell() {
             {dark ? 'Light' : 'Dark'}
           </button>
         </header>
-        {notice && notice.live_reference !== 'CONFIGURED' ? (
+        {notice?.live_reference === 'FIXTURE' ? (
+          <div role="status" data-testid="demo-banner" className="border-b border-warn/30 bg-warn/5 px-4 py-1.5 text-[11px] text-warn">
+            <b>DEMO DATA</b> — synthetic fixture, not market data. Nothing on this screen is a real price, filing or result.
+          </div>
+        ) : notice && notice.live_reference !== 'CONFIGURED' ? (
           <div role="status" className="border-b border-warn/30 bg-warn/5 px-4 py-1.5 text-[11px] text-warn">
             <b>DATA SOURCE NOT CONFIGURED</b> — live reference quotes need <code className="num">{notice.required_env}</code>. Showing persisted end-of-day bars ({notice.mode}).
           </div>

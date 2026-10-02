@@ -274,3 +274,30 @@ def test_same_inputs_same_output_and_historical_call_ignores_later_data(client: 
     assert (
         mid["ttm"]["revenue"]["value"] == 1000.0
     )  # FY2015 is filed in 2016: invisible in mid-2015, FY2014 is the latest known
+
+
+def test_explain_panels_state_provenance_and_nature(client: TestClient) -> None:
+    for panel in ("analysis", "trade-plan"):
+        j = client.get("/analyzer/SYNF/explain", params={"panel": panel, "as_of": AS_OF}).json()
+        assert j["panel"] == panel and j["prediction"] == "NOT_YET_VALIDATED"
+        assert "no BUY" in j["nature"] and j["market_data"]["sources"]
+        assert j["engine_versions"]["trade_plan_version"]
+    assert client.get("/analyzer/SYNF/explain", params={"panel": "x"}).status_code == 422
+    assert (
+        client.get(
+            "/analyzer/SYNF/explain", params={"as_of": "2023-01-02T00:00:00+00:00"}
+        ).status_code
+        == 403
+    )
+
+
+def test_valuation_three_separated_readings_peer_not_available(client: TestClient) -> None:
+    v = client.get("/analyzer/SYNF/valuation", params={"as_of": AS_OF}).json()
+    assert v["peer_relative"]["status"] == "NOT_AVAILABLE" and v["peer_relative"]["metrics"] == {}
+    assert v["absolute"]["kind"] == "ABSOLUTE" and v["own_history_view"]["kind"] == "OWN_HISTORY"
+
+
+def test_technical_indicator_metadata(client: TestClient) -> None:
+    t = client.get("/analyzer/SYNF/technicals", params={"as_of": AS_OF}).json()
+    m = t["indicator_meta"]["sma200"]
+    assert m["lookback"] == 200 and m["sufficient"] is True and "SPLIT_ADJUSTED" in m["adjustment"]

@@ -35,7 +35,7 @@ temporal, se rechaza.
   "FIXTURE"). Nunca presentarlos como históricos reales.
 - No dar una funcionalidad por terminada porque "ejecuta": correcta, testeada, tipada,
   documentada, reproducible, point-in-time.
-- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0030).
+- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0031).
 - Migraciones: `0001`…`0011` fijadas (`0011` perfiles descriptivos `security_profiles`) (`0010` anclas de índice SPY/IVV) (`0009` evidencia de membresía S&P 500) (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
   código↔ISIN, `0006` transiciones de ISIN, `0007` traza de corporate actions, `role` de
   security e `issuer_id` en filings SEC); **todo cambio de esquema = revisión nueva**.
@@ -191,3 +191,9 @@ es `false`: no empezar Feature Engine hasta READY con datos reales.
 
 Mac Mini M4 (16 GB), servidor 24/7 autoalojado. Preferencia por soluciones locales y sin
 dependencia de nube; despliegue con Docker Compose (PostgreSQL + API + Prefect).
+
+## Research Lab (ADR-0030)
+`RESEARCH_LAB_IMPLEMENTED=true` pero `RESEARCH_DATA_READY=false` hasta D-02/D-05. El holdout sigue
+sellado: los folds y el Dataset Builder lo excluyen (también si la ventana de la etiqueta lo toca).
+Etiquetas humanas del Analyzer nunca son feature ni target. `pitquant research-dry-run`,
+`explain-analysis`, `explain-trade-plan`. E2E de navegador: `cd frontend && npx playwright test`.

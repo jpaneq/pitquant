@@ -43,6 +43,13 @@ class Zone:
     distance_atr: float
     reasons: list[str] = field(default_factory=list)
     volume_confirmation: float | None = None
+    # V1 documented contract (additive): explicit band, method, recency and the raw strength
+    zone_low: float = 0.0
+    zone_high: float = 0.0
+    method: str = "SWING_PIVOT_CLUSTER_ATR"
+    recency: float = 0.0
+    strength_raw: float = 0.0
+    calculation_at: str = ""
 
 
 def pivots(high: pd.Series, low: pd.Series, window: int = WINDOW) -> tuple[list[int], list[int]]:
@@ -132,6 +139,11 @@ def compute_zones(
                         f"recency weight {rec:.2f}",
                     ],
                     float(np.mean(vc)) if vc else None,
+                    zone_low=lower,
+                    zone_high=upper,
+                    recency=round(rec, 4),
+                    strength_raw=strength,
+                    calculation_at=str(d.index[-1]),
                 )
             )
     broken = _broken_resistances(d, hi_idx, atr14, close, vol20)

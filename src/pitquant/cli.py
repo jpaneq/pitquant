@@ -7,6 +7,7 @@ import argparse
 import json
 import sys
 from datetime import date, datetime
+from typing import Any
 
 from pitquant.config.settings import Settings, get_settings
 from pitquant.data.providers.sec_edgar.provider import SECEdgarFundamentalProvider
@@ -352,6 +353,55 @@ def _explain_feature(args: argparse.Namespace) -> int:
     return 0
 
 
+def _research_dry_run(args: argparse.Namespace) -> int:
+    """Plan walk-forward folds on calendar dates only: no data read, no model trained."""
+    from pitquant.data.calendars.market_calendar import get_calendar
+    from pitquant.research.walkforward import WalkForwardConfig, dry_run, format_dry_run
+
+    cal = get_calendar("XNYS")
+    first, last = date.fromisoformat(args.start), date.fromisoformat(args.end)
+    ds, d = [], date(first.year, first.month, 1)
+    while d <= last:
+        ds.append(cal.session_on_or_after(d))
+        d = date(d.year + (d.month == 12), d.month % 12 + 1, 1)
+    ho = get_settings().validation.final_holdout
+    cfg = WalkForwardConfig(
+        window_kind=args.window,
+        purge_months=args.purge,
+        embargo_months=args.embargo,
+        label_horizon_months=args.horizon,
+    )
+    print(f"HOLDOUT SEALED {ho.start}..{ho.end} (never used) · {cfg}")
+    print(format_dry_run(dry_run(ds, cfg, (ho.start, ho.end))))
+    return 0
+
+
+def _explain_panel(args: argparse.Namespace) -> int:
+    from pitquant.analyzer.search import search
+    from pitquant.analyzer.service import AnalyzerService
+    from pitquant.core.timeutils import utc_now
+
+    settings = get_settings()
+    at = datetime.fromisoformat(args.as_of) if args.as_of else utc_now()
+    if at.tzinfo is None:
+        print("as_of must include a UTC offset", file=sys.stderr)
+        return 2
+    ho = settings.validation.final_holdout
+    if ho.start <= at.date() <= ho.end:
+        print("as_of is inside the sealed final holdout", file=sys.stderr)
+        return 3
+    factory = make_session_factory(make_engine(settings.database.url))
+    with factory() as session:
+        found: dict[str, Any] = search(session, args.security, limit=5)
+        hits = [h for h in found["results"] if h["match_type"] in ("EXACT", "IDENTIFIER")]
+        if len(hits) != 1:
+            print(f"{args.security!r}: {len(hits)} exact matches", file=sys.stderr)
+            return 2
+        res = AnalyzerService(session, settings).explain(hits[0]["security_id"], at, args.panel)
+    print(json.dumps(res, indent=2, default=str))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="pitquant")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -408,6 +458,19 @@ def main(argv: list[str] | None = None) -> int:
     si.add_argument("ciks", nargs="+")
     si.add_argument("--register-missing", action="store_true")
     si.set_defaults(func=_sec_ingest)
+    rd = sub.add_parser("research-dry-run", help="walk-forward fold plan (no data, no training)")
+    rd.add_argument("--start", default="2011-01-01")
+    rd.add_argument("--end", default="2026-09-01")
+    rd.add_argument("--window", choices=["EXPANDING", "ROLLING"], default="EXPANDING")
+    rd.add_argument("--horizon", type=int, choices=[6, 12], default=6)
+    rd.add_argument("--purge", type=int, default=1)
+    rd.add_argument("--embargo", type=int, default=1)
+    rd.set_defaults(func=_research_dry_run)
+    for cmd, panel in (("explain-analysis", "analysis"), ("explain-trade-plan", "trade-plan")):
+        xp = sub.add_parser(cmd, help=f"provenance of the {panel} panel")
+        xp.add_argument("security", help="ticker | security_id | CIK:<cik>")
+        xp.add_argument("--as-of", help="ISO datetime WITH offset (default now)")
+        xp.set_defaults(func=_explain_panel, panel=panel)
     args = parser.parse_args(argv)
     return int(args.func(args))
 

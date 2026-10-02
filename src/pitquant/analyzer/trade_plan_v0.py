@@ -68,8 +68,12 @@ def _setup(
     t = _targets(entry, stop, resistances)
     if t is None:
         return None
+    st = t["structural_target"]
+    t1 = st["price"] if st and st["price"] > entry else t["r_targets"][0]["price"]
+    t2 = max(t["r_targets"][2]["price"], t1 + t["risk_per_share"])
     return {
         "type": kind,
+        "setup_type": kind,
         "profile": profile,
         "entry_zone": {
             "lower": zone["lower"],
@@ -83,6 +87,23 @@ def _setup(
         "stop_distance_atr": (entry - stop) / atr,
         "structural_target": t["structural_target"],
         "r_targets": t["r_targets"],
+        "target_1": t1,
+        "target_2": t2,
+        "risk_reward_1": (t1 - entry) / t["risk_per_share"],
+        "risk_reward_2": (t2 - entry) / t["risk_per_share"],
+        "rules_version": TRADE_PLAN_VERSION,
+        "inputs": {
+            "atr14": atr,
+            "last_close_split_adjusted": close,
+            "support_zone": {"lower": zone["lower"], "upper": zone["upper"]},
+            "stop_rule": f"zone.lower - {STOP_ATR} ATR14",
+            "target_rule": "target_1 = next structural resistance (else 1.5R); target_2 = 3R (>= target_1 + 1R)",
+        },
+        "explanation": (
+            f"{kind} {profile}: entry {entry:.2f} inside/at the zone {zone['lower']:.2f}-{zone['upper']:.2f}; "
+            f"the setup is invalid below {zone['lower']:.2f}; stop {stop:.2f} = zone.lower - {STOP_ATR} ATR14; "
+            f"scenario targets {t1:.2f} / {t2:.2f}. Rule-based scenario, not a forecast and not validated."
+        ),
         "confluence": confluence,
         "conditions": conditions,
         "distance_from_last_close_pct": entry / close - 1.0,

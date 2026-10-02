@@ -122,3 +122,10 @@ Formatos: Markdown, PDF, JSON y CSV. Nunca expone secretos ni el holdout sellado
 - ML predictivo.
 - Champion/Challenger productivo.
 - Price targets y expected returns.
+
+## Iteración 7 (2026-10-02): Research Lab listo, sin resultados (ADR-0030)
+Hecho: modelo de datos 0012, walk-forward con guardas de holdout, Dataset Builder, missingness,
+baselines predefinidos, métricas, contrato de predicción, backtest de Trade Plan, registro de
+experimentos, `/research/*`, UI Research Lab, provenance del Analyzer y E2E de navegador.
+Pendiente (datos): D-02 con ≥60 cohortes mensuales probadas fuera del holdout y D-05 con precios
+reales; después, el primer experimento baseline.

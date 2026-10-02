@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { usePositionSize, useTradePlan } from '../../api/hooks'
 import type { Setup } from '../../api/types'
 import { Badge, Button, Card, CardBody, CardHeader, Metric, PanelError, Segmented, Skeleton } from '../../components/ui/primitives'
+import { ExplainDetails } from './ExplainDetails'
 import { fmtNum, fmtPct } from '../../lib/format'
 
 const PROFILES = ['AGGRESSIVE', 'BASE', 'CONSERVATIVE'] as const
@@ -27,6 +28,7 @@ export function TradePlanSection({ sec }: { sec: string }) {
               <span className="text-[11px] text-muted">Trend context: {q.data.trend_context?.state?.replace('_', ' ').toLowerCase()}</span>
             </div>
             {s ? <SetupView sec={sec} s={s} /> : null}
+            <ExplainDetails sec={sec} panel="trade-plan" />
           </>
         )}
       </CardBody>

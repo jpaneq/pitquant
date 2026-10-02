@@ -301,6 +301,37 @@ class AnalyzerService:
     def trade_plan(self, sid: str, at: datetime) -> dict[str, Any]:
         return trade_plan_v0.build_trade_plan(self.technicals(sid, at), at.isoformat())
 
+    def explain(self, sid: str, at: datetime, panel: str) -> dict[str, Any]:
+        """Provenance of one panel: what it used, from which source tier, with which rules (ADR-0030)."""
+        if panel not in ("analysis", "trade-plan"):
+            raise ValueError("panel must be 'analysis' or 'trade-plan'")
+        md = self._md(sid, at)
+        tech = self.technicals(sid, at)
+        out: dict[str, Any] = {
+            "panel": panel,
+            "decision_at": at.isoformat(),
+            "engine_versions": self.versions(),
+            "market_data": {
+                "sources": md.sources,
+                "bars": md.series.n_bars,
+                "last_session": str(md.last_session) if md.last_session else None,
+                "last_close_at": md.last_close_at.isoformat() if md.last_close_at else None,
+                "series": "RAW OHLCV; split-adjusted for indicators; vendor adjusted_close is QA only",
+                "corporate_actions_applied": tech.get("corporate_actions_applied", []),
+            },
+            "nature": "RULE_BASED explanation; not a prediction, not a recommendation, no BUY/HOLD/SELL",
+            "prediction": "NOT_YET_VALIDATED",
+        }
+        if panel == "analysis":
+            out["result"] = self.analysis(sid, at)
+            out["fundamental_filings_used"] = self.filings(sid, at).get("filings", [])
+        else:
+            plan = self.trade_plan(sid, at)
+            out["result"] = plan
+            out["structure_used"] = tech.get("support_resistance")
+            out["trend_context"] = tech.get("trend")
+        return out
+
     def prediction(self, sid: str, at: datetime) -> dict[str, Any]:
         champion = self.s.scalars(select(ModelRow).where(ModelRow.role == "champion")).first()
         base = {
@@ -382,6 +413,12 @@ class AnalyzerService:
     def data_notice(self) -> dict[str, Any]:
         import os
 
+        if os.environ.get("PITQUANT_E2E_FIXTURE") == "1":
+            return {
+                "live_reference": "FIXTURE",
+                "required_env": None,
+                "mode": "DEMO DATA · SYNTHETIC FIXTURE (not market data)",
+            }
         tiingo = bool(os.environ.get("PITQUANT_TIINGO_API_KEY"))
         return {
             "live_reference": "CONFIGURED" if tiingo else "DATA SOURCE NOT CONFIGURED",

@@ -103,6 +103,41 @@ def classify_trend(m: dict[str, float | None]) -> dict[str, Any]:
     }
 
 
+# (lookback, minimum observations, input series): split-adjusted OHLCV, never dividend-adjusted
+_META: dict[str, tuple[int, int, str]] = {
+    "sma20": (20, 20, "close"),
+    "sma50": (50, 50, "close"),
+    "sma200": (200, 200, "close"),
+    "ema20": (20, 20, "close"),
+    "ema50": (50, 50, "close"),
+    "rsi14": (14, 15, "close"),
+    "macd": (26, 35, "close"),
+    "macd_signal": (26, 35, "close"),
+    "macd_hist": (26, 35, "close"),
+    "atr14": (14, 15, "high, low, close"),
+    "adx14": (14, 28, "high, low, close"),
+    "bollinger_mid": (20, 20, "close"),
+    "bollinger_upper": (20, 20, "close"),
+    "bollinger_lower": (20, 20, "close"),
+}
+
+
+def indicator_meta(n_bars: int, last_session: str) -> dict[str, dict[str, Any]]:
+    """Per-indicator audit metadata: how much history it needs and whether it had enough."""
+    return {
+        k: {
+            "lookback": lb,
+            "required_observations": need,
+            "available_observations": n_bars,
+            "sufficient": n_bars >= need,
+            "input_series": inp,
+            "adjustment": "SPLIT_ADJUSTED_ONLY (no dividend adjustment)",
+            "last_timestamp": last_session,
+        }
+        for k, (lb, need, inp) in _META.items()
+    }
+
+
 def compute_technicals(
     md: MarketData, bench: MarketData | None = None, bench_ticker: str | None = None
 ) -> dict[str, Any]:
@@ -163,6 +198,7 @@ def compute_technicals(
         if bb_u is None or bb_l is None or bb_u == bb_l or close is None
         else (close - bb_l) / (bb_u - bb_l)
     )
+    out["indicator_meta"] = indicator_meta(ps.n_bars, str(ps.last_session))
     out["indicators"] = ind
     out["trend"] = classify_trend(
         {

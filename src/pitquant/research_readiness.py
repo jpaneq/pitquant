@@ -135,6 +135,9 @@ def research_readiness(session: Session, settings: Settings) -> ResearchFlags:
     )
     n_snap = session.scalar(select(func.count()).select_from(FeatureSnapshotRow)) or 0
     rf.metrics["feature_snapshots"] = n_snap
+    rf.flags["RESEARCH_LAB_IMPLEMENTED"] = True  # code, schema, contracts and UI exist (ADR-0030)
+    rf.flags["RESEARCH_DATA_READY"] = bool(rf.flags["FEATURE_RESEARCH_READY_US"])
+    rf.reasons["RESEARCH_DATA_READY"] = list(rf.reasons["FEATURE_RESEARCH_READY_US"])
     rf.flags["BASELINE_MODEL_READY"] = False
     rf.reasons["BASELINE_MODEL_READY"] = [
         f"needs >= 60 complete pre-holdout cohorts and labels; have {n_pre} cohorts"

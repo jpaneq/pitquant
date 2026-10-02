@@ -113,6 +113,15 @@ def make_analyzer_router(cfg: Settings) -> APIRouter:
         v, sid, at = svc_for(s, security, as_of)
         return v.chart(sid, at, range)
 
+    @r.get("/analyzer/{security}/explain")
+    def explain(
+        security: str, s: DB, panel: str = "analysis", as_of: str | None = None
+    ) -> dict[str, Any]:
+        if panel not in ("analysis", "trade-plan"):
+            raise HTTPException(422, "panel must be 'analysis' or 'trade-plan'")
+        v, sid, at = svc_for(s, security, as_of)
+        return v.explain(sid, at, panel)
+
     @r.get("/analyzer/{security}/technicals")
     def technicals(security: str, s: DB, as_of: str | None = None) -> dict[str, Any]:
         v, sid, at = svc_for(s, security, as_of)
