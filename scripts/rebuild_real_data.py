@@ -116,6 +116,13 @@ def main() -> int:
             print(ingest_cnmv_report(ses, prov, nreg, register_missing=True), flush=True)
         ses.commit()
     run(sys.executable, "scripts/ingest_ancv.py")
+    # official identity evidence (ADR-0022): fichas ~40 min (Internet Archive, throttled),
+    # transitions ~1 min, daily bulletins ~7 min. Needs the BME build's tickers (step below
+    # builds them first without identity; run build twice: before and after the evidence).
+    run(sys.executable, "scripts/build_ibex_real.py")
+    run(sys.executable, "scripts/ingest_bme_ficha_evidence.py")
+    run(sys.executable, "scripts/ingest_official_isin_transitions.py")
+    run(sys.executable, "scripts/ingest_bme_bulletin_evidence.py")
     run(sys.executable, "scripts/build_ibex_real.py")
     run(sys.executable, "scripts/edgar_time_investigation.py")
     run(sys.executable, "scripts/verify_contract_cases.py")

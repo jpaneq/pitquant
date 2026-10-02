@@ -1,0 +1,6 @@
+{
+  "source": "docs/IDENTITY_BLOCKERS.md generated at commit 8d2993e154ca97e585ac4e6b928005afad1342a0 (before the official-evidence iteration)",
+  "dates_total": 190,
+  "dates_backtestable": 0,
+  "blocked_dates": {"MTS": 190, "FER": 46, "LOG": 46, "PUIG": 27, "ABG.P": 25, "GRF": 6, "REE": 6, "PHM": 3}
+}

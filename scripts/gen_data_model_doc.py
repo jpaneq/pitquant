@@ -27,6 +27,8 @@ GROUPS = {
     ],
     "Identidad (ADR-0020)": [
         "security_identity_snapshots",
+        "official_code_isin_evidence",
+        "official_isin_transitions",
         "identity_resolution_runs",
         "membership_identity_segments",
     ],
@@ -35,6 +37,7 @@ GROUPS = {
         "prices",
         "provider_adjusted_prices",
         "corporate_action_events",
+        "corporate_action_ingestions",
         "corporate_actions",
         "dividends",
         "benchmarks",

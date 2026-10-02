@@ -1,4 +1,4 @@
-"""Command line: data-readiness, explain, universe, coverage, sec-stress-scan, sec-ingest."""
+"""Command line: data-readiness, cohort-readiness, explain, universe, coverage, sec-ingest."""
 
 from __future__ import annotations
 
@@ -148,6 +148,59 @@ def _coverage(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cohorts(args: argparse.Namespace) -> int:
+    from dataclasses import asdict
+
+    from pitquant.cohorts import cohort_readiness
+
+    settings = get_settings()
+    factory = make_session_factory(make_engine(settings.database.url))
+    with factory() as session:
+        rows, summ = cohort_readiness(
+            session,
+            settings,
+            args.index,
+            start=date.fromisoformat(args.start) if args.start else None,
+            end=date.fromisoformat(args.end) if args.end else None,
+        )
+    if args.json:
+        print(
+            json.dumps(
+                {"summary": asdict(summ), "rows": [asdict(r) for r in rows]}, default=str, indent=2
+            )
+        )
+        return 0
+    first12 = (
+        f"{summ.first_12_identity_cohorts[0]}..{summ.first_12_identity_cohorts[-1]}"
+        if summ.first_12_identity_cohorts
+        else None
+    )
+    print(f"{summ.index_code} cohorts (build {summ.build_id[:8]}): {summ.total_dates} dates")
+    print(
+        f"  identity-eligible: {summ.identity_eligible_dates}   "
+        f"fully eligible: {summ.eligible_dates}"
+    )
+    print(f"  FIRST_IDENTITY_COHORT: {summ.first_identity_cohort}")
+    print(f"  FIRST_CANONICAL_COHORT: {summ.first_canonical_cohort}")
+    print(f"  first 12 consecutive identity cohorts: {first12}")
+    print(
+        f"  first complete identity year: {summ.first_complete_identity_year}   "
+        f"full year: {summ.first_complete_year}"
+    )
+    print(f"  research identity dates (outside the sealed holdout): {summ.research_identity_dates}")
+    print(f"  blockers (dates): {summ.blockers}")
+    if args.table:
+        print("date       size resolved prices fundam. ca    id_ok elig  reasons")
+        for r in rows:
+            print(
+                f"{r.date} {r.universe_size:>4} {r.resolved_identities:>8} "
+                f"{r.price_coverage:>6.0%} {r.fundamental_coverage:>7.0%} "
+                f"{r.corporate_action_coverage:>4.0%} {r.identity_eligible!s:<5} "
+                f"{r.eligible!s:<5} {'; '.join(r.blocking_reasons[:3])}"
+            )
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="pitquant")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -172,6 +225,13 @@ def main(argv: list[str] | None = None) -> int:
     cv.add_argument("end", help="YYYY-MM-DD")
     cv.add_argument("--benchmark")
     cv.set_defaults(func=_coverage)
+    co = sub.add_parser("cohort-readiness", help="can each rebalance cohort be reconstructed?")
+    co.add_argument("--index", default="IBEX35")
+    co.add_argument("--start")
+    co.add_argument("--end")
+    co.add_argument("--table", action="store_true", help="one line per date")
+    co.add_argument("--json", action="store_true")
+    co.set_defaults(func=_cohorts)
     sc = sub.add_parser("sec-stress-scan", help="pick stress-test filings from submissions")
     sc.add_argument("ciks", nargs="+")
     sc.set_defaults(func=_sec_scan)

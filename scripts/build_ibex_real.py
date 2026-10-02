@@ -43,7 +43,10 @@ from pitquant.security_master.identity import (  # noqa: E402
     resolve_code_row,
 )
 from pitquant.security_master.identity_store import (  # noqa: E402
+    evidence_hash,
+    load_official_evidence,
     load_snapshot_index,
+    load_transitions,
     run_identity_resolution,
     snapshots_hash,
 )
@@ -161,14 +164,18 @@ def main() -> int:
         ]
 
         # 4. identity resolution over the build
-        engine = IdentityResolutionEngine(ix, official, horizon=current.observed_on)
+        official = [*official, *load_official_evidence(ses)]  # exact dated official documents
+        transitions = load_transitions(ses)
+        engine = IdentityResolutionEngine(
+            ix, official, horizon=current.observed_on, transitions=transitions
+        )
         res = run_identity_resolution(
             ses,
             index_code="IBEX35",
             build_id=rep.build_id,
             engine=engine,
             canonical_start=canon,
-            inputs_hash=snap_hash,
+            inputs_hash=f"{snap_hash}:{evidence_hash(ses)}",
             official=official,
             issuer_links=links,
         )
@@ -184,6 +191,18 @@ def main() -> int:
                 )
             )
             if owners and sid not in owners:
+                detail = {"ticker": ticker, "isin": isin, "owners": sorted(owners)}
+                seen = any(
+                    i.details == detail
+                    for i in ses.scalars(
+                        select(DataQualityIssue).where(
+                            DataQualityIssue.check_name == "current_isin_owned_by_other_security",
+                            DataQualityIssue.security_id == sid,
+                        )
+                    )
+                )
+                if seen:
+                    continue
                 ses.add(
                     DataQualityIssue(
                         entity="identifier_history",
@@ -211,7 +230,8 @@ def main() -> int:
                 ),
                 None,
             )
-            engine_isins[sm.ticker_as_of(m.security_id, last) or "?"] = seg.isin if seg else None
+            code_last = res.spans[m.membership_id or -1].code_at(last) or "?"
+            engine_isins[code_last] = seg.isin if seg else None
         agree = mism = miss = 0
         for t, i in current.constituents:
             got = engine_isins.get(t)

@@ -106,3 +106,37 @@ def test_xbrl_duplicates_at_different_precision() -> None:
         assert parse_xbrl_instance(inst(*order))[key] == 25808000000.0
     bad = parse_xbrl_instance(inst(("25808000000", "-6"), ("26000000000", "-8")))
     assert math.isnan(bad[key])
+
+
+def test_sec_fundamentals_belong_to_the_issuer_not_to_one_security(
+    session: Session, tmp_path: Path, settings: Settings
+) -> None:
+    """ADR-0022: the CIK-registered pseudo-security is an ISSUER ANCHOR; facts and filings carry
+    the issuer, so another security of the same issuer sees them without duplication."""
+    from datetime import UTC, datetime
+
+    from sqlalchemy import func, select
+
+    from pitquant.data.point_in_time.engine import facts_as_of
+    from pitquant.db.models import FundamentalFact, IssuerIdentifier, SecFiling, Security
+
+    prov = _provider(tmp_path, settings, FakeSEC())
+    ingest_ciks(session, prov, settings, [CIK], register_missing=True)
+    anchor_id = SecurityMaster(session).resolve_identifier(
+        "CIK", CIK.zfill(10), settings.fundamentals.sec.coverage_start
+    )
+    anchor = session.get_one(Security, anchor_id)
+    assert anchor.role == "ISSUER_ANCHOR" and anchor.issuer_id is not None
+    ident = session.scalars(select(IssuerIdentifier).where(IssuerIdentifier.id_type == "CIK")).one()
+    assert ident.issuer_id == anchor.issuer_id and ident.value == CIK.zfill(10)
+    assert session.query(FundamentalFact).filter(FundamentalFact.issuer_id.is_(None)).count() == 0
+    assert session.query(SecFiling).filter(SecFiling.issuer_id.is_(None)).count() == 0
+    # a TRADED security of the same issuer sees the fundamentals; nothing is copied
+    traded = SecurityMaster(session).register(
+        name="FIXTURE TRADED", exchange="XNYS", currency="USD"
+    )
+    traded.issuer_id = anchor.issuer_id
+    session.flush()
+    n_before = session.scalar(select(func.count()).select_from(FundamentalFact))
+    seen = facts_as_of(session, traded.security_id, datetime(2100, 1, 1, tzinfo=UTC))
+    assert seen and session.scalar(select(func.count()).select_from(FundamentalFact)) == n_before

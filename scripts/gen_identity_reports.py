@@ -35,6 +35,8 @@ from pitquant.db.models import (  # noqa: E402
     IndexMembership,
     Issuer,
     MembershipIdentitySegment,
+    OfficialCodeIsinEvidence,
+    OfficialIsinTransition,
     RawSourceArchive,
     SecurityIdentitySnapshot,
 )
@@ -43,6 +45,7 @@ from pitquant.security_master.identity import BACKTESTABLE, normalize_name  # no
 from pitquant.security_master.identity_store import (  # noqa: E402
     latest_run,
     load_snapshot_index,
+    load_transitions,
 )
 from pitquant.security_master.service import SecurityMaster  # noqa: E402
 from pitquant.universe.index_membership import IndexUniverse  # noqa: E402
@@ -55,6 +58,10 @@ REQUIRED = {
     "BKIA 2017": ("BKIA", 2017),
     "AENA 2025": ("AENA", 2025),
     "Ferrovial": ("FER", None),
+    "MTS 2017": ("MTS", 2017),
+    "GRF 2016": ("GRF", 2016),
+    "REE 2016": ("REE", 2016),
+    "PHM 2020": ("PHM", 2020),
 }
 OBS_ID = "observation:bme-ibex35-constituents:2026-10-01"
 
@@ -132,6 +139,11 @@ def main() -> int:
         horizon = date.fromisoformat(obs["observed_at"][:10])
         current_isin = {t: i for t, i in obs["constituents"]}
 
+        transitions = {(t.old_isin, t.new_isin): t for t in load_transitions(ses)}
+        tr_docs = {
+            (r.old_isin, r.new_isin): list(r.documents or [])
+            for r in ses.scalars(select(OfficialIsinTransition))
+        }
         ivs = {
             i.id: i
             for i in ses.scalars(
@@ -181,29 +193,33 @@ def main() -> int:
                 if sg.ok and sg.isin:
                     if last_ok is not None and last_ok.isin != sg.isin:
                         t = code_at(mid, sg.start)
-                        sec = iv.security_id
+                        sec_a = sec_of.get((mid, last_ok.start)) or iv.security_id
+                        sec_b = sec_of.get((mid, sg.start)) or iv.security_id
+                        tr = transitions.get((last_ok.isin, sg.isin))
                         explained = any(
                             "ISIN change" in e
                             for e in last_ok.evidence
                             + sg.evidence
                             + [x for g in gap for x in g.evidence]
                         )
-                        if (not gap and explained) or (
-                            not gap and sg.start == (last_ok.end or sg.start)
-                        ):
-                            kind, st = "ISIN_CHANGE_SAME_SECURITY", "MULTI_SOURCE_CONFIRMED"
-                        else:
+                        if gap or not (tr or explained or sg.start == (last_ok.end or sg.start)):
                             kind, st = "ISIN_CHANGE_WINDOW_UNEXPLAINED", "UNRESOLVED"
+                        elif sec_a != sec_b:
+                            kind, st = "ISIN_CHANGE_NEW_SECURITY", sg.status
+                        elif tr is not None:
+                            kind, st = "ISIN_CHANGE_OFFICIAL_TRANSITION", sg.status
+                        else:
+                            kind, st = "ISIN_CHANGE_ANCV_ISSUE_DATE", sg.status
                         a = _snap(ses, last_ok.isin, "last_before", sg.start)
                         b = _snap(ses, sg.isin, "first_after", sg.start)
                         c = Case(
                             t,
                             kind,
                             st,
-                            sg.start,
+                            tr.effective_date if tr else sg.start,
                             f"[{iv.effective_from}, {iv.effective_to or 'abierto'})",
-                            sec,
-                            sec,
+                            sec_a,
+                            sec_b,
                             last_ok.isin,
                             sg.isin,
                             iss_of.get((mid, last_ok.start)),
@@ -218,15 +234,39 @@ def main() -> int:
                                 for g in gap
                             ],
                         ]
-                        if kind == "ISIN_CHANGE_SAME_SECURITY":
+                        if tr is not None:
+                            c.evidence += [
+                                f"documento oficial ({d.get('role')}): {d.get('url')} "
+                                f"[{d.get('via')}{' ' + str(d.get('wayback_ts')) if d.get('wayback_ts') else ''}] "
+                                f"{_hash(d.get('sha256'))} extracción {d.get('extraction')}; "
+                                f"cita: «{(d.get('excerpts') or [''])[0][:160]}»"
+                                for d in tr_docs.get((tr.old_isin, tr.new_isin), [])
+                            ]
+                        if kind == "ISIN_CHANGE_NEW_SECURITY":
                             c.explanation = (
-                                "La ANCV fecha la emisión del ISIN nuevo entre los dos snapshots, el ISIN antiguo "
-                                "desaparece y la razón social no cambia (política ADR-0020: cambio de nominal = mismo "
-                                "emisor y misma security, ISIN fechado; el security_id se mantiene)."
+                                "Fusión por absorción / redomiciliación: cambia la entidad jurídica emisora del valor, "
+                                "así que es una security NUEVA enlazada a su predecesora (ADR-0020, "
+                                "`successor_security_id`); el ISIN antiguo cotiza hasta la víspera de la fecha efectiva "
+                                "y el nuevo desde ella. Continuidad ECONÓMICA del emisor (mismo issuer_id), no "
+                                "identidad jurídica."
+                            )
+                        elif kind == "ISIN_CHANGE_OFFICIAL_TRANSITION":
+                            c.explanation = (
+                                f"Cambio de ISIN de la MISMA entidad ({tr.kind if tr else ''}, política ADR-0020: "
+                                "cambio de nominal = misma security). La fecha es la de INICIO DE CONTRATACIÓN "
+                                "declarada en los documentos oficiales archivados, no la fecha de emisión ANCV; "
+                                "el security_id se mantiene."
+                            )
+                        elif kind == "ISIN_CHANGE_ANCV_ISSUE_DATE":
+                            c.explanation = (
+                                "La ANCV fecha la emisión del ISIN nuevo entre la última evidencia del antiguo y la "
+                                "primera del nuevo, el antiguo desaparece y la razón social no cambia (cambio de "
+                                "nominal = misma security). La fecha es la de EMISIÓN ANCV (administrativa), no una "
+                                "fecha oficial de inicio de contratación: frontera con incertidumbre de días."
                             )
                         else:
                             c.explanation = (
-                                "Entre el último snapshot del ISIN antiguo y el primero del nuevo no hay fecha oficial "
+                                "Entre la última evidencia del ISIN antiguo y la primera del nuevo no hay fecha oficial "
                                 "del cambio: no se puede decidir si es continuidad o sustitución de security. "
                                 "Queda UNRESOLVED; la ventana sigue PROVISIONAL en el motor."
                             )
@@ -374,6 +414,27 @@ def main() -> int:
                 f"- **Por qué:** {c.explanation}",
                 "",
             ]
+        L1 += ["## Transiciones oficiales de ISIN registradas", ""]
+        L1 += [
+            "| Efecto | ISIN antiguo → nuevo | Tipo | Continuidad | Uso en el universo IBEX | Documentos |",
+            "|---|---|---|---|---|---|",
+        ]
+        for t in sorted(transitions.values(), key=lambda t: t.effective_date):
+            used = [c for c in cases if c.isin_before == t.old_isin and c.isin_after == t.new_isin]
+            where = (
+                "; ".join(f"{c.ticker} {c.interval}" for c in used)
+                if used
+                else "fuera de los intervalos IBEX (el valor entra o sale después/antes de la transición)"
+            )
+            docs = "; ".join(
+                f"{d.get('role')} {_hash(d.get('sha256'))}"
+                for d in tr_docs.get((t.old_isin, t.new_isin), [])
+            )
+            L1.append(
+                f"| {t.effective_date} | {t.old_isin} → {t.new_isin} | {t.kind} | {t.continuity} "
+                f"| {where} | {docs} |"
+            )
+        L1.append("")
         (ROOT / "docs" / "ISSUER_SECURITY_CHANGES.md").write_text("\n".join(L1) + "\n")
 
         # ── report 2: blockers ────────────────────────────────────────────────────────
@@ -468,7 +529,78 @@ def main() -> int:
         ]
         for k, v in sorted(only.items(), key=lambda kv: -kv[1]):
             L2.append(f"| {', '.join(sorted(k))} | {v} |")
+        base = json.loads((ROOT / "docs" / "identity_blockers_baseline_8d2993e.json").read_text())
+        n_ev: dict[str, int] = defaultdict(int)
+        for e in ses.scalars(select(OfficialCodeIsinEvidence)):
+            n_ev[e.code] += 1
+        after_by_code = {c: len({d for _, _, ds in agg[c] for d in ds}) for c in agg}
+        alone: dict[str, int] = defaultdict(int)
+        for d in dates:
+            bl = {c for c in agg if any(d in ds for _, _, ds in agg[c])}
+            if len(bl) == 1:
+                alone[next(iter(bl))] += 1
+        L2 += [
+            "",
+            "## Evolución frente a la línea base (8d2993e)",
+            "",
+            "Los conteos por security se solapan: una misma fecha podía estar bloqueada por varias.",
+            "",
+            f"Fechas elegibles: **{base['dates_backtestable']}/{base['dates_total']} → "
+            f"{sum(1 for d in dates if not any(d in v for v in rows.values()))}/{len(dates)}**.",
+            "",
+            "| security | blocked_dates_before | blocked_dates_after | newly_eligible_dates | "
+            "dates_unlocked_if_resolved_alone_now | evidence_status |",
+            "|---|---|---|---|---|---|",
+        ]
+        for code, before in sorted(base["blocked_dates"].items(), key=lambda kv: -kv[1]):
+            after = after_by_code.get(code, 0)
+            L2.append(
+                f"| {code} | {before} | {after} | {before - after} | {alone.get(code, 0)} | "
+                f"{'RESOLVED' if after == 0 else 'BLOCKED'}: {n_ev.get(code, 0)} official "
+                "code<->ISIN statements stored |"
+            )
         (ROOT / "docs" / "IDENTITY_BLOCKERS.md").write_text("\n".join(L2) + "\n")
+        # ── report 3: inventory of the official evidence ─────────────────────────────
+        from sqlalchemy import func
+
+        L3 = [
+            "# Inventario de evidencia oficial de identidad (generado)",
+            "",
+            "Generado con `scripts/gen_identity_reports.py` desde las tablas `official_code_isin_evidence` "
+            "y `official_isin_transitions` (ADR-0022). Cada fila apunta a un documento archivado en "
+            "`raw_source_archive` con SHA-256.",
+            "",
+            "## Declaraciones código ↔ ISIN por tipo de fuente",
+            "",
+            "| Fuente | Filas | Desde | Hasta | Códigos distintos |",
+            "|---|---|---|---|---|",
+        ]
+        for kind, n, a, b, nc in ses.execute(
+            select(
+                OfficialCodeIsinEvidence.source_kind,
+                func.count(),
+                func.min(OfficialCodeIsinEvidence.observed_on),
+                func.max(OfficialCodeIsinEvidence.observed_on),
+                func.count(func.distinct(OfficialCodeIsinEvidence.code)),
+            ).group_by(OfficialCodeIsinEvidence.source_kind)
+        ):
+            L3.append(f"| {kind} | {n} | {a} | {b} | {nc} |")
+        L3 += ["", "## Documentos de transiciones (verificados contra el original)", ""]
+        for t in sorted(transitions.values(), key=lambda t: t.effective_date):
+            L3.append(
+                f"### {t.old_isin} → {t.new_isin} ({t.kind}, {t.continuity}, efecto {t.effective_date})"
+            )
+            L3.append("")
+            for d in tr_docs.get((t.old_isin, t.new_isin), []):
+                L3.append(
+                    f"- **{d.get('role')}** — {d.get('url')} "
+                    f"[{d.get('via')}{' ' + str(d.get('wayback_ts')) if d.get('wayback_ts') else ''}], "
+                    f"SHA-256 `{d.get('sha256')}`, extracción {d.get('extraction')}"
+                )
+                for ex in d.get("excerpts") or []:
+                    L3.append(f"  - «{ex[:200]}»")
+            L3.append("")
+        (ROOT / "docs" / "OFFICIAL_IDENTITY_EVIDENCE.md").write_text("\n".join(L3) + "\n")
         print(f"{len(cases)} cases; blockers: {len(order)} securities")
     return 0
 

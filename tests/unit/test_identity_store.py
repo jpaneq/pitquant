@@ -126,3 +126,25 @@ def test_one_unproven_member_blocks_the_date(session: Session) -> None:
     )
     with pytest.raises(IdentityUnresolvedError, match="without a proven identity"):
         IndexUniverse(session).backtest_universe("FIX_IDX", date(2012, 3, 1), bid)
+
+
+def test_reusing_a_run_whose_stored_output_differs_fails_loudly(session: Session) -> None:
+    """Same version + same inputs but different engine output (logic changed without bumping
+    ENGINE_VERSION) must not silently report numbers the stored segments do not support."""
+    bid = _build(session)
+    halfyears = [date(y, m, 30 if m == 6 else 31) for y in range(2009, 2017) for m in (6, 12)]
+    _snapshots(session, {d: ["AAA", "BBB", "CCC", "DDD"] for d in halfyears})
+    ix = load_snapshot_index(session)
+    kw = {
+        "index_code": "FIX_IDX",
+        "build_id": bid,
+        "canonical_start": date(2011, 1, 1),
+        "inputs_hash": content_hash(["same-inputs"]),
+    }
+    run_identity_resolution(
+        session, engine=IdentityResolutionEngine(ix, horizon=date(2016, 12, 31)), **kw
+    )
+    with pytest.raises(ValueError, match="bump ENGINE_VERSION"):
+        run_identity_resolution(
+            session, engine=IdentityResolutionEngine(ix, horizon=date(2014, 6, 30)), **kw
+        )

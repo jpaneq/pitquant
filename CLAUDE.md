@@ -35,10 +35,13 @@ temporal, se rechaza.
   "FIXTURE"). Nunca presentarlos como históricos reales.
 - No dar una funcionalidad por terminada porque "ejecuta": correcta, testeada, tipada,
   documentada, reproducible, point-in-time.
-- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0022).
-- Migraciones: `0001` (base), `0002` (identidad), `0003` (CNMV) y `0004` (emisor/security,
-  snapshots e identidad, corporate actions normalizadas) fijadas; **todo cambio de esquema =
-  revisión nueva**.
+- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0023).
+- Migraciones: `0001`…`0007` fijadas (`0004` emisor/security y snapshots, `0005` evidencia
+  código↔ISIN, `0006` transiciones de ISIN, `0007` traza de corporate actions, `role` de
+  security e `issuer_id` en filings SEC); **todo cambio de esquema = revisión nueva**.
+- Identidad (ADR-0022): sólo evidencia oficial EXACTA desempata o ancla un código; subir
+  `ENGINE_VERSION` si cambia la lógica del motor (un run reutilizado debe coincidir con lo
+  almacenado). Nunca relajar el fallo cerrado de `backtest_universe`.
 - Emisor ≠ security (ADR-0020): fundamentales → `issuer_id`; precios y membership →
   `security_id`. Nunca reutilizar `security_id` por comodidad.
 - Market data: sólo registros normalizados (`pitquant.market.normalized`); serie base = OHLCV
@@ -86,13 +89,17 @@ Hecho:
 - **Bases previas conservadas:** `pitquant_dev_v0…v3.db`; la v3 tiene una propiedad duplicada
   de ISIN por un bug ya corregido.
 - **SEC (MSFT, AAPL):** 127 filings y 51.538 hechos (ADR-0019).
-- **IBEX 35:**
-  - 133 intervalos; 5 de las 7 filas sin leyenda probadas como cambio de código por ANCV.
-  - Identidad 2011+: 59/68 intervalos MULTI_SOURCE_CONFIRMED (86,8 %); LOG y PUIG quedan
-    PROVISIONAL (dos líneas con la misma etiqueta; sólo un documento oficial exacto desempata).
-    Detalle en `docs/IBEX_COVERAGE_REPORT.md`.
-  - Ninguna fecha 2011+ es backtestable todavía: MTS (ArcelorMittal, ISIN LU) no tiene
-    identidad probada y el fallo es cerrado por fecha.
+- **IBEX 35 (ADR-0022):**
+  - Identidad 2011+: **68/68 intervalos resueltos (17 EXACT + 51 MULTI_SOURCE)** y **190/190 fechas
+    candidatas** pasan `backtest_universe` (antes 0/190). Calibración: 35/35 contra la composición
+    BME vigente. `docs/IDENTITY_BLOCKERS.md`, `docs/ISSUER_SECURITY_CHANGES.md`,
+    `docs/OFFICIAL_IDENTITY_EVIDENCE.md`.
+  - Evidencia: fichas oficiales archivadas (Internet Archive) 2012–2022, boletines diarios de BME
+    2022–2026 y 5 transiciones de ISIN verificadas contra el original (MTS 2017, GRF 2016, REE
+    2016, PHM 2020, FER 2023 = security nueva). Ferrovial modelada como Security A/B.
+  - El build sigue PROVISIONAL (ancla transcrita): no elegible para validación final.
+  - `pitquant cohort-readiness`: cohortes de identidad 190/190; cohortes completas 0 (sin
+    precios, fundamentales del universo ni corporate actions).
 - **CNMV (Enagás 2017S1–2019S1):** 5 informes, ligados al EMISOR (CIF). La cadena de extremo a
   extremo está en `docs/REAL_DATA_SPANISH_IDENTITY_DEMO.md`.
 - **Market data:** sin datos reales (`BLOCKED_BY_CREDENTIAL`). Las claves irían en
@@ -106,18 +113,19 @@ Informes generados desde la base (nunca a mano): `docs/ISSUER_SECURITY_CHANGES.m
 es `false`: no empezar Feature Engine hasta READY con datos reales.
 
 ## Pendiente (por orden)
-1. **Identidad IBEX 2011+:**
-   - código BME ↔ ISIN oficial y fechado para MTS (LU), FER (NL desde 2023) y ABG.P (clase B);
-   - fechas de cambio de ISIN de REE y GRF en 2016 (hecho relevante o aviso);
-   - borde de PHM en 2020.
-2. **Con claves:**
+1. **Cohortes completas:** al menos un flujo real de precios y de corporate actions, y
+   fundamentales de los miembros (CNMV: más emisores); después, la primera cohorte
+   `FIRST_CANONICAL_COHORT`.
+2. **Identidad:** fechas oficiales de inicio de contratación para POP 2013, ITX 2014, BKIA 2017 y
+   AENA 2025 (hoy fecha de emisión ANCV); vínculo de emisor BKIA 2013.
+3. **Con claves:**
    - contract tests y suite D-05 sobre Sharadar y EODHD reales;
    - semánticas `UNVERIFIED` (base del dividendo en Sharadar, dirección de `tickerchange`,
      fecha SP500);
    - cruce de SHARADAR/SP500 con anuncios S&P DJI → `CANONICAL_CANDIDATE`.
-3. **Capa oficial BME/CNMV de corporate actions españolas:** derechos, scrip, OPA, fusiones.
-4. **CNMV:** ESEF anual y más emisores (CIF de cada miembro IBEX vía consulta ANCV por NIF).
-5. **Readiness READY con precios reales.** Sólo después: Feature Engine.
+4. **Capa oficial BME/CNMV de corporate actions españolas:** derechos, scrip, OPA, fusiones.
+5. **CNMV:** ESEF anual y más emisores (CIF de cada miembro IBEX vía consulta ANCV por NIF).
+6. **Readiness READY con precios reales.** Sólo después: Feature Engine.
 
 ## Limitaciones conocidas
 
@@ -127,14 +135,14 @@ es `false`: no empezar Feature Engine hasta READY con datos reales.
   (ancla transcrita), así que no es elegible para validación final ni para el holdout.
 - `register_event_securities` cierra el ticker de otra emisión si se reasigna (aviso DQ).
 - Conceptos XBRL sin normalizar todavía.
-- Los hechos SEC siguen ligados a la security registrada por CIK (patrón que ADR-0020 eliminó
-  para CNMV): migrarlos a `issuer_id` queda pendiente.
+- Los hechos SEC llevan `issuer_id` (ADR-0022); la security registrada por CIK es un ancla
+  (`role=ISSUER_ANCHOR`). Las filas ingeridas antes de 0007 sólo tienen `security_id`.
 - `security_identity_snapshots.issuer_id/security_id` quedan NULL (tabla append-only, ingerida
   antes de resolver): el vínculo vive en `membership_identity_segments` e `identifier_history`.
-- Cobertura de corporate actions: COMPLETE si hay una fuente aceptada, sin traza de ingestión
-  por security todavía.
-- Ferrovial (ES→NL) no está modelada como Security A/B: el ISIN ES deja de aparecer tras 12/2022
-  y el NL no está probado.
+- Cobertura de corporate actions: COMPLETE sólo con traza de ingestión completada
+  (`corporate_action_ingestions`); hoy no hay ninguna.
+- Fechas de cambio de ISIN de POP 2013, ITX 2014, BKIA 2017 y AENA 2025 = emisión ANCV
+  (administrativa), no inicio oficial de contratación.
 - Emisores registrados desde SEC usan `exchange="XNYS"` como código de calendario aunque
   coticen en NASDAQ (mismo horario); su ticker queda vacío hasta una fuente fechada.
 

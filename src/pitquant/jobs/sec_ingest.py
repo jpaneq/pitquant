@@ -28,26 +28,60 @@ from pitquant.data.providers.sec_edgar.provider import (
     SecIngestReport,
     ingest_sec_company,
 )
-from pitquant.db.models import SecFiling
+from pitquant.db.models import Issuer, IssuerIdentifier, SecFiling, Security
 from pitquant.security_master.service import SecurityMaster
 
 ET = ZoneInfo("America/New_York")
 
 
 def security_for_cik(session: Session, settings: Settings, cik: str, *, register: bool) -> str:
-    """Security carrying CIK ``cik``. With ``register`` a missing one is created WITHOUT a
-    ticker: tickers come only from dated sources (universe events / D-05), never from the
-    current submissions document projected into the past."""
+    """Security carrying CIK ``cik`` (ADR-0022): the CIK identifies an ISSUER. A real ISSUER
+    (``issuers`` + ``issuer_identifiers``) always exists; the returned security is its
+    registration ANCHOR (``role=ISSUER_ANCHOR``) until a traded security of that issuer is
+    registered from a dated source. Fundamentals carry ``issuer_id`` and so apply to every
+    security of the issuer. No ticker is invented: tickers come only from dated sources."""
     sm = SecurityMaster(session)
     key = cik10(cik)
     try:
-        return sm.resolve_identifier("CIK", key, utc_now().date())
+        sid = sm.resolve_identifier("CIK", key, utc_now().date())
+        _ensure_cik_issuer(session, session.get_one(Security, sid), key, settings)
+        return sid
     except UnknownSecurityError:
         if not register:
             raise
     sec = sm.register(name=f"CIK {key} (SEC EDGAR)", exchange="XNYS", currency="USD", country="US")
+    sec.role = "ISSUER_ANCHOR"
     sm.add_identifier(sec.security_id, "CIK", key, settings.fundamentals.sec.coverage_start)
+    _ensure_cik_issuer(session, sec, key, settings)
     return sec.security_id
+
+
+def _ensure_cik_issuer(session: Session, sec: Security, key: str, settings: Settings) -> str:
+    ident = session.scalars(
+        select(IssuerIdentifier).where(
+            IssuerIdentifier.id_type == "CIK", IssuerIdentifier.value == key
+        )
+    ).first()
+    if ident is None:
+        iss = Issuer(name=sec.name, country="US")
+        session.add(iss)
+        session.flush()
+        session.add(
+            IssuerIdentifier(
+                issuer_id=iss.issuer_id,
+                id_type="CIK",
+                value=key,
+                valid_from=settings.fundamentals.sec.coverage_start,
+                source="SEC EDGAR (CIK)",
+            )
+        )
+        session.flush()
+        issuer_id = iss.issuer_id
+    else:
+        issuer_id = ident.issuer_id
+    if sec.issuer_id is None:
+        sec.issuer_id = issuer_id
+    return issuer_id
 
 
 def ingest_ciks(

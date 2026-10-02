@@ -28,7 +28,7 @@ from sqlalchemy.orm import Session
 from pitquant.data.calendars.market_calendar import get_calendar
 from pitquant.db.models import (
     BenchmarkLevel,
-    CorporateActionEvent,
+    CorporateActionIngestion,
     FundamentalFact,
     IdentifierHistory,
     Price,
@@ -173,27 +173,65 @@ def _fundamentals(
     )
 
 
+class CaCoverageState(StrEnum):
+    """Why corporate-action coverage is (not) claimed for one security and period."""
+
+    PROVIDER_UNAVAILABLE = "PROVIDER_UNAVAILABLE"  # no accepted source configured
+    NOT_ATTEMPTED = "NOT_ATTEMPTED"  # accepted source exists, never queried for this security
+    ATTEMPTED_FAILED = "ATTEMPTED_FAILED"
+    PARTIAL_PERIOD = "PARTIAL_PERIOD"  # completed ingestion covers only part of the period
+    VERIFIED_COVERAGE = "VERIFIED_COVERAGE"  # completed ingestion covers the whole period
+
+
+def corporate_action_state(
+    session: Session, security_id: str, start: date, end: date, accepted: Sequence[str]
+) -> tuple[CaCoverageState, str]:
+    if not accepted:
+        return CaCoverageState.PROVIDER_UNAVAILABLE, "no accepted corporate-action source (D-05)"
+    rows = session.scalars(
+        select(CorporateActionIngestion).where(
+            CorporateActionIngestion.security_id == security_id,
+            CorporateActionIngestion.provider.in_(list(accepted)),
+        )
+    ).all()
+    if not rows:
+        return CaCoverageState.NOT_ATTEMPTED, f"no ingestion trace from {list(accepted)}"
+    done = sorted(
+        (r for r in rows if r.status == "COMPLETED"), key=lambda r: (r.period_start, r.period_end)
+    )
+    if not done:
+        return CaCoverageState.ATTEMPTED_FAILED, f"{len(rows)} attempt(s), none completed"
+    cur = start
+    for r in done:
+        if r.period_start <= cur <= r.period_end:
+            cur = r.period_end + timedelta(days=1)
+    found = sum(r.events_found for r in done)
+    note = f"provider-reported events: {found} (absence of events is the provider's statement)"
+    if cur > end:
+        return CaCoverageState.VERIFIED_COVERAGE, note
+    return (
+        CaCoverageState.PARTIAL_PERIOD,
+        f"completed ingestion covers up to {cur - timedelta(days=1)}; {note}",
+    )
+
+
+def corporate_action_verified(session: Session, security_id: str, start: date, end: date) -> bool:
+    from pitquant.config.settings import get_settings
+
+    accepted = get_settings().data_readiness.accepted_corporate_action_sources
+    state, _ = corporate_action_state(session, security_id, start, end, accepted)
+    return state is CaCoverageState.VERIFIED_COVERAGE
+
+
 def _corporate_actions(
     s: Session, sec: Security, start: date, end: date, accepted: Sequence[str]
 ) -> DimensionCoverage:
-    if not accepted:
-        return DimensionCoverage(
-            "corporate_actions", CoverageStatus.INSUFFICIENT, None, "no accepted CA source (D-05)"
-        )
-    n = (
-        s.scalar(
-            select(func.count())
-            .select_from(CorporateActionEvent)
-            .where(
-                CorporateActionEvent.security_id == sec.security_id,
-                CorporateActionEvent.provider.in_(list(accepted)),
-            )
-        )
-        or 0
-    )
-    return DimensionCoverage(
-        "corporate_actions", CoverageStatus.COMPLETE, float(n), f"{n} events from {list(accepted)}"
-    )
+    state, detail = corporate_action_state(s, sec.security_id, start, end, accepted)
+    status = {
+        CaCoverageState.VERIFIED_COVERAGE: CoverageStatus.COMPLETE,
+        CaCoverageState.PARTIAL_PERIOD: CoverageStatus.PARTIAL,
+    }.get(state, CoverageStatus.INSUFFICIENT)
+    return DimensionCoverage("corporate_actions", status, None, f"{state.value}: {detail}")
 
 
 def _benchmark(s: Session, start: date, end: date, code: str | None) -> DimensionCoverage:

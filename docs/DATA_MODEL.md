@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **42**.
+Tablas: **45**.
 
 ## Procedencia y calidad
 
@@ -93,6 +93,7 @@ Tablas: **42**.
 | `acquirer_security_id` | VARCHAR(36) | sí | FK→`securities.security_id` |
 | `successor_security_id` | VARCHAR(36) | sí | FK→`securities.security_id` |
 | `is_synthetic` | BOOLEAN | no |  |
+| `role` | VARCHAR(20) | no |  |
 | `created_at` | DATETIME | no |  |
 
 - CHECK `listing_end IS NULL OR listing_start IS NULL OR listing_end >= listing_start`
@@ -201,6 +202,49 @@ Tablas: **42**.
 - INDEX ix_security_identity_snapshots_isin (isin)
 - INDEX ix_security_identity_snapshots_reference_date (reference_date)
 - UNIQUE (source, reference_date, isin, source_hash)
+
+### `official_code_isin_evidence` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `evidence_id` | VARCHAR(36) | no | PK |
+| `code` | VARCHAR(20) | no |  |
+| `isin` | VARCHAR(12) | no |  |
+| `observed_on` | DATE | no |  |
+| `issuer_name` | VARCHAR(300) | no |  |
+| `market` | VARCHAR(100) | sí |  |
+| `source_kind` | VARCHAR(40) | no |  |
+| `source_url` | VARCHAR(1000) | no |  |
+| `capture_timestamp` | VARCHAR(20) | sí |  |
+| `archive_id` | VARCHAR(36) | no | FK→`raw_source_archive.archive_id` |
+| `source_sha256` | VARCHAR(64) | no |  |
+| `parser_version` | VARCHAR(50) | no |  |
+| `ingested_at` | DATETIME | no |  |
+
+- INDEX ix_official_code_isin_evidence_code (code)
+- INDEX ix_official_code_isin_evidence_isin (isin)
+- UNIQUE (source_sha256, code, isin, observed_on)
+
+### `official_isin_transitions` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `transition_id` | VARCHAR(36) | no | PK |
+| `issuer_name` | VARCHAR(300) | no |  |
+| `old_isin` | VARCHAR(12) | no |  |
+| `new_isin` | VARCHAR(12) | no |  |
+| `kind` | VARCHAR(30) | no |  |
+| `continuity` | VARCHAR(20) | no |  |
+| `effective_date` | DATE | no |  |
+| `documents` | JSON | no |  |
+| `parser_version` | VARCHAR(50) | no |  |
+| `ingested_at` | DATETIME | no |  |
+
+- CHECK `continuity IN ('SAME_SECURITY','NEW_SECURITY')`
+- CHECK `old_isin <> new_isin`
+- INDEX ix_official_isin_transitions_new_isin (new_isin)
+- INDEX ix_official_isin_transitions_old_isin (old_isin)
+- UNIQUE (old_isin, new_isin, effective_date)
 
 ### `identity_resolution_runs` 🔒
 
@@ -374,6 +418,25 @@ Tablas: **42**.
 - INDEX ix_corporate_action_events_security_id (security_id)
 - UNIQUE (provider, provider_event_id, source_hash)
 
+### `corporate_action_ingestions` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `ingestion_id` | VARCHAR(36) | no | PK |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `provider` | VARCHAR(50) | no |  |
+| `period_start` | DATE | no |  |
+| `period_end` | DATE | no |  |
+| `status` | VARCHAR(12) | no |  |
+| `events_found` | INTEGER | no |  |
+| `source_hash` | VARCHAR(64) | sí |  |
+| `detail` | VARCHAR(300) | sí |  |
+| `ingested_at` | DATETIME | no |  |
+
+- CHECK `period_end >= period_start`
+- CHECK `status IN ('COMPLETED','FAILED')`
+- INDEX ix_corporate_action_ingestions_security_id (security_id)
+
 ### `corporate_actions`
 
 | Columna | Tipo | Nulo | Clave |
@@ -467,6 +530,7 @@ Tablas: **42**.
 | `accession_number` | VARCHAR(25) | no | PK |
 | `cik` | VARCHAR(10) | no |  |
 | `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `issuer_id` | VARCHAR(36) | sí | FK→`issuers.issuer_id` |
 | `form` | VARCHAR(20) | no |  |
 | `is_amendment` | BOOLEAN | no |  |
 | `filed_date` | DATE | no |  |
@@ -482,6 +546,7 @@ Tablas: **42**.
 
 - CHECK `available_at >= accepted_at`
 - INDEX ix_sec_filings_cik (cik)
+- INDEX ix_sec_filings_issuer_id (issuer_id)
 
 ### `cnmv_filings` 🔒
 

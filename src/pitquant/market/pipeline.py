@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import date, datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -25,6 +25,7 @@ from sqlalchemy.orm import Session
 from pitquant.core.timeutils import require_aware, utc_now
 from pitquant.db.models import (
     CorporateActionEvent,
+    CorporateActionIngestion,
     DataQualityIssue,
     DataSource,
     Price,
@@ -182,3 +183,32 @@ def store_batch(
         rep.actions_inserted += 1
     session.flush()
     return rep
+
+
+def record_ca_ingestion(
+    session: Session,
+    *,
+    security_id: str,
+    provider: str,
+    period_start: date,
+    period_end: date,
+    completed: bool,
+    events_found: int,
+    source_hash: str | None = None,
+    detail: str | None = None,
+) -> None:
+    """Trace of ONE corporate-action query for ONE security and period (ADR-0022): the only
+    thing from which coverage may be claimed."""
+    session.add(
+        CorporateActionIngestion(
+            security_id=security_id,
+            provider=provider,
+            period_start=period_start,
+            period_end=period_end,
+            status="COMPLETED" if completed else "FAILED",
+            events_found=events_found,
+            source_hash=source_hash,
+            detail=detail,
+        )
+    )
+    session.flush()

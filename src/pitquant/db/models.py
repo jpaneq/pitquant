@@ -176,6 +176,64 @@ class SecurityIdentitySnapshot(Base):
     )
 
 
+class OfficialCodeIsinEvidence(Base):
+    """One DATED official statement «exchange code C ↔ ISIN I» (ADR-0022), parsed from an
+    archived document (e.g. a copy of the official BME / Bolsa de Madrid ficha). It proves the
+    link ONLY on ``observed_on`` (the date the page states about itself); continuity between
+    two such dates is the engine's job, never assumed here."""
+
+    __tablename__ = "official_code_isin_evidence"
+
+    evidence_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    code: Mapped[str] = mapped_column(String(20), index=True)
+    isin: Mapped[str] = mapped_column(String(12), index=True)
+    observed_on: Mapped[date] = mapped_column(Date)
+    issuer_name: Mapped[str] = mapped_column(String(300))
+    market: Mapped[str | None] = mapped_column(String(100))
+    source_kind: Mapped[str] = mapped_column(String(40))  # BME_FICHA_WAYBACK | BME_FICHA_LIVE ...
+    source_url: Mapped[str] = mapped_column(String(1000))
+    capture_timestamp: Mapped[str | None] = mapped_column(String(20))  # Wayback 14-digit stamp
+    archive_id: Mapped[str] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    source_sha256: Mapped[str] = mapped_column(String(64))
+    parser_version: Mapped[str] = mapped_column(String(50))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        UniqueConstraint("source_sha256", "code", "isin", "observed_on", name="uq_code_isin_ev"),
+    )
+
+
+class OfficialIsinTransition(Base):
+    """An OFFICIAL, dated ISIN change of one issuer's ordinary shares (ADR-0022).
+
+    ``effective_date`` is the first TRADING session of the new ISIN according to the cited
+    documents — not the ANCV issue date, which is only an administrative date. ``continuity``
+    follows ADR-0020: a nominal change of the SAME legal entity (split, reverse split,
+    consolidation) keeps the security; a change of legal entity (merger, redomiciliation) is
+    a NEW security linked to its predecessor. ``documents`` lists every archived source with
+    its SHA-256 and the exact excerpt that supports the statement.
+    """
+
+    __tablename__ = "official_isin_transitions"
+
+    transition_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    issuer_name: Mapped[str] = mapped_column(String(300))
+    old_isin: Mapped[str] = mapped_column(String(12), index=True)
+    new_isin: Mapped[str] = mapped_column(String(12), index=True)
+    kind: Mapped[str] = mapped_column(String(30))
+    continuity: Mapped[str] = mapped_column(String(20))  # SAME_SECURITY | NEW_SECURITY
+    effective_date: Mapped[date] = mapped_column(Date)
+    documents: Mapped[list[Any]] = mapped_column(JSON, default=list)
+    parser_version: Mapped[str] = mapped_column(String(50))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        UniqueConstraint("old_isin", "new_isin", "effective_date", name="uq_isin_transition"),
+        CheckConstraint("continuity IN ('SAME_SECURITY','NEW_SECURITY')", name="continuity_values"),
+        CheckConstraint("old_isin <> new_isin", name="distinct_isins"),
+    )
+
+
 class IdentityResolutionRun(Base):
     """One run of the IdentityResolutionEngine over one membership build (ADR-0020)."""
 
@@ -235,6 +293,9 @@ class Security(Base):
     acquirer_security_id: Mapped[str | None] = mapped_column(ForeignKey("securities.security_id"))
     successor_security_id: Mapped[str | None] = mapped_column(ForeignKey("securities.security_id"))
     is_synthetic: Mapped[bool] = mapped_column(Boolean, default=False)
+    # TRADED: a security that trades; ISSUER_ANCHOR: a registration anchor created when only an
+    # issuer-level identifier (SEC CIK) is known — never priced, never a universe member.
+    role: Mapped[str] = mapped_column(String(20), default="TRADED", server_default="TRADED")
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
 
     tickers: Mapped[list[TickerHistory]] = relationship(back_populates="security")
@@ -517,6 +578,34 @@ class CorporateActionEvent(Base):
     )
 
 
+class CorporateActionIngestion(Base):
+    """Proof that a corporate-action SOURCE was queried for ONE security and period (ADR-0022).
+
+    Coverage is claimed only from these rows: «no events stored» is not «no events happened».
+    ``status`` COMPLETED = the provider answered for the whole [period_start, period_end];
+    FAILED = the attempt is recorded but proves nothing. ``events_found`` counts what the
+    provider returned (possibly 0): it is the provider's statement, never ours.
+    """
+
+    __tablename__ = "corporate_action_ingestions"
+
+    ingestion_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"), index=True)
+    provider: Mapped[str] = mapped_column(String(50))
+    period_start: Mapped[date] = mapped_column(Date)
+    period_end: Mapped[date] = mapped_column(Date)
+    status: Mapped[str] = mapped_column(String(12))
+    events_found: Mapped[int] = mapped_column(Integer, default=0)
+    source_hash: Mapped[str | None] = mapped_column(String(64))
+    detail: Mapped[str | None] = mapped_column(String(300))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        CheckConstraint("status IN ('COMPLETED','FAILED')", name="status_values"),
+        CheckConstraint("period_end >= period_start", name="period_order"),
+    )
+
+
 class ProviderAdjustedPrice(Base):
     """A vendor's ADJUSTED close, kept ONLY for QA/discrepancy detection (ADR-0021). Never
     an input: adjusted series are rebuilt from raw prices + corporate_action_events."""
@@ -612,6 +701,8 @@ class SecFiling(Base):
     accession_number: Mapped[str] = mapped_column(String(25), primary_key=True)
     cik: Mapped[str] = mapped_column(String(10), index=True)
     security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"))
+    # the filer: fundamentals belong to the ISSUER (ADR-0020/0022)
+    issuer_id: Mapped[str | None] = mapped_column(ForeignKey("issuers.issuer_id"), index=True)
     form: Mapped[str] = mapped_column(String(20))
     is_amendment: Mapped[bool] = mapped_column(Boolean)
     filed_date: Mapped[date] = mapped_column(Date)
@@ -1027,5 +1118,8 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "identity_resolution_runs",
         "membership_identity_segments",
         "corporate_action_events",
+        "official_code_isin_evidence",
+        "official_isin_transitions",
+        "corporate_action_ingestions",
     }
 )

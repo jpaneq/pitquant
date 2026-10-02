@@ -57,7 +57,13 @@ from pitquant.data.providers.sec_edgar.parsers import (
     pick_xbrl_instance,
     submissions_acceptance_utc,
 )
-from pitquant.db.models import DataQualityIssue, DataSource, FundamentalFact, SecFiling
+from pitquant.db.models import (
+    DataQualityIssue,
+    DataSource,
+    FundamentalFact,
+    SecFiling,
+    Security,
+)
 
 PROVIDER = "SEC_EDGAR"
 
@@ -206,6 +212,8 @@ def ingest_sec_company(
 ) -> SecIngestReport:
     cfg = provider.config
     rep = SecIngestReport(cik=cik10(cik))
+    anchor = session.get(Security, security_id)
+    issuer_id = anchor.issuer_id if anchor is not None else None  # fundamentals belong to it
     cal = get_calendar(exchange)
     src_id = _source_id(session)
 
@@ -293,6 +301,7 @@ def ingest_sec_company(
             accession_number=acc,
             cik=cik10(cik),
             security_id=security_id,
+            issuer_id=issuer_id,
             form=meta.form,
             is_amendment=meta.form.endswith("/A"),
             filed_date=meta.filing_date,
@@ -455,6 +464,7 @@ def ingest_sec_company(
             session.add(
                 FundamentalFact(
                     security_id=security_id,
+                    issuer_id=issuer_id,
                     taxonomy=f.taxonomy,
                     concept=f.concept,
                     fiscal_period=f"{f.fy}{f.fp}" if f.fy and f.fp else None,

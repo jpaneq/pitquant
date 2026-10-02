@@ -45,7 +45,7 @@ from dataclasses import dataclass, field
 from datetime import date, timedelta
 from enum import StrEnum
 
-ENGINE_VERSION = "identity-engine-2"  # 2: only EXACT official documents break label ties
+ENGINE_VERSION = "identity-engine-4"  # 4: official points, transitions, ISIN-change rule
 
 
 class IdentityResolutionStatus(StrEnum):
@@ -123,6 +123,18 @@ class OfficialIdentifier:
     exact: bool
 
 
+@dataclass(frozen=True)
+class IsinTransition:
+    """An official dated ISIN change (see ``OfficialIsinTransition``)."""
+
+    old_isin: str
+    new_isin: str
+    effective_date: date  # first trading session of the new ISIN
+    kind: str
+    continuity: str  # SAME_SECURITY | NEW_SECURITY (ADR-0020)
+    sources: tuple[str, ...] = ()  # SHA-256 of the supporting documents
+
+
 @dataclass
 class Segment:
     start: date
@@ -131,6 +143,8 @@ class Segment:
     isin: str | None
     evidence: list[str] = field(default_factory=list)
     candidates: tuple[str, ...] = ()
+    new_security: bool = False  # a NEW security (ADR-0020), linked to its predecessor
+    transition: IsinTransition | None = None
 
 
 def normalize_name(s: str) -> str:
@@ -146,15 +160,23 @@ class SnapshotIndex:
         for ln in lines:
             self.by_date[ln.reference_date].append(ln)
         self.dates = sorted(self.by_date)
+        # does this snapshot list non-Spanish ISINs at all? (from 12/2018 the ANCV lists only
+        # ES ISINs: the ABSENCE of a foreign ISIN there carries no information)
+        self._foreign: dict[date, bool] = {
+            d: any(ln.isin[:2] != "ES" for ln in ls) for d, ls in self.by_date.items()
+        }
         self._isin: dict[date, dict[str, SnapshotLine]] = {
             d: {ln.isin: ln for ln in ls} for d, ls in self.by_date.items()
         }
+
+    def lists_foreign(self, d: date) -> bool:
+        return self._foreign.get(d, True)
 
     def label_candidates(self, d: date, code: str) -> list[SnapshotLine]:
         return [ln for ln in self.by_date[d] if ln.is_ordinary_share and ln.label == code]
 
     def line(self, d: date, isin: str) -> SnapshotLine | None:
-        return self._isin[d].get(isin)
+        return self._isin.get(d, {}).get(isin)
 
     def issuer_ordinary_isins(self, d: date, issuer_name: str) -> set[str]:
         n = normalize_name(issuer_name)
@@ -200,31 +222,73 @@ class IdentityResolutionEngine:
         official: Sequence[OfficialIdentifier] = (),
         *,
         horizon: date,
+        transitions: Sequence[IsinTransition] = (),
     ) -> None:
         self.ix = snapshots
         self.official = official
         self.horizon = horizon  # end of knowledge for open intervals (e.g. observation day)
+        self.transitions = {(t.old_isin, t.new_isin): t for t in transitions}
+        self._exact: dict[str, list[OfficialIdentifier]] = defaultdict(list)
+        for o in official:
+            if o.exact:
+                self._exact[o.code].append(o)
+        for lst in self._exact.values():
+            lst.sort(key=lambda o: o.observed_on)
+
+    #: an EXACT official point resolves an ANCV label tie when it is at most this many days
+    #: from the snapshot (one semester of ANCV granularity plus slack), or brackets it.
+    TIE_MAX_GAP_DAYS = 200
+
+    def _exact_isins_on(self, code: str, d: date) -> set[str]:
+        return {o.isin for o in self._exact.get(code, ()) if o.observed_on == d}
+
+    def _tie_break(self, code: str, d: date, candidates: Sequence[str]) -> str | None:
+        """ISIN named by the EXACT official evidence that brackets (or is adjacent to) ``d``
+        for ``code``; None if absent, conflicting or stale."""
+        pts = self._exact.get(code, ())
+        before = [o for o in pts if o.observed_on <= d]
+        after = [o for o in pts if o.observed_on >= d]
+        b = before[-1] if before else None
+        a = after[0] if after else None
+        if b is not None and a is not None and b.isin == a.isin and b.isin in candidates:
+            return b.isin
+        for o in (b, a):
+            if (
+                o is not None
+                and o.isin in candidates
+                and abs((o.observed_on - d).days) <= self.TIE_MAX_GAP_DAYS
+                and not any(
+                    x.isin != o.isin
+                    and min(o.observed_on, d) <= x.observed_on <= max(o.observed_on, d)
+                    for x in pts
+                )
+            ):
+                return o.isin
+        return None
 
     # ── per-date evidence ─────────────────────────────────────────────────────
     def _points(self, span: MembershipSpan, dates: list[date]) -> list[_Point]:
         pts: list[_Point] = []
         for d in dates:
             code = span.code_at(d)
+            off = self._exact_isins_on(code, d) if code else set()
+            if len(off) == 1:
+                pts.append(_Point(d, next(iter(off)), "official-exact", tuple(off)))
+                continue
+            if len(off) > 1:
+                pts.append(_Point(d, None, "ambiguous", tuple(sorted(off))))
+                continue
             cands = self.ix.label_candidates(d, code) if code else []
             isins = tuple(sorted({c.isin for c in cands}))
             if len(isins) == 1:
                 pts.append(_Point(d, isins[0], "anchor", isins))
                 continue
             if len(isins) > 1:
-                # only an EXACT official document may break a tie (ADR-0020); a transcription
+                # only EXACT official evidence may break a tie (ADR-0020/0022); a transcription
                 # of a rendered page is a single provisional source and cannot
-                pick = [
-                    o.isin
-                    for o in self.official
-                    if o.exact and o.code == code and o.isin in isins and o.observed_on >= d
-                ]
-                if len(set(pick)) == 1:
-                    pts.append(_Point(d, pick[0], "anchor+official", isins))
+                pick = self._tie_break(code, d, isins) if code else None
+                if pick is not None:
+                    pts.append(_Point(d, pick, "anchor+official", isins))
                 else:
                     pts.append(_Point(d, None, "ambiguous", isins))
                 continue
@@ -240,13 +304,24 @@ class IdentityResolutionEngine:
         return pts
 
     def _same_security(self, a: str, da: date, b: str, db: date) -> str | None:
-        """ISIN a (last seen da) -> b (first seen db) is a nominal/ISIN change of ONE
-        security when ANCV dates b's issue in (da, db], a is gone at db and the issuer
-        legal name is unchanged. Returns the switch date evidence or None."""
-        lb, la = self.ix.line(db, b), self.ix.line(da, a)
+        """ISIN a (last evidenced da) -> b (first evidenced db) is a nominal/ISIN change of ONE
+        security when ANCV dates b's issue after da and not after the first ANCV snapshot
+        that carries b, a is gone at that snapshot, ``b`` is not evidenced before its issue
+        date, and the issuer legal name is unchanged. Works with ANCV snapshot dates AND with
+        official evidence dates (the ANCV lines are looked up by ISIN, not by date). The
+        returned date is the ANCV ISSUE date (administrative); an official transition
+        (``IsinTransition``) gives the trading date and takes precedence."""
+        first_b = next((d for d in self.ix.dates if d >= da and self.ix.line(d, b)), None)
+        if first_b is None:
+            return None
+        lb = self.ix.line(first_b, b)
+        la = None
+        for d in reversed([x for x in self.ix.dates if x <= da]):
+            if (la := self.ix.line(d, a)) is not None:
+                break
         if lb is None or la is None or lb.issue_date is None:
             return None
-        if not (da < lb.issue_date <= db) or self.ix.line(db, a) is not None:
+        if not (da < lb.issue_date <= min(first_b, db)) or self.ix.line(first_b, a) is not None:
             return None
         if normalize_name(la.issuer_legal_name) != normalize_name(lb.issuer_legal_name):
             return None
@@ -255,10 +330,30 @@ class IdentityResolutionEngine:
     def resolve(self, span: MembershipSpan) -> list[Segment]:
         f = span.effective_from
         t = span.effective_to or _day(self.horizon)
-        inside = [d for d in self.ix.dates if f <= d < t]
+        code0 = span.code_at(f)
+        off_dates = {
+            o.observed_on
+            for c in {p.code for p in span.codes}
+            for o in self._exact.get(c, ())
+            if f <= o.observed_on < t and span.code_at(o.observed_on) == c
+        }
+        _ = code0
+        inside = sorted({d for d in self.ix.dates if f <= d < t} | off_dates)
         if not inside:
             return [self._bracket_only(span, f, t)]
         pts = self._points(span, inside)
+        # an ES-only ANCV snapshot says nothing about a foreign (non-ES) ISIN of this span
+        foreign = {
+            p.isin
+            for p in pts
+            if p.isin and p.isin[:2] != "ES" and p.how.startswith(("anchor", "official"))
+        }
+        if foreign:
+            pts = [
+                p
+                for p in pts
+                if not (p.how == "none" and p.isin is None and not self.ix.lists_foreign(p.d))
+            ]
         segs: list[Segment] = []
         M = IdentityResolutionStatus.MULTI_SOURCE_CONFIRMED
         P = IdentityResolutionStatus.PROVISIONAL
@@ -269,7 +364,9 @@ class IdentityResolutionEngine:
                 runs[-1][1].append(p)
             else:
                 runs.append((p.isin, [p]))
-        anchored = {i for i, ps in runs if i and any(q.how.startswith("anchor") for q in ps)}
+        anchored = {
+            i for i, ps in runs if i and any(q.how.startswith(("anchor", "official")) for q in ps)
+        }
         cursor, prev = f, None  # prev: (isin, last date) of the previous confirmed run
         for isin, ps in runs:
             first, last = ps[0].d, ps[-1].d
@@ -283,8 +380,28 @@ class IdentityResolutionEngine:
                 cursor, prev = _day(last), None
                 continue
             start = first
-            if cursor < first:
-                switch = self._same_security(prev[0], prev[1], isin, first) if prev else None
+            tr: IsinTransition | None = self.transitions.get((prev[0], isin)) if prev else None
+            new_sec = False
+            if (
+                tr is not None
+                and prev is not None
+                and prev[1] < tr.effective_date <= _day(self.horizon)
+            ):
+                # OFFICIAL transition: boundary at the first trading session of the new ISIN
+                start = tr.effective_date
+                if segs and segs[-1].isin == prev[0]:
+                    segs[-1].end = start
+                    segs[-1].evidence.append(
+                        f"official transition {tr.old_isin}->{isin} effective {start} "
+                        f"({tr.kind}, {tr.continuity}; "
+                        f"docs {', '.join(x[:12] for x in tr.sources)})"
+                    )
+                new_sec = tr.continuity == "NEW_SECURITY"
+                cursor = start
+            elif cursor < first:
+                switch: str | None = (
+                    self._same_security(prev[0], prev[1], isin, first) if prev else None
+                )
                 if cursor == f and not segs:
                     segs.append(self._leading_edge(span, f, first, isin))
                 elif switch is not None and prev is not None:
@@ -300,7 +417,17 @@ class IdentityResolutionEngine:
                             cursor, first, P, None, ["unexplained window between snapshots"], gap_c
                         )
                     )
-            segs.append(Segment(start, _day(last), M, isin, ev))
+            segs.append(
+                Segment(
+                    start,
+                    _day(last),
+                    M,
+                    isin,
+                    ev,
+                    new_security=new_sec,
+                    transition=tr if new_sec or tr is not None else None,
+                )
+            )
             cursor, prev = _day(last), (isin, last)
         if cursor < t:
             segs.append(self._trailing_edge(span, cursor, t, prev))
@@ -313,6 +440,34 @@ class IdentityResolutionEngine:
     def _leading_edge(self, span: MembershipSpan, f: date, first: date, isin: str) -> Segment:
         d0 = self.ix.before(f)
         P, M = IdentityResolutionStatus.PROVISIONAL, IdentityResolutionStatus.MULTI_SOURCE_CONFIRMED
+        code = span.code_at(f)
+        trs = [t for t in self.transitions.values() if t.new_isin == isin and t.effective_date <= f]
+        if trs:
+            t0 = max(trs, key=lambda t: t.effective_date)
+            return Segment(
+                f,
+                first,
+                M,
+                isin,
+                [
+                    f"official transition {t0.old_isin}->{isin} effective {t0.effective_date} "
+                    f"({t0.kind}) precedes the interval; "
+                    f"docs {', '.join(x[:12] for x in t0.sources)}"
+                ],
+            )
+        pre = [o for o in self._exact.get(code or "", ()) if o.observed_on < f]
+        if (
+            pre
+            and pre[-1].isin == isin
+            and f - pre[-1].observed_on <= timedelta(days=self.TIE_MAX_GAP_DAYS)
+        ):
+            return Segment(
+                f,
+                first,
+                M,
+                isin,
+                [f"{pre[-1].observed_on}: exact official {pre[-1].source} gives {code} = {isin}"],
+            )
         if d0 is not None and self.ix.line(d0, isin) is not None:
             ln = self.ix.line(first, isin)
             if ln is not None and ln.issue_date is not None and ln.issue_date > f:

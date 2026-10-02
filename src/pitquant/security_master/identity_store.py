@@ -25,9 +25,13 @@ from pitquant.core.hashing import content_hash
 from pitquant.db.models import (
     IdentifierHistory,
     IdentityResolutionRun,
+    IndexEvent,
     IndexMembership,
     Issuer,
+    MembershipBuild,
     MembershipIdentitySegment,
+    OfficialCodeIsinEvidence,
+    OfficialIsinTransition,
     RawSourceArchive,
     Security,
     SecurityIdentitySnapshot,
@@ -38,6 +42,7 @@ from pitquant.security_master.identity import (
     ENGINE_VERSION,
     CodePeriod,
     IdentityResolutionEngine,
+    IsinTransition,
     MembershipSpan,
     OfficialIdentifier,
     PeriodClass,
@@ -62,6 +67,76 @@ def load_snapshot_index(session: Session, source: str = "CNMV_ANCV") -> Snapshot
     )
 
 
+def load_official_evidence(session: Session) -> list[OfficialIdentifier]:
+    """Exact dated code <-> ISIN statements from archived official documents (ADR-0022)."""
+    return [
+        OfficialIdentifier(
+            r.code, r.isin, r.observed_on, r.source_kind, r.source_sha256, exact=True
+        )
+        for r in session.scalars(select(OfficialCodeIsinEvidence))
+    ]
+
+
+def load_transitions(session: Session) -> list[IsinTransition]:
+    return [
+        IsinTransition(
+            r.old_isin,
+            r.new_isin,
+            r.effective_date,
+            r.kind,
+            r.continuity,
+            tuple(str(d.get("sha256", "")) for d in (r.documents or [])),
+        )
+        for r in session.scalars(select(OfficialIsinTransition))
+    ]
+
+
+def evidence_hash(session: Session) -> str:
+    rows = sorted(
+        [
+            f"{r.code}:{r.isin}:{r.observed_on}:{r.source_sha256}"
+            for r in session.scalars(select(OfficialCodeIsinEvidence))
+        ]
+        + [
+            f"T:{r.old_isin}>{r.new_isin}:{r.effective_date}"
+            for r in session.scalars(select(OfficialIsinTransition))
+        ]
+    )
+    return content_hash(rows)
+
+
+def _successor_security(
+    session: Session, sm: SecurityMaster, predecessor_id: str, code: str, isin: str, start: date
+) -> str:
+    """A NEW security (merger / redomiciliation): linked to its predecessor, same issuer
+    (economic continuity), the predecessor's code closed on ``start`` (ADR-0020)."""
+    old = session.get_one(Security, predecessor_id)
+    new = sm.register(
+        name=f"{code} ({isin})",
+        exchange=old.exchange,
+        currency=old.currency,
+        country=old.country,
+        listing_start=start,
+    )
+    new.issuer_id = old.issuer_id
+    for t in session.scalars(
+        select(TickerHistory).where(
+            TickerHistory.security_id == predecessor_id,
+            TickerHistory.ticker == code.upper(),
+            TickerHistory.valid_to.is_(None),
+        )
+    ):
+        if t.valid_from < start:
+            t.valid_to = start
+    old.listing_end = start
+    old.delisted = True
+    old.delisting_reason = "merged"
+    old.successor_security_id = new.security_id
+    session.flush()
+    sm.add_ticker(new.security_id, code, old.exchange, start)
+    return new.security_id
+
+
 def snapshots_hash(session: Session, provider: str = "CNMV_ANCV") -> str:
     """Hash of the archived distributions the evidence comes from (content addressed)."""
     shas = sorted(
@@ -73,20 +148,36 @@ def snapshots_hash(session: Session, provider: str = "CNMV_ANCV") -> str:
 
 
 def spans_for_build(session: Session, build_id: str) -> dict[int, MembershipSpan]:
+    """One span per membership interval. Its CODES come from the build's own (immutable)
+    events — initial code plus TICKER_CHANGE events — never from ``ticker_history``, which a
+    previous resolution run may have edited (e.g. closing a predecessor's ticker): the result
+    of a run must not depend on earlier runs."""
+    build = session.get_one(MembershipBuild, build_id)
     out: dict[int, MembershipSpan] = {}
     for iv in session.scalars(select(IndexMembership).where(IndexMembership.build_id == build_id)):
-        tick = session.scalars(
-            select(TickerHistory)
-            .where(TickerHistory.security_id == iv.security_id)
-            .order_by(TickerHistory.valid_from)
-        ).all()
-        codes = tuple(
-            CodePeriod(t.ticker, t.valid_from, t.valid_to)
-            for t in tick
-            if t.valid_from < (iv.effective_to or date.max)
-            and (t.valid_to is None or t.valid_to > iv.effective_from)
+        end = iv.effective_to or date.max
+        changes = sorted(
+            (
+                e
+                for e in session.scalars(
+                    select(IndexEvent).where(
+                        IndexEvent.security_id == iv.security_id,
+                        IndexEvent.event_type == "TICKER_CHANGE",
+                        IndexEvent.membership_source == build.membership_source,
+                        IndexEvent.raw_source_hash == build.raw_source_hash,
+                    )
+                )
+                if iv.effective_from < e.effective_date < end and e.new_ticker
+            ),
+            key=lambda e: e.effective_date,
         )
-        out[iv.id] = MembershipSpan(str(iv.id), iv.effective_from, iv.effective_to, codes)
+        code, start = iv.ticker_at_inclusion or "?", iv.effective_from
+        periods: list[CodePeriod] = []
+        for e in changes:
+            periods.append(CodePeriod(code, start, e.effective_date))
+            code, start = e.new_ticker or code, e.effective_date
+        periods.append(CodePeriod(code, start, iv.effective_to))
+        out[iv.id] = MembershipSpan(str(iv.id), iv.effective_from, iv.effective_to, tuple(periods))
     return out
 
 
@@ -183,6 +274,7 @@ def run_identity_resolution(
         )
     ).first()
     if same is not None:  # deterministic engine, same inputs: reuse (append-only, idempotent)
+        _assert_run_matches(session, same, raw, canonical_start)
         return IdentityRunResult(same, raw, spans, metrics, metrics_pre)
     run = IdentityResolutionRun(
         index_code=index_code,
@@ -200,13 +292,29 @@ def run_identity_resolution(
     for mid in sorted(raw, key=lambda k: (spans[k].effective_from, k)):
         segs = raw[mid]
         iv = session.get_one(IndexMembership, mid)
+        prev_sid = iv.security_id
         for seg in [x for s in segs for x in _split_at(s, canonical_start)]:
             sid: str | None = None
             issuer_id: str | None = None
             if seg.status in BACKTESTABLE and seg.isin:
                 if seg.isin not in owners:
-                    owners[seg.isin] = _owner_of(session, seg.isin) or iv.security_id
+                    known = _owner_of(session, seg.isin)  # earlier run: reuse, never duplicate
+                    predecessor = session.get(Security, prev_sid)
+                    if (
+                        seg.new_security
+                        and known is None
+                        and (predecessor is not None and predecessor.successor_security_id)
+                    ):
+                        known = predecessor.successor_security_id  # created by an earlier run
+                    if seg.new_security and known is None:
+                        code = spans[mid].code_at(seg.start) or iv.ticker_at_inclusion or "?"
+                        owners[seg.isin] = _successor_security(
+                            session, sm, prev_sid, code, seg.isin, seg.start
+                        )
+                    else:
+                        owners[seg.isin] = known or iv.security_id
                 sid = owners[seg.isin]
+                prev_sid = sid
                 sec = session.get_one(Security, sid)
                 last = engine.ix.latest_line(seg.isin)
                 issuer_id = _issuer_for(
@@ -252,6 +360,31 @@ def run_identity_resolution(
             sm.add_identifier(sid, "ISIN", isin, a, b)
     session.flush()
     return IdentityRunResult(run, raw, spans, metrics, metrics_pre)
+
+
+def _assert_run_matches(
+    session: Session, run: IdentityResolutionRun, raw: dict[int, list[Segment]], canon: date
+) -> None:
+    """A run is reused only if its STORED segments are exactly what the engine computes now.
+    If the engine's logic changed without a new ``ENGINE_VERSION`` this fails instead of
+    reporting numbers that the stored segments do not support."""
+    fresh = sorted(
+        (mid, x.start, x.end, x.status.value, x.isin)
+        for mid, segs in raw.items()
+        for sg in segs
+        for x in _split_at(sg, canon)
+    )
+    stored = sorted(
+        (r.membership_id, r.segment_from, r.segment_to, r.status, r.isin)
+        for r in session.scalars(
+            select(MembershipIdentitySegment).where(MembershipIdentitySegment.run_id == run.run_id)
+        )
+    )
+    if fresh != stored:
+        raise ValueError(
+            f"identity run {run.run_id} ({run.engine_version}) differs from the engine's output: "
+            "bump ENGINE_VERSION when the engine logic changes"
+        )
 
 
 def _union(ranges: list[tuple[date, date | None]]) -> list[tuple[date, date | None]]:

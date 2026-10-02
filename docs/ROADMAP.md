@@ -7,6 +7,7 @@
 | 1b | D-01…D-03: archivo de fuentes, SEC por accession, universos por eventos, holdout sellado, CI PostgreSQL estricto | ✅ en código y tests con fixtures · ⏳ pendiente: ejecución real contra SEC/S&P/BME y job `postgres` de CI en verde |
 | 1d | ADR-0019 (zona horaria EDGAR), GitHub privado con CI verde (incl. PostgreSQL y Docker 3.12), universo IBEX real desde documentos BME, recuperación SEC desde instancia, slice CNMV real (Enagás), bake-off D-05 (11/20 casos verificados), readiness v2 | ✅ · ⏳ identidades IBEX históricas (ISIN fechados), D-05 (decisión económica), S&P DJI (licencia) |
 | 1e | Emisor ≠ security y snapshots ANCV (ADR-0020, migración 0004), `IdentityResolutionEngine`, identidad IBEX 2011+ (61/68 intervalos), 5 de 7 filas BME resueltas, Enagás de extremo a extremo; capa de market data normalizada, adapters Sharadar (SEP, ACTIONS, TICKERS, SP500), EODHD y Alpha Vantage (sólo QA), modelo de corporate actions, motor de total return, Data Coverage Engine y elegibilidad del analizador (ADR-0021); readiness v3 | ✅ en código y tests · ✅ ANCV real (33 snapshots) · ⏳ claves de API (BLOCKED_BY_CREDENTIAL) · ⏳ 7 intervalos IBEX sin probar (MTS y FER con ISIN extranjero, ABG.P, ventanas REE/GRF, borde PHM) |
+| 1f | ADR-0022: evidencia oficial código↔ISIN (fichas BME archivadas, boletines diarios), 5 transiciones de ISIN verificadas contra el original (MTS, GRF, REE, PHM, FER como security nueva), motor v4, `cohort-readiness`, traza de corporate actions, fundamentales SEC por emisor | ✅ identidad IBEX 2011+: 68/68 intervalos, 190/190 fechas · ⏳ precios, corporate actions y fundamentales de los miembros para la primera cohorte completa |
 | 1c | Verificación real de la toolchain, PostgreSQL local estricto, identidad ≠ membership (ADR-0017), `audit.explain`, `pitquant data-readiness`, contrato D-05, política DATE_ONLY (ADR-0018), jobs SEC | ✅ en código y tests · ✅ SEC real (MSFT y AAPL) · 🟡 BME: PDF real calibrado, sin build (falta composición inicial o actual y 7 avisos) · ⏳ CNMV (documentos por identificar y aprobar) · ⏳ D-05 (decisión económica) |
 | 2 | Market data + corporate actions + calendarios | 🟡 calendarios, precios raw, ajuste as-of, ingestión idempotente; capa normalizada, adapters y total return con spin-offs y adquisiciones en efectivo y en acciones (ADR-0021). Falta: datos reales (claves), capa oficial BME/CNMV de corporate actions españolas, FX, almacén Parquet/DuckDB para histórico masivo, benchmarks TR |
 | 3 | Fundamentales PIT | 🟡 modelo bitemporal, `facts_as_of`, reexpresiones, latencia conservadora. Falta: conector real (D-01/D-04), normalización de conceptos XBRL, macro vintages |
@@ -33,7 +34,7 @@ Informes generados desde la base (no editar a mano): `docs/ISSUER_SECURITY_CHANG
 `docs/ADAPTER_FIELD_EVIDENCE.md` (frase oficial que justifica cada campo de los adapters).
 
 Prioridad de la siguiente iteración:
-1. Resolver los blockers de identidad que impiden formar cohortes.
+1. (hecho en ADR-0022) Resolver los blockers de identidad que impiden formar cohortes: 190/190.
 2. Introducir al menos un flujo real de market data.
 3. Validar corporate actions reales.
 4. Conseguir la primera cohorte histórica elegible.

@@ -91,8 +91,54 @@ def test_complete_dimensions_and_missing_ca_source(session: Session) -> None:
     assert st["fundamentals"] is CoverageStatus.COMPLETE  # issuer-level facts count
     assert st["corporate_actions"] is CoverageStatus.INSUFFICIENT  # no accepted source yet
     assert support_decision(cov).status is SupportStatus.NOT_SUPPORTED
+    # an accepted source WITHOUT an ingestion trace is not coverage
+    no_trace = security_coverage(session, sid, START, END, accepted_ca_sources=["EODHD:div"])
+    ca = {d.name: d for d in no_trace.dimensions}["corporate_actions"]
+    assert ca.status is CoverageStatus.INSUFFICIENT and "NOT_ATTEMPTED" in ca.detail
+    assert support_decision(no_trace).status is SupportStatus.NOT_SUPPORTED
+    _trace(session, sid, "COMPLETED", START, END, 0)
     ok = security_coverage(session, sid, START, END, accepted_ca_sources=["EODHD:div"])
+    ca = {d.name: d for d in ok.dimensions}["corporate_actions"]
+    assert ca.status is CoverageStatus.COMPLETE and "provider-reported events: 0" in ca.detail
     assert support_decision(ok).status is SupportStatus.SUPPORTED_SECURITY
+
+
+def _trace(session: Session, sid: str, status: str, a: date, b: date, n: int) -> None:
+    from pitquant.db.models import CorporateActionIngestion
+
+    session.add(
+        CorporateActionIngestion(
+            security_id=sid,
+            provider="EODHD:div",
+            period_start=a,
+            period_end=b,
+            status=status,
+            events_found=n,
+        )
+    )
+    session.flush()
+
+
+def test_corporate_action_states_are_distinguished(session: Session) -> None:
+    from pitquant.coverage import CaCoverageState, corporate_action_state
+
+    _source(session)
+    sid = _security(session, isin=True, prices=True)
+    acc = ["EODHD:div"]
+
+    def state() -> CaCoverageState:
+        return corporate_action_state(session, sid, START, END, acc)[0]
+
+    assert corporate_action_state(session, sid, START, END, [])[0] is (
+        CaCoverageState.PROVIDER_UNAVAILABLE
+    )
+    assert state() is CaCoverageState.NOT_ATTEMPTED
+    _trace(session, sid, "FAILED", START, END, 0)
+    assert state() is CaCoverageState.ATTEMPTED_FAILED  # an attempt proves nothing
+    _trace(session, sid, "COMPLETED", START, date(2024, 6, 30), 2)
+    assert state() is CaCoverageState.PARTIAL_PERIOD
+    _trace(session, sid, "COMPLETED", date(2024, 7, 1), END, 0)
+    assert state() is CaCoverageState.VERIFIED_COVERAGE
 
 
 def test_support_does_not_depend_on_index_membership(session: Session) -> None:
@@ -103,6 +149,19 @@ def test_support_does_not_depend_on_index_membership(session: Session) -> None:
     from pitquant.db.models import IndexMembership
 
     assert session.query(IndexMembership).filter_by(security_id=sid).count() == 0
+    from pitquant.db.models import CorporateActionIngestion
+
+    session.add(
+        CorporateActionIngestion(
+            security_id=sid,
+            provider="X",
+            period_start=START,
+            period_end=END,
+            status="COMPLETED",
+            events_found=0,
+        )
+    )
+    session.flush()
     cov = security_coverage(session, sid, START, END, accepted_ca_sources=["X"])
     assert support_decision(cov).status is SupportStatus.SUPPORTED_SECURITY
 
