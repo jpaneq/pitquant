@@ -13,6 +13,7 @@ import pandas as pd
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from pitquant.core.errors import LookAheadError
 from pitquant.core.timeutils import require_aware
 from pitquant.data.calendars.market_calendar import get_calendar
 from pitquant.data.corporate_actions.adjust import (
@@ -21,7 +22,18 @@ from pitquant.data.corporate_actions.adjust import (
     adjusted_closes_as_of,
 )
 from pitquant.data.point_in_time.engine import FactKey, PITGuard, facts_as_of
-from pitquant.db.models import CorporateAction, Dividend, FundamentalFact, Price, Security
+from pitquant.db.models import (
+    CorporateAction,
+    CorporateActionEvent,
+    Dividend,
+    FundamentalFact,
+    Price,
+    Security,
+)
+from pitquant.market.normalized import CorporateAction as NormalizedAction
+from pitquant.market.normalized import CorporateActionKind, Provenance, SourceTier
+from pitquant.market.total_return import TotalReturnResult
+from pitquant.market.total_return import total_return as market_total_return
 from pitquant.security_master.service import SecurityMaster, SecurityView
 from pitquant.universe.index_membership import IndexUniverse, UniverseMember
 
@@ -82,6 +94,49 @@ class PITContext:
         ).set_index("session_date")
         return df.tail(lookback_sessions) if lookback_sessions else df
 
+    def market_actions(self, security_id: str) -> list[NormalizedAction]:
+        """Normalized corporate actions (ADR-0021) known at ``as_of``."""
+        rows = self.session.scalars(
+            select(CorporateActionEvent).where(
+                CorporateActionEvent.security_id == security_id,
+                CorporateActionEvent.available_at <= self.as_of,
+                *(
+                    [CorporateActionEvent.ingested_at <= self.ingested_before]
+                    if self.ingested_before
+                    else []
+                ),
+            )
+        ).all()
+        PITGuard(self.as_of, context=f"market_actions:{security_id}").check_all(
+            (f"ca:{r.event_type}:{r.ex_date or r.effective_date}", r.available_at) for r in rows
+        )
+        return [
+            NormalizedAction(
+                security_key=security_id,
+                kind=CorporateActionKind(r.event_type),
+                available_at=r.available_at,
+                provenance=Provenance(
+                    r.provider,
+                    SourceTier(r.source_tier),
+                    r.provider_event_id,
+                    r.source_hash,
+                    r.parser_version,
+                    r.archive_id,
+                ),
+                announcement_date=r.announcement_date,
+                ex_date=r.ex_date,
+                record_date=r.record_date,
+                payment_date=r.payment_date,
+                effective_date=r.effective_date,
+                ratio=r.ratio,
+                cash_amount=r.cash_amount,
+                currency=r.currency,
+                target_key=r.target_security_id,
+                details=dict(r.details or {}),
+            )
+            for r in rows
+        ]
+
     def _events(self, security_id: str) -> tuple[list[SplitEvent], list[DividendEvent]]:
         splits = [
             SplitEvent(ca.ex_date, float(ca.ratio or 1.0), ca.announced_at)
@@ -101,7 +156,28 @@ class PITContext:
                 )
             )
         ]
+        # normalized table (ADR-0021): the source for vendor/official data from now on
+        for a in self.market_actions(security_id):
+            if a.kind in (CorporateActionKind.SPLIT, CorporateActionKind.REVERSE_SPLIT) and (
+                a.ex_date and a.ratio
+            ):
+                splits.append(SplitEvent(a.ex_date, a.ratio, a.available_at))
+            elif a.kind in (
+                CorporateActionKind.CASH_DIVIDEND,
+                CorporateActionKind.SPECIAL_DIVIDEND,
+            ) and (a.ex_date and a.cash_amount is not None):
+                divs.append(DividendEvent(a.ex_date, a.cash_amount, a.available_at))
         return splits, divs
+
+    def total_return(self, security_id: str, start: date, end: date) -> TotalReturnResult:
+        """Total return on RAW closes known at ``as_of`` and normalized actions known at
+        ``as_of`` (``pitquant.market.total_return``). ``end`` after the last closed session
+        is refused: the future is never read."""
+        bars = self.raw_bars(security_id)
+        if bars.empty or end > bars.index[-1]:
+            raise LookAheadError(f"total_return {security_id}: end {end} not closed at as_of")
+        closes = {d: float(c) for d, c in bars["close"].items()}
+        return market_total_return(closes, self.market_actions(security_id), start, end, self.as_of)
 
     def adjusted_closes(self, security_id: str, *, include_dividends: bool = True) -> pd.Series:
         bars = self.raw_bars(security_id)

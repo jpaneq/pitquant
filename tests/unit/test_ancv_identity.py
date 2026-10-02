@@ -219,6 +219,24 @@ def test_ticker_alone_is_never_sufficient() -> None:
     assert set(segs[0].candidates) == {"ES0000000011", "ES0000000029"}
 
 
+def test_only_an_exact_official_document_breaks_a_label_tie() -> None:
+    """PUIG/LOG pattern: two ordinary lines share the label. The BME composition
+    TRANSCRIPTION (exact=False) must not pick one; an archived exact document may."""
+    ix = SnapshotIndex(
+        [
+            _l("2025-06-30", "ES0000000011", "XYZ/AC 0.30 A", "FIXTURE"),
+            _l("2025-06-30", "ES0000000029", "XYZ/AC 0.06 B", "FIXTURE"),
+        ]
+    )
+    span = _span("XYZ", "2025-01-02", "2025-12-01")
+    tr = OfficialIdentifier("XYZ", "ES0000000029", date(2026, 10, 1), "BME", "h", exact=False)
+    segs = IdentityResolutionEngine(ix, [tr], horizon=date(2026, 10, 1)).resolve(span)
+    assert all(s.status not in BACKTESTABLE for s in segs)
+    ex = OfficialIdentifier("XYZ", "ES0000000029", date(2025, 7, 1), "aviso", "h", exact=True)
+    segs = IdentityResolutionEngine(ix, [ex], horizon=date(2026, 10, 1)).resolve(span)
+    assert any(s.isin == "ES0000000029" and s.status in BACKTESTABLE for s in segs)
+
+
 def test_new_shares_line_is_not_an_ordinary_share() -> None:
     ln = _l("2015-06-30", "ES0000000011", "XYZ/ACNV 1,00")
     assert not ln.is_ordinary_share

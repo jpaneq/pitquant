@@ -88,7 +88,9 @@ Hecho:
 - **SEC (MSFT, AAPL):** 127 filings y 51.538 hechos (ADR-0019).
 - **IBEX 35:**
   - 133 intervalos; 5 de las 7 filas sin leyenda probadas como cambio de código por ANCV.
-  - Identidad 2011+ en `docs/IBEX_COVERAGE_REPORT.md`.
+  - Identidad 2011+: 59/68 intervalos MULTI_SOURCE_CONFIRMED (86,8 %); LOG y PUIG quedan
+    PROVISIONAL (dos líneas con la misma etiqueta; sólo un documento oficial exacto desempata).
+    Detalle en `docs/IBEX_COVERAGE_REPORT.md`.
   - Ninguna fecha 2011+ es backtestable todavía: MTS (ArcelorMittal, ISIN LU) no tiene
     identidad probada y el fallo es cerrado por fecha.
 - **CNMV (Enagás 2017S1–2019S1):** 5 informes, ligados al EMISOR (CIF). La cadena de extremo a
@@ -120,6 +122,14 @@ Hecho:
   (ancla transcrita), así que no es elegible para validación final ni para el holdout.
 - `register_event_securities` cierra el ticker de otra emisión si se reasigna (aviso DQ).
 - Conceptos XBRL sin normalizar todavía.
+- Los hechos SEC siguen ligados a la security registrada por CIK (patrón que ADR-0020 eliminó
+  para CNMV): migrarlos a `issuer_id` queda pendiente.
+- `security_identity_snapshots.issuer_id/security_id` quedan NULL (tabla append-only, ingerida
+  antes de resolver): el vínculo vive en `membership_identity_segments` e `identifier_history`.
+- Cobertura de corporate actions: COMPLETE si hay una fuente aceptada, sin traza de ingestión
+  por security todavía.
+- Ferrovial (ES→NL) no está modelada como Security A/B: el ISIN ES deja de aparecer tras 12/2022
+  y el NL no está probado.
 - Emisores registrados desde SEC usan `exchange="XNYS"` como código de calendario aunque
   coticen en NASDAQ (mismo horario); su ticker queda vacío hasta una fuente fechada.
 

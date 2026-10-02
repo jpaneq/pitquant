@@ -97,10 +97,30 @@ def test_missing_key_is_source_not_configured(monkeypatch: pytest.MonkeyPatch) -
 def test_api_key_never_reaches_a_stored_identifier(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("PITQUANT_SHARADAR_API_KEY", "SECRET123")
     seen = []
-    p = SharadarMarketDataProvider(fetch=lambda u: seen.append(u) or b"x")
+    p = SharadarMarketDataProvider(fetch=lambda u: seen.append(u) or SEP)
     _, stored = p.download("stocks", ticker="AAPL")
     assert "SECRET123" in seen[0] and "SECRET123" not in stored and "REDACTED" in stored
     assert redact("https://x/y?api_token=abc&fmt=json") == "https://x/y?api_token=REDACTED&fmt=json"
+
+
+def test_full_page_is_never_treated_as_complete(monkeypatch: pytest.MonkeyPatch) -> None:
+    import pitquant.market.providers.sharadar as sh
+
+    monkeypatch.setenv("PITQUANT_SHARADAR_API_KEY", "k")
+    monkeypatch.setattr(sh, "PAGE_LIMIT", 2)
+    header = b"date,action,ticker,name,value,contraticker,contraname\n"
+    row = b"2020-01-02,dividend,AAPL,Apple,0.1,,\n"
+    pages = {"0": header + row * 2, "2": header + row * 2, "4": header + row}
+
+    def fetch(u: str) -> bytes:
+        off = u.split("offset=")[1].split("&")[0] if "offset=" in u else None
+        return pages[off] if off is not None else header + row * 2
+
+    p = sh.SharadarMarketDataProvider(fetch=fetch)
+    with pytest.raises(DataQualityError, match="truncated"):
+        p.download("actions", limit="2")
+    got = p.download_all("actions")
+    assert len(got) == 3 and all("REDACTED" in u for _, u in got)
 
 
 # ───────────────────────────── Sharadar SEP / ACTIONS / TICKERS ─────────────────────────

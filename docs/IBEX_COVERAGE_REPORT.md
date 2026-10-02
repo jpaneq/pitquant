@@ -5,7 +5,7 @@ Generado con `scripts/build_ibex_real.py` (ADR-0017, ADR-0020). Fuentes:
 - Composición vigente observada el 2026-10-01: **transcripción** de páginas oficiales renderizadas por JavaScript — `9d2f010701a50c42de9d5d5bcac6fd3aa4b57cb253b1cd7533740c78b159c28d`. Por eso el build es PROVISIONAL_RESEARCH_SOURCE.
 - Identidad: 33 snapshots semestrales ANCV de la CNMV (2010-06-30 → 2026-06-30), hash del conjunto `e22b3703e8f78e7988c05a1a9e4957f7b3ce6570d9735fa06d46c925f1b2efca`.
 
-Build `8f4716ed-5562-4368-84f9-36e11fc0ef11`: estado **ok**, 334 eventos, 133 intervalos. Run de identidad `52ff0be6-2b4c-48ea-bdb3-472dd9ee7222` (`identity-engine-1`).
+Build `8f4716ed-5562-4368-84f9-36e11fc0ef11`: estado **ok**, 334 eventos, 133 intervalos. Run de identidad `7854a476-c1cd-4475-97e5-f3234643abe0` (`identity-engine-2`).
 
 ## Identidad IBEX 2011+ (periodo canónico V1, desde 2011-01-01)
 
@@ -13,27 +13,29 @@ Build `8f4716ed-5562-4368-84f9-36e11fc0ef11`: estado **ok**, 334 eventos, 133 in
 |---|---|---|
 | intervals_total | 68 | 100 |
 | resolved_exact | 0 | 0 |
-| resolved_multi_source | 61 | 1 |
-| provisional | 4 | 61 |
+| resolved_multi_source | 59 | 1 |
+| provisional | 6 | 61 |
 | unresolved | 3 | 38 |
-| coverage_percentage | 89.7 | 1.0 |
+| coverage_percentage | 86.8 | 1.0 |
 
 Un intervalo cuenta como resuelto sólo si TODOS sus segmentos dentro del periodo son EXACT_OFFICIAL_IDENTIFIER o MULTI_SOURCE_CONFIRMED. Lo anterior a 2011-01-01 es ARCHIVAL / NON_CANONICAL_FOR_V1 y no bloquea V1.
 
 ### Calibración contra la composición vigente
 
-ISIN del motor en 2026-06-30 frente a la composición BME observada el 2026-10-01: **33 coinciden, 0 discrepan, 2 sin ISIN probado**.
+ISIN del motor en 2026-06-30 frente a la composición BME observada el 2026-10-01: **31 coinciden, 0 discrepan, 4 sin ISIN probado**.
 
 | Código | ISIN BME | Motor |
 |---|---|---|
 | FER | NL0015001FS8 | — (sin ISIN probado) |
+| LOG | ES0105027009 | — (sin ISIN probado) |
 | MTS | LU1598757687 | — (sin ISIN probado) |
+| PUIG | ES0105777017 | — (sin ISIN probado) |
 
 ### Fechas backtestables (fallo cerrado por fecha)
 
 `backtest_universe` en el primer día hábil de cada mes desde 2011-01-01: **0/190 fechas pasan**. Basta UN miembro sin identidad probada para que la fecha falle (descartarlo sería sesgo de supervivencia).
 
-Códigos que bloquean (número de fechas): MTS (190), FER (46), ABG.P (25), GRF (6), REE (6), PHM (3)
+Códigos que bloquean (número de fechas): MTS (190), LOG (46), FER (46), PUIG (27), ABG.P (25), GRF (6), REE (6), PHM (3)
 
 ## Las 7 filas sin marcador de leyenda
 
@@ -142,9 +144,9 @@ Clasificadas sólo con evidencia: mismo ISIN (ANCV) bajo la etiqueta antigua ant
 | ROVI | 2021-12-20 | — | MULTI: ES0157261019 [2021-12-20, abierto) |
 | ANE | 2022-06-20 | — | MULTI: ES0105563003 [2022-06-20, abierto) |
 | SCYR | 2022-06-20 | — | MULTI: ES0182870214 [2022-06-20, abierto) |
-| LOG | 2022-12-19 | — | MULTI: ES0105027009 [2022-12-19, abierto) |
+| LOG | 2022-12-19 | — | PROVISIONAL: ES0105027009|ES0160973014 [2022-12-19, 2026-07-01); PROVISIONAL: — [2026-07-01, abierto) |
 | UNI | 2022-12-27 | — | MULTI: ES0180907000 [2022-12-27, abierto) |
-| PUIG | 2024-07-22 | — | MULTI: ES0105777017 [2024-07-22, abierto) |
+| PUIG | 2024-07-22 | — | PROVISIONAL: ES0105777009|ES0105777017 [2024-07-22, 2026-07-01); PROVISIONAL: — [2026-07-01, abierto) |
 
 ## Identidades no resueltas en el periodo canónico
 
@@ -160,6 +162,10 @@ Clasificadas sólo con evidencia: mismo ISIN (ANCV) bajo la etiqueta antigua ant
 | ABG.P | 2014-06-23 | 2015-07-01 | UNRESOLVED | 2014-12-31:none:-; 2015-06-30:none:- |
 | ABG.P | 2015-07-01 | 2015-11-27 | PROVISIONAL | trailing edge after an unresolved run |
 | PHM | 2020-09-21 | 2020-12-31 | PROVISIONAL | leading edge: 2020-06-30: ISIN absent |
+| LOG | 2022-12-19 | 2026-07-01 | PROVISIONAL | 2025-12-31:ambiguous:ES0105027009|ES0160973014; 2026-06-30:ambiguous:ES0105027009|ES0160973014 |
+| LOG | 2026-07-01 | abierto | PROVISIONAL | trailing edge after an unresolved run |
+| PUIG | 2024-07-22 | 2026-07-01 | PROVISIONAL | 2025-12-31:ambiguous:ES0105777009|ES0105777017; 2026-06-30:ambiguous:ES0105777009|ES0105777017 |
+| PUIG | 2026-07-01 | abierto | PROVISIONAL | trailing edge after an unresolved run |
 
 ## Intervalos anteriores a 2011 (archivo)
 

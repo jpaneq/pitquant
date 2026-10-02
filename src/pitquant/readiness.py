@@ -28,6 +28,7 @@ from pitquant.data.point_in_time.availability import filing_available_at
 from pitquant.db.models import (
     CnmvFiling,
     CorporateAction,
+    CorporateActionEvent,
     DataQualityIssue,
     DataSource,
     Dividend,
@@ -324,6 +325,15 @@ def _corporate_actions_component(
             if sid not in synthetic:
                 names[src_name] += 1
                 secs.add(sid)
+    # normalized table (ADR-0021); FIXTURE-tier rows never count
+    for prov, sid in session.execute(
+        select(CorporateActionEvent.provider, CorporateActionEvent.security_id).where(
+            CorporateActionEvent.source_tier != "FIXTURE"
+        )
+    ):
+        if sid not in synthetic:
+            names[prov] += 1
+            secs.add(sid)
     if not names:
         return Component(
             "Corporate actions", Status.BLOCKED, gaps=["no real corporate actions (D-05 open)"]
@@ -464,17 +474,31 @@ def _es_identity_components(
         m = run.metrics.get(key, {})
         pct = float(m.get("coverage_percentage", 0.0))
         total = int(m.get("intervals_total", 0))
+        dpct = m.get("date_coverage_percentage")
         comp.securities = int(m.get("resolved_exact", 0)) + int(m.get("resolved_multi_source", 0))
         comp.unresolved_identities = int(m.get("provisional", 0)) + int(m.get("unresolved", 0))
+        # READY needs BOTH interval coverage and date-level (fail-closed) coverage
+        dates_ok = dpct is None or float(dpct) / 100 >= min_cov
         comp.status = (
             Status.READY
-            if total and pct / 100 >= min_cov
+            if total and pct / 100 >= min_cov and dates_ok
             else Status.PARTIAL
             if comp.securities
             else Status.BLOCKED
         )
         comp.source_status = "SOURCE_CANONICAL"  # CNMV ANCV official snapshots
-        comp.source_version = f"{label}: {pct:.1f}% of {total} intervals (run {run.run_id[:8]})"
+        comp.source_version = (
+            f"{label}: {pct:.1f}% of {total} intervals"
+            + (
+                f"; {m.get('dates_backtestable')}/{m.get('dates_total')} month-start dates "
+                f"backtestable ({float(dpct):.1f}%)"
+                if dpct is not None
+                else ""
+            )
+            + f" (run {run.run_id[:8]})"
+        )
+        if dpct is not None and m.get("date_blockers"):
+            comp.warnings.append(f"date blockers: {m.get('date_blockers')}")
         comp.maturity = [label]
         if comp.status is not Status.READY:
             comp.gaps.append(

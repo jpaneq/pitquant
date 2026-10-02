@@ -45,7 +45,7 @@ from dataclasses import dataclass, field
 from datetime import date, timedelta
 from enum import StrEnum
 
-ENGINE_VERSION = "identity-engine-1"
+ENGINE_VERSION = "identity-engine-2"  # 2: only EXACT official documents break label ties
 
 
 class IdentityResolutionStatus(StrEnum):
@@ -216,10 +216,12 @@ class IdentityResolutionEngine:
                 pts.append(_Point(d, isins[0], "anchor", isins))
                 continue
             if len(isins) > 1:
+                # only an EXACT official document may break a tie (ADR-0020); a transcription
+                # of a rendered page is a single provisional source and cannot
                 pick = [
                     o.isin
                     for o in self.official
-                    if o.code == code and o.isin in isins and o.observed_on >= d
+                    if o.exact and o.code == code and o.isin in isins and o.observed_on >= d
                 ]
                 if len(set(pick)) == 1:
                     pts.append(_Point(d, pick[0], "anchor+official", isins))
@@ -551,6 +553,38 @@ def resolve_code_row(
         a,
         b,
     )
+
+
+def date_level_backtestability(
+    resolved: Mapping[str, list[Segment]],
+    spans: Mapping[str, MembershipSpan],
+    dates: Sequence[date],
+) -> dict[str, object]:
+    """Share of ``dates`` on which EVERY member has a backtestable segment — the fail-closed
+    rule of ``backtest_universe``. Identity QA only: no returns or metrics are computed."""
+    ok = 0
+    blockers: dict[str, int] = defaultdict(int)
+    for d in dates:
+        bad = []
+        for k, sp in spans.items():
+            if not (sp.effective_from <= d and (sp.effective_to is None or d < sp.effective_to)):
+                continue
+            seg = next(
+                (s for s in resolved[k] if s.start <= d and (s.end is None or d < s.end)), None
+            )
+            if seg is None or seg.status not in BACKTESTABLE:
+                bad.append(sp.code_at(d) or k)
+        if bad:
+            for b in bad:
+                blockers[b] += 1
+        else:
+            ok += 1
+    return {
+        "dates_total": len(dates),
+        "dates_backtestable": ok,
+        "date_coverage_percentage": round(100.0 * ok / len(dates), 1) if dates else 0.0,
+        "date_blockers": dict(sorted(blockers.items(), key=lambda kv: -kv[1])),
+    }
 
 
 def coverage_metrics(

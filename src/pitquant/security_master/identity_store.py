@@ -45,6 +45,7 @@ from pitquant.security_master.identity import (
     SnapshotIndex,
     SnapshotLine,
     coverage_metrics,
+    date_level_backtestability,
 )
 from pitquant.security_master.service import SecurityMaster
 
@@ -151,6 +152,14 @@ def run_identity_resolution(
     raw = {k: engine.resolve(sp) for k, sp in spans.items()}
     metrics = coverage_metrics(
         {str(k): v for k, v in raw.items()}, {str(k): v for k, v in spans.items()}, canonical_start
+    )
+    from pitquant.data.calendars.market_calendar import get_calendar
+
+    firsts = get_calendar("XMAD").first_sessions_of_months(canonical_start, engine.horizon)
+    metrics.update(
+        date_level_backtestability(
+            {str(k): v for k, v in raw.items()}, {str(k): v for k, v in spans.items()}, firsts
+        )
     )
     pre_spans = {str(k): sp for k, sp in spans.items() if sp.effective_from < canonical_start}
     metrics_pre = coverage_metrics(

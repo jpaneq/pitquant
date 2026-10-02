@@ -60,6 +60,7 @@ PROVIDER = "SHARADAR"
 PARSER_VERSION = "sharadar-1"
 API = "https://api.sharadar.com/v1.0/data/{table}"
 CREDENTIAL = Credential("PITQUANT_SHARADAR_API_KEY")
+PAGE_LIMIT = 10_000  # documented default/maximum rows per request
 
 COLUMNS = {
     "stocks": (
@@ -206,9 +207,35 @@ class SharadarMarketDataProvider:
         return API.format(table=table) + "?" + urllib.parse.urlencode(q)
 
     def download(self, table: str, **params: str) -> tuple[bytes, str]:
-        """Raw payload + the REDACTED url to archive it under (the key is never stored)."""
+        """ONE page: raw payload + the REDACTED url to archive it under (the key is never
+        stored). A page with as many rows as the limit (default 10000, official docs) may be
+        truncated: it is refused here — use ``download_all``."""
         u = self.url(table, **params)
-        return self.fetch(u), redact(u)
+        payload = self.fetch(u)
+        limit = int(params.get("limit", PAGE_LIMIT))
+        if "offset" not in params and len(parse_table(table, payload)) >= limit:
+            raise DataQualityError(
+                f"sharadar {table}: {limit} rows = page limit, result possibly truncated "
+                "(use download_all)"
+            )
+        return payload, redact(u)
+
+    def download_all(
+        self, table: str, *, max_pages: int = 10_000, **params: str
+    ) -> list[tuple[bytes, str]]:
+        """Every page (``limit``/``offset``) until a short page. Each page is archived on its
+        own; ``max_pages`` reached without a short page fails closed."""
+        pages: list[tuple[bytes, str]] = []
+        offset = 0
+        for _ in range(max_pages):
+            payload, stored = self.download(
+                table, limit=str(PAGE_LIMIT), offset=str(offset), **params
+            )
+            pages.append((payload, stored))
+            if len(parse_table(table, payload)) < PAGE_LIMIT:
+                return pages
+            offset += PAGE_LIMIT
+        raise DataQualityError(f"sharadar {table}: no short page after {max_pages} pages")
 
     # ── normalization (no network) ────────────────────────────────────────────
     @staticmethod

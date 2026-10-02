@@ -135,3 +135,12 @@ Nunca se infiere por nombre parecido.
   CRI→CABK (reorganización Criteria/CaixaBank) son cambios de código sobre la misma acción.
   El evento societario subyacente se modela aparte como corporate action (ADR-0021), con
   fuente oficial.
+
+## Addendum (motor v2)
+- **Desempate de etiquetas.** Sólo un `OfficialIdentifier` con `exact=True` (documento oficial
+  archivado que declara código ↔ ISIN) puede desempatar dos líneas ordinarias con la misma
+  etiqueta. La composición vigente BME es una transcripción (`exact=False`) y no desempata.
+  Efecto: LOG y PUIG pasan de MULTI_SOURCE_CONFIRMED a PROVISIONAL (59/68, 86,8 %).
+- **Métrica por fecha.** El run guarda también `dates_backtestable/dates_total`: fechas de
+  inicio de mes en las que TODOS los miembros están probados (la regla de
+  `backtest_universe`). `data-readiness` exige ambas coberturas para READY.
