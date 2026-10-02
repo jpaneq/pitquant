@@ -33,6 +33,8 @@ GROUPS = {
         "sp500_discovery_rows",
         "sp500_announcements",
         "sp500_membership_events",
+        "index_anchor_snapshots",
+        "index_current_anchors",
         "identity_resolution_runs",
         "membership_identity_segments",
     ],

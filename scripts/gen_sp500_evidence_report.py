@@ -143,7 +143,22 @@ def main() -> int:
                     f"| {a.announcement_at.date()} | {a.stated_change_date} {a.timing} | {a.reason_class} | {a.added_ticker} | {a.removed_ticker} | {a.source_tier} |"
                 )
             L.append("")
+        from pitquant.universe.sp500_reconstruct import compute_d02
+
+        d02 = compute_d02(ses)
+        lr = d02.longest_run
         L += [
+            "## Reconstrucción D-02 (ancla SPY/IVV → deshacer eventos confirmados → rejugar)",
+            "",
+            f"- Ancla: **{d02.anchor_status}** (as_of {d02.anchor_as_of}); eventos {d02.n_events}, confirmados {d02.n_confirmed}; reversibilidad exacta de la cadena confirmada: **{d02.reversible}**.",
+            f"- Primera fecha con membresía demostrada (earliest reconstructible date): **{d02.reconstructible_from}** (nada anterior es canónico: queda un evento sin confirmar posterior a cada fecha anterior).",
+            f"- Periodo continuo más largo: {lr[0] if lr else None} → {lr[-1] if lr else None}, **{len(lr)} cohortes mensuales** fuera del holdout (el holdout excluye {d02.holdout_cohorts_excluded} cohortes demostradas).",
+            f"- Primer / último año completo reconstruible: {d02.first_complete_year} / {d02.last_complete_year}.",
+            f"- **D02_RESEARCH_READY = {str(d02.d02_research_ready).lower()}** (mínimo 60 cohortes consecutivas; preferido 96). Notas: {d02.notes or 'ninguna'}",
+            "- Eventos sin confirmar más recientes (rompen la cadena), de más reciente a más antiguo:",
+            "",
+            *[f"  - {d}: {why}" for d, why in sorted(d02.breaks, reverse=True)[:12]],
+            "",
             "## Gaps (eventos sin evidencia oficial concordante)",
             "",
             "| fecha | añadida | eliminada | fuente discovery | fuente oficial | estado | motivo |",

@@ -35,8 +35,8 @@ temporal, se rechaza.
   "FIXTURE"). Nunca presentarlos como históricos reales.
 - No dar una funcionalidad por terminada porque "ejecuta": correcta, testeada, tipada,
   documentada, reproducible, point-in-time.
-- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0026).
-- Migraciones: `0001`…`0009` fijadas (`0009` evidencia de membresía S&P 500) (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
+- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0029).
+- Migraciones: `0001`…`0010` fijadas (`0010` anclas de índice SPY/IVV) (`0009` evidencia de membresía S&P 500) (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
   código↔ISIN, `0006` transiciones de ISIN, `0007` traza de corporate actions, `role` de
   security e `issuer_id` en filings SEC); **todo cambio de esquema = revisión nueva**.
 - Identidad (ADR-0022): sólo evidencia oficial EXACTA desempata o ancla un código; subir
@@ -133,6 +133,14 @@ es `false`: no empezar Feature Engine hasta READY con datos reales.
   vía Wayback); CSV comunitario sólo descubre. `pitquant sp500-evidence`; informe generado
   `docs/SP500_MEMBERSHIP_EVIDENCE.md` (`scripts/ingest_sp500_evidence.py`, `scripts/gen_sp500_evidence_report.py`).
 - `CURRENT_ANCHOR_BLOCKED` (S&P DJI 403): `SP500_MEMBERSHIP_CANONICAL_READY=false`.
+
+## Iteración 6 (2026-10-02, ADR-0026/27/28)
+- Ancla S&P 500 SPY+IVV `MULTI_SOURCE_CONFIRMED` (2026-10-01); D-02 desde comunicados de S&P: 171/558 eventos
+  confirmados, `D02_RESEARCH_READY=false` (387 eventos sin confirmar rompen la cadena; 1 cohorte demostrada).
+- Feature Engine V0 (51 features RAW, PIT), Label Engine 6M/12M, `explain-feature`, Developer UI `/dev/`,
+  `cohort-readiness --universe SP500`, flags de readiness separados (`research_readiness.py`).
+- Tiingo sigue `BLOCKED_BY_CREDENTIAL`: sin clave no hay precios US, cohortes completas ni baseline.
+- Holdout NO tocado: los features rechazan fechas 2022-10-01 → 2025-09-30.
 
 ## Pendiente (por orden)
 1. **Cohortes completas:** al menos un flujo real de precios y de corporate actions, y

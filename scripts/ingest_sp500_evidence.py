@@ -34,6 +34,7 @@ from sqlalchemy import select  # noqa: E402
 from pitquant.config.settings import get_settings  # noqa: E402
 from pitquant.data.archive import ArchiveStore, archive_document  # noqa: E402
 from pitquant.db.models import (  # noqa: E402
+    RawSourceArchive,
     SP500Announcement,
     SP500DiscoveryRow,
     SP500MembershipEvent,
@@ -106,31 +107,31 @@ def is_sp_release(text: str) -> bool:
 
 
 def crawl_press() -> dict[str, tuple[date, str]]:
+    """The WHOLE paginated archive of press.spglobal.com (2012-01 onwards, ~3,700 releases), then a
+    title filter for index-change releases. Releases without S&P 500 clauses simply parse to nothing."""
     found: dict[str, tuple[date, str]] = {}
-    for kw in KEYWORDS:
-        o = 0
-        while o < 4000:
-            b = http(PRESS + urllib.parse.urlencode({"s": 2429, "l": 100, "keywords": kw, "o": o}))
-            rows = re.findall(
-                r'<a[^>]+href="(https://press\.spglobal\.com/(\d{4}-\d\d-\d\d)-[^"]+)"[^>]*>(.*?)</a>',
-                b.decode("utf-8", "replace") if b else "",
-                flags=re.S,
-            )
-            if not rows:
-                break
-            for u, d, t in rows:
-                found[u] = (date.fromisoformat(d), re.sub(r"\s+", " ", re.sub("<[^>]+>", "", t)))
-            o += 100
-    keep = re.compile(r"S&P 500", re.I)
-    drop = re.compile(
-        r"Buyback|Sales|Dividend|Launch|\bQ[1-4] 20|Rebalance Results|Consultation", re.I
+    o = 0
+    while o < 8000:
+        b = http(PRESS + urllib.parse.urlencode({"s": 2429, "l": 100, "keywords": "", "o": o}))
+        rows = re.findall(
+            r'<a[^>]+href="(https://press\.spglobal\.com/(\d{4}-\d\d-\d\d)-[^"]+)"[^>]*>(.*?)</a>',
+            b.decode("utf-8", "replace") if b else "",
+            flags=re.S,
+        )
+        if not rows:
+            break
+        for u, d, t in rows:
+            found[u] = (date.fromisoformat(d), re.sub(r"\s+", " ", re.sub("<[^>]+>", "", t)))
+        o += 100
+    ok = re.compile(
+        r"Announces Changes? to U\.S\.|Join|Replac|Added to|Switch|Remov|Dropp|Changes? to (the )?S&P|S&P 500",
+        re.I,
     )
-    ok = re.compile(r"Join|Replace|Added|Changes|Set to|Adds|Remov|Delet|Switch|Move", re.I)
-    return {
-        u: v
-        for u, v in found.items()
-        if keep.search(v[1]) and ok.search(v[1]) and not drop.search(v[1])
-    }
+    drop = re.compile(
+        r"Case-Shiller|Dividend|Buyback|Rating|Launch|Sustainab|Credit|Earnings|Platts|Market Intelligence|Mobility|Methodolog|Consultation|Review Results|Healthcare Economic|SPIVA|Quarter|Sales|Growth",
+        re.I,
+    )
+    return {u: v for u, v in found.items() if ok.search(v[1]) and not drop.search(v[1])}
 
 
 def crawl_prnewswire() -> dict[str, tuple[str, str]]:
@@ -165,6 +166,17 @@ def main(refresh: bool) -> int:
         def archive(provider: str, ident: str, body: bytes, mime: str, notes: str):  # type: ignore[no-untyped-def]
             return archive_document(ses, store, provider=provider, source_identifier=ident, data=body,
                                     mime_type=mime, parser_version=PARSER_VERSION, notes=notes)  # fmt: skip
+
+        def fetch_cached(url: str) -> bytes | None:
+            """Previously archived document (same URL) is reused: the archive is the cache."""
+            row = ses.scalars(
+                select(RawSourceArchive)
+                .where(RawSourceArchive.source_identifier == url)
+                .order_by(RawSourceArchive.retrieved_at.desc())
+            ).first()
+            if row is not None and not refresh:
+                return store.get(row.sha256)
+            return http(url)
 
         # 1. discovery -----------------------------------------------------------------
         body = http(DISCOVERY_URL)
@@ -221,7 +233,7 @@ def main(refresh: bool) -> int:
         anns: list[tuple[Announcement, str, datetime]] = []
         docs: list[tuple[SourceTier, str, str, bytes, date, datetime]] = []
         for u, (d, _t) in sorted(crawl_press().items()):
-            b = http(u)
+            b = fetch_cached(u)
             if b:
                 docs.append(
                     (
@@ -237,7 +249,7 @@ def main(refresh: bool) -> int:
                 )
         for _k, (ts, orig) in sorted(crawl_prnewswire().items()):
             w = f"https://web.archive.org/web/{ts}id_/{orig}"
-            b = http(w)
+            b = fetch_cached(w)
             if not b:
                 continue
             txt = text_of(b)
@@ -336,7 +348,7 @@ def main(refresh: bool) -> int:
                 else (None, None)
             )
             ses.add(SP500MembershipEvent(
-                run_id=run_id, discovery_row_id=row_ids[(r.row.row_date, r.row.added, r.row.removed)], announcement_row_id=rid,
+                run_id=run_id, discovery_row_id=row_ids.get((r.row.row_date, r.row.added, r.row.removed)), announcement_row_id=rid,
                 added_ticker=r.added, added_security_id=None, removed_ticker=r.removed, removed_security_id=None,
                 announcement_at=at, stated_change_date=ann.change.stated_change_date if ann else None,
                 timing=ann.change.timing.value if ann else None,

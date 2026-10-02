@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 """Command line: data-readiness, cohort-readiness, explain, universe, coverage, sec-ingest."""
 
 from __future__ import annotations
@@ -19,10 +20,30 @@ def _readiness(args: argparse.Namespace) -> int:
     factory = make_session_factory(make_engine(settings.database.url))
     with factory() as session:
         rep = data_readiness(session, settings)
+    from pitquant.research_readiness import research_readiness
+
+    with factory() as session:
+        rf = research_readiness(session, settings)
     if args.json:
-        print(json.dumps(rep.as_dict(), default=str, indent=2))
+        print(
+            json.dumps(
+                {
+                    **rep.as_dict(),
+                    "research": {
+                        "flags": rf.flags,
+                        "status": rf.status,
+                        "reasons": rf.reasons,
+                        "metrics": rf.metrics,
+                    },
+                },
+                default=str,
+                indent=2,
+            )
+        )
     else:
         print(rep.to_text())
+        print()
+        print(rf.to_text())
     return 0 if rep.overall is Status.READY else 1
 
 
@@ -148,8 +169,59 @@ def _coverage(args: argparse.Namespace) -> int:
     return 0
 
 
+def _yn(b: bool) -> str:
+    return "Y" if b else "-"
+
+
+def _us_cohorts(args: argparse.Namespace) -> int:
+    from dataclasses import asdict
+
+    from pitquant.universe.sp500_cohorts import us_cohort_readiness
+
+    settings = get_settings()
+    factory = make_session_factory(make_engine(settings.database.url))
+    with factory() as session:
+        summ = us_cohort_readiness(session)
+    d = summ.d02
+    if args.json:
+        print(
+            json.dumps(
+                {
+                    "d02": {
+                        "status": d.anchor_status,
+                        "research_ready": d.d02_research_ready,
+                        "longest_run": len(d.longest_run),
+                    },
+                    "layers": summ.layer_ready_counts,
+                    "rows": [asdict(r) for r in summ.rows],
+                },
+                default=str,
+                indent=2,
+            )
+        )
+        return 0
+    print(
+        f"SP500 cohorts: {len(summ.rows)} month-start sessions; anchor {d.anchor_status} as of {d.anchor_as_of}"
+    )
+    print(
+        f"  complete pre-holdout cohorts: {summ.complete_pre_holdout}; longest continuous proven run: {len(d.longest_run)} (D02 needs 60)"
+    )
+    print(f"  members per proven cohort: {summ.securities_per_cohort}")
+    print(f"  layer-ready dates: {summ.layer_ready_counts}")
+    if args.table:
+        print("date       members memb ident fund  price ca    bench tr    holdout elig reasons")
+        for r in summ.rows:
+            print(
+                f"{r.date} {r.n_members or '-':>7} {_yn(r.membership_ready):<4} {_yn(r.identity_ready):<5} {_yn(r.fundamentals_ready):<5} {_yn(r.prices_ready):<5} {_yn(r.corporate_actions_ready):<5} {_yn(r.benchmark_ready):<5} {_yn(r.total_return_ready):<5} {_yn(r.in_holdout):<7} {_yn(r.eligible):<4} {'; '.join(r.blocking_reasons[:2])}"
+            )
+    return 0
+
+
 def _cohorts(args: argparse.Namespace) -> int:
     from dataclasses import asdict
+
+    if getattr(args, "universe", None) == "SP500":
+        return _us_cohorts(args)
 
     from pitquant.cohorts import cohort_readiness
 
@@ -241,10 +313,12 @@ def _sp500_evidence(args: argparse.Namespace) -> int:
             if run
             else []
         )
+        from pitquant.db.models import IndexCurrentAnchor
+
         anchor = session.scalars(
-            select(RawSourceArchive.archive_id).where(
-                RawSourceArchive.provider == "SPDJI:sp500_page"
-            )
+            select(IndexCurrentAnchor.status)
+            .where(IndexCurrentAnchor.index_code == "SP500")
+            .order_by(IndexCurrentAnchor.ingested_at.desc())
         ).first()
     st = Counter(e.status for e in events)
     canon = sum(st[x.value] for x in CANONICAL_STATUSES)
@@ -252,11 +326,29 @@ def _sp500_evidence(args: argparse.Namespace) -> int:
     print(f"SP500_MEMBERSHIP_DISCOVERY_READY = {str(discovery is not None).lower()}")
     print(f"SP500_MEMBERSHIP_EVIDENCE_COVERAGE = {pct:.1f}% ({canon}/{len(events)})")
     unresolved = len(events) - canon
-    ready = anchor is not None and unresolved == 0 and bool(events)
+    ready = anchor == "MULTI_SOURCE_CONFIRMED" and unresolved == 0 and bool(events)
     print(f"SP500_MEMBERSHIP_CANONICAL_READY = {str(ready).lower()}")
-    state = "archived" if anchor else "CURRENT_ANCHOR_BLOCKED"
+    state = anchor or "CURRENT_ANCHOR_BLOCKED"
     print(f"current anchor: {state}; statuses: {dict(st)}")
     _ = EventStatus
+    return 0
+
+
+def _explain_feature(args: argparse.Namespace) -> int:
+    from pitquant.features.v0.explain import explain_feature
+
+    settings = get_settings()
+    factory = make_session_factory(make_engine(settings.database.url))
+    with factory() as session:
+        print(
+            explain_feature(
+                session,
+                args.security,
+                date.fromisoformat(args.date),
+                args.feature,
+                benchmark_ref=args.benchmark,
+            )
+        )
     return 0
 
 
@@ -286,6 +378,7 @@ def main(argv: list[str] | None = None) -> int:
     cv.set_defaults(func=_coverage)
     co = sub.add_parser("cohort-readiness", help="can each rebalance cohort be reconstructed?")
     co.add_argument("--index", default="IBEX35")
+    co.add_argument("--universe", choices=["SP500"], help="US cohorts from the D-02 reconstruction")
     co.add_argument("--start")
     co.add_argument("--end")
     co.add_argument("--table", action="store_true", help="one line per date")
@@ -300,6 +393,14 @@ def main(argv: list[str] | None = None) -> int:
     rs.set_defaults(func=_reconstruct)
     se = sub.add_parser("sp500-evidence", help="D-02 candidate: S&P 500 membership evidence states")
     se.set_defaults(func=_sp500_evidence)
+    ef = sub.add_parser(
+        "explain-feature", help="audit one feature value (inputs, formula, provenance)"
+    )
+    ef.add_argument("security", help="security_id | dated ticker | CIK:<cik>")
+    ef.add_argument("date", help="decision session YYYY-MM-DD (NYSE)")
+    ef.add_argument("feature")
+    ef.add_argument("--benchmark", help="benchmark security for beta/relative features")
+    ef.set_defaults(func=_explain_feature)
     sc = sub.add_parser("sec-stress-scan", help="pick stress-test filings from submissions")
     sc.add_argument("ciks", nargs="+")
     sc.set_defaults(func=_sec_scan)

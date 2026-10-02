@@ -16,7 +16,6 @@ import io
 import sys
 import urllib.request
 import zipfile
-from collections import Counter
 from datetime import date
 from pathlib import Path
 
@@ -29,7 +28,7 @@ from pitquant.config.settings import get_settings  # noqa: E402
 from pitquant.core.timeutils import utc_now  # noqa: E402
 from pitquant.data.archive import ArchiveStore, archive_document  # noqa: E402
 from pitquant.data.point_in_time.context import PITContext  # noqa: E402
-from pitquant.db.models import MembershipBuild, Security  # noqa: E402
+from pitquant.db.models import Security  # noqa: E402
 from pitquant.db.session import make_engine, make_session_factory  # noqa: E402
 from pitquant.market.ca_compare import (  # noqa: E402
     Agreement,
@@ -40,6 +39,7 @@ from pitquant.market.credentials import SourceStatus  # noqa: E402
 from pitquant.market.providers.eodhd import EODHDMarketDataProvider  # noqa: E402
 from pitquant.market.providers.tiingo import TiingoBudget, TiingoEODMarketDataProvider  # noqa: E402
 from pitquant.market.tiingo_eval import (  # noqa: E402
+    CoverageStatus,
     UniverseRow,
     coverage_rows,
     evaluate_d05,
@@ -82,33 +82,72 @@ def main() -> int:
         supported = load_supported(csv_bytes)
         asof = now.date()
 
-        # ── 2. historical S&P universe ─────────────────────────────────────────────────
-        sp = ses.scalars(select(MembershipBuild).where(MembershipBuild.index_code == "SP500")).all()
-        universe_rows: list[UniverseRow] = []
-        blocked = not sp
+        # ── 2. candidate universe from the D-02 evidence (DISCOVERY-grade periods) ──────
+        from pitquant.db.models import IndexCurrentAnchor, SP500MembershipEvent
+        from pitquant.market.tiingo_eval import deterministic_sample
+
+        anchor = ses.scalars(
+            select(IndexCurrentAnchor)
+            .where(IndexCurrentAnchor.index_code == "SP500")
+            .order_by(IndexCurrentAnchor.ingested_at.desc())
+        ).first()
+        run_id = ses.scalars(
+            select(SP500MembershipEvent.run_id).order_by(SP500MembershipEvent.created_at.desc())
+        ).first()
+        evs = (
+            ses.scalars(
+                select(SP500MembershipEvent).where(SP500MembershipEvent.run_id == run_id)
+            ).all()
+            if run_id
+            else []
+        )
+        active_t = sorted({m["ticker"] for m in (anchor.members if anchor else [])})
+        former: dict[str, date] = {}
+        for e in evs:
+            if e.removed_ticker and e.discovery_date and e.removed_ticker not in active_t:
+                former[e.removed_ticker] = max(
+                    former.get(e.removed_ticker, date(1900, 1, 1)), e.discovery_date
+                )
+        blocked = not evs
+        universe_rows = [UniverseRow(t, t, date(2011, 1, 3), None) for t in active_t] + [
+            UniverseRow(t, t, date(2011, 1, 3), d) for t, d in sorted(former.items())
+        ]
+        cov_all = coverage_rows(universe_rows, supported, asof)
+        sample_active = deterministic_sample(active_t, 20, salt="ACTIVE")
+        sample_former = deterministic_sample(former, 20, salt="FORMER")
         sample = [
             UniverseRow(sec["AAPL"], "AAPL", date(2011, 1, 3), None),
             UniverseRow(sec["MSFT"], "MSFT", date(2011, 1, 3), None),
         ]
         cov = coverage_rows(sample, supported, asof)
-        out += ["## Resumen", "", "```",
-                f"total_unique_securities   = {'n/a (BLOCKED: no historical S&P 500 universe)' if blocked else len(universe_rows)}",
-                "resolved                 = n/a" if blocked else "resolved                 = ...",
-                "price_history_available  = n/a",
-                "missing                  = n/a", "delisted_resolved        = n/a", "delisted_missing         = n/a",
-                "ticker_recycled_cases    = n/a", "coverage_percentage      = n/a", "```", ""]  # fmt: skip
+        from collections import Counter
+
+        cnt = Counter(r.status for r in cov_all)
+        n_unique = len({r.historical_ticker for r in cov_all})
+        resolved = sum(1 for r in cov_all if r.status is not CoverageStatus.MISSING)
+        covered = cnt[CoverageStatus.ACTIVE_COVERED] + cnt[CoverageStatus.DELISTED_COVERED]
+        former_rows = [r for r in cov_all if r.historical_ticker in former]
+        out += ["## Resumen (nivel `supported_tickers.zip`: descubrimiento, NO cobertura de precios)", "", "```",
+                f"total_unique_securities   = {n_unique}   (tickers del universo candidato: {len(active_t)} activos del ancla + {len(former)} ex-miembros de los eventos)",
+                f"resolved                 = {resolved}",
+                f"price_history_available  = {covered}   (rango del ticker cubre el periodo de pertenencia aproximado)",
+                f"missing                  = {cnt[CoverageStatus.MISSING]}",
+                f"delisted_resolved        = {sum(1 for r in former_rows if r.status is not CoverageStatus.MISSING)}",
+                f"delisted_missing         = {sum(1 for r in former_rows if r.status is CoverageStatus.MISSING)}",
+                f"ticker_recycled_cases    = {cnt[CoverageStatus.TICKER_RECYCLED_SUSPECT]}",
+                f"partial_period           = {cnt[CoverageStatus.PARTIAL_PERIOD]}",
+                f"coverage_percentage      = {100 * covered / max(len(cov_all), 1):.1f}%", "```", "",
+                "**Calidad del universo:** los periodos de pertenencia son aproximados (2011-01-03 → fecha del CSV de descubrimiento del último evento de salida); los ex-miembros proceden de eventos de descubrimiento y NO son membresía canónica (D02_RESEARCH_READY = false). Los tickers se cruzan con la lista pública de Tiingo; un ticker presente no garantiza datos de precios y un ticker reciclado puede pertenecer a otra empresa.", ""]  # fmt: skip
         if blocked:
-            out += [
-                "**BLOCKED**: la base no contiene ninguna membresía histórica del S&P 500 (D-02: el fichero S&P DJI",
-                "lo aporta el propietario; el candidato Sharadar SP500 está `BLOCKED_BY_CREDENTIAL`). No se ha",
-                "inventado un universo: sin él no se puede medir la cobertura de *former/delisted constituents*, que es",
-                "el test crítico. La herramienta (`coverage_rows`) está lista y testeada con estados",
-                "`ACTIVE_COVERED / DELISTED_COVERED / PARTIAL_PERIOD / TICKER_RECYCLED_SUSPECT / MISSING`.",
-                "",
-            ]
-        out += ["## Filas disponibles (las dos únicas securities US reales; tickers actuales, no históricos)", "",
-                "| security_id | historical_ticker | period | tiingo_ticker | start_date | end_date | is_active | status | reason |", "|---|---|---|---|---|---|---|---|---|"]  # fmt: skip
-        for r in cov:
+            out += ["**BLOCKED**: no hay ninguna ejecución de evidencia S&P en la base.", ""]
+        out += ["## Muestra determinista D-05 (semilla SHA-256 de `PITQUANT_D05_SAMPLE_V1`)", "",
+                f"- 20 activas: {', '.join(sample_active)}", f"- 20 ex-miembros: {', '.join(sample_former)}",
+                "- Fijas: AAPL, MSFT, SPY. Categoría «cambios de ticker/reorganizaciones»: vacía hasta resolver renombres con identidad (los renombres no son eventos de membresía).",
+                f"- Símbolos únicos de la muestra: {len(set(sample_active) | set(sample_former) | {'AAPL', 'MSFT', 'SPY'})} de 500/mes del plan gratuito; la descarga NO se hace sin clave.", ""]  # fmt: skip
+        out += ["## Filas de la muestra a nivel de lista pública", "", "| security_id | historical_ticker | period | tiingo_ticker | start_date | end_date | is_active | status | reason |", "|---|---|---|---|---|---|---|---|---|"]  # fmt: skip
+        for r in [
+            x for x in cov_all if x.historical_ticker in set(sample_active) | set(sample_former)
+        ] + cov:
             out.append(
                 f"| {r.security_id[:8]} | {r.historical_ticker} | {r.period} | {r.tiingo_ticker} | {r.start_date} | {r.end_date} | {r.is_active} | {r.status} | {r.reason} |"
             )
@@ -217,7 +256,31 @@ def main() -> int:
                 "| ticker | primera | última | barras | duplicados | fuera de orden | no-sesión | sesiones ausentes | imposibles | días adj≠raw | factor última barra | sha256 |",
                 "|---|---|---|---|---|---|---|---|---|---|---|---|",
             ]
-            for sym in ("AAPL", "MSFT"):
+            from pitquant.db.models import TickerHistory
+            from pitquant.security_master.service import SecurityMaster
+
+            spy_row = supported.get("SPY", [{}])[0]
+            if "SPY" not in sec:
+                existing = ses.scalars(
+                    select(TickerHistory.security_id).where(TickerHistory.ticker == "SPY")
+                ).first()
+                if (
+                    existing is None
+                ):  # US_BENCHMARK_SPY_TOTAL_RETURN: an investable ETF proxy, NOT the official index
+                    existing = (
+                        SecurityMaster(ses)
+                        .register(
+                            name="SPDR S&P 500 ETF Trust (SPY) - benchmark ETF_PROXY",
+                            exchange="XNYS",
+                            currency="USD",
+                            ticker="SPY",
+                            listed_from=spy_row.get("start") or date(1993, 1, 29),
+                        )
+                        .security_id
+                    )
+                sec["SPY"] = existing
+                official["SPY"] = []
+            for sym in ("AAPL", "MSFT", "SPY"):
                 r = ingest_symbol(
                     ses,
                     store,
@@ -250,6 +313,30 @@ def main() -> int:
         ]
         for k, (c, d) in ev.criteria.items():
             out.append(f"| {k} | {c} | {d} |")
+        from pitquant.market.tiingo_eval import evaluate_sample
+
+        gt_unexplained = (
+            None
+            if not series
+            else sum(
+                1
+                for c in comparisons_t
+                if c.status is not Agreement.MATCH
+                and c.official.provenance.provider != "MICROSOFT_IR:dividends"
+            )
+        )
+        verdict = evaluate_sample(
+            [],
+            ground_truth_unexplained=gt_unexplained,
+            mapping_reproducible=None,
+            provenance_complete=True if series else None,
+        )
+        out += [
+            "",
+            "## Veredicto de la muestra (umbrales fijos: ≥ 98 % activas, ≥ 95 % ex-miembros, 100 % ground truth sin contradicción)",
+            "",
+            f"- `TIINGO_D05_CANDIDATE = {str(verdict.candidate and ev.candidate).lower()}`",
+        ] + [f"- {r}" for r in verdict.reasons]
         ses.commit()
     Path(ROOT / "docs" / "TIINGO_SP500_COVERAGE.md").write_text(
         "\n".join(out) + "\n", encoding="utf-8"

@@ -258,3 +258,109 @@ def test_identity_accepts_official_cusip_chain_but_not_derived_or_gapped(session
         _identity(session, session.get_one(Security, g), date(2012, 1, 1), date(2014, 1, 1)).status
         is CoverageStatus.PARTIAL
     )
+
+
+# ───────────── deterministic D-05 sample, per-security coverage, fixed thresholds ─────────────
+def test_sample_is_deterministic_and_not_cherry_picked() -> None:
+    from pitquant.market.tiingo_eval import SAMPLE_SEED, deterministic_sample
+
+    cands = [f"T{i:03d}" for i in range(200)]
+    a = deterministic_sample(cands, 20, salt="ACTIVE")
+    assert a == deterministic_sample(
+        list(reversed(cands)), 20, salt="ACTIVE"
+    )  # order of the input is irrelevant
+    assert len(a) == 20 and a != deterministic_sample(cands, 20, salt="FORMER")
+    assert deterministic_sample(["X", "Y"], 20) in (
+        ["X", "Y"],
+        ["Y", "X"],
+    )  # fewer candidates -> all of them
+    assert SAMPLE_SEED == "PITQUANT_D05_SAMPLE_V1"
+
+
+def _bar(
+    d: date, o: float = 10.0, h: float = 11.0, lo: float = 9.0, c: float = 10.0, v: float = 5.0
+):  # type: ignore[no-untyped-def]
+    from types import SimpleNamespace
+
+    return SimpleNamespace(session_date=d, open=o, high=h, low=lo, close=c, volume=v)
+
+
+def test_security_coverage_counts_gaps_duplicates_noncalendar_and_invalid_ohlc() -> None:
+    from pitquant.market.tiingo_eval import security_coverage_row
+
+    sess = [
+        d
+        for d in __import__("pitquant.data.calendars.market_calendar", fromlist=["get_calendar"])
+        .get_calendar("XNYS")
+        .sessions(date(2024, 3, 4), date(2024, 3, 15))
+    ]
+    bars = [_bar(d) for d in sess if d != sess[3]]  # one missing session
+    bars += [
+        _bar(sess[0]),
+        _bar(date(2024, 3, 9)),
+        _bar(sess[5], lo=10.5),
+    ]  # duplicate, Saturday, close outside [low, high]
+    row = security_coverage_row("SYN", "ACTIVE", bars, date(2024, 3, 4), None, date(2024, 3, 15))
+    assert row.expected_sessions == len(sess) and row.missing_sessions == 1
+    assert row.duplicate_rows == 2 and row.noncalendar_rows == 1 and row.invalid_ohlc == 1
+    excused = security_coverage_row(
+        "SYN",
+        "ACTIVE",
+        [b for b in bars if b.session_date != sess[3]],
+        date(2024, 3, 4),
+        None,
+        date(2024, 3, 15),
+        documented_missing=frozenset({sess[3]}),
+    )
+    assert excused.documented_exceptions == 1 and excused.coverage >= row.coverage
+
+
+def test_sample_verdict_uses_fixed_thresholds_and_missing_measurements_fail() -> None:
+    from pitquant.market.tiingo_eval import SecurityCoverage, evaluate_sample
+
+    def row(cat: str, cov: float) -> SecurityCoverage:
+        n = 1000
+        return SecurityCoverage(
+            "T",
+            cat,
+            date(2011, 1, 3),
+            None,
+            date(2011, 1, 3),
+            date(2026, 9, 30),
+            n,
+            round(n * cov),
+            n - round(n * cov),
+            0,
+            0,
+            0,
+        )
+
+    good = (
+        [row("ACTIVE", 1.0)] * 49
+        + [row("ACTIVE", 0.5)]
+        + [row("FORMER", 1.0)] * 19
+        + [row("FORMER", 0.5)]
+    )  # 98 % active, 95 % former
+    v = evaluate_sample(
+        good, ground_truth_unexplained=0, mapping_reproducible=True, provenance_complete=True
+    )
+    assert (
+        v.candidate
+        and v.active_coverage == pytest.approx(0.98)
+        and v.former_coverage == pytest.approx(0.95)
+    )
+    worse = (
+        [row("ACTIVE", 1.0)] * 48 + [row("ACTIVE", 0.5)] * 2 + [row("FORMER", 1.0)] * 20
+    )  # 96 % active < 98 %
+    assert not evaluate_sample(
+        worse, ground_truth_unexplained=0, mapping_reproducible=True, provenance_complete=True
+    ).candidate
+    assert not evaluate_sample(
+        good, ground_truth_unexplained=1, mapping_reproducible=True, provenance_complete=True
+    ).candidate
+    assert not evaluate_sample(
+        good, ground_truth_unexplained=None, mapping_reproducible=None, provenance_complete=None
+    ).candidate  # unmeasured = fail
+    assert not evaluate_sample(
+        [], ground_truth_unexplained=0, mapping_reproducible=True, provenance_complete=True
+    ).candidate

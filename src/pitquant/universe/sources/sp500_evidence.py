@@ -209,6 +209,31 @@ def _list_clauses(text: str) -> list[tuple[str, str, str, str, int, int]]:
     return out
 
 
+_ADD_ONLY = re.compile(
+    rf"{_NAME}{_TICK}\s+(?:was|will be) added to the S&P 500{_NOT_500}(?:\s+(?:on|effective)\s*{_DATE})?"
+)
+
+
+def _added_only(text: str, announced: date) -> list[ParsedChange]:
+    """Spin-off / temporary additions without a simultaneous deletion (never 1 add = 1 delete)."""
+    out: list[ParsedChange] = []
+    for m in _ADD_ONLY.finditer(text):
+        name, tick = m.group(1).strip(), m.group(2).upper()
+        stated = _mk_date(m.groups(), announced)
+        was = "was added" in text[m.start() : m.end()]
+        tail = text[m.end() : m.end() + 300]
+        reason = (
+            "SPINOFF" if re.search(r"spun off|spinning off|spin-off", tail, re.I) else "UNSPECIFIED"
+        )
+        timing = Timing.EFFECTIVE_ON_DATE if stated is not None else Timing.UNKNOWN
+        notes = ["addition without a simultaneous deletion"]
+        if was and stated is None:
+            notes.append("past-tense addition without a date")
+        out.append(ParsedChange(tick, _clean_name(name), "", "", timing, stated, None, reason,
+                                text[max(0, m.start() - 20) : m.end() + 200][:420], notes))  # fmt: skip
+    return out
+
+
 def parse_release(text: str, announced: date) -> list[ParsedChange]:
     """Every «X (EXCH: A) will replace Y (EXCH: B) in the S&P 500» clause of ONE release, with
     the nearest timing phrase after it and, cross-checking, the date of the «S&P 500 INDEX –»
@@ -314,6 +339,11 @@ def parse_release(text: str, announced: date) -> list[ParsedChange]:
                 notes,
             )
         )
+    out += [
+        c
+        for c in _added_only(text, announced)
+        if c.added_ticker not in {x.added_ticker for x in out}
+    ]
     return out
 
 
@@ -342,15 +372,20 @@ def parse_discovery_csv(data: bytes, since: date) -> list[DiscoveryRow]:
         if d < since:
             continue
         add = tuple(
-            str(x).upper()
-            for x in (ast.literal_eval(r["added_tickers"]) if r["added_tickers"] else [])
+            _tk(x) for x in (ast.literal_eval(r["added_tickers"]) if r["added_tickers"] else [])
         )
         rem = tuple(
-            str(x).upper()
-            for x in (ast.literal_eval(r["removed_tickers"]) if r["removed_tickers"] else [])
+            _tk(x) for x in (ast.literal_eval(r["removed_tickers"]) if r["removed_tickers"] else [])
         )
         out.append(DiscoveryRow(d, add, rem))
-    return out
+    # the community file may split one change over several rows of the same date (an addition in
+    # one row, the matching deletion in another): merge by date so a pair is judged as a pair
+    merged: dict[date, tuple[list[str], list[str]]] = {}
+    for row in out:
+        ma, mb = merged.setdefault(row.row_date, ([], []))
+        ma += [t for t in row.added if t not in ma]
+        mb += [t for t in row.removed if t not in mb]
+    return [DiscoveryRow(d, tuple(ma), tuple(mb)) for d, (ma, mb) in sorted(merged.items())]
 
 
 # ───────────────────────────────────────── matching ──────────────────────────────────────
@@ -385,7 +420,7 @@ def match_discovery(rows: list[DiscoveryRow], anns: list[Announcement]) -> list[
         used_rem: set[str] = set()
         cands = [
             a for a in anns
-            if (a.change.added_ticker in row.added or a.change.removed_ticker in row.removed)
+            if (a.change.added_ticker in row.added or (a.change.removed_ticker != '' and a.change.removed_ticker in row.removed))
             and abs((a.announced_on - row.row_date).days) <= 120
         ]  # fmt: skip
 
@@ -400,13 +435,18 @@ def match_discovery(rows: list[DiscoveryRow], anns: list[Announcement]) -> list[
 
         for a in sorted(cands, key=rank, reverse=True):
             c = a.change
-            if c.added_ticker in used_add or c.removed_ticker in used_rem:
+            if c.added_ticker in used_add or (
+                c.removed_ticker != "" and c.removed_ticker in used_rem
+            ):
                 continue
-            both = c.added_ticker in row.added and c.removed_ticker in row.removed
+            both = c.added_ticker in row.added and (
+                c.removed_ticker == "" or c.removed_ticker in row.removed
+            )
             used_add.add(c.added_ticker)
-            used_rem.add(c.removed_ticker)
+            if c.removed_ticker:
+                used_rem.add(c.removed_ticker)
             if c.timing is Timing.TBA:
-                out.append(EventResult(row, c.added_ticker, c.removed_ticker, EventStatus.DATE_TBA,
+                out.append(EventResult(row, c.added_ticker, c.removed_ticker or None, EventStatus.DATE_TBA,
                                        "release states a date to be announced", a))  # fmt: skip
                 continue
             try:
@@ -419,13 +459,10 @@ def match_discovery(rows: list[DiscoveryRow], anns: list[Announcement]) -> list[
                 )
                 continue
             if eff is None:
-                out.append(EventResult(row, c.added_ticker, c.removed_ticker, EventStatus.UNRESOLVED,
+                out.append(EventResult(row, c.added_ticker, c.removed_ticker or None, EventStatus.UNRESOLVED,
                                        "no resolvable date/timing in the release", a))  # fmt: skip
-            elif not both:
-                out.append(EventResult(row, c.added_ticker, c.removed_ticker, EventStatus.UNRESOLVED,
-                                       "only one side of the pair matches the discovery row (ticker difference?)", a, eff))  # fmt: skip
             elif eff != row.row_date:
-                out.append(EventResult(row, c.added_ticker, c.removed_ticker, EventStatus.CONFLICT,
+                out.append(EventResult(row, c.added_ticker, c.removed_ticker or None, EventStatus.CONFLICT,
                                        f"official effective session {eff} != discovery date {row.row_date}", a, eff))  # fmt: skip
             else:
                 st = (EventStatus.OFFICIAL_CONFIRMED if a.tier is SourceTier.OFFICIAL_SPDJI
@@ -434,9 +471,11 @@ def match_discovery(rows: list[DiscoveryRow], anns: list[Announcement]) -> list[
                     EventResult(
                         row,
                         c.added_ticker,
-                        c.removed_ticker,
+                        c.removed_ticker or None,
                         st,
-                        "official evidence matches",
+                        "official evidence matches"
+                        if both
+                        else "official pair confirms the discovery side on the same session; discovery lacks the counterpart",
                         a,
                         eff,
                     )
@@ -463,6 +502,46 @@ def match_discovery(rows: list[DiscoveryRow], anns: list[Announcement]) -> list[
                         "no official evidence found for this removal",
                     )
                 )
+    claimed = {
+        (
+            r.announcement.change.added_ticker,
+            r.announcement.change.removed_ticker,
+            r.announcement.url,
+        )
+        for r in out
+        if r.announcement is not None
+    }
+    pairs_done = {(a, b) for a, b, _ in claimed}
+    for a in anns:
+        c = a.change
+        if (c.added_ticker, c.removed_ticker, a.url) in claimed or (
+            c.added_ticker,
+            c.removed_ticker,
+        ) in pairs_done:
+            continue
+        try:
+            eff = effective_session(c.timing, c.stated_change_date)
+        except DataQualityError:
+            eff = None
+        if eff is None or eff < date(2011, 1, 1) or c.timing is Timing.TBA:
+            continue  # TBA / unresolvable releases are not events by themselves
+        st = (
+            EventStatus.OFFICIAL_CONFIRMED
+            if a.tier is SourceTier.OFFICIAL_SPDJI
+            else EventStatus.OFFICIAL_REPUBLISHED_CONFIRMED
+        )
+        out.append(
+            EventResult(
+                DiscoveryRow(eff, (), ()),
+                c.added_ticker or None,
+                c.removed_ticker or None,
+                st,
+                "official announcement without a discovery row (discovery list incomplete)",
+                a,
+                eff,
+            )
+        )
+        pairs_done.add((c.added_ticker, c.removed_ticker))
     return out
 
 

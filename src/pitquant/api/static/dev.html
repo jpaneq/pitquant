@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>PITQuant Developer UI v0.1</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+ body{font:14px/1.45 system-ui,sans-serif;margin:0;background:#fafafa;color:#111}
+ header{background:#111;color:#fff;padding:10px 16px} nav a{color:#9cf;margin-right:14px;cursor:pointer}
+ main{padding:16px;max-width:1100px} h2{margin-top:0}
+ table{border-collapse:collapse;width:100%} td,th{border:1px solid #ddd;padding:3px 6px;text-align:left;vertical-align:top;font-size:13px}
+ .ok{color:#080}.bad{color:#b00}.warn{color:#a60} input{padding:4px;margin-right:6px} button{padding:4px 10px}
+ pre{background:#fff;border:1px solid #ddd;padding:8px;overflow:auto;font-size:12px}
+ .sealed{background:#fee;border:1px solid #b00;padding:6px;margin-bottom:10px}
+</style></head><body>
+<header><b>PITQuant · Developer UI v0.1</b> — sólo lectura. Sin señales, sin BUY/HOLD/SELL.
+<nav><a onclick="show('status')">System Status</a><a onclick="show('sec')">Security Explorer</a><a onclick="show('tm')">Time Machine</a><a onclick="show('feat')">Feature Inspector</a><a onclick="show('uni')">Universe Explorer</a></nav></header>
+<main>
+<section id="status"></section>
+<section id="sec" hidden><h2>Security Explorer</h2><input id="q" placeholder="ticker, CUSIP, ISIN, nombre o CIK:0000320193"><button onclick="search()">Buscar</button><div id="secout"></div></section>
+<section id="tm" hidden><h2>Time Machine</h2><input id="tms" placeholder="CIK:0000320193 | ENG | security_id"><input id="tmd" type="date" value="2020-09-01"><button onclick="tm()">Reconstruir</button><pre id="tmout"></pre></section>
+<section id="feat" hidden><h2>Feature Inspector</h2><input id="fs" placeholder="CIK:0000320193"><input id="fd" type="date" value="2020-09-01"><button onclick="feat()">Calcular</button><div id="fout"></div></section>
+<section id="uni" hidden><h2>Universe Explorer · S&amp;P 500</h2><input id="ud" type="date" value="2026-09-01"><button onclick="uni()">Ver</button><pre id="uout"></pre></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+function esc(x){return String(x??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function show(id){for(const s of document.querySelectorAll('main section'))s.hidden=s.id!==id; if(id==='status')status();}
+async function j(u){const r=await fetch(u);if(!r.ok)throw new Error(r.status+' '+await r.text());return r.json();}
+async function status(){try{const d=await j('/dev/status');let h='<h2>System Status</h2><div class="sealed">HOLDOUT '+d.holdout.state+' ('+d.holdout.start+' → '+d.holdout.end+') · outcomes expuestos: '+d.holdout.outcomes_exposed+'</div><h3>Gates de investigación</h3><table>';
+ for(const[k,v] of Object.entries(d.research.flags)){h+='<tr><td>'+k+'</td><td class="'+(v?'ok':'bad')+'">'+v+'</td><td>'+esc(d.research.status[k]||'')+'</td><td>'+esc((d.research.reasons[k]||[]).slice(0,2).join(' · '))+'</td></tr>'}
+ h+='</table><h3>Componentes de datos</h3><table>';for(const[k,v] of Object.entries(d.components)){h+='<tr><td>'+esc(k)+'</td><td class="'+(v.status==='READY'?'ok':'warn')+'">'+esc(v.status)+'</td><td>'+esc(v.gaps.join(' · '))+'</td></tr>'}
+ $('status').innerHTML=h+'</table><p>'+esc(d.note)+'</p>'}catch(e){$('status').innerHTML='<pre>'+esc(e)+'</pre>'}}
+async function search(){try{const d=await j('/dev/security/search?q='+encodeURIComponent($('q').value));$('secout').innerHTML=d.length?d.map(x=>'<h3>'+esc(x.name)+'</h3><table><tr><td>security_id</td><td>'+x.security_id+'</td></tr><tr><td>issuer</td><td>'+esc(x.issuer_id)+' '+esc(x.issuer||'')+'</td></tr><tr><td>identificadores</td><td>'+esc(x.identifiers.join(' · '))+'</td></tr><tr><td>tickers</td><td>'+esc(x.ticker_history.join(' · '))+'</td></tr></table>').join(''):'<p>sin resultados</p>'}catch(e){$('secout').innerHTML='<pre>'+esc(e)+'</pre>'}}
+async function tm(){try{$('tmout').textContent=JSON.stringify(await j('/dev/time-machine/'+encodeURIComponent($('tms').value)+'/'+$('tmd').value),null,1)}catch(e){$('tmout').textContent=e}}
+async function feat(){try{const d=await j('/dev/features/'+encodeURIComponent($('fs').value)+'/'+$('fd').value);$('fout').innerHTML='<p>feature_version '+d.feature_version+' · '+d.decision_session+'</p><table><tr><th>feature</th><th>valor</th><th>estado</th><th>fórmula / procedencia</th></tr>'+d.features.map(f=>'<tr><td>'+f.name+'</td><td>'+(f.value===null?'NULL':f.value)+'</td><td class="'+(f.value===null?'warn':'ok')+'">'+f.coverage_status+(f.reason?' · '+f.reason:'')+'</td><td><details><summary>'+esc(f.formula)+'</summary><pre>'+esc(JSON.stringify(f.provenance,null,1))+'</pre></details></td></tr>').join('')+'</table>'}catch(e){$('fout').innerHTML='<pre>'+esc(e)+'</pre>'}}
+async function uni(){try{$('uout').textContent=JSON.stringify(await j('/dev/universe/SP500/'+$('ud').value),null,1)}catch(e){$('uout').textContent=e}}
+status();
+</script></body></html>

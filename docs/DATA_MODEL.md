@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **49**.
+Tablas: **51**.
 
 ## Procedencia y calidad
 
@@ -336,6 +336,42 @@ Tablas: **49**.
 
 - CHECK `status IN ('OFFICIAL_CONFIRMED','OFFICIAL_REPUBLISHED_CONFIRMED','DISCOVERY_ONLY','DATE_TBA','CONFLICT','UNRESOLVED')`
 - INDEX ix_sp500_membership_events_run_id (run_id)
+
+### `index_anchor_snapshots` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `snapshot_id` | VARCHAR(36) | no | PK |
+| `source` | VARCHAR(10) | no |  |
+| `as_of` | DATE | no |  |
+| `source_url` | VARCHAR(1000) | no |  |
+| `archive_id` | VARCHAR(36) | no | FK→`raw_source_archive.archive_id` |
+| `source_sha256` | VARCHAR(64) | no |  |
+| `key_level` | VARCHAR(12) | no |  |
+| `holdings` | JSON | no |  |
+| `excluded` | JSON | no |  |
+| `parser_version` | VARCHAR(50) | no |  |
+| `ingested_at` | DATETIME | no |  |
+
+### `index_current_anchors` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `anchor_id` | VARCHAR(36) | no | PK |
+| `index_code` | VARCHAR(20) | no |  |
+| `as_of` | DATE | sí |  |
+| `status` | VARCHAR(30) | no |  |
+| `key_level` | VARCHAR(12) | no |  |
+| `members` | JSON | no |  |
+| `spy_snapshot_id` | VARCHAR(36) | sí | FK→`index_anchor_snapshots.snapshot_id` |
+| `ivv_snapshot_id` | VARCHAR(36) | sí | FK→`index_anchor_snapshots.snapshot_id` |
+| `reconciled` | INTEGER | no |  |
+| `applied_events` | JSON | no |  |
+| `differences` | JSON | no |  |
+| `notes` | JSON | no |  |
+| `ingested_at` | DATETIME | no |  |
+
+- CHECK `status IN ('OFFICIAL_SPDJI','MULTI_SOURCE_CONFIRMED','CONFLICT','BLOCKED')`
 
 ### `identity_resolution_runs` 🔒
 

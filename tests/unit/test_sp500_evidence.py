@@ -50,10 +50,15 @@ TBA = (
     "constituent Intel Corp. (Nasdaq: INTC ) in a deal expected to be completed soon. Following is a summary of the "
     "change: S&P 500 INDEX – TBA COMPANY GICS ADDED Covidien DELETED McAfee"
 )
-# Ensco: wording of the S&P release of 2012-07-26 as given by the owner (the release text is NOT archived yet)
+# Ensco / Goodrich: S&P press release of 2012-07-26 (press.spglobal.com, tier 1) — verbatim excerpt of the
+# ARCHIVED raw document (sha256 below); test_esv_excerpt_is_in_the_archived_raw re-checks it when the local
+# archive is present.
+ESV_SHA = "c1173fb36d7143d432c31ece6e1b77d28cecd5abae4e6913ced81a29d6d40737"
 ESV_CLAUSE = (
-    "NEW YORK , July 26, 2012 /PRNewswire/ -- Ensco plc (NYSE: ESV) will replace Great Plains Energy (NYSE: GR) in the "
-    "S&P 500 index after the close of trading on Monday, July 30 ."
+    "NEW YORK , July 26, 2012 / PRNewswire / -- Ensco plc (NYSE: ESV) will replace Goodrich Corp. (NYSE: GR) in the "
+    "S&P 500 index after the close of trading on Monday, July 30 . S&P 100 and 500 constituent United Technologies Corp. "
+    "(NYSE: UTX) is acquiring Goodrich in a deal expected to be completed tonight. Following is a summary of the change: "
+    "S&P 500 INDEX – July 30, 2012 COMPANY GICS ECONOMIC SECTOR GICS SUB-INDUSTRY ADDED Ensco Energy Oil & Gas Drilling DELETED Goodrich"
 )
 
 
@@ -183,3 +188,30 @@ def test_discovery_csv_layout_and_since_filter() -> None:
 def test_aware_effective_at() -> None:
     e = effective_at(Timing.AFTER_CLOSE, date(2011, 1, 3))
     assert isinstance(e, datetime) and e.tzinfo is not None
+
+
+def test_esv_excerpt_is_in_the_archived_raw() -> None:
+    """No hand-typed release text: the excerpt must be found in the archived original (skipped only when
+    the local archive is absent, e.g. CI)."""
+    import re
+    from pathlib import Path
+
+    store = Path(__file__).resolve().parents[2] / "data" / "archive"
+    if not store.exists():
+        pytest.skip("local raw archive not present")
+    from pitquant.data.archive import ArchiveStore
+
+    try:
+        raw = ArchiveStore(store).get(ESV_SHA).decode("utf-8", "replace")
+    except Exception:
+        pytest.skip("ESV raw document not archived locally")
+    import html as _h
+
+    text = re.sub(
+        r"\s+",
+        " ",
+        _h.unescape(
+            re.sub(r"<[^>]+>", " ", re.sub(r"<(script|style).*?</\1>", " ", raw, flags=re.S))
+        ),
+    )
+    assert ESV_CLAUSE[:260] in text

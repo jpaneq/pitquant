@@ -321,6 +321,56 @@ class SP500MembershipEvent(Base):
     )
 
 
+class IndexAnchorSnapshot(Base):
+    """One archived ETF holdings file (SPY / IVV) used as an index anchor source (ADR-0026)."""
+
+    __tablename__ = "index_anchor_snapshots"
+
+    snapshot_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    source: Mapped[str] = mapped_column(String(10))  # SPY | IVV
+    as_of: Mapped[date] = mapped_column(Date)
+    source_url: Mapped[str] = mapped_column(String(1000))
+    archive_id: Mapped[str] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    source_sha256: Mapped[str] = mapped_column(String(64))
+    key_level: Mapped[str] = mapped_column(String(12))
+    holdings: Mapped[list[dict[str, Any]]] = mapped_column(JSON)
+    excluded: Mapped[list[list[str]]] = mapped_column(JSON)
+    parser_version: Mapped[str] = mapped_column(String(50))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class IndexCurrentAnchor(Base):
+    """``SP500_CURRENT_ANCHOR``: reconciled constituents with an honest status. Never OFFICIAL_SPDJI
+    when it comes from ETF holdings."""
+
+    __tablename__ = "index_current_anchors"
+
+    anchor_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    index_code: Mapped[str] = mapped_column(String(20))
+    as_of: Mapped[date | None] = mapped_column(Date)
+    status: Mapped[str] = mapped_column(String(30))
+    key_level: Mapped[str] = mapped_column(String(12))
+    members: Mapped[list[dict[str, Any]]] = mapped_column(JSON)
+    spy_snapshot_id: Mapped[str | None] = mapped_column(
+        ForeignKey("index_anchor_snapshots.snapshot_id")
+    )
+    ivv_snapshot_id: Mapped[str | None] = mapped_column(
+        ForeignKey("index_anchor_snapshots.snapshot_id")
+    )
+    reconciled: Mapped[int] = mapped_column(Integer)
+    applied_events: Mapped[list[str]] = mapped_column(JSON)
+    differences: Mapped[list[str]] = mapped_column(JSON)
+    notes: Mapped[list[str]] = mapped_column(JSON)
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('OFFICIAL_SPDJI','MULTI_SOURCE_CONFIRMED','CONFLICT','BLOCKED')",
+            name="status_values",
+        ),
+    )
+
+
 class OfficialIsinTransition(Base):
     """An OFFICIAL, dated ISIN change of one issuer's ordinary shares (ADR-0022).
 
@@ -1243,5 +1293,7 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "sp500_discovery_rows",
         "sp500_announcements",
         "sp500_membership_events",
+        "index_anchor_snapshots",
+        "index_current_anchors",
     }
 )

@@ -23,6 +23,10 @@ class FeatureValue:
     available_at: datetime | None  # None only when the value is missing
     source_ref: str | None = None  # lineage pointer: raw_record_id / fact_id / computation id
     imputed: bool = False
+    # Feature Engine V0 audit fields (optional; absent keys keep old snapshot hashes unchanged)
+    reason: str | None = None
+    formula: str | None = None
+    provenance: list[dict[str, Any]] | None = None
 
     @property
     def is_missing(self) -> bool:
@@ -125,6 +129,15 @@ class SnapshotBuilder:
             n: {
                 "available_at": to_iso_utc(av) if (av := self._values[n].available_at) else None,
                 "source_ref": self._values[n].source_ref,
+                **{
+                    k: v
+                    for k, v in (
+                        ("reason", self._values[n].reason),
+                        ("formula", self._values[n].formula),
+                        ("provenance", self._values[n].provenance),
+                    )
+                    if v is not None
+                },
             }
             for n in names
         }

@@ -164,6 +164,10 @@ def create_app(factory: sessionmaker[Session], settings: Settings | None = None)
             "signal": None,
         }
 
+    from pitquant.api.dev import make_dev_router
+
+    app.include_router(make_dev_router(cfg))
+
     @app.post("/backtests")
     def backtests() -> None:
         raise HTTPException(501, "Backtest engine is Phase 7")

@@ -196,7 +196,7 @@ def evaluate_d05(
     coverage: Sequence[CoverageRow] | None,
     provenance_complete: bool | None,
     min_first_bar: date = date(2011, 1, 3),
-    min_former_coverage: float = 0.90,
+    min_former_coverage: float = 0.95,
 ) -> D05Evaluation:
     c: dict[str, tuple[Criterion, str]] = {}
     if not series:
@@ -252,3 +252,153 @@ def evaluate_d05(
         "archived raw responses with SHA-256, token not archived",
     )  # fmt: skip
     return D05Evaluation(c)
+
+
+# ───────────────────────── deterministic D-05 sample + per-security coverage ─────────────────
+import hashlib  # noqa: E402
+
+SAMPLE_SEED = "PITQUANT_D05_SAMPLE_V1"
+ACTIVE_THRESHOLD = 0.98  # fixed research thresholds: never relaxed to make Tiingo pass
+FORMER_THRESHOLD = 0.95
+
+
+def deterministic_sample(candidates: Iterable[str], k: int, *, salt: str = "") -> list[str]:
+    """First ``k`` candidates ordered by SHA-256(seed | salt | candidate). No cherry-picking: the
+    seed is fixed; a category with fewer than ``k`` candidates is returned whole."""
+    seed = hashlib.sha256(SAMPLE_SEED.encode()).hexdigest()
+    ranked = sorted(
+        set(candidates), key=lambda c: hashlib.sha256(f"{seed}|{salt}|{c}".encode()).hexdigest()
+    )
+    return ranked[:k]
+
+
+@dataclass
+class SecurityCoverage:
+    ticker: str
+    category: str  # ACTIVE | FORMER | CHANGED | FIXED
+    membership_start: date
+    membership_end: date | None
+    price_start: date | None
+    price_end: date | None
+    expected_sessions: int
+    observed_sessions: int
+    missing_sessions: int
+    noncalendar_rows: int
+    duplicate_rows: int
+    invalid_ohlc: int
+    documented_exceptions: int = 0  # suspensions / halts / IPO / delisting with a document
+
+    @property
+    def coverage(self) -> float:
+        return (
+            1.0
+            if self.expected_sessions == 0
+            else (self.observed_sessions + self.documented_exceptions) / self.expected_sessions
+        )
+
+
+def security_coverage_row(
+    ticker: str,
+    category: str,
+    bars: Sequence[Any],
+    membership_start: date,
+    membership_end: date | None,
+    asof: date,
+    exchange: str = "XNYS",
+    documented_missing: frozenset[date] = frozenset(),
+) -> SecurityCoverage:
+    """``bars``: objects with session_date/open/high/low/close/volume. Missing sessions are NOT
+    errors by themselves; only a documented reason (``documented_missing``) excuses them."""
+    from pitquant.data.calendars.market_calendar import get_calendar
+    from pitquant.market.validation import calendar_status
+
+    cal = get_calendar(exchange)
+    end = min(membership_end or asof, asof)
+    expected = [
+        d
+        for d in cal.sessions(max(membership_start, cal.first_session), min(end, cal.last_session))
+    ]
+    seen: dict[date, int] = {}
+    invalid = noncal = 0
+    for b in bars:
+        seen[b.session_date] = seen.get(b.session_date, 0) + 1
+        if calendar_status(cal, b.session_date) == "non_session":
+            noncal += 1
+        o, h, lo, c, v = b.open, b.high, b.low, b.close, b.volume
+        bad = (
+            (v is not None and v < 0)
+            or not (lo <= c <= h)
+            or (o is not None and not (lo <= o <= h))
+        )
+        invalid += int(bad)
+    inside = {d for d in seen if d in set(expected)}
+    missing = [d for d in expected if d not in seen]
+    excused = sum(1 for d in missing if d in documented_missing)
+    dates = sorted(seen)
+    return SecurityCoverage(
+        ticker, category, membership_start, membership_end,
+        dates[0] if dates else None, dates[-1] if dates else None,
+        len(expected), len(inside), len(missing), noncal, sum(1 for n in seen.values() if n > 1), invalid, excused,
+    )  # fmt: skip
+
+
+@dataclass
+class SampleVerdict:
+    active_coverage: float | None
+    former_coverage: float | None
+    systematic_temporal_issues: int
+    invalid_ohlc: int
+    ground_truth_unexplained: int | None
+    mapping_reproducible: bool | None
+    provenance_complete: bool | None
+    candidate: bool
+    reasons: list[str]
+
+
+def evaluate_sample(
+    rows: Sequence[SecurityCoverage],
+    *,
+    ground_truth_unexplained: int | None,
+    mapping_reproducible: bool | None,
+    provenance_complete: bool | None,
+) -> SampleVerdict:
+    """TIINGO_D05_CANDIDATE: >= 98 % of the ACTIVE sample covered during membership, >= 95 % of the
+    FORMER/DELISTED sample, no systematic temporal problems, consistent OHLCV, 100 % of the
+    ground-truth corporate actions without unexplained contradiction, reproducible mapping and
+    complete provenance. A missing measurement is a failure, never a pass."""
+
+    def share(cat: set[str]) -> float | None:
+        sel = [r for r in rows if r.category in cat]
+        if not sel:
+            return None
+        return sum(1 for r in sel if r.coverage >= 0.98) / len(sel)
+
+    act, frm = share({"ACTIVE", "FIXED"}), share({"FORMER", "CHANGED"})
+    sys_issues = sum(1 for r in rows if r.noncalendar_rows or r.duplicate_rows)
+    inv = sum(r.invalid_ohlc for r in rows)
+    reasons = []
+    if act is None or act < ACTIVE_THRESHOLD:
+        reasons.append(f"active coverage {act} < {ACTIVE_THRESHOLD}")
+    if frm is None or frm < FORMER_THRESHOLD:
+        reasons.append(f"former/delisted coverage {frm} < {FORMER_THRESHOLD}")
+    if sys_issues:
+        reasons.append(f"{sys_issues} securities with duplicate or non-calendar rows")
+    if inv:
+        reasons.append(f"{inv} invalid OHLC rows")
+    if ground_truth_unexplained != 0:
+        reasons.append(f"ground-truth contradictions unexplained: {ground_truth_unexplained}")
+    if not mapping_reproducible:
+        reasons.append("ticker mapping reproducibility not demonstrated")
+    if not provenance_complete:
+        reasons.append("provenance not demonstrated complete")
+    return SampleVerdict(
+        act,
+        frm,
+        sys_issues,
+        inv,
+        ground_truth_unexplained,
+        mapping_reproducible,
+        provenance_complete,
+        not reasons,
+        reasons,
+    )
