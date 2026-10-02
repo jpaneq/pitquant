@@ -42,6 +42,28 @@ class CohortRow:
     in_holdout: bool
     blocking_reasons: list[str] = field(default_factory=list)
 
+    # layer flags (never merged into one): each is "≥ MIN_COVERAGE of members"
+    @property
+    def identity_ready(self) -> bool:
+        return self.identity_eligible
+
+    @property
+    def price_ready(self) -> bool:
+        return self.price_coverage >= MIN_COVERAGE
+
+    @property
+    def corporate_actions_ready(self) -> bool:
+        return self.corporate_action_coverage >= MIN_COVERAGE
+
+    @property
+    def fundamentals_ready(self) -> bool:
+        return self.fundamental_coverage >= MIN_COVERAGE
+
+    @property
+    def total_return_ready(self) -> bool:
+        """Total return needs raw prices AND verified corporate actions for the same members."""
+        return self.price_ready and self.corporate_actions_ready
+
 
 @dataclass
 class CohortSummary:
@@ -56,6 +78,7 @@ class CohortSummary:
     first_complete_identity_year: int | None
     first_complete_year: int | None  # full eligibility
     research_identity_dates: int  # identity-eligible and NOT in the sealed holdout
+    layer_ready_dates: dict[str, int] = field(default_factory=dict)
     blockers: dict[str, int] = field(default_factory=dict)  # security code -> blocked dates
 
 
@@ -236,6 +259,14 @@ def cohort_readiness(
         _complete_year(research_id),
         _complete_year(full),
         len(research_id),
+        {
+            "identity_ready": sum(r.identity_ready for r in rows),
+            "price_ready": sum(r.price_ready for r in rows),
+            "corporate_actions_ready": sum(r.corporate_actions_ready for r in rows),
+            "fundamentals_ready": sum(r.fundamentals_ready for r in rows),
+            "total_return_ready": sum(r.total_return_ready for r in rows),
+            "eligible": len(full),
+        },
         dict(sorted(blockers.items(), key=lambda kv: -kv[1])),
     )
     return rows, summary

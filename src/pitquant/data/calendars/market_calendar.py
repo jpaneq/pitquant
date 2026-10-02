@@ -74,6 +74,9 @@ class MarketCalendar:
     def next_session(self, session: date) -> date:
         return self._cal.next_session(_ts(session)).date()  # type: ignore[no-any-return]
 
+    def previous_session(self, session: date) -> date:
+        return self._cal.previous_session(_ts(session)).date()  # type: ignore[no-any-return]
+
     # ── point-in-time helpers ───────────────────────────────────────────────
     def last_closed_session(self, as_of: datetime) -> date:
         """Latest session whose close is <= as_of: the last bar a model may use."""

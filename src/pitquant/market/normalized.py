@@ -66,14 +66,16 @@ COMPLEX_ES_KINDS = frozenset(
     }
 )
 
+_SPLIT_KINDS = (CorporateActionKind.SPLIT, CorporateActionKind.REVERSE_SPLIT)
+
 # Minimum fields per kind (beyond the always-required provenance).
 _REQUIRED: dict[CorporateActionKind, tuple[str, ...]] = {
     CorporateActionKind.CASH_DIVIDEND: ("ex_date", "cash_amount", "currency"),
     CorporateActionKind.SPECIAL_DIVIDEND: ("ex_date", "cash_amount", "currency"),
     CorporateActionKind.RETURN_OF_CAPITAL: ("ex_date", "cash_amount", "currency"),
     CorporateActionKind.STOCK_DIVIDEND: ("ex_date", "ratio"),
-    CorporateActionKind.SPLIT: ("ex_date", "ratio"),
-    CorporateActionKind.REVERSE_SPLIT: ("ex_date", "ratio"),
+    CorporateActionKind.SPLIT: ("ratio",),
+    CorporateActionKind.REVERSE_SPLIT: ("ratio",),
     CorporateActionKind.RIGHTS_ISSUE: ("ex_date",),
     CorporateActionKind.SCRIP_DIVIDEND: ("ex_date",),
     CorporateActionKind.SPINOFF: ("ex_date",),
@@ -153,6 +155,12 @@ class CorporateAction:
         missing = [f for f in _REQUIRED.get(self.kind, ()) if getattr(self, f) is None]
         if missing:
             raise DataQualityError(f"{self.kind} {self.security_key}: missing {missing}")
+        # a split's anchor may be the first split-adjusted trading day (``effective_date``) when
+        # the source gives no ex-date (Apple IR): one of the two must exist, never invented
+        if self.kind in _SPLIT_KINDS and self.anchor_date is None:
+            raise DataQualityError(
+                f"{self.kind} {self.security_key}: needs ex_date or effective_date"
+            )
         if self.ratio is not None and self.ratio <= 0:
             raise DataQualityError(f"{self.kind} {self.security_key}: ratio must be > 0")
         if self.kind is CorporateActionKind.SPLIT and self.ratio is not None and self.ratio <= 1:

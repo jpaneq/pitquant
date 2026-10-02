@@ -25,6 +25,7 @@ from pitquant.data.point_in_time.engine import FactKey, PITGuard, facts_as_of
 from pitquant.db.models import (
     CorporateAction,
     CorporateActionEvent,
+    DataQualityIssue,
     Dividend,
     FundamentalFact,
     Price,
@@ -32,7 +33,7 @@ from pitquant.db.models import (
 )
 from pitquant.market.normalized import CorporateAction as NormalizedAction
 from pitquant.market.normalized import CorporateActionKind, Provenance, SourceTier
-from pitquant.market.total_return import TotalReturnResult
+from pitquant.market.total_return import InsufficientValuationError, TotalReturnResult
 from pitquant.market.total_return import total_return as market_total_return
 from pitquant.security_master.service import SecurityMaster, SecurityView
 from pitquant.universe.index_membership import IndexUniverse, UniverseMember
@@ -107,6 +108,12 @@ class PITContext:
                 ),
             )
         ).all()
+        # the same provider event re-ingested from a NEW version of the page/payload is ONE
+        # event (append-only: a correction is a newer row); the latest version known wins
+        latest: dict[tuple[str, str, str], CorporateActionEvent] = {}
+        for r in sorted(rows, key=lambda x: x.ingested_at):
+            latest[(r.provider, r.provider_event_id, r.event_type)] = r
+        rows = list(latest.values())
         PITGuard(self.as_of, context=f"market_actions:{security_id}").check_all(
             (f"ca:{r.event_type}:{r.ex_date or r.effective_date}", r.available_at) for r in rows
         )
@@ -177,7 +184,29 @@ class PITContext:
         if bars.empty or end > bars.index[-1]:
             raise LookAheadError(f"total_return {security_id}: end {end} not closed at as_of")
         closes = {d: float(c) for d, c in bars["close"].items()}
+        self._refuse_unresolved_dividends(security_id, start, end)
         return market_total_return(closes, self.market_actions(security_id), start, end, self.as_of)
+
+    def _refuse_unresolved_dividends(self, security_id: str, start: date, end: date) -> None:
+        """A dividend whose ex-date the source does not publish cannot be placed in time: a
+        window it may fall into has NO defined total return (never silently ignored)."""
+        issues = self.session.scalars(
+            select(DataQualityIssue).where(
+                DataQualityIssue.security_id == security_id,
+                DataQualityIssue.check_name == "ca_unresolved_ex_date",
+                DataQualityIssue.resolved_at.is_(None),
+            )
+        ).all()
+        for i in issues:
+            lo, hi = (
+                date.fromisoformat(i.details["window_from"]),
+                date.fromisoformat(i.details["window_to"]),
+            )
+            if lo <= end and hi > start:
+                raise InsufficientValuationError(
+                    f"{security_id}: dividend with unknown ex-date "
+                    f"(paid {i.details.get('payment_date')}) may fall in {start}..{end}"
+                )
 
     def adjusted_closes(self, security_id: str, *, include_dividends: bool = True) -> pd.Series:
         bars = self.raw_bars(security_id)

@@ -39,6 +39,7 @@ from pitquant.market.normalized import (
     Provenance,
     SourceTier,
 )
+from pitquant.market.validation import calendar_status
 
 PROVIDER = "EODHD"
 PARSER_VERSION = "eodhd-1"
@@ -176,6 +177,9 @@ class EODHDMarketDataProvider:
             close = r.get("close")
             if d is None or close is None or float(close) <= 0:
                 out.warnings.append(f"EOD {symbol} {r.get('date')}: incomplete")
+                continue
+            if (cs := calendar_status(cal, d)) != "ok":
+                out.warnings.append(f"EOD {symbol} {d}: {cs} (bar not stored)")
                 continue
             later = 1.0
             for sd, ratio in split_list:

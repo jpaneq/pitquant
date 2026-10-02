@@ -112,6 +112,15 @@ Informes generados desde la base (nunca a mano): `docs/ISSUER_SECURITY_CHANGES.m
 `docs/ADAPTER_FIELD_EVIDENCE.md`. `FEATURE_ENGINE_READY` es derivado de `data-readiness` y hoy
 es `false`: no empezar Feature Engine hasta READY con datos reales.
 
+## Iteración 4 (2026-10-02): datos reales → corporate actions → total return (ADR-0023)
+- Informe generado: `docs/REAL_MARKET_DATA_US.md` (`scripts/gen_real_market_report.py`); ingesta:
+  `scripts/ingest_real_market_ca.py` (idempotente; Alpha Vantage sólo con clave).
+- Real: AAPL split 4:1 (Apple IR, vía Wayback: la web da 403), dividendos Enagás 2016-06-30+ (web IR),
+  MSFT especial 2004 (IR), 4 sesiones ENG del boletín BME, ventanas EODHD `demo` (QA) de AAPL/MSFT.
+- Total Return validado en 6 ventanas reales contra cálculo independiente. Sin ex-date publicado
+  (Apple, Enagás ≤2015) la ventana se rechaza, no se calcula.
+- `FEATURE_RESEARCH_READY=false`: falta histórico de precios 2011+ aceptado (D-05).
+
 ## Pendiente (por orden)
 1. **Cohortes completas:** al menos un flujo real de precios y de corporate actions, y
    fundamentales de los miembros (CNMV: más emisores); después, la primera cohorte

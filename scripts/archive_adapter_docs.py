@@ -33,6 +33,7 @@ PAGES = {
     "SHARADAR:sp500": "https://sharadar.com/docs/sp500",
     "EODHD:eod": "https://eodhd.com/financial-apis/api-for-historical-data-and-volumes",
     "EODHD:div_splits": "https://eodhd.com/financial-apis/api-splits-dividends",
+    "ALPHAVANTAGE:daily": "https://www.alphavantage.co/documentation/",
 }
 # (page, adapter field, what the adapter does with it, regex that must match official text)
 FIELDS = [
@@ -171,6 +172,18 @@ FIELDS = [
         "div.declaration/record/payment dates",
         "announcement/record/payment",
         r"declarationDate[^.]{0,200}",
+    ),
+    (
+        "ALPHAVANTAGE:daily",
+        "TIME_SERIES_DAILY OHLCV",
+        "RAW as-traded; adjusted endpoint never used",
+        r"returns raw \(as-traded\) daily time series",
+    ),
+    (
+        "ALPHAVANTAGE:daily",
+        "outputsize=compact",
+        "latest 100 data points (free-tier backfill is NOT possible)",
+        r"compact returns only the latest 100 data points in the daily time series",
     ),
     ("EODHD:div_splits", "splits.split", "'new/old' ratio", r"\"split\": \"\d\.\d+/\d\.\d+\""),
 ]

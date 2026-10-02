@@ -122,13 +122,26 @@ class ReadinessReport:
         both invariant scans PASS over real rows) opens the Feature Engine."""
         return self.overall is Status.READY
 
+    @property
+    def feature_research_ready(self) -> bool:
+        """FEATURE_RESEARCH_READY (ADR-0023): feature_engine_ready AND a real-data-validated
+        total return over a cohort-wide period. Derived; the TR component only becomes READY
+        with real validation across the cohorts, never from a few short windows."""
+        tr = next((c for c in self.components if c.name == "Total return engine"), None)
+        return self.feature_engine_ready and tr is not None and tr.status is Status.READY
+
     def as_dict(self) -> dict[str, Any]:
-        return {**asdict(self), "feature_engine_ready": self.feature_engine_ready}
+        return {
+            **asdict(self),
+            "feature_engine_ready": self.feature_engine_ready,
+            "feature_research_ready": self.feature_research_ready,
+        }
 
     def to_text(self) -> str:
         out = [
             f"PITQuant data readiness: {self.overall}",
             f"FEATURE_ENGINE_READY = {str(self.feature_engine_ready).lower()}",
+            f"FEATURE_RESEARCH_READY = {str(self.feature_research_ready).lower()}",
             "",
         ]
         for c in self.components:
@@ -595,8 +608,9 @@ def data_readiness(session: Session, settings: Settings) -> ReadinessReport:
         Status.PARTIAL,
         critical=False,
         gaps=[
-            "validated on FIXTURES (splits, dividends, special, spin-off, acquisitions, "
-            "bankruptcy); real-data validation needs real prices"
+            "engine validated on FIXTURES (all kinds) and on 5 short REAL windows (AAPL 4:1 split, "
+            "MSFT special dividend, ENG dividends; ADR-0023); READY needs real validation over "
+            "cohort-wide price history"
         ],
     )
     sp.warnings.append(

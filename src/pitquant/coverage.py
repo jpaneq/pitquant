@@ -187,7 +187,30 @@ def corporate_action_state(
     session: Session, security_id: str, start: date, end: date, accepted: Sequence[str]
 ) -> tuple[CaCoverageState, str]:
     if not accepted:
-        return CaCoverageState.PROVIDER_UNAVAILABLE, "no accepted corporate-action source (D-05)"
+        # No source is accepted (D-05 open): coverage can NEVER be VERIFIED, but the real
+        # ingestion attempts of non-accepted (e.g. official issuer) sources are still shown.
+        traces = session.scalars(
+            select(CorporateActionIngestion).where(
+                CorporateActionIngestion.security_id == security_id
+            )
+        ).all()
+        if not traces:
+            return (
+                CaCoverageState.PROVIDER_UNAVAILABLE,
+                "no accepted corporate-action source (D-05)",
+            )
+        done = [r for r in traces if r.status == "COMPLETED"]
+        found = sum(r.events_found for r in done)
+        if not done:
+            return (
+                CaCoverageState.ATTEMPTED_FAILED,
+                f"{len(traces)} attempt(s) by non-accepted sources, none completed",
+            )
+        return (
+            CaCoverageState.PARTIAL_PERIOD,
+            f"source(s) {sorted({r.provider for r in done})} NOT accepted (D-05): never verified; "
+            f"{found} event(s) from {min(r.period_start for r in done)}",
+        )
     rows = session.scalars(
         select(CorporateActionIngestion).where(
             CorporateActionIngestion.security_id == security_id,

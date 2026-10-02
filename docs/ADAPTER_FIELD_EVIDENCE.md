@@ -6,12 +6,13 @@ Generado con `scripts/archive_adapter_docs.py`. Cada página oficial está en `r
 
 | Página | URL | retrieved_at | SHA-256 |
 |---|---|---|---|
-| SHARADAR:stocks | https://sharadar.com/docs/stocks | 2026-10-02T07:46:28.012625+00:00 | `4bd36b85f735e13555b3b374de1b73483be8fb16c9a16acc37b3d8359f118c13` |
-| SHARADAR:actions | https://sharadar.com/docs/actions | 2026-10-02T07:46:29.207993+00:00 | `9bd2b1c14f2f033158c09f55c1d101489a94d9cb2d9242d45e56d0d758879bc6` |
-| SHARADAR:tickers | https://sharadar.com/docs/tickers | 2026-10-02T07:46:30.408453+00:00 | `b22a881c42e6ea0f05e6c4b2325e6fb99149c87c83637ce71099516af8fdd853` |
-| SHARADAR:sp500 | https://sharadar.com/docs/sp500 | 2026-10-02T07:46:31.650508+00:00 | `e74d02a077b8c511a82e5240fb5559ef1dc8d90fca51e663b7897525bdbee8af` |
+| SHARADAR:stocks | https://sharadar.com/docs/stocks | 2026-10-02T09:45:42.928777+00:00 | `f5644fd45360ccef7301c8e4a68c82cab4b051cb90a20e8b1fedecd149aeec49` |
+| SHARADAR:actions | https://sharadar.com/docs/actions | 2026-10-02T09:45:44.145972+00:00 | `c9cabcee99002db3323984e291cfb4679a952c60a863f1ef84895340d34a2449` |
+| SHARADAR:tickers | https://sharadar.com/docs/tickers | 2026-10-02T09:45:45.379581+00:00 | `65919963f2c69990affd7972687c60ec08a524a1b6e968230f4114bc72420bce` |
+| SHARADAR:sp500 | https://sharadar.com/docs/sp500 | 2026-10-02T09:45:46.627757+00:00 | `a4d92010e0fa37d07b6c9b5393b4011a3e31587f877bcf82227aca5c7bac9299` |
 | EODHD:eod | https://eodhd.com/financial-apis/api-for-historical-data-and-volumes | 2026-10-02T07:46:34.043816+00:00 | `c2810e21040f5c1bde3aa412ac3bd24ec8c6039dcebaf3506eba7a07db1b37fa` |
-| EODHD:div_splits | https://eodhd.com/financial-apis/api-splits-dividends | 2026-10-02T07:45:42.799195+00:00 | `617712a346b7c0d734540ae2aa53751e091d7aaf0e87d62de6b7705fe14b1571` |
+| EODHD:div_splits | https://eodhd.com/financial-apis/api-splits-dividends | 2026-10-02T07:46:19.740754+00:00 | `c60331c5aae18bc1c38292e59cab21b49e691041b9c5ed5fbf2d80dc2d9fb9ab` |
+| ALPHAVANTAGE:daily | https://www.alphavantage.co/documentation/ | 2026-10-02T09:45:52.996946+00:00 | `65c9951083c9b64a8070b8f40c90b5e7146b599940c636069e69ff566dce93bb` |
 
 ## Campos
 
@@ -43,4 +44,6 @@ Generado con `scripts/archive_adapter_docs.py`. Cada página oficial está en `r
 | div.unadjustedValue | actual payout (used as amount) | VERIFIED | «unadjustedValue number The amount actually paid» (EODHD:div_splits) |
 | div.value | split-adjusted (QA only) | VERIFIED | «Split-adjusted amount per share» (EODHD:div_splits) |
 | div.declaration/record/payment dates | announcement/record/payment | VERIFIED | «declarationDate": "2026-04-30", "recordDate": "2026-05-11", "paymentDate": "2026-05-14", "period": "Quarterly", "value": 0» (EODHD:div_splits) |
+| TIME_SERIES_DAILY OHLCV | RAW as-traded; adjusted endpoint never used | VERIFIED | «returns raw (as-traded) daily time series» (ALPHAVANTAGE:daily) |
+| outputsize=compact | latest 100 data points (free-tier backfill is NOT possible) | VERIFIED | «compact returns only the latest 100 data points in the daily time series» (ALPHAVANTAGE:daily) |
 | splits.split | 'new/old' ratio | VERIFIED | «"split": "2.000000/1.000000"» (EODHD:div_splits) |

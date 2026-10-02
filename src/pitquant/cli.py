@@ -188,6 +188,7 @@ def _cohorts(args: argparse.Namespace) -> int:
         f"full year: {summ.first_complete_year}"
     )
     print(f"  research identity dates (outside the sealed holdout): {summ.research_identity_dates}")
+    print(f"  layer-ready dates: {summ.layer_ready_dates}")
     print(f"  blockers (dates): {summ.blockers}")
     if args.table:
         print("date       size resolved prices fundam. ca    id_ok elig  reasons")
@@ -198,6 +199,19 @@ def _cohorts(args: argparse.Namespace) -> int:
                 f"{r.corporate_action_coverage:>4.0%} {r.identity_eligible!s:<5} "
                 f"{r.eligible!s:<5} {'; '.join(r.blocking_reasons[:3])}"
             )
+    return 0
+
+
+def _reconstruct(args: argparse.Namespace) -> int:
+    from dataclasses import asdict
+
+    from pitquant.reconstruct import reconstruct, to_text
+
+    settings = get_settings()
+    factory = make_session_factory(make_engine(settings.database.url))
+    with factory() as session:
+        rec = reconstruct(session, args.security, date.fromisoformat(args.date))
+    print(json.dumps(asdict(rec), indent=2, default=str) if args.json else to_text(rec))
     return 0
 
 
@@ -232,6 +246,13 @@ def main(argv: list[str] | None = None) -> int:
     co.add_argument("--table", action="store_true", help="one line per date")
     co.add_argument("--json", action="store_true")
     co.set_defaults(func=_cohorts)
+    rs = sub.add_parser(
+        "reconstruct-security", help="information set of one security at a date (no features)"
+    )
+    rs.add_argument("security", help="security_id | dated ticker | CIK:<cik>")
+    rs.add_argument("date", help="YYYY-MM-DD")
+    rs.add_argument("--json", action="store_true")
+    rs.set_defaults(func=_reconstruct)
     sc = sub.add_parser("sec-stress-scan", help="pick stress-test filings from submissions")
     sc.add_argument("ciks", nargs="+")
     sc.set_defaults(func=_sec_scan)
