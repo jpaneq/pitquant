@@ -167,9 +167,55 @@ def create_app(factory: sessionmaker[Session], settings: Settings | None = None)
     from pitquant.api.dev import make_dev_router
 
     app.include_router(make_dev_router(cfg))
+    from pitquant.api.analyzer import make_analyzer_router
+
+    app.include_router(make_analyzer_router(cfg))
+
+    @app.middleware("http")
+    async def _timing(request: Request, call_next):  # type: ignore[no-untyped-def]
+        import logging
+        import time
+        import uuid
+
+        rid, t0 = request.headers.get("x-request-id") or uuid.uuid4().hex[:12], time.perf_counter()
+        response = await call_next(request)
+        ms = (time.perf_counter() - t0) * 1000
+        response.headers["X-Request-ID"], response.headers["X-Process-Time-ms"] = rid, f"{ms:.0f}"
+        logging.getLogger("pitquant.api").info(
+            "%s %s %s %.0fms rid=%s",
+            request.method,
+            request.url.path,
+            response.status_code,
+            ms,
+            rid,
+        )
+        return response
+
+    _mount_frontend(app)
 
     @app.post("/backtests")
     def backtests() -> None:
         raise HTTPException(501, "Backtest engine is Phase 7")
 
     return app
+
+
+def _mount_frontend(app: FastAPI) -> None:
+    """Serve the built Analyzer SPA (``frontend/dist``) when it exists: one process for API + UI.
+    Browser navigations to /analyzer/AAPL get index.html; API paths such as
+    /analyzer/AAPL/summary are untouched."""
+    from pathlib import Path
+
+    from fastapi.responses import FileResponse
+    from fastapi.staticfiles import StaticFiles
+
+    dist = Path(__file__).resolve().parents[3] / "frontend" / "dist"
+    if not (dist / "index.html").exists():
+        return
+    app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
+
+    def index() -> FileResponse:
+        return FileResponse(dist / "index.html")
+
+    for path in ("/", "/analyzer/{ident}", "/watchlist", "/research", "/status", "/settings"):
+        app.add_api_route(path, index, methods=["GET"], include_in_schema=False)

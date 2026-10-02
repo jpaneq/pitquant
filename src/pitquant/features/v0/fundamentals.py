@@ -171,12 +171,18 @@ def _minus_year(d: date) -> date:
         return d.replace(year=d.year - 1, day=28)
 
 
-def resolve_flow_ttm(vis: Sequence[Fact], key: str, as_of_end: date | None = None) -> Metric:
+def resolve_flow_ttm(
+    vis: Sequence[Fact],
+    key: str,
+    as_of_end: date | None = None,
+    tags: tuple[str, ...] | None = None,
+) -> Metric:
     """TTM of ``key`` through the versioned tag map. ``as_of_end``: compute the TTM that ENDS at
     that date (used for the prior-year TTM): facts of later periods are ignored."""
     pool = [f for f in vis if as_of_end is None or f.period_end <= as_of_end + timedelta(days=7)]
     res: list[tuple[str, Metric]] = []
-    for tag in TAGS[key]:
+    cand = tags if tags is not None else TAGS[key]
+    for tag in cand:
         m = _ttm_one(pool, tag)
         if m is not None:
             res.append((tag, m))
@@ -185,7 +191,7 @@ def resolve_flow_ttm(vis: Sequence[Fact], key: str, as_of_end: date | None = Non
         return (
             res[0][1]
             if res
-            else Metric.missing("missing_fundamental", f"no fact for any of {TAGS[key]}")
+            else Metric.missing("missing_fundamental", f"no fact for any of {cand}")
         )
     freshest = max(_end_of(m) for _, m in good)
     top = [(t, m) for t, m in good if _end_of(m) == freshest]
@@ -206,9 +212,11 @@ def _end_of(m: Metric) -> str:
     return max(str(p["period"]).split("..")[-1] for p in m.provenance)
 
 
-def latest_instant(vis: Sequence[Fact], key: str, unit: str = "USD") -> Metric:
+def latest_instant(
+    vis: Sequence[Fact], key: str, unit: str = "USD", tags: tuple[str, ...] | None = None
+) -> Metric:
     best: Fact | None = None
-    for tag in TAGS[key]:
+    for tag in tags if tags is not None else TAGS[key]:
         for f in vis:
             if (
                 f.concept == tag
@@ -221,7 +229,7 @@ def latest_instant(vis: Sequence[Fact], key: str, unit: str = "USD") -> Metric:
             ):
                 best = f
     if best is None:
-        return Metric.missing("missing_fundamental", f"no instant fact for {TAGS[key]}")
+        return Metric.missing("missing_fundamental", f"no instant fact for {key}")
     return Metric(
         best.value,
         None,
@@ -314,3 +322,22 @@ def linear(a: Metric, b: Metric, sign: int, name: str) -> Metric:
     return Metric(
         a.value + sign * b.value, None, max(ats) if ats else None, a.provenance + b.provenance, name
     )
+
+
+def split_factor_between(actions: Sequence[object], start: date, end: date) -> float:
+    """Product of split ratios whose anchor date lies in (start, end]: share counts reported at
+    ``start`` must be multiplied by it to be on the share basis of ``end``."""
+    f = 1.0
+    for a in actions:
+        kind = getattr(a, "kind", None)
+        ratio = getattr(a, "ratio", None)
+        anchor = getattr(a, "anchor_date", None)
+        if (
+            kind is not None
+            and str(getattr(kind, "value", kind)) in ("SPLIT", "REVERSE_SPLIT")
+            and ratio
+            and anchor
+            and start < anchor <= end
+        ):
+            f *= ratio
+    return f

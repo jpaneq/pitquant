@@ -35,6 +35,7 @@ GROUPS = {
         "sp500_membership_events",
         "index_anchor_snapshots",
         "index_current_anchors",
+        "security_profiles",
         "identity_resolution_runs",
         "membership_identity_segments",
     ],

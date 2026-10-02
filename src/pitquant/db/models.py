@@ -371,6 +371,39 @@ class IndexCurrentAnchor(Base):
     )
 
 
+class SecurityProfile(Base):
+    """CURRENT descriptive profile of a security for the Analyzer (ADR-0029): display name, current
+    ticker, exchange and SIC classification, from an archived SEC submissions document. NOT a dated
+    identity: ``ticker_history`` stays the temporal authority; this row says what the issuer calls
+    itself today. Append-only: a new retrieval is a new row (the latest ``ingested_at`` wins)."""
+
+    __tablename__ = "security_profiles"
+
+    profile_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"), index=True)
+    current_ticker: Mapped[str | None] = mapped_column(String(20), index=True)
+    display_name: Mapped[str] = mapped_column(String(300))
+    exchange: Mapped[str | None] = mapped_column(String(40))
+    country: Mapped[str | None] = mapped_column(String(2))
+    sic: Mapped[str | None] = mapped_column(String(8))
+    sic_description: Mapped[str | None] = mapped_column(String(200))
+    sector: Mapped[str | None] = mapped_column(String(100))
+    industry: Mapped[str | None] = mapped_column(String(200))
+    profile_type: Mapped[str] = mapped_column(String(24))
+    source: Mapped[str] = mapped_column(String(40))
+    source_url: Mapped[str] = mapped_column(String(1000))
+    archive_id: Mapped[str] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    source_sha256: Mapped[str] = mapped_column(String(64))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        CheckConstraint(
+            "profile_type IN ('STANDARD_CORPORATE','BANK','INSURER','REIT','OTHER_SPECIAL')",
+            name="profile_type_values",
+        ),
+    )
+
+
 class OfficialIsinTransition(Base):
     """An OFFICIAL, dated ISIN change of one issuer's ordinary shares (ADR-0022).
 
@@ -1295,5 +1328,6 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "sp500_membership_events",
         "index_anchor_snapshots",
         "index_current_anchors",
+        "security_profiles",
     }
 )

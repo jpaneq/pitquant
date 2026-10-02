@@ -184,7 +184,7 @@ def val(rs, name):  # type: ignore[no-untyped-def]
 # ───────────────────────────── price features ─────────────────────────────────────────────
 def test_feature_list_is_exact_and_unique() -> None:
     assert len(FEATURE_NAMES) == len(set(FEATURE_NAMES)) == 51
-    assert FEATURE_VERSION == "v0.1"
+    assert FEATURE_VERSION == "v0.2"
 
 
 def test_no_data_from_the_decision_session_enters_a_price_feature(

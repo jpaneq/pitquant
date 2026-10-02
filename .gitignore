@@ -12,3 +12,7 @@ dev.db
 x.db
 .pgdata/
 .pit.log
+
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo

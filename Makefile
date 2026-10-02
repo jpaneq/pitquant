@@ -26,3 +26,16 @@ ci:           ## local equivalent of .github/workflows/ci.yml (except the docker
 	tail -1 .pit.log; ! grep -E "^SKIPPED" .pit.log
 	pytest -m "not postgres"
 	$(MAKE) pg-local
+
+.PHONY: frontend-install frontend-ci frontend-dev analyzer
+frontend-install:  ## npm ci for the Analyzer UI
+	cd frontend && npm ci
+
+frontend-ci:       ## lint + strict types + tests + build of the Analyzer UI
+	cd frontend && npx oxlint && npx tsc -b && npm test && npm run build
+
+frontend-dev:      ## Vite dev server (proxy to the API on :8000)
+	cd frontend && npm run dev
+
+analyzer:          ## API + built UI on http://127.0.0.1:8000 (run `make frontend-ci` first)
+	python -m uvicorn pitquant.api.main:app --port 8000

@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **51**.
+Tablas: **52**.
 
 ## Procedencia y calidad
 
@@ -372,6 +372,31 @@ Tablas: **51**.
 | `ingested_at` | DATETIME | no |  |
 
 - CHECK `status IN ('OFFICIAL_SPDJI','MULTI_SOURCE_CONFIRMED','CONFLICT','BLOCKED')`
+
+### `security_profiles` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `profile_id` | VARCHAR(36) | no | PK |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `current_ticker` | VARCHAR(20) | sí |  |
+| `display_name` | VARCHAR(300) | no |  |
+| `exchange` | VARCHAR(40) | sí |  |
+| `country` | VARCHAR(2) | sí |  |
+| `sic` | VARCHAR(8) | sí |  |
+| `sic_description` | VARCHAR(200) | sí |  |
+| `sector` | VARCHAR(100) | sí |  |
+| `industry` | VARCHAR(200) | sí |  |
+| `profile_type` | VARCHAR(24) | no |  |
+| `source` | VARCHAR(40) | no |  |
+| `source_url` | VARCHAR(1000) | no |  |
+| `archive_id` | VARCHAR(36) | no | FK→`raw_source_archive.archive_id` |
+| `source_sha256` | VARCHAR(64) | no |  |
+| `ingested_at` | DATETIME | no |  |
+
+- CHECK `profile_type IN ('STANDARD_CORPORATE','BANK','INSURER','REIT','OTHER_SPECIAL')`
+- INDEX ix_security_profiles_current_ticker (current_ticker)
+- INDEX ix_security_profiles_security_id (security_id)
 
 ### `identity_resolution_runs` 🔒
 

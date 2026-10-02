@@ -31,6 +31,7 @@ from pitquant.db.models import (
     Price,
     Security,
 )
+from pitquant.market.ca_resolve import collapse_equivalent
 from pitquant.market.normalized import CorporateAction as NormalizedAction
 from pitquant.market.normalized import CorporateActionKind, Provenance, SourceTier
 from pitquant.market.total_return import InsufficientValuationError, TotalReturnResult
@@ -117,32 +118,34 @@ class PITContext:
         PITGuard(self.as_of, context=f"market_actions:{security_id}").check_all(
             (f"ca:{r.event_type}:{r.ex_date or r.effective_date}", r.available_at) for r in rows
         )
-        return [
-            NormalizedAction(
-                security_key=security_id,
-                kind=CorporateActionKind(r.event_type),
-                available_at=r.available_at,
-                provenance=Provenance(
-                    r.provider,
-                    SourceTier(r.source_tier),
-                    r.provider_event_id,
-                    r.source_hash,
-                    r.parser_version,
-                    r.archive_id,
-                ),
-                announcement_date=r.announcement_date,
-                ex_date=r.ex_date,
-                record_date=r.record_date,
-                payment_date=r.payment_date,
-                effective_date=r.effective_date,
-                ratio=r.ratio,
-                cash_amount=r.cash_amount,
-                currency=r.currency,
-                target_key=r.target_security_id,
-                details=dict(r.details or {}),
-            )
-            for r in rows
-        ]
+        return collapse_equivalent(
+            [
+                NormalizedAction(
+                    security_key=security_id,
+                    kind=CorporateActionKind(r.event_type),
+                    available_at=r.available_at,
+                    provenance=Provenance(
+                        r.provider,
+                        SourceTier(r.source_tier),
+                        r.provider_event_id,
+                        r.source_hash,
+                        r.parser_version,
+                        r.archive_id,
+                    ),
+                    announcement_date=r.announcement_date,
+                    ex_date=r.ex_date,
+                    record_date=r.record_date,
+                    payment_date=r.payment_date,
+                    effective_date=r.effective_date,
+                    ratio=r.ratio,
+                    cash_amount=r.cash_amount,
+                    currency=r.currency,
+                    target_key=r.target_security_id,
+                    details=dict(r.details or {}),
+                )
+                for r in rows
+            ]
+        )
 
     def _events(self, security_id: str) -> tuple[list[SplitEvent], list[DividendEvent]]:
         splits = [

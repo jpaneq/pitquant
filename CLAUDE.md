@@ -35,8 +35,8 @@ temporal, se rechaza.
   "FIXTURE"). Nunca presentarlos como históricos reales.
 - No dar una funcionalidad por terminada porque "ejecuta": correcta, testeada, tipada,
   documentada, reproducible, point-in-time.
-- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0029).
-- Migraciones: `0001`…`0010` fijadas (`0010` anclas de índice SPY/IVV) (`0009` evidencia de membresía S&P 500) (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
+- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0030).
+- Migraciones: `0001`…`0011` fijadas (`0011` perfiles descriptivos `security_profiles`) (`0010` anclas de índice SPY/IVV) (`0009` evidencia de membresía S&P 500) (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
   código↔ISIN, `0006` transiciones de ISIN, `0007` traza de corporate actions, `role` de
   security e `issuer_id` en filings SEC); **todo cambio de esquema = revisión nueva**.
 - Identidad (ADR-0022): sólo evidencia oficial EXACTA desempata o ancla un código; subir
@@ -141,6 +141,17 @@ es `false`: no empezar Feature Engine hasta READY con datos reales.
   `cohort-readiness --universe SP500`, flags de readiness separados (`research_readiness.py`).
 - Tiingo sigue `BLOCKED_BY_CREDENTIAL`: sin clave no hay precios US, cohortes completas ni baseline.
 - Holdout NO tocado: los features rechazan fechas 2022-10-01 → 2025-09-30.
+
+## Analyzer (2026-10-02, ADR-0029)
+- Producto: `make frontend-ci && make analyzer` → http://127.0.0.1:8000 (React 19 + TS estricto + Vite + Tailwind 4 +
+  TanStack + Lightweight Charts). Backend: `src/pitquant/analyzer/` (`technical_v1`, `fundamental_v1`, `valuation_v1`,
+  `sr_v1`, `analysis_v0`, `trade_plan_v0`, `service`, `search`) y `api/analyzer.py`. **Una sola implementación**: los
+  motores reciben `decision_at` y reutilizan `features.v0`; el frontend no calcula finanzas.
+- Estado y bloqueos exactos: `docs/PRODUCT_ANALYZER_STATUS.md`. Mapa de reutilización: `docs/ANALYZER_REUSE_MAP.md`.
+- Datos: AAPL/MSFT/VTI vía token público `demo` de EODHD (`scripts/ingest_analyzer_demo_data.py`); KO sólo SEC
+  (FUNDAMENTAL_ONLY). Sin `PITQUANT_TIINGO_API_KEY` → banner `DATA SOURCE NOT CONFIGURED`. Predicción siempre
+  `NOT_YET_VALIDATED`; trade plan `RULE_BASED_NOT_BACKTEST_VALIDATED`.
+- `PITContext.market_actions` colapsa eventos equivalentes por tier (`market/ca_resolve.py`); `FEATURE_VERSION=v0.2`.
 
 ## Pendiente (por orden)
 1. **Cohortes completas:** al menos un flujo real de precios y de corporate actions, y

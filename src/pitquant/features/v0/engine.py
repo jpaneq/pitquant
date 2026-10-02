@@ -13,6 +13,7 @@ MUST change ``FEATURE_VERSION``: old snapshots are immutable.
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Any
@@ -32,7 +33,7 @@ from pitquant.features.v0 import technical as T
 from pitquant.features.v0.series import SHARE_KINDS, PriceSeries, build_series
 from pitquant.market.total_return import InsufficientValuationError
 
-FEATURE_VERSION = "v0.1"
+FEATURE_VERSION = "v0.2"  # v0.2: shares_growth_yoy is aligned to splits between the two cover dates
 
 TECHNICAL = (
     "tr_21d", "tr_63d", "tr_126d", "tr_252d", "mom_12_1",
@@ -232,7 +233,7 @@ def _price_features(ps: PriceSeries, bench: PriceSeries | None) -> list[FeatureR
 
 
 def _fundamental_features(
-    vis: list[F.Fact], decision_at: datetime
+    vis: list[F.Fact], decision_at: datetime, actions: Sequence[Any] = ()
 ) -> tuple[list[FeatureResult], dict[str, F.Metric]]:
     m: dict[str, F.Metric] = {}
     for k in ("revenue", "gross_profit", "operating_income", "net_income", "cfo", "capex"):
@@ -320,7 +321,9 @@ def _fundamental_features(
         ),
         "cash_to_assets": F.safe_div(cash, assets, "cash / assets", den_positive=True),
         "debt_to_assets": F.safe_div(debt, assets, "debt / assets", den_positive=True),
-        "shares_growth_yoy": _shares_growth(shares_now, sh_prior),
+        "shares_growth_yoy": _shares_growth(
+            shares_now, sh_prior, _share_split_factor(shares_now, sh_prior, actions)
+        ),
     }
     res = []
     for name in FUNDAMENTAL:
@@ -390,7 +393,7 @@ def _prior_shares(vis: list[F.Fact], now: F.Metric) -> F.Metric:
     )
 
 
-def _shares_growth(now: F.Metric, prior: F.Metric) -> F.Metric:
+def _shares_growth(now: F.Metric, prior: F.Metric, split_factor: float = 1.0) -> F.Metric:
     if now.value is None or prior.value is None:
         return F.Metric.missing(
             now.reason or prior.reason or "missing_fundamental", "shares_growth_yoy"
@@ -398,12 +401,20 @@ def _shares_growth(now: F.Metric, prior: F.Metric) -> F.Metric:
     if prior.value <= 0:
         return F.Metric.missing("denominator_invalid", "prior shares <= 0")
     return F.Metric(
-        now.value / prior.value - 1.0,
+        now.value / (prior.value * split_factor) - 1.0,
         None,
         max(x for x in (now.available_at, prior.available_at) if x),
         now.provenance + prior.provenance,
-        "shares_out / shares_out(1y earlier) - 1 (cover-page shares as reported; no split adjustment applied between the two dates)",
+        f"shares_out / (shares_out(1y earlier) * split factor {split_factor:g} between the two cover dates) - 1 (cover-page shares)",
     )
+
+
+def _share_split_factor(now: F.Metric, prior: F.Metric, actions: Sequence[Any]) -> float:
+    if now.value is None or prior.value is None:
+        return 1.0
+    end_now = date.fromisoformat(str(now.provenance[0]["period"]).split("..")[-1])
+    end_prior = date.fromisoformat(str(prior.provenance[0]["period"]).split("..")[-1])
+    return F.split_factor_between(actions, end_prior, end_now)
 
 
 MAX_SHARES_AGE_DAYS = 400
@@ -556,7 +567,7 @@ def compute_features(
             r.value, r.reason = None, "coverage_gap"
             r.intermediates["series_error"] = series_err
     vis = F.visible(load_facts(session, security_id, dt), dt)
-    fres, mets = _fundamental_features(vis, dt)
+    fres, mets = _fundamental_features(vis, dt, [a for a in actions if a.available_at < dt])
     vres = _valuation(
         ps, mets["shares"], [a for a in actions if a.available_at < dt], mets, decision_session
     )
