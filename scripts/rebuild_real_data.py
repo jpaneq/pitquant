@@ -119,6 +119,8 @@ def main() -> int:
     run(sys.executable, "scripts/build_ibex_real.py")
     run(sys.executable, "scripts/edgar_time_investigation.py")
     run(sys.executable, "scripts/verify_contract_cases.py")
+    run(sys.executable, "scripts/archive_adapter_docs.py")
+    run(sys.executable, "scripts/gen_identity_reports.py")
     run(sys.executable, "scripts/gen_real_demos.py")
     run(sys.executable, "scripts/gen_spanish_identity_demo.py")
     return 0

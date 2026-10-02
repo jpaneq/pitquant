@@ -53,6 +53,7 @@ docker compose up -d   # PostgreSQL + API (migraciones Alembic al arrancar)
 | `docs/BME_PARSER.md` | Calibración del parser del histórico IBEX 35 |
 | `docs/DATA_MODEL.md` | Esquema completo (42 tablas, generado desde el ORM) |
 | `docs/IBEX_COVERAGE_REPORT.md` | Universo IBEX real e identidad 2011+ |
+| `docs/IDENTITY_BLOCKERS.md`, `docs/ISSUER_SECURITY_CHANGES.md`, `docs/ADAPTER_FIELD_EVIDENCE.md` | Informes generados: bloqueos de identidad por security, cambios emisor/security y evidencia documental de los adapters |
 | `docs/REAL_DATA_SPANISH_IDENTITY_DEMO.md` | Enagás de extremo a extremo (emisor → ISIN → security → ticker → membership → fundamentales) |
 | `docs/PIT_AND_BACKTEST_FLOWS.md` | Flujo point-in-time y flujo de backtest |
 | `docs/ANTI_LEAKAGE_TESTS.md` | Catálogo de tests y su estado |

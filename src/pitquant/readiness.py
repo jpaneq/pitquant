@@ -116,11 +116,21 @@ class ReadinessReport:
     excluded_fixture_rows: dict[str, int]
     blockers: list[str]
 
+    @property
+    def feature_engine_ready(self) -> bool:
+        """Derived, never set by hand: only a global READY (every critical component READY,
+        both invariant scans PASS over real rows) opens the Feature Engine."""
+        return self.overall is Status.READY
+
     def as_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        return {**asdict(self), "feature_engine_ready": self.feature_engine_ready}
 
     def to_text(self) -> str:
-        out = [f"PITQuant data readiness: {self.overall}", ""]
+        out = [
+            f"PITQuant data readiness: {self.overall}",
+            f"FEATURE_ENGINE_READY = {str(self.feature_engine_ready).lower()}",
+            "",
+        ]
         for c in self.components:
             cov = f"{c.coverage_from}..{c.coverage_to}" if c.coverage_from else "-"
             out.append(f"  {c.name:<22} {c.status:<12} securities={c.securities:<6} coverage={cov}")

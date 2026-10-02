@@ -100,6 +100,11 @@ Hecho:
 - **GitHub:** `jpaneq/pitquant` (PRIVADO).
 - **User-Agent SEC:** no se persiste; hay que exportar `PITQUANT_SEC_USER_AGENT`.
 
+Informes generados desde la base (nunca a mano): `docs/ISSUER_SECURITY_CHANGES.md`,
+`docs/IDENTITY_BLOCKERS.md` (qué security bloquea qué fecha y qué evidencia falta) y
+`docs/ADAPTER_FIELD_EVIDENCE.md`. `FEATURE_ENGINE_READY` es derivado de `data-readiness` y hoy
+es `false`: no empezar Feature Engine hasta READY con datos reales.
+
 ## Pendiente (por orden)
 1. **Identidad IBEX 2011+:**
    - código BME ↔ ISIN oficial y fechado para MTS (LU), FER (NL desde 2023) y ABG.P (clase B);

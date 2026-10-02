@@ -28,6 +28,17 @@
    resolver las semánticas sin verificar y cruzar SHARADAR/SP500 con anuncios S&P DJI.
 3. Capa oficial BME/CNMV de corporate actions españolas complejas.
 
+Informes generados desde la base (no editar a mano): `docs/ISSUER_SECURITY_CHANGES.md`,
+`docs/IDENTITY_BLOCKERS.md` (entrada de trabajo de la siguiente iteración) y
+`docs/ADAPTER_FIELD_EVIDENCE.md` (frase oficial que justifica cada campo de los adapters).
+
+Prioridad de la siguiente iteración:
+1. Resolver los blockers de identidad que impiden formar cohortes.
+2. Introducir al menos un flujo real de market data.
+3. Validar corporate actions reales.
+4. Conseguir la primera cohorte histórica elegible.
+5. Sólo entonces, Feature Engine (`FEATURE_ENGINE_READY = false` hasta entonces).
+
 Criterio para iniciar el Feature Engine:
 - identidad IBEX 2011+ prácticamente resuelta;
 - emisor y security separados (hecho);

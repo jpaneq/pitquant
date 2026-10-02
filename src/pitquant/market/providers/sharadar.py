@@ -22,7 +22,8 @@ Normalization decisions (fail closed, nothing guessed):
   ``imputed_fields``. ``closeadj`` is kept as ``vendor_adj_close`` (QA only).
 * Tickers are reused, so every row is keyed by ``permaticker`` resolved from TICKERS by
   (ticker, date ∈ [firstpricedate, lastpricedate]); unresolvable or ambiguous → rejected.
-* UNVERIFIED semantics (to check against primary sources once real data is available):
+* UNVERIFIED semantics (the official pages do not state them — see
+  docs/ADAPTER_FIELD_EVIDENCE.md; to check against real data):
   whether dividend ``value`` is split-adjusted (sources disagree: recorded per row as
   ``value_basis=UNVERIFIED``), the direction of tickerchangefrom/to rows, and whether an
   SP500 ``date`` is the effective date. Acquisitions carry no consideration type, so they

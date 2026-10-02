@@ -125,3 +125,16 @@ Todavía no hay claves de API. Los adapters deben poder construirse y probarse s
   1. ejecutar la suite D-05 y los contract tests sobre datos reales;
   2. resolver las semánticas sin verificar;
   3. etiquetar `REAL_DATA_FULLY_VALIDATED`.
+
+## Addendum — evidencia documental de los adapters
+`scripts/archive_adapter_docs.py` archiva las 6 páginas oficiales (Sharadar: stocks, actions,
+tickers, sp500; EODHD: eod, dividendos/splits) en `raw_source_archive` y genera
+`docs/ADAPTER_FIELD_EVIDENCE.md` con la frase oficial que justifica cada campo.
+- **Resueltas:**
+  - la `date` de SP500 es la fecha efectiva del cambio;
+  - las filas `historical` son snapshots trimestrales;
+  - `contraticker` del deslistado por adquisición es el adquirente.
+- **Siguen UNVERIFIED** (la página oficial no lo dice): base del dividendo de ACTIONS (¿ajustado
+  por splits?), semántica de la fecha de ACTIONS (¿ex-date o efectiva?), dirección de
+  `tickerchangefrom/to`, significado de `value` en spinoff y reutilización explícita de tickers
+  (el adapter resuelve por permaticker y fecha de todos modos).

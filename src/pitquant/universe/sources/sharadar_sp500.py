@@ -19,8 +19,11 @@ Reconstruction (same discipline as the BME history):
 * a removal and an addition on the same date that resolve to the SAME permaticker are a
   TICKER_CHANGE, never a turnover;
 * identity: permaticker from TICKERS; unresolvable → IDENTITY_UNRESOLVED (never guessed);
-* the SP500 ``date`` is treated as the EFFECTIVE date — UNVERIFIED until cross-checked with
-  official S&P DJI announcements (``cross_check_announcements`` fails closed).
+* the SP500 ``date`` is the EFFECTIVE date of the change (official docs: «the effective date
+  of the change») and ``historical`` rows are «historical quarterly snapshots» (evidence in
+  docs/ADAPTER_FIELD_EVIDENCE.md); the vendor's accuracy is still UNVERIFIED until
+  cross-checked with official S&P DJI announcements (``cross_check_announcements`` fails
+  closed).
 """
 
 from __future__ import annotations

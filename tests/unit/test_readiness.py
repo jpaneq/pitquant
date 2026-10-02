@@ -39,6 +39,8 @@ def _by_name(rep, name):  # type: ignore[no-untyped-def]
 def test_empty_database_is_blocked(session: Session, settings: Settings) -> None:
     rep = data_readiness(session, settings)
     assert rep.overall is Status.BLOCKED
+    assert rep.feature_engine_ready is False  # derived: only a global READY opens it
+    assert rep.as_dict()["feature_engine_ready"] is False
     # every DATA component is blocked; only code components (total-return engine) are not
     assert {c.status for c in rep.components if c.critical} == {Status.BLOCKED}
     assert "invariant scans ran over zero real rows (vacuous PASS)" in rep.blockers
