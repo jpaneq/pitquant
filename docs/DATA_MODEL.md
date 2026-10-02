@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **45**.
+Tablas: **46**.
 
 ## Procedencia y calidad
 
@@ -245,6 +245,28 @@ Tablas: **45**.
 - INDEX ix_official_isin_transitions_new_isin (new_isin)
 - INDEX ix_official_isin_transitions_old_isin (old_isin)
 - UNIQUE (old_isin, new_isin, effective_date)
+
+### `security_identifier_evidence` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `evidence_id` | VARCHAR(36) | no | PK |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `id_type` | VARCHAR(10) | no |  |
+| `value` | VARCHAR(20) | no |  |
+| `kind` | VARCHAR(12) | no |  |
+| `observed_on` | DATE | no |  |
+| `source_kind` | VARCHAR(40) | no |  |
+| `source_url` | VARCHAR(1000) | no |  |
+| `archive_id` | VARCHAR(36) | sí | FK→`raw_source_archive.archive_id` |
+| `source_sha256` | VARCHAR(64) | sí |  |
+| `excerpt` | VARCHAR(600) | sí |  |
+| `parser_version` | VARCHAR(50) | no |  |
+| `ingested_at` | DATETIME | no |  |
+
+- CHECK `kind IN ('OFFICIAL','DERIVED','VENDOR','UNRESOLVED')`
+- INDEX ix_security_identifier_evidence_security_id (security_id)
+- UNIQUE (security_id, id_type, value, observed_on, source_url)
 
 ### `identity_resolution_runs` 🔒
 

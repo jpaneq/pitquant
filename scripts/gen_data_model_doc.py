@@ -29,6 +29,7 @@ GROUPS = {
         "security_identity_snapshots",
         "official_code_isin_evidence",
         "official_isin_transitions",
+        "security_identifier_evidence",
         "identity_resolution_runs",
         "membership_identity_segments",
     ],

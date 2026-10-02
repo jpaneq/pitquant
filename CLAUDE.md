@@ -35,8 +35,8 @@ temporal, se rechaza.
   "FIXTURE"). Nunca presentarlos como históricos reales.
 - No dar una funcionalidad por terminada porque "ejecuta": correcta, testeada, tipada,
   documentada, reproducible, point-in-time.
-- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0023).
-- Migraciones: `0001`…`0007` fijadas (`0004` emisor/security y snapshots, `0005` evidencia
+- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0025).
+- Migraciones: `0001`…`0008` fijadas (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
   código↔ISIN, `0006` transiciones de ISIN, `0007` traza de corporate actions, `role` de
   security e `issuer_id` en filings SEC); **todo cambio de esquema = revisión nueva**.
 - Identidad (ADR-0022): sólo evidencia oficial EXACTA desempata o ancla un código; subir
@@ -120,6 +120,13 @@ es `false`: no empezar Feature Engine hasta READY con datos reales.
 - Total Return validado en 6 ventanas reales contra cálculo independiente. Sin ex-date publicado
   (Apple, Enagás ≤2015) la ventana se rechaza, no se calcula.
 - `FEATURE_RESEARCH_READY=false`: falta histórico de precios 2011+ aceptado (D-05).
+
+## Micro-iteración Tiingo (2026-10-02, ADR-0024)
+- `TiingoEODMarketDataProvider` (token sólo en cabecera, presupuesto de cupo), comparador
+  vendor-vs-oficial (`VENDOR_DISAGREEMENT`), cobertura por `supported_tickers.zip`, criterios D-05.
+- CUSIP oficial de AAPL y MSFT (Schedule 13G 2011–2024); ISIN ya no es obligatorio.
+- `docs/TIINGO_SP500_COVERAGE.md` (generado por `scripts/tiingo_evaluate.py`): sin clave y sin universo
+  S&P histórico → `TIINGO_D05_CANDIDATE=false`, `FEATURE_RESEARCH_READY=false`.
 
 ## Pendiente (por orden)
 1. **Cohortes completas:** al menos un flujo real de precios y de corporate actions, y

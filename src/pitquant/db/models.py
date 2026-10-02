@@ -203,6 +203,40 @@ class OfficialCodeIsinEvidence(Base):
     )
 
 
+class SecurityIdentifierEvidence(Base):
+    """One DATED statement «security S carries identifier V (CUSIP, FIGI, ISIN, ...)» with its
+    evidence class (ADR-0024). ``kind``: OFFICIAL (regulator / exchange / issuer document, e.g.
+    an SEC Schedule 13G), DERIVED (computed from another identifier, e.g. an ISIN built from a
+    CUSIP: NEVER evidence), VENDOR (a data vendor says so) or UNRESOLVED. It proves the link on
+    ``observed_on``; continuity is the reader's rule. ISIN is not required universally."""
+
+    __tablename__ = "security_identifier_evidence"
+
+    evidence_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"), index=True)
+    id_type: Mapped[str] = mapped_column(String(10))
+    value: Mapped[str] = mapped_column(String(20))
+    kind: Mapped[str] = mapped_column(String(12))
+    observed_on: Mapped[date] = mapped_column(Date)
+    source_kind: Mapped[str] = mapped_column(String(40))
+    source_url: Mapped[str] = mapped_column(String(1000))
+    archive_id: Mapped[str | None] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    source_sha256: Mapped[str | None] = mapped_column(String(64))
+    excerpt: Mapped[str | None] = mapped_column(String(600))
+    parser_version: Mapped[str] = mapped_column(String(50))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        CheckConstraint(
+            "kind IN ('OFFICIAL','DERIVED','VENDOR','UNRESOLVED')",
+            name="kind_values",
+        ),
+        UniqueConstraint(
+            "security_id", "id_type", "value", "observed_on", "source_url", name="uq_sec_ident_ev"
+        ),
+    )
+
+
 class OfficialIsinTransition(Base):
     """An OFFICIAL, dated ISIN change of one issuer's ordinary shares (ADR-0022).
 
@@ -1121,5 +1155,6 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "official_code_isin_evidence",
         "official_isin_transitions",
         "corporate_action_ingestions",
+        "security_identifier_evidence",
     }
 )

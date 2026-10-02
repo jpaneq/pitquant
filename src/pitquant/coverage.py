@@ -34,6 +34,7 @@ from pitquant.db.models import (
     Price,
     SectorClassification,
     Security,
+    SecurityIdentifierEvidence,
 )
 
 
@@ -95,11 +96,56 @@ def _identity(s: Session, sec: Security, start: date, end: date) -> DimensionCov
     if cur > end:
         isins = sorted({r.value for r in rows})
         return DimensionCoverage("identity", CoverageStatus.COMPLETE, 1.0, f"ISIN proven: {isins}")
+    alt = _identifier_chain(s, sec.security_id, start, end)
+    if alt is not None:
+        return alt
     return DimensionCoverage(
         "identity",
         CoverageStatus.UNRESOLVED_IDENTITY,
         None,
         f"no proven ISIN from {cur}" if rows else "no proven ISIN",
+    )
+
+
+MAX_EVIDENCE_GAP_DAYS = 400  # annual filings: consecutive observations of ONE value chain up
+
+
+def _identifier_chain(
+    s: Session, security_id: str, start: date, end: date
+) -> DimensionCoverage | None:
+    """ISIN is not mandatory (ADR-0024): a security is identified when an OFFICIAL identifier
+    (e.g. CUSIP from SEC Schedule 13G) chains, observation to observation (<= 400 days apart),
+    over the period. DERIVED / VENDOR evidence never counts."""
+    ev = s.scalars(
+        select(SecurityIdentifierEvidence)
+        .where(
+            SecurityIdentifierEvidence.security_id == security_id,
+            SecurityIdentifierEvidence.kind == "OFFICIAL",
+            SecurityIdentifierEvidence.id_type != "ISIN",
+        )
+        .order_by(SecurityIdentifierEvidence.observed_on)
+    ).all()
+    by_value: dict[tuple[str, str], list[date]] = {}
+    for e in ev:
+        by_value.setdefault((e.id_type, e.value), []).append(e.observed_on)
+    best: tuple[date, date] | None = None
+    for (_, _), ds in by_value.items():
+        lo = hi = ds[0]
+        for d in ds[1:]:
+            if (d - hi).days > MAX_EVIDENCE_GAP_DAYS:
+                break
+            hi = d
+        if best is None or (hi - lo) > (best[1] - best[0]):
+            best = (lo, hi)
+    if best is None:
+        return None
+    covers = best[0] <= start and end <= best[1] + timedelta(days=MAX_EVIDENCE_GAP_DAYS)
+    ids = sorted({f"{t}={v}" for (t, v) in by_value})
+    return DimensionCoverage(
+        "identity",
+        CoverageStatus.COMPLETE if covers else CoverageStatus.PARTIAL,
+        1.0 if covers else None,
+        f"no ISIN; OFFICIAL {ids} observed {best[0]}..{best[1]}",
     )
 
 
