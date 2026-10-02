@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **52**.
+Tablas: **62**.
 
 ## Procedencia y calidad
 
@@ -397,6 +397,189 @@ Tablas: **52**.
 - CHECK `profile_type IN ('STANDARD_CORPORATE','BANK','INSURER','REIT','OTHER_SPECIAL')`
 - INDEX ix_security_profiles_current_ticker (current_ticker)
 - INDEX ix_security_profiles_security_id (security_id)
+
+### `feature_set_versions` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `feature_set_version_id` | VARCHAR(36) | no | PK |
+| `name` | VARCHAR(60) | no |  |
+| `feature_version` | VARCHAR(50) | no |  |
+| `tag_map_version` | VARCHAR(50) | no |  |
+| `features` | JSON | no |  |
+| `set_hash` | VARCHAR(64) | no |  |
+| `created_at` | DATETIME | no |  |
+
+- UNIQUE (set_hash)
+
+### `label_definitions` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `label_definition_id` | VARCHAR(36) | no | PK |
+| `label_version` | VARCHAR(50) | no |  |
+| `horizon_months` | INTEGER | no |  |
+| `target_kind` | VARCHAR(40) | no |  |
+| `benchmark` | VARCHAR(60) | no |  |
+| `benchmark_type` | VARCHAR(20) | no |  |
+| `definition` | JSON | no |  |
+| `definition_hash` | VARCHAR(64) | no |  |
+| `created_at` | DATETIME | no |  |
+
+- UNIQUE (definition_hash)
+
+### `model_configs` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `model_config_id` | VARCHAR(36) | no | PK |
+| `kind` | VARCHAR(30) | no |  |
+| `name` | VARCHAR(80) | no |  |
+| `params` | JSON | no |  |
+| `grid` | JSON | no |  |
+| `config_hash` | VARCHAR(64) | no |  |
+| `created_at` | DATETIME | no |  |
+
+- UNIQUE (config_hash)
+
+### `dataset_versions` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `dataset_version_id` | VARCHAR(36) | no | PK |
+| `dataset_hash` | VARCHAR(64) | no |  |
+| `universe` | VARCHAR(120) | no |  |
+| `universe_version` | VARCHAR(120) | no |  |
+| `start_date` | DATE | no |  |
+| `end_date` | DATE | no |  |
+| `snapshot_frequency` | VARCHAR(20) | no |  |
+| `feature_set_version_id` | VARCHAR(36) | no | FK→`feature_set_versions.feature_set_version_id` |
+| `label_definition_id` | VARCHAR(36) | no | FK→`label_definitions.label_definition_id` |
+| `benchmark` | VARCHAR(60) | no |  |
+| `n_rows` | INTEGER | no |  |
+| `n_eligible` | INTEGER | no |  |
+| `n_securities` | INTEGER | no |  |
+| `holdout_dates_excluded` | INTEGER | no |  |
+| `builder_version` | VARCHAR(40) | no |  |
+| `rows_path` | VARCHAR(500) | sí |  |
+| `summary` | JSON | no |  |
+| `created_at` | DATETIME | no |  |
+
+- UNIQUE (dataset_hash)
+
+### `research_experiments` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `experiment_id` | VARCHAR(36) | no | PK |
+| `name` | VARCHAR(120) | no |  |
+| `status` | VARCHAR(20) | no |  |
+| `commit_sha` | VARCHAR(40) | no |  |
+| `dataset_version_id` | VARCHAR(36) | sí | FK→`dataset_versions.dataset_version_id` |
+| `dataset_hash` | VARCHAR(64) | sí |  |
+| `feature_set_version_id` | VARCHAR(36) | no | FK→`feature_set_versions.feature_set_version_id` |
+| `label_definition_id` | VARCHAR(36) | no | FK→`label_definitions.label_definition_id` |
+| `model_config_id` | VARCHAR(36) | no | FK→`model_configs.model_config_id` |
+| `universe_version` | VARCHAR(120) | no |  |
+| `benchmark_version` | VARCHAR(80) | no |  |
+| `train_start` | DATE | sí |  |
+| `train_end` | DATE | sí |  |
+| `validation_start` | DATE | sí |  |
+| `validation_end` | DATE | sí |  |
+| `purge_months` | INTEGER | no |  |
+| `embargo_months` | INTEGER | no |  |
+| `window_kind` | VARCHAR(12) | no |  |
+| `seed` | INTEGER | no |  |
+| `library_versions` | JSON | no |  |
+| `spec` | JSON | no |  |
+| `spec_hash` | VARCHAR(64) | no |  |
+| `blocked_reasons` | JSON | no |  |
+| `created_at` | DATETIME | no |  |
+
+- UNIQUE (spec_hash)
+
+### `research_folds` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `fold_id` | VARCHAR(36) | no | PK |
+| `experiment_id` | VARCHAR(36) | no | FK→`research_experiments.experiment_id` |
+| `fold_index` | INTEGER | no |  |
+| `train_start` | DATE | no |  |
+| `train_end` | DATE | no |  |
+| `validation_start` | DATE | no |  |
+| `validation_end` | DATE | no |  |
+| `n_train` | INTEGER | sí |  |
+| `n_validation` | INTEGER | sí |  |
+| `created_at` | DATETIME | no |  |
+
+- INDEX ix_research_folds_experiment_id (experiment_id)
+
+### `research_predictions` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `research_prediction_id` | VARCHAR(36) | no | PK |
+| `experiment_id` | VARCHAR(36) | no | FK→`research_experiments.experiment_id` |
+| `fold_id` | VARCHAR(36) | sí | FK→`research_folds.fold_id` |
+| `model_id` | VARCHAR(80) | no |  |
+| `model_version` | VARCHAR(80) | no |  |
+| `generated_at` | DATETIME | no |  |
+| `decision_at` | DATETIME | no |  |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `feature_snapshot_id` | VARCHAR(36) | no | FK→`feature_snapshots.snapshot_id` |
+| `expected_excess_return` | FLOAT | sí |  |
+| `probability` | FLOAT | sí |  |
+| `uncertainty` | JSON | no |  |
+| `calibration_version` | VARCHAR(80) | sí |  |
+| `created_at` | DATETIME | no |  |
+
+- CHECK `decision_at <= generated_at`
+- INDEX ix_research_predictions_experiment_id (experiment_id)
+
+### `realized_outcomes` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `outcome_id` | VARCHAR(36) | no | PK |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `decision_at` | DATETIME | no |  |
+| `horizon_months` | INTEGER | no |  |
+| `label_version` | VARCHAR(50) | no |  |
+| `security_total_return` | FLOAT | sí |  |
+| `benchmark_total_return` | FLOAT | sí |  |
+| `excess_total_return` | FLOAT | sí |  |
+| `outperform` | BOOLEAN | sí |  |
+| `label_available_at` | DATETIME | no |  |
+| `status` | VARCHAR(20) | no |  |
+| `created_at` | DATETIME | no |  |
+
+- INDEX ix_realized_outcomes_security_id (security_id)
+
+### `metric_sets` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `metric_set_id` | VARCHAR(36) | no | PK |
+| `experiment_id` | VARCHAR(36) | no | FK→`research_experiments.experiment_id` |
+| `fold_id` | VARCHAR(36) | sí | FK→`research_folds.fold_id` |
+| `kind` | VARCHAR(20) | no |  |
+| `metrics` | JSON | no |  |
+| `computed_at` | DATETIME | no |  |
+
+- INDEX ix_metric_sets_experiment_id (experiment_id)
+
+### `champion_challenger_comparisons` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `comparison_id` | VARCHAR(36) | no | PK |
+| `champion_experiment_id` | VARCHAR(36) | sí | FK→`research_experiments.experiment_id` |
+| `challenger_experiment_id` | VARCHAR(36) | no | FK→`research_experiments.experiment_id` |
+| `metrics` | JSON | no |  |
+| `decision` | VARCHAR(20) | no |  |
+| `reviewer` | VARCHAR(120) | sí |  |
+| `created_at` | DATETIME | no |  |
 
 ### `identity_resolution_runs` 🔒
 

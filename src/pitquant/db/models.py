@@ -404,6 +404,206 @@ class SecurityProfile(Base):
     )
 
 
+class FeatureSetVersion(Base):
+    """A frozen, hashed list of RAW feature names and their defining versions (ADR-0030)."""
+
+    __tablename__ = "feature_set_versions"
+
+    feature_set_version_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    name: Mapped[str] = mapped_column(String(60))
+    feature_version: Mapped[str] = mapped_column(String(50))
+    tag_map_version: Mapped[str] = mapped_column(String(50))
+    features: Mapped[list[str]] = mapped_column(JSON)
+    set_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class LabelDefinition(Base):
+    __tablename__ = "label_definitions"
+
+    label_definition_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    label_version: Mapped[str] = mapped_column(String(50))
+    horizon_months: Mapped[int] = mapped_column(Integer)
+    target_kind: Mapped[str] = mapped_column(String(40))  # EXCESS_TOTAL_RETURN | OUTPERFORM
+    benchmark: Mapped[str] = mapped_column(String(60))
+    benchmark_type: Mapped[str] = mapped_column(String(20))
+    definition: Mapped[dict[str, Any]] = mapped_column(JSON)
+    definition_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class ModelConfig(Base):
+    __tablename__ = "model_configs"
+
+    model_config_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    kind: Mapped[str] = mapped_column(String(30))  # ELASTIC_NET | LOGISTIC_REGRESSION
+    name: Mapped[str] = mapped_column(String(80))
+    params: Mapped[dict[str, Any]] = mapped_column(JSON)
+    grid: Mapped[dict[str, Any]] = mapped_column(JSON)
+    config_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class DatasetVersion(Base):
+    """A built dataset (rows live in a content-addressed JSONL file; this row is its identity)."""
+
+    __tablename__ = "dataset_versions"
+
+    dataset_version_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    dataset_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    universe: Mapped[str] = mapped_column(String(120))
+    universe_version: Mapped[str] = mapped_column(String(120))
+    start_date: Mapped[date] = mapped_column(Date)
+    end_date: Mapped[date] = mapped_column(Date)
+    snapshot_frequency: Mapped[str] = mapped_column(String(20))
+    feature_set_version_id: Mapped[str] = mapped_column(
+        ForeignKey("feature_set_versions.feature_set_version_id")
+    )
+    label_definition_id: Mapped[str] = mapped_column(
+        ForeignKey("label_definitions.label_definition_id")
+    )
+    benchmark: Mapped[str] = mapped_column(String(60))
+    n_rows: Mapped[int] = mapped_column(Integer)
+    n_eligible: Mapped[int] = mapped_column(Integer)
+    n_securities: Mapped[int] = mapped_column(Integer)
+    holdout_dates_excluded: Mapped[int] = mapped_column(Integer)
+    builder_version: Mapped[str] = mapped_column(String(40))
+    rows_path: Mapped[str | None] = mapped_column(String(500))
+    summary: Mapped[dict[str, Any]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class ResearchExperiment(Base):
+    """Everything needed to reproduce an experiment months later (ADR-0030)."""
+
+    __tablename__ = "research_experiments"
+
+    experiment_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    name: Mapped[str] = mapped_column(String(120))
+    status: Mapped[str] = mapped_column(
+        String(20)
+    )  # DEFINED | BLOCKED | RUNNING | COMPLETED | FAILED
+    commit_sha: Mapped[str] = mapped_column(String(40))
+    dataset_version_id: Mapped[str | None] = mapped_column(
+        ForeignKey("dataset_versions.dataset_version_id")
+    )
+    dataset_hash: Mapped[str | None] = mapped_column(String(64))
+    feature_set_version_id: Mapped[str] = mapped_column(
+        ForeignKey("feature_set_versions.feature_set_version_id")
+    )
+    label_definition_id: Mapped[str] = mapped_column(
+        ForeignKey("label_definitions.label_definition_id")
+    )
+    model_config_id: Mapped[str] = mapped_column(ForeignKey("model_configs.model_config_id"))
+    universe_version: Mapped[str] = mapped_column(String(120))
+    benchmark_version: Mapped[str] = mapped_column(String(80))
+    train_start: Mapped[date | None] = mapped_column(Date)
+    train_end: Mapped[date | None] = mapped_column(Date)
+    validation_start: Mapped[date | None] = mapped_column(Date)
+    validation_end: Mapped[date | None] = mapped_column(Date)
+    purge_months: Mapped[int] = mapped_column(Integer)
+    embargo_months: Mapped[int] = mapped_column(Integer)
+    window_kind: Mapped[str] = mapped_column(String(12))  # EXPANDING | ROLLING
+    seed: Mapped[int] = mapped_column(Integer)
+    library_versions: Mapped[dict[str, str]] = mapped_column(JSON)
+    spec: Mapped[dict[str, Any]] = mapped_column(JSON)
+    spec_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    blocked_reasons: Mapped[list[str]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class ResearchFold(Base):
+    __tablename__ = "research_folds"
+
+    fold_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    experiment_id: Mapped[str] = mapped_column(
+        ForeignKey("research_experiments.experiment_id"), index=True
+    )
+    fold_index: Mapped[int] = mapped_column(Integer)
+    train_start: Mapped[date] = mapped_column(Date)
+    train_end: Mapped[date] = mapped_column(Date)
+    validation_start: Mapped[date] = mapped_column(Date)
+    validation_end: Mapped[date] = mapped_column(Date)
+    n_train: Mapped[int | None] = mapped_column(Integer)
+    n_validation: Mapped[int | None] = mapped_column(Integer)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class ResearchPrediction(Base):
+    """Provenance contract of a future prediction. NO BUY/HOLD/SELL signal is stored here."""
+
+    __tablename__ = "research_predictions"
+
+    research_prediction_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    experiment_id: Mapped[str] = mapped_column(
+        ForeignKey("research_experiments.experiment_id"), index=True
+    )
+    fold_id: Mapped[str | None] = mapped_column(ForeignKey("research_folds.fold_id"))
+    model_id: Mapped[str] = mapped_column(String(80))
+    model_version: Mapped[str] = mapped_column(String(80))
+    generated_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    decision_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"))
+    feature_snapshot_id: Mapped[str] = mapped_column(ForeignKey("feature_snapshots.snapshot_id"))
+    expected_excess_return: Mapped[float | None] = mapped_column(Float)
+    probability: Mapped[float | None] = mapped_column(Float)
+    uncertainty: Mapped[dict[str, Any]] = mapped_column(JSON)
+    calibration_version: Mapped[str | None] = mapped_column(String(80))
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        CheckConstraint("decision_at <= generated_at", name="decision_before_generation"),
+    )
+
+
+class RealizedOutcome(Base):
+    __tablename__ = "realized_outcomes"
+
+    outcome_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"), index=True)
+    decision_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    horizon_months: Mapped[int] = mapped_column(Integer)
+    label_version: Mapped[str] = mapped_column(String(50))
+    security_total_return: Mapped[float | None] = mapped_column(Float)
+    benchmark_total_return: Mapped[float | None] = mapped_column(Float)
+    excess_total_return: Mapped[float | None] = mapped_column(Float)
+    outperform: Mapped[bool | None] = mapped_column(Boolean)
+    label_available_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    status: Mapped[str] = mapped_column(String(20))
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class MetricSet(Base):
+    __tablename__ = "metric_sets"
+
+    metric_set_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    experiment_id: Mapped[str] = mapped_column(
+        ForeignKey("research_experiments.experiment_id"), index=True
+    )
+    fold_id: Mapped[str | None] = mapped_column(ForeignKey("research_folds.fold_id"))
+    kind: Mapped[str] = mapped_column(String(20))  # REGRESSION | CLASSIFICATION | RANKING
+    metrics: Mapped[dict[str, Any]] = mapped_column(JSON)
+    computed_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class ChampionChallengerComparison(Base):
+    """Promotion is an explicit, reviewed decision: candidate, backtest, report, human review."""
+
+    __tablename__ = "champion_challenger_comparisons"
+
+    comparison_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    champion_experiment_id: Mapped[str | None] = mapped_column(
+        ForeignKey("research_experiments.experiment_id")
+    )
+    challenger_experiment_id: Mapped[str] = mapped_column(
+        ForeignKey("research_experiments.experiment_id")
+    )
+    metrics: Mapped[dict[str, Any]] = mapped_column(JSON)
+    decision: Mapped[str] = mapped_column(String(20))  # PENDING_REVIEW | PROMOTED | REJECTED
+    reviewer: Mapped[str | None] = mapped_column(String(120))
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
 class OfficialIsinTransition(Base):
     """An OFFICIAL, dated ISIN change of one issuer's ordinary shares (ADR-0022).
 
@@ -1329,5 +1529,15 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "index_anchor_snapshots",
         "index_current_anchors",
         "security_profiles",
+        "feature_set_versions",
+        "label_definitions",
+        "model_configs",
+        "dataset_versions",
+        "research_experiments",
+        "research_folds",
+        "research_predictions",
+        "realized_outcomes",
+        "metric_sets",
+        "champion_challenger_comparisons",
     }
 )
