@@ -38,15 +38,21 @@ ROOT = Path(__file__).resolve().parents[3]
 
 
 def commit_sha() -> str:
+    """HEAD, suffixed ``+dirty`` when tracked files differ from it: an experiment must say exactly which code ran."""
     try:
-        return (
-            subprocess.run(
-                ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, timeout=10
-            ).stdout.strip()
-            or "UNKNOWN"
-        )
+        sha = subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, timeout=10
+        ).stdout.strip()
+        dirty = subprocess.run(
+            ["git", "status", "--porcelain", "--untracked-files=no"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        ).stdout.strip()
     except Exception:
         return "UNKNOWN"
+    return (sha + ("+dirty" if dirty else "")) if sha else "UNKNOWN"
 
 
 def library_versions() -> dict[str, str]:
@@ -178,6 +184,12 @@ class ExperimentSpec:
     validation_start: date | None = None
     validation_end: date | None = None
     seed: int = 20261001
+    horizons: tuple[
+        int, ...
+    ] = ()  # all horizons covered by the experiment (horizon_months = primary)
+    extra_models: tuple[
+        BaselineConfig, ...
+    ] = ()  # further baselines registered with the same experiment
 
 
 def define_experiment(
@@ -190,6 +202,8 @@ def define_experiment(
         target_kind="OUTPERFORM" if spec.model.target == "outperform" else "EXCESS_TOTAL_RETURN",
     )
     mc = get_or_create_model_config(s, spec.model)
+    for extra in spec.extra_models:
+        get_or_create_model_config(s, extra)
     dv = persist_dataset(s, dataset, fs, label) if dataset else None
     blocked = [f"gate {k} = false" for k, v in gates.items() if not v]
     if dataset is not None and dataset.summary["n_eligible"] == 0:
@@ -197,6 +211,8 @@ def define_experiment(
     canon = {
         "name": spec.name,
         "model": spec.model.config_hash,
+        "extra_models": [m.config_hash for m in spec.extra_models],
+        "horizons": list(spec.horizons),
         "wf": asdict(spec.walk_forward),
         "horizon": spec.horizon_months,
         "universe": spec.universe_version,
@@ -243,3 +259,14 @@ def define_experiment(
     s.add(ex)
     s.flush()
     return ex
+
+
+def gates_from_readiness(reasons: list[str]) -> dict[str, bool]:
+    """«gate D02_RESEARCH_READY = False» lines of ``research_readiness`` -> {gate: False}. Only the CLOSED gates
+    are listed there, so the experiment's block reasons come from readiness itself, never from a hand list."""
+    out: dict[str, bool] = {}
+    for r in reasons:
+        head, _, val = r.partition(" = ")
+        if head.startswith("gate ") and val.strip() == "False":
+            out[head[5:].strip()] = False
+    return out

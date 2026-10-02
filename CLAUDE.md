@@ -35,7 +35,7 @@ temporal, se rechaza.
   "FIXTURE"). Nunca presentarlos como históricos reales.
 - No dar una funcionalidad por terminada porque "ejecuta": correcta, testeada, tipada,
   documentada, reproducible, point-in-time.
-- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0031).
+- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0032).
 - Migraciones: `0001`…`0011` fijadas (`0011` perfiles descriptivos `security_profiles`) (`0010` anclas de índice SPY/IVV) (`0009` evidencia de membresía S&P 500) (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
   código↔ISIN, `0006` transiciones de ISIN, `0007` traza de corporate actions, `role` de
   security e `issuer_id` en filings SEC); **todo cambio de esquema = revisión nueva**.
@@ -197,3 +197,12 @@ dependencia de nube; despliegue con Docker Compose (PostgreSQL + API + Prefect).
 sellado: los folds y el Dataset Builder lo excluyen (también si la ventana de la etiqueta lo toca).
 Etiquetas humanas del Analyzer nunca son feature ni target. `pitquant research-dry-run`,
 `explain-analysis`, `explain-trade-plan`. E2E de navegador: `cd frontend && npx playwright test`.
+
+## D-02 por ventanas (ADR-0031)
+- `pitquant sp500-window-readiness --start 2017-10-01 --end 2022-09-30` (y `2014-10-01`): bloqueos dentro de la
+  ventana vs. de CADENA (ancla única de 2026-10: los eventos de 2022-10→2026 también bloquean). Fichas de gap
+  generadas: `docs/SP500_GAP_CARDS.md/.json`; informes: `scripts/gen_us_window_reports.py`.
+- Evidencia oficial > CSV; `CONFLICT` inmaterial se resuelve con la fecha oficial. Reprocesar sin red:
+  `python scripts/ingest_sp500_evidence.py --offline` (parser `sp500-evidence-3`).
+- D-05 sin clave: `pitquant tiingo-backfill-plan`, `pitquant us-window-dryrun` (demanda CANDIDATA, no cobertura).
+- `scripts/register_us_baseline_v0.py` registra `US_BASELINE_V0` BLOCKED. Con train_min 60m, 60 cohortes = 0 folds.

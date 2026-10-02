@@ -402,6 +402,128 @@ def _explain_panel(args: argparse.Namespace) -> int:
     return 0
 
 
+def _window(args: argparse.Namespace) -> int:
+    from pitquant.universe.sp500_window import window_readiness
+
+    settings = get_settings()
+    factory = make_session_factory(make_engine(settings.database.url))
+    with factory() as session:
+        rep = window_readiness(
+            session, date.fromisoformat(args.start), date.fromisoformat(args.end)
+        )
+    if args.json:
+        print(json.dumps(rep.as_dict(), indent=2, default=str))
+        return 0 if rep.status == "READY" else 1
+    print(f"window {rep.start} → {rep.end}   status: {rep.status}")
+    print(f"  monthly_cohorts                         {rep.monthly_cohorts}")
+    print(f"  reconstructible_cohorts (today)         {rep.reconstructible_cohorts}")
+    print(f"  longest consecutive run (today)         {rep.longest_consecutive_run}")
+    print(
+        f"  HYPOTHETICAL with an anchor at the end  {rep.intrinsic_reconstructible_cohorts} cohorts, run {rep.intrinsic_longest_run}"
+    )
+    print(f"  first_failure                           {rep.first_failure}")
+    print(f"  blocking events inside the window       {len(rep.blocking_events)}")
+    print(
+        f"  blocking events AFTER it (chain)        {rep.chain_blocking_events}  {rep.chain_blocking_by_year}"
+    )
+    print(f"  immaterial conflicts resolved (window)  {rep.immaterial_conflicts_in_window}")
+    print(f"  blocking_identity (tickers w/o security){len(rep.blocking_identity):>5}")
+    print(f"  holdout_overlap                         {rep.holdout_overlap}")
+    by: dict[str, int] = {}
+    for c in rep.blocking_events:
+        by[f"{c.status}/{c.parser_status}"] = by.get(f"{c.status}/{c.parser_status}", 0) + 1
+    for k, v in sorted(by.items(), key=lambda kv: -kv[1]):
+        print(f"    {v:>4}  {k}")
+    for n in rep.notes:
+        print(f"  note: {n}")
+    return 0 if rep.status == "READY" else 1
+
+
+def _tiingo_plan(args: argparse.Namespace) -> int:
+    """Demand planning only: NO network, NO API key is read for any request."""
+    from pitquant.market.providers.tiingo import CREDENTIAL
+    from pitquant.universe.us_window_plan import backfill_plan
+
+    settings = get_settings()
+    factory = make_session_factory(make_engine(settings.database.url))
+    with factory() as session:
+        plan = backfill_plan(session, date.fromisoformat(args.start), date.fromisoformat(args.end))
+    out = {"PITQUANT_TIINGO_API_KEY": CREDENTIAL.status().value, **plan.summary}
+    if args.json:
+        print(
+            json.dumps(
+                {**plan.as_dict(), "credential": out["PITQUANT_TIINGO_API_KEY"]},
+                indent=2,
+                default=str,
+            )
+        )
+        return 0
+    print(f"window {plan.start} → {plan.end}  cohorts {plan.cohorts}  [{plan.summary['label']}]")
+    for k, v in out.items():
+        if k not in ("label", "already_available_note", "free_plan_capacity"):
+            print(f"  {k:<30} {v}")
+    cap = plan.summary["free_plan_capacity"]
+    print(
+        f"  free_plan_capacity             {cap['monthly_unique_symbols']} symbols/month, {cap['daily_requests']} req/day, {cap['hourly_requests']} req/h → {cap['months_needed_for_symbols']} months for the symbols"
+    )
+    print(
+        f"  ({plan.summary['already_available_note']}; capacity as encoded in TiingoBudget, not re-verified)"
+    )
+    return 0
+
+
+def _window_dryrun(args: argparse.Namespace) -> int:
+    from pitquant.data.calendars.market_calendar import get_calendar
+    from pitquant.research.walkforward import WalkForwardConfig, dry_run, format_dry_run
+    from pitquant.universe.us_window_plan import (
+        backfill_plan,
+        dataset_dry_run,
+        fundamental_coverage,
+    )
+
+    settings = get_settings()
+    ho = settings.validation.final_holdout
+    start, end = date.fromisoformat(args.start), date.fromisoformat(args.end)
+    factory = make_session_factory(make_engine(settings.database.url))
+    with factory() as session:
+        plan = backfill_plan(session, start, end)
+        fund = fundamental_coverage(session, plan)
+        rows, builder = dataset_dry_run(session, start, end, plan)
+    ok = [f for f in fund if f.fundamental_months_possible > 0]
+    print(f"[{plan.summary['label']}] window {start} → {end}")
+    print(
+        f"fundamentals: {len(ok)}/{len(fund)} candidate securities have SEC facts ({sum(f.fundamental_months_possible for f in ok)} security-months of {sum(f.membership_months for f in fund)})"
+    )
+    tot = {
+        k: sum(getattr(r, k) for r in rows)
+        for k in (
+            "members",
+            "identity_ready",
+            "fundamentals_ready",
+            "prices_ready",
+            "corporate_actions_ready",
+            "eligible",
+        )
+    }
+    print(f"cohort-members: {tot}  over {len(rows)} cohorts")
+    print(
+        f"dataset builder (resolved securities only): {json.dumps(builder.get('summary', {}).get('blocking_reasons', {}))}"
+    )
+    cal = get_calendar("XNYS")
+    ds = cal.first_sessions_of_months(start, end)
+    for h in (6, 12):
+        cfg = WalkForwardConfig(label_horizon_months=h, purge_months=1, embargo_months=1)
+        folds = dry_run(ds, cfg, (ho.start, ho.end))
+        print(
+            f"\nwalk-forward {h}M (train_min {cfg.train_min_months}m, purge 1, embargo 1) PLAN ONLY, labels not consumed:"
+        )
+        print(format_dry_run(folds))
+        print(
+            f"holdout_overlap = {any(ho.start <= date.fromisoformat(str(r['validation_end'])) <= ho.end for r in folds)}"
+        )
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="pitquant")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -471,6 +593,24 @@ def main(argv: list[str] | None = None) -> int:
         xp.add_argument("security", help="ticker | security_id | CIK:<cik>")
         xp.add_argument("--as-of", help="ISO datetime WITH offset (default now)")
         xp.set_defaults(func=_explain_panel, panel=panel)
+    wr = sub.add_parser(
+        "sp500-window-readiness", help="exact blockers of a window of monthly S&P 500 cohorts"
+    )
+    wr.add_argument("--start", required=True, help="YYYY-MM-DD")
+    wr.add_argument("--end", required=True, help="YYYY-MM-DD")
+    wr.add_argument("--json", action="store_true")
+    wr.set_defaults(func=_window)
+    tp = sub.add_parser("tiingo-backfill-plan", help="D-05 demand plan for a window (no API calls)")
+    tp.add_argument("--start", default="2017-10-01")
+    tp.add_argument("--end", default="2022-09-30")
+    tp.add_argument("--json", action="store_true")
+    tp.set_defaults(func=_tiingo_plan)
+    wd = sub.add_parser(
+        "us-window-dryrun", help="fundamental/dataset/walk-forward dry-run of a window"
+    )
+    wd.add_argument("--start", default="2017-10-01")
+    wd.add_argument("--end", default="2022-09-30")
+    wd.set_defaults(func=_window_dryrun)
     args = parser.parse_args(argv)
     return int(args.func(args))
 

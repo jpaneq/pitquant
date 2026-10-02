@@ -25,7 +25,7 @@ from enum import StrEnum
 from pitquant.core.errors import DataQualityError
 from pitquant.data.calendars.market_calendar import get_calendar
 
-PARSER_VERSION = "sp500-evidence-2"
+PARSER_VERSION = "sp500-evidence-3"
 
 
 class Timing(StrEnum):
@@ -94,7 +94,7 @@ _REPLACE = re.compile(
 _TIMING = re.compile(
     rf"(?P<tba>(?:after the close of trading|prior to the open of trading|effective)?\s*on a date to be announced)|"
     rf"(?P<after>after the (?:market )?close of trading(?: on)?)\s*{_DATE}|"
-    rf"(?P<before>(?:effective )?prior to the open(?:ing)? (?:of trading )?(?:on trading )?on)\s*{_DATE}|"
+    rf"(?P<before>(?:effective )?(?:prior to|before) the open(?:ing)? (?:of trading )?(?:on trading )?on)\s*{_DATE}|"
     rf"(?P<eff>effective (?:on )?)\s*{_DATE}",
     re.I,
 )
@@ -209,6 +209,176 @@ def _list_clauses(text: str) -> list[tuple[str, str, str, str, int, int]]:
     return out
 
 
+_CONSTITUENTS = re.compile(r"constituents?\s", re.I)
+
+
+def _subjects_before(text: str, verb_start: int) -> list[tuple[str, str, int]]:
+    """Companies enumerated between the nearest preceding «constituents» marker and the verb. The whole
+    enumeration is taken (never just as many as the object list has) so unequal lists are detected."""
+    window_start = max(0, verb_start - 900)
+    marks = list(_CONSTITUENTS.finditer(text, window_start, verb_start))
+    if not marks:
+        return []
+    start = marks[-1].end()
+    return [
+        (m.group(1), m.group(2), m.start()) for m in _TICK_NAME.finditer(text, start, verb_start)
+    ]
+
+
+_MOVE = re.compile(
+    r"will (?:all )?move to the S&P 500,?\s+(?:replacing|switching places with)\s+(?:S&P (?:MidCap 400|SmallCap 600|500) constituents?\s+)?"
+)
+
+
+def _move_clauses(text: str) -> list[tuple[str, str, str, str, int, int]]:
+    """«S&P MidCap 400 constituents A (T), B (T) and C (T) will move to the S&P 500, replacing|switching
+    places with D (T), E (T) and F (T) [respectively]»: N subjects, the FIRST N tickers after the verb
+    pair positionally (the quarterly-rebalance form, ADR-0031)."""
+    out: list[tuple[str, str, str, str, int, int]] = []
+    for mm in _MOVE.finditer(text):
+        seg = text[mm.end() : mm.end() + 700]
+        cut = [
+            k
+            for k in (
+                re.search(
+                    r"all of which|respectively|will move to|is acquiring|are acquiring|will be (?:added|removed)",
+                    seg,
+                ),
+            )
+            if k
+        ]
+        seg = seg[: cut[0].start()] if cut else seg
+        objs = _TICK_NAME.findall(seg)
+        subs = _subjects_before(text, mm.start())
+        n = min(len(subs), len(objs))
+        if n == 0:
+            continue
+        if len(subs) != len(objs):
+            continue  # unequal lists: positional pairing would be a guess
+        subs = subs[-n:]
+        for (an, at, _), (rn, rt) in zip(subs, objs[:n], strict=True):
+            out.append(
+                (
+                    _clean_name(an),
+                    at.upper(),
+                    _clean_name(rn),
+                    rt.upper(),
+                    subs[0][2],
+                    mm.end() + len(seg),
+                )
+            )
+    return out
+
+
+_SWITCH = re.compile(r"will switch places with")
+
+
+def _switch_clauses(text: str) -> list[tuple[str, str, str, str, int, int]]:
+    """«S&P MidCap 400 constituents A (T) and B (T) will switch places with C (T) and D (T) respectively in the
+    S&P 500»: only when the clause itself ends in the S&P 500 (never MidCap/SmallCap)."""
+    out: list[tuple[str, str, str, str, int, int]] = []
+    for mm in _SWITCH.finditer(text):
+        qm = _LIST_END.search(text, mm.end(), mm.end() + 420)
+        if qm is None or "in the S&P" in text[mm.end() : qm.start()]:
+            continue
+        objs = _TICK_NAME.findall(text[mm.end() : qm.start()])
+        if not objs:
+            continue
+        subs = _subjects_before(text, mm.start())
+        if len(subs) != len(objs):
+            continue
+        for (an, at, _), (rn, rt) in zip(subs, objs, strict=True):
+            out.append(
+                (_clean_name(an), at.upper(), _clean_name(rn), rt.upper(), subs[0][2], qm.end())
+            )
+    return out
+
+
+_ADD_TIMED = re.compile(rf"{_NAME}{_TICK}\s+(?:will be|was) added to the S&P 500{_NOT_500}")
+_REMOVED = re.compile(r"(both of )?which will be removed from the S&P 500")
+
+
+def _timing_after(
+    text: str, pos: int, announced: date, horizon: int = 220
+) -> tuple[Timing, date | None]:
+    tail = text[pos : pos + horizon]
+    for tm in _TIMING.finditer(tail):
+        if tm.group("tba"):
+            return Timing.TBA, None
+        dm = _mk_date(tm.groups(), announced)
+        if dm is None:
+            continue
+        timing = (
+            Timing.AFTER_CLOSE if tm.group("after")
+            else Timing.BEFORE_OPEN if tm.group("before")
+            else Timing.EFFECTIVE_ON_DATE
+        )  # fmt: skip
+        return timing, dm
+    return Timing.UNKNOWN, None
+
+
+def _timed_adds_removes(text: str, announced: date) -> list[ParsedChange]:
+    """Two-sided changes whose legs have DIFFERENT dates: «A (T) will be added to the S&P 500 prior to the open on
+    D1 … B (T), which will be removed from the S&P 500 effective prior to the open on D2». Each leg is its own
+    change (an add-only and a remove-only): the 501-member interval between them is real (ADR-0031)."""
+    out: list[ParsedChange] = []
+    for m in _ADD_TIMED.finditer(text):
+        timing, stated = _timing_after(text, m.end(), announced)
+        if timing is Timing.UNKNOWN:
+            continue
+        group = [(m.group(1), m.group(2))]
+        pos = m.start()
+        while True:  # «A (T) and B (T) will be added»: walk back over the enumeration
+            prev = [x for x in _TICK_NAME.finditer(text, max(0, pos - 160), pos)]
+            if not prev or not re.fullmatch(r"\s*(?:,\s*)?(?:and\s+)?", text[prev[-1].end() : pos]):
+                break
+            group.insert(0, (prev[-1].group(1), prev[-1].group(2)))
+            pos = prev[-1].start()
+        for name, tk in group:
+            out.append(ParsedChange(tk.upper(), _clean_name(name), "", "", timing, stated, None, "UNSPECIFIED",
+                                    text[max(0, m.start() - 20) : m.end() + 200][:420],
+                                    ["add leg with its own date; the removal leg is a separate change"]))  # fmt: skip
+    for m in _REMOVED.finditer(text):
+        before = text[max(0, m.start() - 320) : m.start()]
+        ticks = _TICK_NAME.findall(before)
+        n = 2 if m.group(1) else 1
+        if len(ticks) < n:
+            continue
+        timing, stated = _timing_after(text, m.end(), announced)
+        if timing is Timing.UNKNOWN:
+            continue
+        for name, tk in ticks[-n:]:
+            out.append(ParsedChange("", "", tk.upper(), _clean_name(name), timing, stated, None, "UNSPECIFIED",
+                                    text[max(0, m.start() - 160) : m.end() + 160][:420],
+                                    ["removal leg with its own date; the add leg is a separate change"]))  # fmt: skip
+    return out
+
+
+_NAME_ONLY = re.compile(
+    rf"{_NAME}{_TICK}\s+will replace\s+([A-Z][^():;,]{{1,60}}?)\s+in the S&P 500{_NOT_500}"
+)
+
+
+def _name_only_clauses(text: str) -> list[tuple[str, str, str, str, int, int]]:
+    """«Verisk (T) will replace Joy Global in the S&P 500»: the removed company is named only; its ticker
+    must appear once, earlier in the SAME release as «Joy Global Inc. (NYSE: JOY)». Otherwise no clause."""
+    out: list[tuple[str, str, str, str, int, int]] = []
+    for m in _NAME_ONLY.finditer(text):
+        rname = re.sub(r"\s+", " ", m.group(3)).strip().rstrip("'s ").strip()
+        rname = re.sub(r"[ ,]+(?:Inc|Corp|Co|Ltd|plc|Group)\.?$", "", rname).strip()
+        found = {
+            t.upper()
+            for t in re.findall(
+                rf"{re.escape(rname)}\b[^():;]{{0,45}}?\((?:[A-Za-z][A-Za-z /]{{1,18}})\s*:\s*([A-Z][A-Za-z0-9.\-]{{0,9}})\s*\)",
+                text[: m.start()],
+            )
+        }
+        if len(found) != 1:
+            continue
+        out.append((m.group(1).strip(), m.group(2), rname, next(iter(found)), m.start(), m.end()))
+    return out
+
+
 _ADD_ONLY = re.compile(
     rf"{_NAME}{_TICK}\s+(?:was|will be) added to the S&P 500{_NOT_500}(?:\s+(?:on|effective)\s*{_DATE})?"
 )
@@ -239,6 +409,9 @@ def parse_release(text: str, announced: date) -> list[ParsedChange]:
     the nearest timing phrase after it and, cross-checking, the date of the «S&P 500 INDEX –»
     summary header. Clauses about other indices are ignored."""
     text = re.sub(r"\s+", " ", text)
+    text = re.sub(r"S&\s+P", "S&P", text)  # «S& P 500» typography in some releases
+    text = re.sub(r"\(\s+", "(", text)
+    text = re.sub(r"\s+\)", ")", text)  # «( NASD : CSGP )»
     header: date | None = None
     hms = list(_HEADER.finditer(text))
     hm = hms[0] if len(hms) == 1 else None  # several headers = several dates: no cross-check
@@ -254,6 +427,10 @@ def parse_release(text: str, announced: date) -> list[ParsedChange]:
     ]
     seen_pairs = {(c[1].upper(), c[3].upper()) for c in clauses}
     clauses += [c for c in _list_clauses(text) if (c[1], c[3]) not in seen_pairs]
+    seen_pairs |= {(c[1], c[3]) for c in clauses}
+    for extra in (_move_clauses(text), _switch_clauses(text), _name_only_clauses(text)):
+        clauses += [c for c in extra if (c[1].upper(), c[3].upper()) not in seen_pairs]
+        seen_pairs |= {(c[1].upper(), c[3].upper()) for c in clauses}
     for add_name, add_t, rem_name, rem_t, c_start, c_end in clauses:
         add_t, rem_t = add_t.upper(), rem_t.upper()
         tail = text[c_end : c_end + 700]
@@ -303,9 +480,9 @@ def parse_release(text: str, announced: date) -> list[ParsedChange]:
         ):  # intro: «will make the following changes … effective prior to the open …»
             intro = text[max(0, c_start - 3000) : c_start]
             for im in _TIMING.finditer(intro):
-                ctx = intro[max(0, im.start() - 160) : im.start()]
+                ctx = intro[max(0, im.start() - 420) : im.start()]
                 if (
-                    "following changes" in ctx
+                    re.search(r"following (?:index )?(?:changes|adjustments)", ctx) is not None
                     and (dm3 := _mk_date(im.groups(), announced)) is not None
                 ):
                     stated = dm3
@@ -344,6 +521,23 @@ def parse_release(text: str, announced: date) -> list[ParsedChange]:
         for c in _added_only(text, announced)
         if c.added_ticker not in {x.added_ticker for x in out}
     ]
+    timed = _timed_adds_removes(text, announced)
+    known_add = {c.added_ticker for c in timed if c.added_ticker and c.timing is not Timing.UNKNOWN}
+    out = [
+        c
+        for c in out
+        if not (c.added_ticker in known_add and not c.removed_ticker and c.timing is Timing.UNKNOWN)
+    ]
+    have_a = {x.added_ticker for x in out if x.added_ticker}
+    have_r = {x.removed_ticker for x in out if x.removed_ticker}
+    for c in timed:
+        if (c.added_ticker and c.added_ticker in have_a) or (
+            c.removed_ticker and c.removed_ticker in have_r
+        ):
+            continue
+        out.append(c)
+        have_a.add(c.added_ticker)
+        have_r.add(c.removed_ticker)
     return out
 
 

@@ -157,7 +157,49 @@ def crawl_prnewswire() -> dict[str, tuple[str, str]]:
     return out
 
 
-def main(refresh: bool) -> int:
+def archived_docs(ses, store):  # type: ignore[no-untyped-def]
+    """OFFLINE: every S&P release already in the raw archive (no network). Same tiering and the same
+    publication timestamps as the online crawl; one entry per distinct (URL, sha256)."""
+    out = []
+    seen: set[tuple[str, str]] = set()
+    rows = ses.scalars(
+        select(RawSourceArchive).where(RawSourceArchive.provider.like("SP_PRESS:%"))
+    ).all()
+    for r in rows:
+        key = (r.source_identifier, r.sha256)
+        if key in seen:
+            continue
+        seen.add(key)
+        b = store.get(r.sha256)
+        if r.provider == "SP_PRESS:press.spglobal.com":
+            m = re.search(r"spglobal\.com/(\d{4}-\d\d-\d\d)-", r.source_identifier)
+            if not m:
+                continue
+            d = date.fromisoformat(m.group(1))
+            at = datetime.combine(d, datetime.max.time().replace(microsecond=0), NY).astimezone(UTC)
+            out.append(
+                (SourceTier.OFFICIAL_SPDJI, r.source_identifier, r.source_identifier, b, d, at)
+            )
+        else:
+            m = re.search(r"(20\d\d-\d\d-\d\dT\d\d:\d\d:\d\d)", b.decode("utf-8", "replace"))
+            if not m or not is_sp_release(text_of(b)):
+                continue
+            at = datetime.fromisoformat(m.group(1)).replace(tzinfo=NY)
+            orig = re.search(r"original_url=(\S+)", r.notes or "")
+            out.append(
+                (
+                    SourceTier.OFFICIAL_REPUBLISHED,
+                    r.source_identifier,
+                    orig.group(1) if orig else r.source_identifier,
+                    b,
+                    at.date(),
+                    at.astimezone(UTC),
+                )
+            )
+    return out
+
+
+def main(refresh: bool, offline: bool = False) -> int:
     s = get_settings()
     store = ArchiveStore(ROOT / s.archive.root)
     report: dict[str, object] = {}
@@ -179,7 +221,16 @@ def main(refresh: bool) -> int:
             return http(url)
 
         # 1. discovery -----------------------------------------------------------------
-        body = http(DISCOVERY_URL)
+        if offline:
+            drow0 = ses.scalars(
+                select(RawSourceArchive)
+                .where(RawSourceArchive.provider == "SP500_DISCOVERY:chinobing")
+                .order_by(RawSourceArchive.retrieved_at.desc())
+            ).first()
+            assert drow0 is not None, "no archived discovery CSV (offline mode)"
+            body = store.get(drow0.sha256)
+        else:
+            body = http(DISCOVERY_URL)
         assert body, "discovery CSV unavailable"
         drow = archive(
             "SP500_DISCOVERY:chinobing",
@@ -220,9 +271,11 @@ def main(refresh: bool) -> int:
         report["discovery_rows"] = len(rows)
 
         # 2. current anchor ------------------------------------------------------------
-        a = http(SPDJI_URL, tries=1)
+        a = None if offline else http(SPDJI_URL, tries=1)
         report["current_anchor"] = (
             "CURRENT_ANCHOR_BLOCKED (S&P DJI page not retrievable without login/403)"
+            if a is None and not offline
+            else "offline: anchor step skipped (ADR-0026 anchor unchanged)"
             if a is None
             else "page retrieved (constituent list not parsed)"
         )
@@ -232,7 +285,9 @@ def main(refresh: bool) -> int:
         # 3/4. announcements -----------------------------------------------------------
         anns: list[tuple[Announcement, str, datetime]] = []
         docs: list[tuple[SourceTier, str, str, bytes, date, datetime]] = []
-        for u, (d, _t) in sorted(crawl_press().items()):
+        if offline:
+            docs = archived_docs(ses, store)
+        for u, (d, _t) in sorted({} if offline else crawl_press().items()):
             b = fetch_cached(u)
             if b:
                 docs.append(
@@ -247,7 +302,7 @@ def main(refresh: bool) -> int:
                         ).astimezone(UTC),
                     )
                 )
-        for _k, (ts, orig) in sorted(crawl_prnewswire().items()):
+        for _k, (ts, orig) in sorted({} if offline else crawl_prnewswire().items()):
             w = f"https://web.archive.org/web/{ts}id_/{orig}"
             b = fetch_cached(w)
             if not b:
@@ -365,4 +420,4 @@ def main(refresh: bool) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main("--refresh" in sys.argv))
+    raise SystemExit(main("--refresh" in sys.argv, "--offline" in sys.argv))

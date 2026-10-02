@@ -50,6 +50,10 @@ class D02Report:
     reversible: bool | None = None
     holdout_cohorts_excluded: int = 0
     notes: list[str] = field(default_factory=list)
+    # CONFLICT events whose two candidate dates leave every monthly cohort unchanged (ADR-0031)
+    immaterial_conflicts: list[tuple[date, str]] = field(default_factory=list)
+    break_event_ids: list[tuple[date, str]] = field(default_factory=list)  # (break date, event_id)
+    run_id: str | None = None
 
     @property
     def d02_research_ready(self) -> bool:
@@ -92,9 +96,10 @@ def compute_d02(session: Session, *, exchange: str = "XNYS") -> D02Report:
         if run_id
         else []
     )
-    rep = D02Report(anchor.status, anchor.as_of, n_events=len(events))
+    rep = D02Report(anchor.status, anchor.as_of, n_events=len(events), run_id=run_id)
     A = anchor.as_of
     cal = get_calendar(exchange)
+    month_opens = cal.first_sessions_of_months(date(2011, 1, 1), A)
     confirmed: list[ReplayEvent] = []
     break_dates: list[date] = []
     for e in events:
@@ -104,7 +109,26 @@ def compute_d02(session: Session, *, exchange: str = "XNYS") -> D02Report:
             else None
         )
         cand = [d for d in (e.discovery_date, official, e.stated_change_date) if d is not None]
-        if EventStatus(e.status) in CANONICAL_STATUSES and official is not None:
+        immaterial = False
+        if (
+            EventStatus(e.status) is EventStatus.CONFLICT
+            and official is not None
+            and e.discovery_date is not None
+            and (e.added_ticker or e.removed_ticker)
+        ):
+            # official release > discovery CSV (ADR-0031): the OFFICIAL date drives the replay; the
+            # disagreement only blocks if a monthly cohort open lies between the two dates
+            lo = cal.session_on_or_after(min(official, e.discovery_date))
+            hi = cal.session_on_or_after(max(official, e.discovery_date))
+            immaterial = not any(lo <= m < hi for m in month_opens)
+            if immaterial:
+                rep.immaterial_conflicts.append(
+                    (
+                        official,
+                        f"+{e.added_ticker or '-'} -{e.removed_ticker or '-'}: official {official} vs CSV {e.discovery_date}",
+                    )
+                )
+        if (EventStatus(e.status) in CANONICAL_STATUSES or immaterial) and official is not None:
             confirmed.append(
                 ReplayEvent(
                     cal.session_on_or_after(official),
@@ -116,6 +140,7 @@ def compute_d02(session: Session, *, exchange: str = "XNYS") -> D02Report:
             b = max(cand) if cand else A
             if b <= A:
                 break_dates.append(b)
+                rep.break_event_ids.append((b, e.event_id))
                 rep.breaks.append(
                     (
                         b,

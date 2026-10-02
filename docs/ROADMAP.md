@@ -129,3 +129,9 @@ baselines predefinidos, métricas, contrato de predicción, backtest de Trade Pl
 experimentos, `/research/*`, UI Research Lab, provenance del Analyzer y E2E de navegador.
 Pendiente (datos): D-02 con ≥60 cohortes mensuales probadas fuera del holdout y D-05 con precios
 reales; después, el primer experimento baseline.
+
+## Iteración 8 (2026-10-03): D-02 por ventanas y demanda D-05 (ADR-0031)
+Diagnóstico exacto de las ventanas 2017-10→2022-09 (60) y 2014-10→2022-09 (96), parser v3 sobre el archivo existente,
+fichas de gap para investigación externa, plan de backfill de demanda sin llamadas, `US_BASELINE_V0` BLOCKED.
+Siguiente: segunda ancla verificada ~2022-09/10, evidencia de los comunicados que faltan (`NO_DOCUMENT`) y tabla fechada
+de alias de ticker de miembros; después Tiingo (D-05).
