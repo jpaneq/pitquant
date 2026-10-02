@@ -237,6 +237,90 @@ class SecurityIdentifierEvidence(Base):
     )
 
 
+class SP500DiscoveryRow(Base):
+    """One row of a community change list (DISCOVERY ONLY, ADR-0025). Never membership."""
+
+    __tablename__ = "sp500_discovery_rows"
+
+    row_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    source: Mapped[str] = mapped_column(String(60))
+    source_sha256: Mapped[str] = mapped_column(String(64))
+    archive_id: Mapped[str] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    row_date: Mapped[date] = mapped_column(Date, index=True)
+    added_tickers: Mapped[list[str]] = mapped_column(JSON)
+    removed_tickers: Mapped[list[str]] = mapped_column(JSON)
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class SP500Announcement(Base):
+    """One «X will replace Y in the S&P 500» clause parsed from an archived OFFICIAL release
+    (tier 1 press.spglobal.com, tier 2 PRNewswire copy of an S&P release)."""
+
+    __tablename__ = "sp500_announcements"
+
+    announcement_row_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    source_tier: Mapped[str] = mapped_column(String(24))
+    source_url: Mapped[str] = mapped_column(String(1000))
+    archive_id: Mapped[str] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    source_sha256: Mapped[str] = mapped_column(String(64))
+    announcement_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    stated_change_date: Mapped[date | None] = mapped_column(Date)
+    timing: Mapped[str] = mapped_column(String(20))
+    effective_at: Mapped[datetime | None] = mapped_column(UTCDateTime)
+    added_ticker: Mapped[str] = mapped_column(String(12), index=True)
+    added_name: Mapped[str] = mapped_column(String(120))
+    removed_ticker: Mapped[str] = mapped_column(String(12), index=True)
+    removed_name: Mapped[str] = mapped_column(String(120))
+    reason_class: Mapped[str] = mapped_column(String(30))
+    excerpt: Mapped[str] = mapped_column(String(500))
+    notes: Mapped[list[str]] = mapped_column(JSON)
+    parser_version: Mapped[str] = mapped_column(String(50))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "source_sha256", "added_ticker", "removed_ticker", "parser_version", name="uq_sp500_ann"
+        ),
+    )
+
+
+class SP500MembershipEvent(Base):
+    """A matched event of one evidence RUN (append-only; the latest run is current).
+    Only OFFICIAL_CONFIRMED / OFFICIAL_REPUBLISHED_CONFIRMED may feed the canonical universe."""
+
+    __tablename__ = "sp500_membership_events"
+
+    event_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    run_id: Mapped[str] = mapped_column(ID, index=True)
+    discovery_row_id: Mapped[str | None] = mapped_column(ForeignKey("sp500_discovery_rows.row_id"))
+    announcement_row_id: Mapped[str | None] = mapped_column(
+        ForeignKey("sp500_announcements.announcement_row_id")
+    )
+    added_ticker: Mapped[str | None] = mapped_column(String(12))
+    added_security_id: Mapped[str | None] = mapped_column(ForeignKey("securities.security_id"))
+    removed_ticker: Mapped[str | None] = mapped_column(String(12))
+    removed_security_id: Mapped[str | None] = mapped_column(ForeignKey("securities.security_id"))
+    announcement_at: Mapped[datetime | None] = mapped_column(UTCDateTime)
+    stated_change_date: Mapped[date | None] = mapped_column(Date)
+    timing: Mapped[str | None] = mapped_column(String(20))
+    effective_at: Mapped[datetime | None] = mapped_column(UTCDateTime)
+    discovery_date: Mapped[date | None] = mapped_column(Date)
+    source_tier: Mapped[str] = mapped_column(String(24))
+    source_url: Mapped[str | None] = mapped_column(String(1000))
+    raw_source_hash: Mapped[str | None] = mapped_column(String(64))
+    status: Mapped[str] = mapped_column(String(40))
+    reason: Mapped[str] = mapped_column(String(300))
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('OFFICIAL_CONFIRMED','OFFICIAL_REPUBLISHED_CONFIRMED','DISCOVERY_ONLY',"
+            "'DATE_TBA','CONFLICT','UNRESOLVED')",
+            name="status_values",
+        ),
+    )
+
+
 class OfficialIsinTransition(Base):
     """An OFFICIAL, dated ISIN change of one issuer's ordinary shares (ADR-0022).
 
@@ -1156,5 +1240,8 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "official_isin_transitions",
         "corporate_action_ingestions",
         "security_identifier_evidence",
+        "sp500_discovery_rows",
+        "sp500_announcements",
+        "sp500_membership_events",
     }
 )

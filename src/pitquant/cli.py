@@ -215,6 +215,51 @@ def _reconstruct(args: argparse.Namespace) -> int:
     return 0
 
 
+def _sp500_evidence(args: argparse.Namespace) -> int:
+    from collections import Counter
+
+    from sqlalchemy import select
+
+    from pitquant.db.models import RawSourceArchive, SP500MembershipEvent
+    from pitquant.universe.sources.sp500_evidence import CANONICAL_STATUSES, EventStatus
+
+    settings = get_settings()
+    factory = make_session_factory(make_engine(settings.database.url))
+    with factory() as session:
+        run = session.scalars(
+            select(SP500MembershipEvent.run_id).order_by(SP500MembershipEvent.created_at.desc())
+        ).first()
+        discovery = session.scalars(
+            select(RawSourceArchive.archive_id).where(
+                RawSourceArchive.provider == "SP500_DISCOVERY:chinobing"
+            )
+        ).first()
+        events = (
+            session.scalars(
+                select(SP500MembershipEvent).where(SP500MembershipEvent.run_id == run)
+            ).all()
+            if run
+            else []
+        )
+        anchor = session.scalars(
+            select(RawSourceArchive.archive_id).where(
+                RawSourceArchive.provider == "SPDJI:sp500_page"
+            )
+        ).first()
+    st = Counter(e.status for e in events)
+    canon = sum(st[x.value] for x in CANONICAL_STATUSES)
+    pct = 100 * canon / len(events) if events else 0.0
+    print(f"SP500_MEMBERSHIP_DISCOVERY_READY = {str(discovery is not None).lower()}")
+    print(f"SP500_MEMBERSHIP_EVIDENCE_COVERAGE = {pct:.1f}% ({canon}/{len(events)})")
+    unresolved = len(events) - canon
+    ready = anchor is not None and unresolved == 0 and bool(events)
+    print(f"SP500_MEMBERSHIP_CANONICAL_READY = {str(ready).lower()}")
+    state = "archived" if anchor else "CURRENT_ANCHOR_BLOCKED"
+    print(f"current anchor: {state}; statuses: {dict(st)}")
+    _ = EventStatus
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="pitquant")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -253,6 +298,8 @@ def main(argv: list[str] | None = None) -> int:
     rs.add_argument("date", help="YYYY-MM-DD")
     rs.add_argument("--json", action="store_true")
     rs.set_defaults(func=_reconstruct)
+    se = sub.add_parser("sp500-evidence", help="D-02 candidate: S&P 500 membership evidence states")
+    se.set_defaults(func=_sp500_evidence)
     sc = sub.add_parser("sec-stress-scan", help="pick stress-test filings from submissions")
     sc.add_argument("ciks", nargs="+")
     sc.set_defaults(func=_sec_scan)

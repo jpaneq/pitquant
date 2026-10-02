@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **46**.
+Tablas: **49**.
 
 ## Procedencia y calidad
 
@@ -267,6 +267,75 @@ Tablas: **46**.
 - CHECK `kind IN ('OFFICIAL','DERIVED','VENDOR','UNRESOLVED')`
 - INDEX ix_security_identifier_evidence_security_id (security_id)
 - UNIQUE (security_id, id_type, value, observed_on, source_url)
+
+### `sp500_discovery_rows` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `row_id` | VARCHAR(36) | no | PK |
+| `source` | VARCHAR(60) | no |  |
+| `source_sha256` | VARCHAR(64) | no |  |
+| `archive_id` | VARCHAR(36) | no | FK→`raw_source_archive.archive_id` |
+| `row_date` | DATE | no |  |
+| `added_tickers` | JSON | no |  |
+| `removed_tickers` | JSON | no |  |
+| `ingested_at` | DATETIME | no |  |
+
+- INDEX ix_sp500_discovery_rows_row_date (row_date)
+
+### `sp500_announcements` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `announcement_row_id` | VARCHAR(36) | no | PK |
+| `source_tier` | VARCHAR(24) | no |  |
+| `source_url` | VARCHAR(1000) | no |  |
+| `archive_id` | VARCHAR(36) | no | FK→`raw_source_archive.archive_id` |
+| `source_sha256` | VARCHAR(64) | no |  |
+| `announcement_at` | DATETIME | no |  |
+| `stated_change_date` | DATE | sí |  |
+| `timing` | VARCHAR(20) | no |  |
+| `effective_at` | DATETIME | sí |  |
+| `added_ticker` | VARCHAR(12) | no |  |
+| `added_name` | VARCHAR(120) | no |  |
+| `removed_ticker` | VARCHAR(12) | no |  |
+| `removed_name` | VARCHAR(120) | no |  |
+| `reason_class` | VARCHAR(30) | no |  |
+| `excerpt` | VARCHAR(500) | no |  |
+| `notes` | JSON | no |  |
+| `parser_version` | VARCHAR(50) | no |  |
+| `ingested_at` | DATETIME | no |  |
+
+- INDEX ix_sp500_announcements_added_ticker (added_ticker)
+- INDEX ix_sp500_announcements_removed_ticker (removed_ticker)
+- UNIQUE (source_sha256, added_ticker, removed_ticker, parser_version)
+
+### `sp500_membership_events` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `event_id` | VARCHAR(36) | no | PK |
+| `run_id` | VARCHAR(36) | no |  |
+| `discovery_row_id` | VARCHAR(36) | sí | FK→`sp500_discovery_rows.row_id` |
+| `announcement_row_id` | VARCHAR(36) | sí | FK→`sp500_announcements.announcement_row_id` |
+| `added_ticker` | VARCHAR(12) | sí |  |
+| `added_security_id` | VARCHAR(36) | sí | FK→`securities.security_id` |
+| `removed_ticker` | VARCHAR(12) | sí |  |
+| `removed_security_id` | VARCHAR(36) | sí | FK→`securities.security_id` |
+| `announcement_at` | DATETIME | sí |  |
+| `stated_change_date` | DATE | sí |  |
+| `timing` | VARCHAR(20) | sí |  |
+| `effective_at` | DATETIME | sí |  |
+| `discovery_date` | DATE | sí |  |
+| `source_tier` | VARCHAR(24) | no |  |
+| `source_url` | VARCHAR(1000) | sí |  |
+| `raw_source_hash` | VARCHAR(64) | sí |  |
+| `status` | VARCHAR(40) | no |  |
+| `reason` | VARCHAR(300) | no |  |
+| `created_at` | DATETIME | no |  |
+
+- CHECK `status IN ('OFFICIAL_CONFIRMED','OFFICIAL_REPUBLISHED_CONFIRMED','DISCOVERY_ONLY','DATE_TBA','CONFLICT','UNRESOLVED')`
+- INDEX ix_sp500_membership_events_run_id (run_id)
 
 ### `identity_resolution_runs` 🔒
 
