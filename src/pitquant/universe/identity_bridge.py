@@ -30,9 +30,9 @@ from pitquant.db.models import (
 )
 from pitquant.universe.sources.spy_sec_anchors import norm_name
 
-_CLASS_N30D = re.compile(r"\bClass\s+([A-Z])\b", re.I)
+_CLASS_N30D = re.compile(r"\b(?:Class|Series)\s+([A-Z])\b", re.I)
 _CLASS_13F = re.compile(r"\b(?:CL|CLASS|SER|SERIES)\s+([A-Z])\b")
-_NOT_COMMON = re.compile(r"\b(PFD|WT|WTS|RIGHT|RTS|UNIT|UNITS|NOTE|NOTES|DEBT|SUB)\b")
+_NOT_COMMON = re.compile(r"\b(PFD|WT|WTS|RIGHT|RTS|UNIT|UNITS|NOTE|NOTES|DEBT|SUB|WHEN ISSUED)\b")
 
 
 _ABBR = {
@@ -42,12 +42,29 @@ _ABBR = {
     "INTL": "INTERNATIONAL",
     "CORPORATION": "CORP",
     "COMPANY": "CO",
+    # abbreviations the SEC 13(f) list itself prints (ADR-0035): each is a fixed, class-preserving expansion observed in the archived lists
+    "PETE": "PETROLEUM",
+    "FINL": "FINANCIAL",
+    "RUBR": "RUBBER",
+    "NATL": "NATIONAL",
+    "EXPL": "EXPLORATION",
+    "RES": "RESOURCES",
+    "CENTY": "CENTURY",
+    "COMMUNICATNS": "COMMUNICATIONS",
+    "INTERACT": "INTERACTIVE",
 }
 
 
 def expand13f(name: str) -> str:
-    """Deterministic expansion of the standard abbreviations the SEC 13(f) list prints (HLDGS, GRP, INTL): not similarity, a fixed table."""
-    return " ".join(_ABBR.get(w, w) for w in name.upper().split())
+    """Deterministic expansion of the standard abbreviations the SEC 13(f) list prints (HLDGS, GRP, INTL, FINL, ...): not similarity, a fixed
+    table. A trailing «DEL» (state of incorporation) is dropped and «INTERACT IN» (the list's own compression of «Interactive Inc») reads
+    «Interactive Inc». The class designator is never touched (it lives in the issuer description)."""
+    words = name.upper().split()
+    if words and words[-1] == "DEL":
+        words = words[:-1]
+    if len(words) >= 2 and words[-1] == "IN" and words[-2] == "INTERACT":
+        words[-1] = "INC"
+    return " ".join(_ABBR.get(w, w) for w in words)
 
 
 def quarter_of(d: date) -> str:
@@ -74,6 +91,7 @@ class Bridge:
 def candidates_for(session: Session, name: str, quarter: str) -> list[Sec13FListEntry]:
     base, cls = n30d_key(name)
     out = []
+    sole: list[Sec13FListEntry] = []
     for e in session.scalars(
         select(Sec13FListEntry).where(
             Sec13FListEntry.quarter == quarter, Sec13FListEntry.parser_version == F13_VERSION
@@ -84,6 +102,12 @@ def candidates_for(session: Session, name: str, quarter: str) -> list[Sec13FList
         m = _CLASS_13F.search(e.issuer_description)
         if (cls is None and m is None) or (cls is not None and m is not None and m.group(1) == cls):
             out.append(e)
+        elif cls is not None and m is None:
+            sole.append(e)
+    if not out and len(sole) == 1:
+        # the filer calls the common stock «Series A» / «Class A» but the 13F list carries ONE common entry for that exact legal name and
+        # no class designator at all (Celanese: «Series A Common Stock» = «CELANESE CORP DEL COM»): the sole class is that entry (ADR-0035)
+        return sole
     return out
 
 
@@ -212,13 +236,15 @@ def link_same_security(
     ratio: float | None = None,
     note: str = "",
 ) -> None:
-    if session.scalars(
-        select(SecuritySuccession).where(
-            SecuritySuccession.security_predecessor_id == pred,
-            SecuritySuccession.security_successor_id == succ,
-            SecuritySuccession.event_type == event_type,
-        )
-    ).first():
+    q = select(SecuritySuccession).where(
+        SecuritySuccession.security_predecessor_id.in_((pred, succ)),
+        SecuritySuccession.security_successor_id.in_((pred, succ)),
+    )
+    if (
+        event_type != "SAME_SECURITY_IDENTITY_LINK"
+    ):  # a generic CUSIP link never duplicates a typed succession of the same pair
+        q = q.where(SecuritySuccession.event_type == event_type)
+    if session.scalars(q).first():
         return
     session.add(
         SecuritySuccession(

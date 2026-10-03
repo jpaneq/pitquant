@@ -45,6 +45,7 @@ from pitquant.universe.sources.sp500_evidence import (  # noqa: E402
     PARSER_VERSION,
     Announcement,
     SourceTier,
+    collect_name_tickers,
     effective_at,
     match_discovery,
     parse_discovery_csv,
@@ -317,6 +318,11 @@ def main(refresh: bool, offline: bool = False) -> int:
             docs.append(
                 (SourceTier.OFFICIAL_REPUBLISHED, w, orig, b, at.date(), at.astimezone(UTC))
             )
+        # exact company name -> tickers seen in OFFICIAL releases (a release may only use releases announced on or before itself)
+        corpus: list[tuple[date, str, str]] = []
+        for _t, _u, _o, _b, _d, _a in docs:
+            corpus += [(_d, k, tk) for k, tk in collect_name_tickers(text_of(_b))]
+        corpus.sort()
         n_docs = {SourceTier.OFFICIAL_SPDJI: 0, SourceTier.OFFICIAL_REPUBLISHED: 0}
         parsed_docs = {SourceTier.OFFICIAL_SPDJI: 0, SourceTier.OFFICIAL_REPUBLISHED: 0}
         for tier, url, orig, b, ann_date, ann_at in docs:
@@ -330,7 +336,11 @@ def main(refresh: bool, offline: bool = False) -> int:
                 "text/html",
                 f"tier={tier}; original_url={orig}",
             )
-            changes = parse_release(text_of(b), ann_date)
+            name_tickers: dict[str, set[str]] = {}
+            for cd, ck, ctk in corpus:
+                if cd <= ann_date:
+                    name_tickers.setdefault(ck, set()).add(ctk)
+            changes = parse_release(text_of(b), ann_date, name_tickers)
             if changes:
                 parsed_docs[tier] += 1
             for c in changes:
@@ -393,6 +403,7 @@ def main(refresh: bool, offline: bool = False) -> int:
             t: sid
             for t, sid in ses.execute(select(TickerHistory.ticker, TickerHistory.security_id))
         }
+        new_events: list[SP500MembershipEvent] = []
         for r in results:
             ann = r.announcement
             rid, at = (
@@ -402,7 +413,7 @@ def main(refresh: bool, offline: bool = False) -> int:
                 if ann
                 else (None, None)
             )
-            ses.add(SP500MembershipEvent(
+            new_events.append(SP500MembershipEvent(
                 run_id=run_id, discovery_row_id=row_ids.get((r.row.row_date, r.row.added, r.row.removed)), announcement_row_id=rid,
                 added_ticker=r.added, added_security_id=None, removed_ticker=r.removed, removed_security_id=None,
                 announcement_at=at, stated_change_date=ann.change.stated_change_date if ann else None,
@@ -411,10 +422,53 @@ def main(refresh: bool, offline: bool = False) -> int:
                 discovery_date=r.row.row_date, source_tier=ann.tier.value if ann else SourceTier.DISCOVERY_ONLY.value,
                 source_url=ann.url if ann else None, raw_source_hash=ann.sha256 if ann else None,
                 status=r.status.value, reason=r.reason[:300]))  # fmt: skip
+
+        def sig(e: SP500MembershipEvent) -> tuple[object, ...]:
+            return (
+                e.discovery_row_id,
+                e.announcement_row_id,
+                e.added_ticker,
+                e.removed_ticker,
+                e.status,
+                e.reason,
+                e.effective_at,
+                e.stated_change_date,
+                e.timing,
+                e.discovery_date,
+                e.source_tier,
+            )
+
+        prev_run = ses.scalars(
+            select(SP500MembershipEvent.run_id).order_by(SP500MembershipEvent.created_at.desc())
+        ).first()
+        prev = (
+            sorted(
+                map(
+                    repr,
+                    (
+                        sig(e)
+                        for e in ses.scalars(
+                            select(SP500MembershipEvent).where(
+                                SP500MembershipEvent.run_id == prev_run
+                            )
+                        )
+                    ),
+                )
+            )
+            if prev_run
+            else []
+        )
+        if prev and prev == sorted(map(repr, (sig(e) for e in new_events))):
+            report["run_id"], report["events"], report["run_reused"] = (
+                prev_run,
+                len(new_events),
+                True,
+            )  # same data + parser: no duplicate run
+        else:
+            ses.add_all(new_events)
+            report["run_id"], report["events"], report["run_reused"] = run_id, len(results), False
         ses.commit()
         _ = tick
-        report["run_id"] = run_id
-        report["events"] = len(results)
     print(json.dumps(report, indent=2, default=str))
     return 0
 

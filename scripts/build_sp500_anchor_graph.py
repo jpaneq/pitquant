@@ -37,6 +37,7 @@ from pitquant.universe.sp500_anchor_graph import (
     pre_holdout_limit,
     reconstruct,
 )
+from pitquant.universe.sp500_rename_links import apply_rename_links
 
 DOCS = ROOT / "docs"
 MIN_W, PREF_W = (date(2017, 10, 1), date(2022, 9, 30)), (date(2014, 10, 1), date(2022, 9, 30))
@@ -57,6 +58,10 @@ def main() -> int:
     cfg = get_settings()
     ho = cfg.validation.final_holdout
     with make_session_factory(make_engine(cfg.database.url))() as s:
+        # identity first: every later reconstruction reads the same successions (bridge, then S&P rename statements, then reload)
+        bridge = bridge_name_only(s)
+        apply_rename_links(s, cfg)
+        s.commit()
         anchors = load_anchors(s, settings=cfg)
         monthly = reconstruct(s, anchors[0].as_of, pre_holdout_limit(cfg), settings=cfg)
         daily = reconstruct(
@@ -64,8 +69,6 @@ def main() -> int:
         )
         w60, w96 = reconstruct(s, *MIN_W, settings=cfg), reconstruct(s, *PREF_W, settings=cfg)
         stored = persist_graph(s, monthly)
-        bridge = bridge_name_only(s)
-        s.commit()
         succ = list(s.scalars(select(SecuritySuccession)))
         names = {
             m.security_id: m.issuer_name

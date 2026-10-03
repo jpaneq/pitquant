@@ -19,6 +19,7 @@ from pitquant.db.models import (
     SP500Announcement,
     SP500MembershipEvent,
 )
+from pitquant.universe.sources.sp500_evidence import PARSER_VERSION as EVIDENCE_PARSER
 from pitquant.universe.sources.spy_sec_anchors import PARSER_VERSION
 from pitquant.universe.sp500_anchor_graph import (
     ENGINE_VERSION,
@@ -96,7 +97,7 @@ class World:
         ann_id = None
         if eff:
             ann = SP500Announcement(source_tier="OFFICIAL_SPDJI", source_url="u", archive_id=self.arch.archive_id, source_sha256="0" * 64, announcement_at=datetime(eff.year, eff.month, eff.day, tzinfo=UTC), stated_change_date=eff, timing="BEFORE_OPEN",
-                                    added_ticker=(added or "").upper(), added_name=f"SYN {added} Corp" if added else "", removed_ticker=(removed or "").upper(), removed_name=f"SYN {removed} Corp" if removed else "", reason_class="X", excerpt="e", notes=[], parser_version="sp500-evidence-3")  # fmt: skip
+                                    added_ticker=(added or "").upper(), added_name=f"SYN {added} Corp" if added else "", removed_ticker=(removed or "").upper(), removed_name=f"SYN {removed} Corp" if removed else "", reason_class="X", excerpt="e", notes=[], parser_version=EVIDENCE_PARSER)  # fmt: skip
             self.s.add(ann)
             self.s.flush()
             ann_id = ann.announcement_row_id
@@ -266,7 +267,7 @@ def test_csv_rename_pair_is_a_ticker_alias_not_a_transient_member(
         "OFFICIAL_CONFIRMED", "ALPHA", "ALPHA", date(2020, 1, 2), date(2020, 1, 2)
     )  # outside the segment (context only)
     for t in ("OLD1", "NEW1"):
-        w.s.add(SP500Announcement(source_tier="OFFICIAL_SPDJI", source_url="u", archive_id=w.arch.archive_id, source_sha256="1" * 64, announcement_at=datetime(2019, 1, 2, tzinfo=UTC), timing="UNKNOWN", added_ticker=t, added_name="SYN ALPHA Corp", removed_ticker="", removed_name="", reason_class="X", excerpt="e", notes=[], parser_version="sp500-evidence-3"))  # fmt: skip
+        w.s.add(SP500Announcement(source_tier="OFFICIAL_SPDJI", source_url="u", archive_id=w.arch.archive_id, source_sha256="1" * 64, announcement_at=datetime(2019, 1, 2, tzinfo=UTC), timing="UNKNOWN", added_ticker=t, added_name="SYN ALPHA Corp", removed_ticker="", removed_name="", reason_class="X", excerpt="e", notes=[], parser_version=EVIDENCE_PARSER))  # fmt: skip
     session.flush()
     w.event("DISCOVERY_ONLY", "NEW1", None, None, date(2020, 5, 4))
     w.event("DISCOVERY_ONLY", None, "OLD1", None, date(2020, 5, 4))

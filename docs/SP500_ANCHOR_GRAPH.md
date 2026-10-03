@@ -13,72 +13,72 @@ Holdout 2022-10-01 → 2025-09-30 sellado; ningún ancla posterior a 2022-09-30.
 |---|---|---|
 | verified_anchors | 17 | 17 |
 | segments | 16 | 16 |
-| validated_segments | 3 | 3 |
-| forward_validated_segments | 7 | 7 |
-| backward_validated_segments | 7 | 7 |
+| validated_segments | 5 | 5 |
+| forward_validated_segments | 9 | 9 |
+| backward_validated_segments | 9 | 9 |
 | monthly_cohorts | 60 | 60 |
-| monthly_cohorts_reconstructible | 21 | 9 |
-| longest_continuous_period | 9 | 3 |
+| monthly_cohorts_reconstructible | 27 | 15 |
+| longest_continuous_period | 15 | 6 |
 | post_limit_events_used | 0 | 0 |
-| cohortes diarias canónicas / racha | 9 / 3 | |
+| cohortes diarias canónicas / racha | 15 / 6 | |
 
 ## Ventana mínima (60): 2017-10-01 → 2022-09-30
 
-- monthly_cohorts 60 · membership_ready **21** · racha continua 9 · cohortes sin ancla 0 (no se ha extendido a 2014-2017)
+- monthly_cohorts 60 · membership_ready **27** · racha continua 15 · cohortes sin ancla 0 (no se ha extendido a 2014-2017)
 
 ## Ventana preferida (96): 2014-10-01 → 2022-09-30
 
-- monthly_cohorts 96 · membership_ready **21** · racha continua 9 · cohortes sin ancla 36 (no se ha extendido a 2014-2017)
+- monthly_cohorts 96 · membership_ready **27** · racha continua 15 · cohortes sin ancla 36 (no se ha extendido a 2014-2017)
 
 ## Cohortes (ventana mínima)
 
 | decision_at | estado | segmento | forward = backward | ambigüedad mensual | conflictos primarios |
 |---|---|---|---|---|---|
-| 2017-10-02 | BLOCKED | 2017-09-30→2018-03-31 | False | 8 | 0 |
-| 2017-11-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 8 | 0 |
-| 2017-12-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 8 | 0 |
-| 2018-01-02 | BLOCKED | 2017-09-30→2018-03-31 | False | 8 | 0 |
-| 2018-02-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 8 | 0 |
-| 2018-03-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 8 | 0 |
-| 2018-04-02 | BLOCKED | 2018-03-31→2018-09-30 | False | 4 | 0 |
-| 2018-05-01 | BLOCKED | 2018-03-31→2018-09-30 | False | 4 | 0 |
-| 2018-06-01 | BLOCKED | 2018-03-31→2018-09-30 | False | 4 | 0 |
-| 2018-07-02 | BLOCKED | 2018-03-31→2018-09-30 | False | 4 | 0 |
-| 2018-08-01 | BLOCKED | 2018-03-31→2018-09-30 | False | 4 | 0 |
-| 2018-09-04 | BLOCKED | 2018-03-31→2018-09-30 | False | 4 | 0 |
-| 2018-10-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 7 | 0 |
-| 2018-11-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 7 | 0 |
-| 2018-12-03 | BLOCKED | 2018-09-30→2019-03-31 | False | 7 | 0 |
-| 2019-01-02 | BLOCKED | 2018-09-30→2019-03-31 | False | 8 | 1 |
-| 2019-02-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 8 | 1 |
-| 2019-03-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 8 | 1 |
-| 2019-04-01 | BLOCKED | 2019-03-31→2019-09-30 | False | 9 | 0 |
-| 2019-05-01 | BLOCKED | 2019-03-31→2019-09-30 | False | 9 | 0 |
-| 2019-06-03 | BLOCKED | 2019-03-31→2019-09-30 | False | 9 | 0 |
-| 2019-07-01 | BLOCKED | 2019-03-31→2019-09-30 | False | 9 | 0 |
-| 2019-08-01 | BLOCKED | 2019-03-31→2019-09-30 | False | 9 | 0 |
-| 2019-09-03 | BLOCKED | 2019-03-31→2019-09-30 | False | 9 | 0 |
+| 2017-10-02 | BLOCKED | 2017-09-30→2018-03-31 | False | 4 | 0 |
+| 2017-11-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 4 | 0 |
+| 2017-12-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 4 | 0 |
+| 2018-01-02 | BLOCKED | 2017-09-30→2018-03-31 | False | 4 | 0 |
+| 2018-02-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 4 | 0 |
+| 2018-03-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 4 | 0 |
+| 2018-04-02 | BLOCKED | 2018-03-31→2018-09-30 | False | 2 | 0 |
+| 2018-05-01 | BLOCKED | 2018-03-31→2018-09-30 | False | 2 | 0 |
+| 2018-06-01 | BLOCKED | 2018-03-31→2018-09-30 | False | 2 | 0 |
+| 2018-07-02 | BLOCKED | 2018-03-31→2018-09-30 | False | 2 | 0 |
+| 2018-08-01 | BLOCKED | 2018-03-31→2018-09-30 | False | 2 | 0 |
+| 2018-09-04 | BLOCKED | 2018-03-31→2018-09-30 | False | 2 | 0 |
+| 2018-10-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 2 | 0 |
+| 2018-11-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 2 | 0 |
+| 2018-12-03 | BLOCKED | 2018-09-30→2019-03-31 | False | 2 | 0 |
+| 2019-01-02 | BLOCKED | 2018-09-30→2019-03-31 | False | 2 | 0 |
+| 2019-02-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 2 | 0 |
+| 2019-03-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 2 | 0 |
+| 2019-04-01 | BLOCKED | 2019-03-31→2019-09-30 | False | 4 | 0 |
+| 2019-05-01 | BLOCKED | 2019-03-31→2019-09-30 | False | 4 | 0 |
+| 2019-06-03 | BLOCKED | 2019-03-31→2019-09-30 | False | 4 | 0 |
+| 2019-07-01 | BLOCKED | 2019-03-31→2019-09-30 | False | 4 | 0 |
+| 2019-08-01 | BLOCKED | 2019-03-31→2019-09-30 | False | 4 | 0 |
+| 2019-09-03 | BLOCKED | 2019-03-31→2019-09-30 | False | 4 | 0 |
 | 2019-10-01 | MEMBERSHIP_READY | 2019-09-30→2019-12-31 | True | 0 | 0 |
 | 2019-11-01 | MEMBERSHIP_READY | 2019-09-30→2019-12-31 | True | 0 | 0 |
 | 2019-12-02 | MEMBERSHIP_READY | 2019-09-30→2019-12-31 | True | 0 | 0 |
-| 2020-01-02 | BLOCKED | 2019-12-31→2020-03-31 | False | 1 | 0 |
-| 2020-02-03 | BLOCKED | 2019-12-31→2020-03-31 | False | 1 | 0 |
-| 2020-03-02 | BLOCKED | 2019-12-31→2020-03-31 | False | 1 | 0 |
+| 2020-01-02 | MEMBERSHIP_READY | 2019-12-31→2020-03-31 | True | 0 | 0 |
+| 2020-02-03 | MEMBERSHIP_READY | 2019-12-31→2020-03-31 | True | 0 | 0 |
+| 2020-03-02 | MEMBERSHIP_READY | 2019-12-31→2020-03-31 | True | 0 | 0 |
 | 2020-04-01 | BLOCKED | 2020-03-31→2020-06-30 | False | 4 | 0 |
 | 2020-05-01 | BLOCKED | 2020-03-31→2020-06-30 | False | 4 | 0 |
 | 2020-06-01 | BLOCKED | 2020-03-31→2020-06-30 | False | 4 | 0 |
 | 2020-07-01 | MEMBERSHIP_READY | 2020-06-30→2020-09-30 | True | 0 | 0 |
 | 2020-08-03 | MEMBERSHIP_READY | 2020-06-30→2020-09-30 | True | 0 | 0 |
 | 2020-09-01 | MEMBERSHIP_READY | 2020-06-30→2020-09-30 | True | 0 | 0 |
-| 2020-10-01 | BLOCKED | 2020-09-30→2020-12-31 | False | 3 | 0 |
-| 2020-11-02 | BLOCKED | 2020-09-30→2020-12-31 | False | 3 | 0 |
-| 2020-12-01 | BLOCKED | 2020-09-30→2020-12-31 | False | 3 | 0 |
+| 2020-10-01 | BLOCKED | 2020-09-30→2020-12-31 | False | 2 | 0 |
+| 2020-11-02 | BLOCKED | 2020-09-30→2020-12-31 | False | 2 | 0 |
+| 2020-12-01 | BLOCKED | 2020-09-30→2020-12-31 | False | 2 | 0 |
 | 2021-01-04 | MEMBERSHIP_READY | 2020-12-31→2021-03-31 | True | 0 | 0 |
 | 2021-02-01 | MEMBERSHIP_READY | 2020-12-31→2021-03-31 | True | 0 | 0 |
 | 2021-03-01 | MEMBERSHIP_READY | 2020-12-31→2021-03-31 | True | 0 | 0 |
-| 2021-04-01 | BLOCKED | 2021-03-31→2021-06-30 | False | 1 | 0 |
-| 2021-05-03 | BLOCKED | 2021-03-31→2021-06-30 | False | 1 | 0 |
-| 2021-06-01 | BLOCKED | 2021-03-31→2021-06-30 | False | 1 | 0 |
+| 2021-04-01 | MEMBERSHIP_READY | 2021-03-31→2021-06-30 | True | 0 | 0 |
+| 2021-05-03 | MEMBERSHIP_READY | 2021-03-31→2021-06-30 | True | 0 | 0 |
+| 2021-06-01 | MEMBERSHIP_READY | 2021-03-31→2021-06-30 | True | 0 | 0 |
 | 2021-07-01 | MEMBERSHIP_READY | 2021-06-30→2021-09-30 | True | 0 | 0 |
 | 2021-08-02 | MEMBERSHIP_READY | 2021-06-30→2021-09-30 | True | 0 | 0 |
 | 2021-09-01 | MEMBERSHIP_READY | 2021-06-30→2021-09-30 | True | 0 | 0 |
@@ -88,9 +88,9 @@ Holdout 2022-10-01 → 2025-09-30 sellado; ningún ancla posterior a 2022-09-30.
 | 2022-01-03 | MEMBERSHIP_READY | 2021-12-31→2022-03-31 | True | 0 | 0 |
 | 2022-02-01 | MEMBERSHIP_READY | 2021-12-31→2022-03-31 | True | 0 | 0 |
 | 2022-03-01 | MEMBERSHIP_READY | 2021-12-31→2022-03-31 | True | 0 | 0 |
-| 2022-04-01 | BLOCKED | 2022-03-31→2022-06-30 | False | 8 | 0 |
-| 2022-05-02 | BLOCKED | 2022-03-31→2022-06-30 | False | 8 | 0 |
-| 2022-06-01 | BLOCKED | 2022-03-31→2022-06-30 | False | 8 | 0 |
+| 2022-04-01 | BLOCKED | 2022-03-31→2022-06-30 | False | 3 | 0 |
+| 2022-05-02 | BLOCKED | 2022-03-31→2022-06-30 | False | 3 | 0 |
+| 2022-06-01 | BLOCKED | 2022-03-31→2022-06-30 | False | 3 | 0 |
 | 2022-07-01 | MEMBERSHIP_READY | 2022-06-30→2022-09-30 | True | 0 | 0 |
 | 2022-08-01 | MEMBERSHIP_READY | 2022-06-30→2022-09-30 | True | 0 | 0 |
 | 2022-09-01 | MEMBERSHIP_READY | 2022-06-30→2022-09-30 | True | 0 | 0 |
@@ -101,16 +101,16 @@ Antes (ficha global, ADR-0032): **95** gaps. Tras la reclasificación y las reso
 
 | categoría | n | bloquea membresía | bloquea identidad |
 |---|---|---|---|
-| PRIMARY_DELTA_UNEXPLAINED | 1 | 1 | 0 |
-| PRIMARY_EVENT_MISSING | 37 | 37 | 0 |
+| PRIMARY_DELTA_UNEXPLAINED | 0 | 0 | 0 |
+| PRIMARY_EVENT_MISSING | 18 | 18 | 0 |
 | MONTHLY_DATE_AMBIGUITY | 0 | 0 | 0 |
-| SECURITY_IDENTITY_ONLY | 8 | 8 | 8 |
-| TICKER_OR_NAME_CHANGE | 18 | 0 | 0 |
-| SUCCESSOR_SECURITY | 12 | 0 | 0 |
-| DISCOVERY_UNCORROBORATED | 12 | 0 | 0 |
+| SECURITY_IDENTITY_ONLY | 3 | 3 | 3 |
+| TICKER_OR_NAME_CHANGE | 20 | 0 | 0 |
+| SUCCESSOR_SECURITY | 10 | 0 | 0 |
+| DISCOVERY_UNCORROBORATED | 14 | 0 | 0 |
 | DISCOVERY_CONFLICT | 18 | 0 | 0 |
 | TRANSIENT_EVENT_POSSIBLE | 0 | 0 | 0 |
-| RESOLVED | 6 | 0 | 0 |
+| RESOLVED | 1 | 0 | 0 |
 
-Blockers de membresía reales: **46** · de identidad: **8** + 15 securities sin evidencia oficial de CUSIP/ISIN.
+Blockers de membresía reales: **21** · de identidad: **3** + 2 securities sin evidencia oficial de CUSIP/ISIN.
 

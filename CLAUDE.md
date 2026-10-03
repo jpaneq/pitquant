@@ -35,7 +35,7 @@ temporal, se rechaza.
   "FIXTURE"). Nunca presentarlos como históricos reales.
 - No dar una funcionalidad por terminada porque "ejecuta": correcta, testeada, tipada,
   documentada, reproducible, point-in-time.
-- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0035).
+- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0036).
 - Migraciones: `0001`…`0016` fijadas (`0016` Simulation Lab, `0015` tipos de sucesión) (`0014` lista SEC 13(f) y sucesión de securities) (`0013` grafo de anclas SEC SPY: `sp500_anchors`, `sp500_anchor_members`, `sp500_anchor_crosschecks`, `sp500_membership_segments`, `security_ticker_alias`) (`0011` perfiles descriptivos `security_profiles`) (`0010` anclas de índice SPY/IVV) (`0009` evidencia de membresía S&P 500) (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
   código↔ISIN, `0006` transiciones de ISIN, `0007` traza de corporate actions, `role` de
   security e `issuer_id` en filings SEC); **todo cambio de esquema = revisión nueva**.
@@ -225,4 +225,4 @@ Etiquetas humanas del Analyzer nunca son feature ni target. `pitquant research-d
 ## Simulation Lab V0 (ADR-0034)
 Paper trading, SIN dinero real ni broker ni cambios de modelo. `/simulations` (UI y API), botón «Simulate trade» en el Analyzer. T0 inmutable;
 outcomes/observaciones/post-mortems en tablas aparte. `AUTO_PAPER` desactivado. El Research Lab sólo lee `/research/simulation-evidence`.
-D-02: `python scripts/apply_identity_events.py` (8-K verificados contra 13F). Estado: 21/60 cohortes mensuales, 46 blockers de membresía.
+D-02: `python scripts/apply_identity_events.py` (8-K verificados contra 13F). Estado (ADR-0035): 27/60 cohortes mensuales, racha 15, 21 blockers de membresía; paquete: `docs/D02_RESIDUAL_PACKAGE.md` (`scripts/gen_d02_residual_package.py`).

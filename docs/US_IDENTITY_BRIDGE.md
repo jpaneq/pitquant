@@ -28,28 +28,13 @@
 
 ## N-30D identificadas sólo por nombre: 56
 
-- resueltas por la lista 13F (nombre legal normalizado exacto + clase, candidato único): **39** (4 enlazadas con una security que ya tenía CUSIP)
-- sin resolver: **17** (Counter({'UNRESOLVED_NONE': 17}))
+- resueltas por la lista 13F (nombre legal normalizado exacto + clase, candidato único): **54** (7 enlazadas con una security que ya tenía CUSIP)
+- sin resolver: **2** (Counter({'UNRESOLVED_NONE': 2}))
 
 | security | estado | candidatos |
 |---|---|---|
-| Patterson Cos., Inc. | UNRESOLVED_NONE |  |
-| Celanese Corp. Series A | UNRESOLVED_NONE |  |
-| Range Resources Corp. | UNRESOLVED_NONE |  |
-| Scripps Networks Interactive, Inc. Class A | UNRESOLVED_NONE |  |
-| Brighthouse Financial, Inc. | UNRESOLVED_NONE |  |
-| Anadarko Petroleum Corp. | UNRESOLVED_NONE |  |
-| Leucadia National Corp. | UNRESOLVED_NONE |  |
 | C.R. Bard, Inc. | UNRESOLVED_NONE |  |
-| Twenty-First Century Fox, Inc. Class A | UNRESOLVED_NONE |  |
-| Twenty-First Century Fox, Inc. Class B | UNRESOLVED_NONE |  |
-| Discovery Communications, Inc. Class C | UNRESOLVED_NONE |  |
-| Jefferies Financial Group, Inc. | UNRESOLVED_NONE |  |
 | PPoG Industries, Inc. | UNRESOLVED_NONE |  |
-| Goodyear Tire & Rubber Co. | UNRESOLVED_NONE |  |
-| Newfield Exploration Co. | UNRESOLVED_NONE |  |
-| Discovery Communications, Inc. Class A | UNRESOLVED_NONE |  |
-| Harris Corp. | UNRESOLVED_NONE |  |
 
 ## Sucesiones y cambios de nombre verificados contra las listas 13F
 
@@ -69,3 +54,8 @@
 | Coach, Inc. | Tapestry, Inc. | NAME_TICKER_CHANGE_SAME_SECURITY | 2017-10-31 00:00:00+00:00 | — | True | SEC_8K:0001157523-17-002666+SEC_13F_LIST |
 | Praxair, Inc. | Linde PLC | SECURITY_REPLACEMENT_SUCCESSOR | 2018-10-31 00:00:00+00:00 | 1.0 | True | SEC_8K:0001193125-18-313073+SEC_13F_LIST |
 | CBOE Holdings, Inc. | Cboe Global Markets, Inc. | SAME_SECURITY_IDENTITY_LINK | — | — | True | SEC_13F_LIST |
+| Celanese Corp. Series A | Celanese Corp. | SAME_SECURITY_IDENTITY_LINK | — | — | True | SEC_13F_LIST |
+| Delphi Automotive PLC | Aptiv PLC | NAME_TICKER_IDENTIFIER_CHANGE_SAME_SECURITY | — | — | True | SP_PRESS_STATEMENT+SEC_13F_LIST |
+| DowDuPont, Inc. | DuPont de Nemours, Inc. | NAME_TICKER_IDENTIFIER_CHANGE_SAME_SECURITY | — | — | True | SP_PRESS_STATEMENT+SEC_13F_LIST |
+| BB&T Corp. | Truist Financial Corp. | IDENTIFIER_CHANGE_SAME_SECURITY | — | — | True | SP_PRESS_STATEMENT+SEC_13F_LIST |
+| Ingersoll-Rand PLC | Trane Technologies PLC | IDENTIFIER_CHANGE_SAME_SECURITY | — | — | True | SP_PRESS_STATEMENT+SEC_13F_LIST |

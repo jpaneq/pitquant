@@ -25,7 +25,7 @@ from enum import StrEnum
 from pitquant.core.errors import DataQualityError
 from pitquant.data.calendars.market_calendar import get_calendar
 
-PARSER_VERSION = "sp500-evidence-3"
+PARSER_VERSION = "sp500-evidence-4"
 
 
 class Timing(StrEnum):
@@ -88,8 +88,9 @@ _DATE = (
 )
 _TICK = r"\((?:[A-Za-z][A-Za-z /]{1,18})\s*:\s*([A-Z][A-Za-z0-9.\-]{0,9})\s*\)"
 _NAME = r"([A-Z0-9][^():;]{1,90}?)\s*"
+_RENAMED = r"(?:,\s*to be renamed\s+[^,():;]{1,40},)?"  # «Westar Energy Inc. (NYSE: WR), to be renamed Evergy, will replace …»
 _REPLACE = re.compile(
-    rf"{_NAME}{_TICK}\s+will replace\s+{_NAME}{_TICK}\s+in the S&P 500(?!\s+(?:GICS|Barra|Pure|Growth|Value))"
+    rf"{_NAME}{_TICK}{_RENAMED}\s+will replace\s+{_NAME}{_TICK}\s+in the S&P 500(?!\s+(?:GICS|Barra|Pure|Growth|Value))"
 )
 _TIMING = re.compile(
     rf"(?P<tba>(?:after the close of trading|prior to the open of trading|effective)?\s*on a date to be announced)|"
@@ -174,13 +175,78 @@ def _summary_table(text: str, announced: date) -> dict[tuple[str, str], date]:
 
 
 def _clean_name(n: str) -> str:
-    n = re.sub(r"^.*\bconstituents?\s+", "", n.strip())
+    n = re.sub(r"^.*?PRNewswire\s*/\s*--\s*", "", n.strip())  # release dateline
+    n = re.sub(r"^.*?\bannounced on [A-Z][a-z]+\.? \d{1,2}\s*,\s*", "", n)
+    n = re.sub(r"^.*\bwill replace\s+", "", n)
+    n = re.sub(r"^.*\bconstituents?\s+", "", n)
     return re.sub(r"^(?:and|,)\s+", "", n).strip()
 
 
+_MULTI_TICK = re.compile(
+    r"([A-Z0-9][^():;]{1,90}?)\s*\(\s*([A-Za-z][A-Za-z /]{1,18})\s*:\s*([A-Z][A-Za-z0-9.\-]{0,9}(?:\s*[;/]\s*[A-Z][A-Za-z0-9.\-]{0,9})+)\s*\)"
+)
+_CORP_SUFFIX = {
+    "inc",
+    "corp",
+    "corporation",
+    "co",
+    "company",
+    "ltd",
+    "limited",
+    "plc",
+    "holdings",
+    "group",
+    "the",
+    "and",
+}
+
+
+def _expand_multi_tickers(text: str) -> str:
+    """«Fox Corp. (NASD: FOXAV; FOXBV)» / «Under Armour Inc. (NYSE:UA/UAA)» (several share-class tickers of ONE company) become
+    «Fox Corp. (NASD: FOXAV) and Fox Corp. (NASD: FOXBV)» so every ticker is its own enumerated leg; the company name is repeated, so the
+    class of each ticker is NOT inferred here (the identity layer matches by the set of classes)."""
+
+    def rep(m: re.Match[str]) -> str:
+        name, ex = m.group(1).strip(), m.group(2)
+        ticks = re.split(r"\s*[;/]\s*", m.group(3).strip())
+        return " and ".join(f"{name} ({ex}: {t})" for t in ticks)
+
+    return _MULTI_TICK.sub(rep, text)
+
+
+def name_key(name: str) -> str:
+    """Normalised company name for exact lookups across releases (corporate suffixes dropped, no fuzzy matching)."""
+    words = re.sub(r"[^a-z0-9& ]+", " ", name.lower()).split()
+    return " ".join(w for w in words if w not in _CORP_SUFFIX)
+
+
+def collect_name_tickers(text: str) -> list[tuple[str, str]]:
+    """(name_key, ticker) pairs «Company Inc. (EXCH: T)» of ONE release text, for resolving a removed company that a later release names
+    WITHOUT a ticker. Only the pairs are returned; the caller decides which releases may be used (never later than the release it helps)."""
+    text = _expand_multi_tickers(re.sub(r"\s+", " ", text))
+    return [
+        (name_key(_clean_name(n)), t.upper())
+        for n, t in _TICK_NAME.findall(text)
+        if name_key(_clean_name(n))
+    ]
+
+
+def _group_companies(items: list[tuple[str, str]]) -> list[list[tuple[str, str]]]:
+    """Consecutive (name, ticker) entries of the SAME company (several share classes) form one group."""
+    groups: list[list[tuple[str, str]]] = []
+    for name, tk in items:
+        if groups and name_key(_clean_name(groups[-1][-1][0])) == name_key(_clean_name(name)):
+            groups[-1].append((name, tk))
+        else:
+            groups.append([(name, tk)])
+    return groups
+
+
 def _list_clauses(text: str) -> list[tuple[str, str, str, str, int, int]]:
-    """«A (T) and B (T) will replace C (T) and D (T) in the S&P 500 [respectively]»: N subjects
-    and N objects pair POSITIONALLY. (add_name, add_t, rem_name, rem_t, clause_start, clause_end)"""
+    """«A (T) and B (T) will replace C (T) and D (T) in the S&P 500 [respectively]»: N subject COMPANIES and N object companies pair
+    POSITIONALLY. A company with several share-class tickers (``_expand_multi_tickers``) is ONE company: classes pair 1:1 when both
+    sides list the same number of them; otherwise each ticker becomes its own add-only / remove-only leg with the clause date (the
+    set of classes moves together; which class replaces which is not stated). (add_name, add_t, rem_name, rem_t, start, end)"""
     out: list[tuple[str, str, str, str, int, int]] = []
     for pm in re.finditer(r"will replace", text):
         p = pm.end()
@@ -191,21 +257,33 @@ def _list_clauses(text: str) -> list[tuple[str, str, str, str, int, int]]:
         if "in the S&P" in mid:
             continue
         objs = _TICK_NAME.findall(mid)
-        n = len(objs)
-        if n < 2:
+        if len(objs) < 2:
             continue  # single pairs are handled by the main pattern
-        head_start = max(0, pm.start() - 140 * n)
+        ogroups = _group_companies(objs)
+        n = len(ogroups)
+        head_start = max(0, pm.start() - 140 * len(objs))
         subs = [
             (m.group(1), m.group(2), m.start())
             for m in _TICK_NAME.finditer(text, head_start, pm.start())
         ]
-        if len(subs) < n:
+        sgroups = _group_companies([(a, b) for a, b, _ in subs])
+        if len(sgroups) < n:
             continue
-        subs = subs[-n:]
-        for (an, at, _), (rn, rt) in zip(subs, objs, strict=True):
-            out.append(
-                (_clean_name(an), at.upper(), _clean_name(rn), rt.upper(), subs[0][2], qm.end())
-            )
+        sgroups = sgroups[-n:]
+        flat = [x for g in sgroups for x in g]
+        start = next(st for (a_, b_, st) in subs if (a_, b_) == flat[0])
+        for sg, og in zip(sgroups, ogroups, strict=True):
+            if len(sg) == len(og):
+                pairs = [(sa, ra) for sa, ra in zip(sg, og, strict=True)]
+                for (an, at), (rn, rt) in pairs:
+                    out.append(
+                        (_clean_name(an), at.upper(), _clean_name(rn), rt.upper(), start, qm.end())
+                    )
+            else:
+                for an, at in sg:
+                    out.append((_clean_name(an), at.upper(), "", "", start, qm.end()))
+                for rn, rt in og:
+                    out.append(("", "", _clean_name(rn), rt.upper(), start, qm.end()))
     return out
 
 
@@ -317,7 +395,9 @@ def _timing_after(
     return Timing.UNKNOWN, None
 
 
-def _timed_adds_removes(text: str, announced: date) -> list[ParsedChange]:
+def _timed_adds_removes(
+    text: str, announced: date, name_tickers: dict[str, set[str]] | None = None
+) -> list[ParsedChange]:
     """Two-sided changes whose legs have DIFFERENT dates: «A (T) will be added to the S&P 500 prior to the open on
     D1 … B (T), which will be removed from the S&P 500 effective prior to the open on D2». Each leg is its own
     change (an add-only and a remove-only): the 501-member interval between them is real (ADR-0031)."""
@@ -340,18 +420,58 @@ def _timed_adds_removes(text: str, announced: date) -> list[ParsedChange]:
                                     ["add leg with its own date; the removal leg is a separate change"]))  # fmt: skip
     for m in _REMOVED.finditer(text):
         before = text[max(0, m.start() - 320) : m.start()]
-        ticks = _TICK_NAME.findall(before)
-        n = 2 if m.group(1) else 1
-        if len(ticks) < n:
-            continue
         timing, stated = _timing_after(text, m.end(), announced)
         if timing is Timing.UNKNOWN:
             continue
-        for name, tk in ticks[-n:]:
-            out.append(ParsedChange("", "", tk.upper(), _clean_name(name), timing, stated, None, "UNSPECIFIED",
-                                    text[max(0, m.start() - 160) : m.end() + 160][:420],
-                                    ["removal leg with its own date; the add leg is a separate change"]))  # fmt: skip
+        ticks = _enumerated_ticks_before(before)
+        if ticks:
+            # the ticker(s) sit RIGHT before «, which will be removed»: «B (T), which …» or «A (T) and B (T), both of which …»
+            for name, tk in ticks:
+                out.append(ParsedChange("", "", tk.upper(), _clean_name(name), timing, stated, None, "UNSPECIFIED",
+                                        text[max(0, m.start() - 160) : m.end() + 160][:420],
+                                        ["removal leg with its own date; the add leg is a separate change"]))  # fmt: skip
+            continue
+        # «… , replacing HollyFrontier, which will be removed …»: the removed company is named WITHOUT a ticker. v3 took the nearest
+        # earlier ticker (the ADDED company's): never. The ticker must come from an exact-name mention in the SAME release or in an EARLIER
+        # official release (``name_tickers``), and it must be unique.
+        rm = re.search(r"replacing\s+([A-Z][^():;,]{1,60}?)\s*,?\s*$", before)
+        if rm is None:
+            continue
+        rname = _clean_name(rm.group(1))
+        cands = {
+            t.upper()
+            for n, t in _TICK_NAME.findall(text)
+            if name_key(_clean_name(n)) == name_key(rname)
+        }
+        src = "the same release"
+        if not cands and name_tickers:
+            cands = set(name_tickers.get(name_key(rname), set()))
+            src = "an earlier official S&P release (exact company name)"
+        if len(cands) != 1:
+            continue
+        out.append(ParsedChange("", "", next(iter(cands)), rname, timing, stated, None, "UNSPECIFIED",
+                                text[max(0, m.start() - 160) : m.end() + 160][:420],
+                                [f"removal leg with its own date; removed company named without ticker, ticker from {src}"]))  # fmt: skip
     return out
+
+
+def _enumerated_ticks_before(before: str) -> list[tuple[str, str]]:
+    """The «A (T) and B (T)» enumeration that ends exactly at the end of ``before`` (separators: «, », « and », « both of »)."""
+    ms = list(_TICK_NAME.finditer(before))
+    if not ms or not re.fullmatch(r"\s*,?\s*", before[ms[-1].end() :]):
+        return []
+    last = ms[-1]
+    group = [(last.group(1), last.group(2))]
+    pos = last.start()
+    while True:
+        prev = list(_TICK_NAME.finditer(before, 0, pos))
+        if not prev or not re.fullmatch(
+            r"\s*(?:,\s*)?(?:and\s+)?(?:both of\s+)?", before[prev[-1].end() : pos]
+        ):
+            break
+        group.insert(0, (prev[-1].group(1), prev[-1].group(2)))
+        pos = prev[-1].start()
+    return group
 
 
 _NAME_ONLY = re.compile(
@@ -376,6 +496,39 @@ def _name_only_clauses(text: str) -> list[tuple[str, str, str, str, int, int]]:
         if len(found) != 1:
             continue
         out.append((m.group(1).strip(), m.group(2), rname, next(iter(found)), m.start(), m.end()))
+    return out
+
+
+def _with_rename(m: re.Match[str]) -> str:
+    """The added name, with the S&P statement «, to be renamed Evergy,» kept (it links the old and new name of ONE company)."""
+    ren = re.search(r"to be renamed\s+([^,():;]{1,40}),", m.group(0))
+    base = _clean_name(m.group(1))
+    return f"{base} (to be renamed {ren.group(1).strip()})" if ren else base
+
+
+_ADD_THEN_REPLACE = re.compile(
+    rf"{_NAME}{_TICK}\s+will be added to the S&P 500{_NOT_500}[^.]{{0,100}}\.\s+(?:[A-Z][\w&'\-]*\s+){{1,4}}will replace\s+{_NAME}{_TICK}\s*\."
+)
+
+
+def _added_then_replace(text: str) -> list[tuple[str, str, str, str, int, int]]:
+    """«Tesla Inc. (NASD:TSLA) will be added to the S&P 500. Tesla will replace Apartment Investment and Management Co. (NYSE:AIV).»: the
+    second sentence names the added company only by its short name and carries NO «in the S&P 500»; the first sentence fixes that it is the
+    S&P 500 and the ticker. The date comes from the same intro/summary machinery as any other clause."""
+    out: list[tuple[str, str, str, str, int, int]] = []
+    for m in _ADD_THEN_REPLACE.finditer(text):
+        if _TIMING.search(m.group(0)):
+            continue  # the add sentence carries its own date: the legs have different dates (timed adds/removes)
+        out.append(
+            (
+                _clean_name(m.group(1)),
+                m.group(2).upper(),
+                _clean_name(m.group(3)),
+                m.group(4).upper(),
+                m.start(),
+                m.end(),
+            )
+        )
     return out
 
 
@@ -404,7 +557,9 @@ def _added_only(text: str, announced: date) -> list[ParsedChange]:
     return out
 
 
-def parse_release(text: str, announced: date) -> list[ParsedChange]:
+def parse_release(
+    text: str, announced: date, name_tickers: dict[str, set[str]] | None = None
+) -> list[ParsedChange]:
     """Every «X (EXCH: A) will replace Y (EXCH: B) in the S&P 500» clause of ONE release, with
     the nearest timing phrase after it and, cross-checking, the date of the «S&P 500 INDEX –»
     summary header. Clauses about other indices are ignored."""
@@ -412,6 +567,7 @@ def parse_release(text: str, announced: date) -> list[ParsedChange]:
     text = re.sub(r"S&\s+P", "S&P", text)  # «S& P 500» typography in some releases
     text = re.sub(r"\(\s+", "(", text)
     text = re.sub(r"\s+\)", ")", text)  # «( NASD : CSGP )»
+    text = _expand_multi_tickers(text)  # «(NYSE:UA/UAA)», «(NASD: FOXAV; FOXBV)»
     header: date | None = None
     hms = list(_HEADER.finditer(text))
     hm = hms[0] if len(hms) == 1 else None  # several headers = several dates: no cross-check
@@ -422,13 +578,18 @@ def parse_release(text: str, announced: date) -> list[ParsedChange]:
         hdr_tba = header is None
     out: list[ParsedChange] = []
     clauses: list[tuple[str, str, str, str, int, int]] = [
-        (m.group(1).strip(), m.group(2), m.group(3).strip(), m.group(4), m.start(), m.end())
+        (_with_rename(m), m.group(2), m.group(3).strip(), m.group(4), m.start(), m.end())
         for m in _REPLACE.finditer(text)
     ]
     seen_pairs = {(c[1].upper(), c[3].upper()) for c in clauses}
     clauses += [c for c in _list_clauses(text) if (c[1], c[3]) not in seen_pairs]
     seen_pairs |= {(c[1], c[3]) for c in clauses}
-    for extra in (_move_clauses(text), _switch_clauses(text), _name_only_clauses(text)):
+    for extra in (
+        _move_clauses(text),
+        _switch_clauses(text),
+        _name_only_clauses(text),
+        _added_then_replace(text),
+    ):
         clauses += [c for c in extra if (c[1].upper(), c[3].upper()) not in seen_pairs]
         seen_pairs |= {(c[1].upper(), c[3].upper()) for c in clauses}
     for add_name, add_t, rem_name, rem_t, c_start, c_end in clauses:
@@ -471,8 +632,10 @@ def parse_release(text: str, announced: date) -> list[ParsedChange]:
                         else Timing.EFFECTIVE_ON_DATE
                     )  # fmt: skip
         if timing is Timing.UNKNOWN:
-            ad = table.get((add_t, "Addition"))
-            if ad is not None and table.get((rem_t, "Deletion"), ad) == ad:
+            ad = table.get((add_t, "Addition")) if add_t else table.get((rem_t, "Deletion"))
+            if ad is not None and (
+                not rem_t or not add_t or table.get((rem_t, "Deletion"), ad) == ad
+            ):
                 timing, stated = Timing.BEFORE_OPEN, ad
                 notes.append("date from the release's effective-date summary table")
         if (
@@ -521,7 +684,7 @@ def parse_release(text: str, announced: date) -> list[ParsedChange]:
         for c in _added_only(text, announced)
         if c.added_ticker not in {x.added_ticker for x in out}
     ]
-    timed = _timed_adds_removes(text, announced)
+    timed = _timed_adds_removes(text, announced, name_tickers)
     known_add = {c.added_ticker for c in timed if c.added_ticker and c.timing is not Timing.UNKNOWN}
     out = [
         c

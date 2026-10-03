@@ -35,10 +35,11 @@ from pitquant.db.models import (
     SP500Announcement,
     SP500MembershipEvent,
 )
+from pitquant.universe.sources.sp500_evidence import PARSER_VERSION as EVIDENCE_PARSER
 from pitquant.universe.sources.spy_sec_anchors import PARSER_VERSION as ANCHOR_PARSER
 from pitquant.universe.sources.spy_sec_anchors import norm_name
 
-ENGINE_VERSION = "anchor-graph-2"
+ENGINE_VERSION = "anchor-graph-3"
 CONFIRMED = {"OFFICIAL_CONFIRMED", "OFFICIAL_REPUBLISHED_CONFIRMED"}
 
 
@@ -136,6 +137,9 @@ class Leg:
     security_id: str | None = None
     resolution: str = "UNRESOLVED"
     reason: str = ""
+    pool: tuple[
+        str, ...
+    ] = ()  # plausible securities when the leg alone could not pick one (share classes of ONE company)
     conflict_csv: date | None = (
         None  # a discovery-CSV date that disagrees with the OFFICIAL one (never widens the primary date)
     )
@@ -183,8 +187,10 @@ class Resolver:
         session: Session,
         anchors: list[AnchorNode],
         phrases: dict[str, set[str]] | None = None,
+        renames: list[Any] | None = None,
     ):
         self.phrases = phrases or {}
+        self.renames = renames or []  # ``RenameStatement`` of the archived S&P releases (ADR-0035)
         self.issuer: dict[
             str, str
         ] = {}  # security_id -> issuer key (LEI when the NPORT-P gives one), over ALL anchors
@@ -204,7 +210,7 @@ class Resolver:
                 self.name_idx.setdefault(norm_name(mnm), set()).add(msid)
         self.ticker_names: dict[str, set[str]] = {}
         for an in session.scalars(
-            select(SP500Announcement).where(SP500Announcement.parser_version == "sp500-evidence-3")
+            select(SP500Announcement).where(SP500Announcement.parser_version == EVIDENCE_PARSER)
         ):
             for t, n in ((an.added_ticker, an.added_name), (an.removed_ticker, an.removed_name)):
                 if t and n:
@@ -231,7 +237,17 @@ class Resolver:
         n = " " + norm_name(raw) + " "
         hits = [k for k in self.name_idx if len(k) >= 4 and f" {k} " in n]
         if not hits:
-            return set()
+            # the release names the COMPANY («Twenty-First Century Fox Inc.»); the anchors name each share class («… Class A»): the
+            # candidates are the securities whose name is exactly that company + a class/series suffix (never a looser match)
+            base = n.strip()
+            cls = [
+                k for k in self.name_idx
+                if k.startswith(base + " ") and re.fullmatch(r"(?:class|series) [a-z0-9]{1,2}", k[len(base) + 1 :])
+            ]  # fmt: skip
+            out_c: set[str] = set()
+            for k in cls:
+                out_c |= self.name_idx[k]
+            return out_c
         best = max(len(k) for k in hits)
         out: set[str] = set()
         for k in hits:
@@ -239,10 +255,14 @@ class Resolver:
                 out |= self.name_idx[k]
         return out
 
-    def candidates(self, ticker: str, name: str) -> tuple[set[str], str]:
+    def routes(self, ticker: str, name: str, on: date | None = None) -> list[tuple[set[str], str]]:
+        """Candidate sets in priority order: the CURRENT anchor's ticker, then the release name. A ticker can be REUSED by a different
+        issuer (FOXA: Twenty-First Century Fox until 2019-03-19, Fox Corp. afterwards), so ``resolve`` falls back to the name route when
+        the ticker route is not plausible for the segment."""
         t = ticker.upper()
+        out_r: list[tuple[set[str], str]] = []
         if t in self.cur_ticker:
-            return {self.cur_ticker[t]}, "CURRENT_ANCHOR_TICKER"
+            out_r.append(({self.cur_ticker[t]}, "CURRENT_ANCHOR_TICKER"))
         raws = ({name} if name else set()) | self.phrases.get(t, set())
         out: set[str] = set()
         for raw in raws:
@@ -250,7 +270,27 @@ class Resolver:
         if not out:
             for n in self.ticker_names.get(t, set()):
                 out |= self.name_idx.get(n, set())
-        return out, "RELEASE_NAME"
+        out_r.append((out, "RELEASE_NAME"))
+        # a leg that carries its own release name tries the name FIRST: the name is specific to the release, the ticker may be reused
+        if name and out:
+            out_r = out_r[::-1]
+        if name:
+            # the S&P itself states «X will be renamed / have a name change to Y»: the leg named X is the security that the anchors
+            # name Y (``Gardner Denver`` -> ``Ingersoll Rand Inc``). Exact name (or whole-word prefix) of the old name, statement not later
+            # than the change, and only as the LAST route.
+            from pitquant.universe.sp500_rename_links import name_eq
+
+            alias: set[str] = set()
+            for st in self.renames:
+                if (on is None or st.announced_on <= on) and name_eq(name, st.old_name):
+                    alias |= self._by_containment(st.new_name)
+            if alias:
+                out_r.append((alias, "RENAME_STATEMENT"))
+        return out_r
+
+    def candidates(self, ticker: str, name: str) -> tuple[set[str], str]:
+        rs = self.routes(ticker, name)
+        return rs[0]
 
     def resolve(
         self,
@@ -260,13 +300,21 @@ class Resolver:
         added_in_seg: set[str],
         lineage: dict[str, str] | None = None,
     ) -> None:
-        cands, how = self.candidates(leg.ticker, leg.name)
-        if lineage:
-            cands = {lineage.get(c, c) for c in cands}
-        if leg.kind == "ADD":
-            ok = {c for c in cands if c not in a.members}
-        else:
-            ok = {c for c in cands if c in a.members or c in added_in_seg}
+        def plausible(cs: set[str]) -> set[str]:
+            if leg.kind == "ADD":
+                return {c for c in cs if c not in a.members}
+            return {c for c in cs if c in a.members or c in added_in_seg}
+
+        cands: set[str] = set()
+        how = "RELEASE_NAME"
+        ok: set[str] = set()
+        for rc, rh in self.routes(leg.ticker, leg.name, leg.lo or leg.discovery_date):
+            rc = {lineage.get(c, c) for c in rc} if lineage else rc
+            if not cands:
+                cands, how = rc, rh  # first non-empty route: the fallback when none is plausible
+            if plausible(rc):
+                cands, how, ok = rc, rh, plausible(rc)
+                break
         pool = ok if ok else set()
         if not pool and len(cands) == 1:
             # a single candidate that is NOT plausible as a membership change (e.g. the new ticker of a rename whose old security is
@@ -281,6 +329,7 @@ class Resolver:
                 leg.security_id, leg.resolution = next(iter(both)), how + "+B_CONSISTENT"
             else:
                 leg.reason = f"{len(pool)} plausible securities"
+                leg.pool = tuple(sorted(pool))
         else:
             leg.reason = "no plausible security" if cands else "name/ticker unknown to the anchors"
 
@@ -455,6 +504,32 @@ def _collapse_duplicates(evs: list[Leg]) -> list[Leg]:
     return out
 
 
+def assign_class_sets(legs: list[Leg]) -> int:
+    """SHARE-CLASS SET RULE (ADR-0035). Several legs of ONE release clause (same kind, same date, same status) that name the same company
+    and all resolve to the SAME pool of plausible securities are assigned jointly when, and only when, the number of legs equals the
+    number of securities in the pool (``Fox Corp. (FOXAV; FOXBV)`` -> Fox Class A and Class B). Which ticker is which class is NOT
+    decided: every security gets exactly one leg with the same date, so the membership timeline does not depend on the pairing. Any other
+    count stays unresolved (a card). Returns the number of legs assigned."""
+    groups: dict[tuple[object, ...], list[Leg]] = {}
+    for leg in legs:
+        if leg.security_id is None and leg.pool:
+            groups.setdefault(
+                (leg.kind, leg.pool, leg.lo, leg.hi, leg.exact, leg.status, norm_name(leg.name)),
+                [],
+            ).append(leg)
+    n = 0
+    for key, ls in groups.items():
+        pool = key[1]
+        assert isinstance(pool, tuple)
+        if len(ls) != len(pool):
+            continue
+        for leg, sid in zip(sorted(ls, key=lambda x: x.ticker), pool, strict=True):
+            leg.security_id, leg.resolution = sid, "CLASS_SET"
+            leg.reason = "share-class set: the ticker<->class pairing is not stated; membership of every class is"
+            n += 1
+    return n
+
+
 def validate_segment(
     session: Session,
     a: AnchorNode,
@@ -498,6 +573,7 @@ def validate_segment(
     added_in_seg = {s for s in b.members - a.members}
     for leg in inside:
         res.resolve(leg, a, b, added_in_seg, lineage)
+    assign_class_sets(inside)
     # timelines per security
     by_sec: dict[str, list[Leg]] = {}
     unresolved_confirmed: list[Leg] = []
@@ -898,7 +974,14 @@ def reconstruct(
     anchors = load_anchors(session, settings=cfg)
     cal = get_calendar("XNYS")
     legs = load_legs(session)
-    res = Resolver(session, anchors, scan_release_phrases(session, cfg))
+    from pitquant.universe.sp500_rename_links import scan_rename_statements
+
+    res = Resolver(
+        session,
+        anchors,
+        scan_release_phrases(session, cfg),
+        [st for _d, st in scan_rename_statements(session, cfg)],
+    )
     anchors = adjust_tier_b(anchors, legs, res)
     segs: dict[tuple[date, date], SegmentResult] = {}
     for a, b in itertools.pairwise(anchors):

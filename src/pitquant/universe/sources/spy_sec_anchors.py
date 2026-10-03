@@ -362,5 +362,6 @@ def norm_name(s: str) -> str:
     t = s.lower().replace("&", " and ")
     t = re.sub(r"\bcl(?:ass)?\.?\s+([a-z])\b", r"class \1", t)
     t = re.sub(r"[^a-z0-9 ]+", " ", t)
+    t = re.sub(r"\bcos\b", "companies", t)  # «Patterson Cos., Inc.» = «PATTERSON COMPANIES INC»
     t = _SUFFIX.sub(" ", t)
     return re.sub(r"\s+", " ", t).strip()
