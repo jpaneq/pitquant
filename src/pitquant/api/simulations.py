@@ -18,6 +18,7 @@ from pitquant.config.settings import Settings
 from pitquant.core.errors import HoldoutAccessError
 from pitquant.core.timeutils import utc_now
 from pitquant.db.models import (
+    Security,
     Simulation,
     SimulationObservation,
     SimulationOutcome,
@@ -169,7 +170,9 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
         out = []
         for s in db.scalars(select(Simulation).order_by(Simulation.created_at.desc())):
             o = sim.latest_outcome(db, s.simulation_id)
-            out.append({"simulation_id": s.simulation_id, "created_at": s.created_at.isoformat(), "security_id": s.security_id, "decision_at": s.decision_at.isoformat(), "plan_origin": s.plan_origin, "mode": s.mode, "state": o.state if o else "CREATED", "outcome": row(o) if o else None, "entry_zone": [s.entry_zone_low, s.entry_zone_high], "stop_loss": s.stop_loss, "target_1": s.target_1, "target_2": s.target_2, "banner": PAPER})  # fmt: skip
+            ex = ((o.details or {}).get("metrics_extra") or {}) if o else {}
+            sec = db.get(Security, s.security_id)
+            out.append({"simulation_id": s.simulation_id, "created_at": s.created_at.isoformat(), "security_id": s.security_id, "security": sec.name if sec else s.security_id, "decision_at": s.decision_at.isoformat(), "plan_origin": s.plan_origin, "mode": s.mode, "setup_type": (s.original_pitquant_plan or {}).get("setup_type") or "USER_DEFINED", "state": o.state if o else "CREATED", "outcome": row(o) if o else None, "mae_pct": ex.get("mae_pct"), "mfe_pct": ex.get("mfe_pct"), "mae_r": ex.get("mae_r"), "mfe_r": ex.get("mfe_r"), "exit_policy": (s.final_simulated_plan or {}).get("exit_policy") or "LEGACY_HALF_AT_TP1", "entry_zone": [s.entry_zone_low, s.entry_zone_high], "stop_loss": s.stop_loss, "target_1": s.target_1, "target_2": s.target_2, "banner": PAPER})  # fmt: skip
         return out
 
     @r.post("")
@@ -215,8 +218,18 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
             analysis_now = svc.analysis(s.security_id, now)
         except Exception:
             analysis_now = {"status": "UNAVAILABLE"}
+        current: dict[str, Any]
+        try:
+            current = {
+                "quote": svc.quote(s.security_id, now),
+                "technical": svc.technicals(s.security_id, now),
+                "fundamental": svc.fundamentals(s.security_id, now),
+                "valuation": svc.valuation(s.security_id, now),
+            }
+        except Exception:
+            current = {"status": "UNAVAILABLE"}
         return {
-            "banner": PAPER, "simulation": row(s), "outcomes": [row(o) for o in db.scalars(select(SimulationOutcome).where(SimulationOutcome.simulation_id == simulation_id).order_by(SimulationOutcome.evaluated_at))],
+            "banner": PAPER, "current": current, "simulation": row(s), "outcomes": [row(o) for o in db.scalars(select(SimulationOutcome).where(SimulationOutcome.simulation_id == simulation_id).order_by(SimulationOutcome.evaluated_at))],
             "observations": [row(o) for o in db.scalars(select(SimulationObservation).where(SimulationObservation.simulation_id == simulation_id).order_by(SimulationObservation.observed_at))],
             "postmortems": [row(p) for p in db.scalars(select(SimulationPostMortem).where(SimulationPostMortem.simulation_id == simulation_id))],
             "bars": [{"date": str(d), **{k: float(v) for k, v in b.items()}} for d, b in bars.iterrows()], "analysis_now": analysis_now,

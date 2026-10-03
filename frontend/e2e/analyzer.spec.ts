@@ -55,7 +55,10 @@ test.describe('Analyzer + Research Lab on the synthetic fixture', () => {
     await page.goto('/analyzer/SYNF')
     await page.getByTestId('simulate-open').click()
     const set = async (label: string, v: number) => page.getByLabel(label, { exact: true }).fill(v.toFixed(2))
-    await set('Entry zone low', px * 0.97); await set('Entry zone high', px); await set('Stop loss', px * 0.9); await set('Target 1', px * 1.05); await set('Target 2', px * 1.1)
+    await page.getByTestId('wizard-next').click() // step 2: entry (zone is the default)
+    await set('Entry zone low', px * 0.97); await set('Entry zone high', px)
+    await page.getByTestId('wizard-next').click() // step 3: risk plan
+    await set('Stop loss', px * 0.9); await set('Target 1', px * 1.05); await set('Target 2', px * 1.1)
     await page.getByTestId('simulate-submit').click()
     await expect(page).toHaveURL(/simulations\//)
     await expect(page.getByTestId('paper-banner')).toContainText('PAPER TRADE — NO REAL MONEY')

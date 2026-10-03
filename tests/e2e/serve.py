@@ -23,8 +23,13 @@ from fastapi import FastAPI  # noqa: E402
 from pitquant.api.app import create_app  # noqa: E402
 from pitquant.config.settings import get_settings  # noqa: E402
 from pitquant.db.session import create_all, make_engine, make_session_factory  # noqa: E402
+from pitquant.market.normalized import MarketBar, NormalizedBatch  # noqa: E402
+from pitquant.market.pipeline import store_batch  # noqa: E402
 from pitquant.security_master.service import SecurityMaster  # noqa: E402
 from tests.unit.test_feature_engine_v0 import (  # noqa: E402
+    CAL,
+    NOW,
+    PROV,
     SESSIONS,
     add_fact,
     closes_path,
@@ -67,6 +72,46 @@ def build() -> FastAPI:
             500.0,
             datetime(2016, 2, 20, tzinfo=UTC),
             form="10-K",
+        )
+        # SYNSIM: the same synthetic path plus SCRIPTED future sessions (relative to the last close C0), so the Simulation Lab E2E can
+        # exercise a full lifecycle deterministically. Never real market data.
+        c = sm.register(name="SYN SIM CO (FIXTURE)", exchange="XNYS", currency="USD").security_id
+        sm.add_ticker(c, "SYNSIM", "XNYS", date(2010, 1, 4))
+        path = closes_path(SESSIONS, 100.0, 0.0006)
+        load_bars(s, c, "S", path)
+        c0 = list(path.values())[-1]
+        scripted = [  # (open, high, low, close) as multiples of C0
+            (1.000, 1.010, 0.995, 1.000),  # no touch of a 0.99 limit
+            (0.995, 0.996, 0.985, 0.990),  # touches 0.99: entry at the limit
+            (0.990, 1.010, 0.985, 1.005),
+            (1.005, 1.040, 1.000, 1.035),  # target 1.03 touched
+            (1.035, 1.040, 0.940, 0.960),  # stop 0.95 hit after the touch
+            (1.000, 1.060, 0.900, 1.000),  # wide bar: stop AND target inside it
+        ]
+        days = CAL.sessions(date(2017, 1, 3), date(2017, 1, 31))[: len(scripted)]
+        store_batch(
+            s,
+            NormalizedBatch(
+                bars=[
+                    MarketBar(
+                        "S",
+                        d,
+                        round(c0 * o, 4),
+                        round(c0 * h, 4),
+                        round(c0 * lo, 4),
+                        round(c0 * cl, 4),
+                        1000.0,
+                        "USD",
+                        CAL.session_close(d),
+                        PROV,
+                    )
+                    for d, (o, h, lo, cl) in zip(days, scripted, strict=True)
+                ],
+                actions=[],
+            ),
+            key_to_security={"S": c},
+            market="US",
+            now=NOW,
         )
         s.commit()
     return create_app(factory, settings)

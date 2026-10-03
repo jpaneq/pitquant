@@ -225,3 +225,18 @@ def _mount_frontend(app: FastAPI) -> None:
 
     for path in ("/", "/analyzer/{ident}", "/watchlist", "/research", "/status", "/settings"):
         app.add_api_route(path, index, methods=["GET"], include_in_schema=False)
+
+    # Simulation Lab SPA routes share their paths with the JSON API (/simulations, ...):
+    # a BROWSER navigation (Accept: text/html) gets the SPA, the app's own fetches
+    # keep getting the API. ``Vary: Accept`` stops the browser from serving the
+    # cached HTML to a later JSON fetch of the same URL.
+    @app.middleware("http")
+    async def spa_for_browser_navigation(request: Request, call_next: Any) -> Any:
+        if not (request.method == "GET" and request.url.path.startswith("/simulations")):
+            return await call_next(request)
+        if request.headers.get("accept", "").startswith("text/html"):
+            resp: Any = FileResponse(dist / "index.html")
+        else:
+            resp = await call_next(request)
+        resp.headers["Vary"] = "Accept"
+        return resp

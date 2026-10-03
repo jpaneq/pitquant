@@ -43,6 +43,8 @@ GROUPS = {
         "simulations",
         "simulation_observations",
         "simulation_outcomes",
+        "simulation_events",
+        "simulation_counterfactuals",
         "simulation_postmortems",
         "research_hypotheses",
         "index_anchor_snapshots",

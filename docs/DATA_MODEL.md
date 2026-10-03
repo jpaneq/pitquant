@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **74**.
+Tablas: **76**.
 
 ## Procedencia y calidad
 
@@ -515,7 +515,7 @@ Tablas: **74**.
 | `original_pitquant_plan` | JSON | sí |  |
 | `final_simulated_plan` | JSON | no |  |
 | `side` | VARCHAR(5) | no |  |
-| `entry_type` | VARCHAR(12) | no |  |
+| `entry_type` | VARCHAR(20) | no |  |
 | `entry_zone_low` | FLOAT | no |  |
 | `entry_zone_high` | FLOAT | no |  |
 | `entry_price_actual` | FLOAT | sí |  |
@@ -530,6 +530,8 @@ Tablas: **74**.
 | `time_horizon_sessions` | INTEGER | no |  |
 | `expiration_at` | DATETIME | no |  |
 | `benchmark_security_id` | VARCHAR(36) | sí |  |
+| `snapshot_hash` | VARCHAR(64) | sí |  |
+| `source_provenance` | JSON | sí |  |
 
 - CHECK `asset_type IN ('EQUITY','BTC')`
 - CHECK `created_at >= decision_at`
@@ -578,8 +580,48 @@ Tablas: **74**.
 | `timeline` | JSON | no |  |
 | `details` | JSON | no |  |
 | `created_at` | DATETIME | no |  |
+| `prediction_outcome` | VARCHAR(30) | sí |  |
+| `execution_outcome` | VARCHAR(30) | sí |  |
+| `event_count` | INTEGER | sí |  |
+| `engine_version` | VARCHAR(30) | sí |  |
 
 - INDEX ix_simulation_outcomes_simulation_id (simulation_id)
+
+### `simulation_events` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `event_id` | VARCHAR(36) | no | PK |
+| `simulation_id` | VARCHAR(36) | no | FK→`simulations.simulation_id` |
+| `sequence_number` | INTEGER | no |  |
+| `event_type` | VARCHAR(30) | no |  |
+| `occurred_at` | DATE | no |  |
+| `source_bar_timestamp` | DATE | sí |  |
+| `payload_json` | JSON | no |  |
+| `engine_version` | VARCHAR(30) | no |  |
+| `created_at` | DATETIME | no |  |
+
+- INDEX ix_simulation_events_simulation_id (simulation_id)
+- UNIQUE (simulation_id, sequence_number)
+
+### `simulation_counterfactuals` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `counterfactual_id` | VARCHAR(36) | no | PK |
+| `simulation_id` | VARCHAR(36) | no | FK→`simulations.simulation_id` |
+| `evaluated_at` | DATETIME | no |  |
+| `plan_label` | VARCHAR(40) | no |  |
+| `last_bar` | DATE | sí |  |
+| `state` | VARCHAR(20) | no |  |
+| `plan` | JSON | no |  |
+| `metrics` | JSON | no |  |
+| `details` | JSON | no |  |
+| `timeline` | JSON | no |  |
+| `label` | VARCHAR(20) | no |  |
+| `created_at` | DATETIME | no |  |
+
+- INDEX ix_simulation_counterfactuals_simulation_id (simulation_id)
 
 ### `simulation_postmortems` 🔒
 

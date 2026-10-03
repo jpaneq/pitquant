@@ -33,3 +33,7 @@
   post-mortem) y botón «Simulate trade» en el Analyzer, deshabilitado con `PRICE_DATA_REQUIRED` sin precios (KO). Métricas agregadas sólo con N ≥ 10.
 - **Límites V0:** long only; retorno de precio (sin dividendos); splits posteriores al T0 se reexpresan en unidades de T0; una decisión intradía
   empieza a operar a partir de la sesión siguiente.
+
+---
+**Addendum (2026-10-03):** el Simulation Lab fue auditado y ampliado en [ADR-0036](0036-simulation-lab-event-store-replay-y-politicas-de-salida.md)
+(event store, replay, política de salidas, contrafactual, Insights). Este ADR histórico no se modifica en su contenido.

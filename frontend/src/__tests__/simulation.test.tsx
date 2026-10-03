@@ -23,7 +23,7 @@ describe('Simulation Lab UI', () => {
   it('shows the aggregate metrics only when N is sufficient', async () => {
     mock(ev({ stats_available: true, n_entered_closed: 12, hit_rate: 0.58, mean_r: 0.4, mean_return: 0.02, mean_excess_return: 0.01, mean_mae: 0.03, mean_mfe: 0.06 }))
     wrap(<SimulationsPage />)
-    expect(await screen.findByTestId('sim-stats')).toHaveTextContent(/Hit rate/)
+    expect(await screen.findByTestId('sim-stats')).toHaveTextContent(/Win rate \(N=12\)/)
     expect(screen.queryByTestId('sim-insufficient')).toBeNull()
   })
   it('disables «Simulate trade» with PRICE_DATA_REQUIRED for a security without prices', () => {
