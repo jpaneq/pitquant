@@ -77,8 +77,15 @@ def research_readiness(session: Session, settings: Settings) -> ResearchFlags:
             [],
         )
     longest = int(gm["longest_continuous_period"])
-    rf.flags["D02_RESEARCH_READY"] = longest >= 60
-    rf.flags["D02_MEMBERSHIP_READY"] = longest >= 60
+    daily_longest = int(gm.get("daily_canonical_longest_run", 0))
+    rf.flags["D02_MONTHLY_RESEARCH_READY"] = (
+        longest >= 60
+    )  # the Research Lab gate (decision_at is monthly)
+    rf.flags["D02_RESEARCH_READY"] = bool(rf.flags["D02_MONTHLY_RESEARCH_READY"])
+    rf.flags["D02_MEMBERSHIP_READY"] = bool(rf.flags["D02_MONTHLY_RESEARCH_READY"])
+    rf.flags["D02_DAILY_CANONICAL_READY"] = (
+        daily_longest >= 60
+    )  # exact daily membership, the stricter standard
     rf.status["D02_RESEARCH_READY"] = (
         f"anchor graph: {gm['verified_anchors']} verified anchors, {gm.get('validated_segments', 0)} validated segments; "
         f"{longest} consecutive reconstructible pre-holdout cohorts (need 60, preferred 96)"
@@ -102,7 +109,7 @@ def research_readiness(session: Session, settings: Settings) -> ResearchFlags:
             "not enough consecutive reconstructible cohorts for train_min=60 + purge + embargo + 2 OOS folds"
         ]
     )
-    rf.flags["US_IDENTITY_READY"] = (
+    rf.flags["US_SECURITY_IDENTITY_READY"] = (
         bool(anchors)
         and gm.get("security_identity_resolution", {}).get("weak_identity_members", 1) == 0
         and gm.get("security_identity_resolution", {}).get("unresolved_lines", 1) == 0

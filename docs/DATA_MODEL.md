@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **67**.
+Tablas: **69**.
 
 ## Procedencia y calidad
 
@@ -443,6 +443,45 @@ Tablas: **67**.
 - CHECK `valid_to IS NULL OR valid_from IS NULL OR valid_to >= valid_from`
 - INDEX ix_security_ticker_alias_security_id (security_id)
 - INDEX ix_security_ticker_alias_ticker (ticker)
+
+### `sec_13f_list_entries` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `entry_id` | VARCHAR(36) | no | PK |
+| `quarter` | VARCHAR(6) | no |  |
+| `cusip` | VARCHAR(9) | no |  |
+| `issuer_name` | VARCHAR(200) | no |  |
+| `issuer_description` | VARCHAR(100) | no |  |
+| `status_added_deleted` | VARCHAR(10) | sí |  |
+| `raw_source_hash` | VARCHAR(64) | no |  |
+| `archive_id` | VARCHAR(36) | no | FK→`raw_source_archive.archive_id` |
+| `parser_version` | VARCHAR(40) | no |  |
+| `ingested_at` | DATETIME | no |  |
+
+- INDEX ix_sec_13f_list_entries_cusip (cusip)
+- INDEX ix_sec_13f_list_entries_quarter (quarter)
+
+### `security_succession` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `succession_id` | VARCHAR(36) | no | PK |
+| `security_predecessor_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `security_successor_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `effective_at` | DATETIME | sí |  |
+| `event_type` | VARCHAR(32) | no |  |
+| `exchange_ratio` | FLOAT | sí |  |
+| `membership_continuity` | BOOLEAN | no |  |
+| `source` | VARCHAR(80) | no |  |
+| `source_hash` | VARCHAR(64) | sí |  |
+| `note` | VARCHAR(400) | sí |  |
+| `ingested_at` | DATETIME | no |  |
+
+- CHECK `event_type IN ('NAME_CHANGE_SAME_SECURITY','TICKER_CHANGE_SAME_SECURITY','SECURITY_REPLACEMENT_SUCCESSOR','SHARE_CLASS_CHANGE','TRUE_INDEX_EXIT','TRUE_INDEX_ENTRY','SAME_SECURITY_IDENTITY_LINK')`
+- CHECK `security_predecessor_id != security_successor_id`
+- INDEX ix_security_succession_security_predecessor_id (security_predecessor_id)
+- INDEX ix_security_succession_security_successor_id (security_successor_id)
 
 ### `index_anchor_snapshots` 🔒
 

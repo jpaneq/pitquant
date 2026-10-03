@@ -1633,6 +1633,59 @@ class SecurityTickerAlias(Base):
     )
 
 
+class Sec13FListEntry(Base):
+    """One line of the SEC «Official List of Section 13(f) Securities» of a quarter (ADR-0033). OFFICIAL SECURITY IDENTIFIER
+    REFERENCE (CUSIP + issuer text + status): never a membership source. The list is quarterly: a CUSIP is evidence for THAT quarter."""
+
+    __tablename__ = "sec_13f_list_entries"
+
+    entry_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    quarter: Mapped[str] = mapped_column(String(6), index=True)  # 2019Q3
+    cusip: Mapped[str] = mapped_column(String(9), index=True)
+    issuer_name: Mapped[str] = mapped_column(String(200))
+    issuer_description: Mapped[str] = mapped_column(String(100))
+    status_added_deleted: Mapped[str | None] = mapped_column(String(10))  # ADDED | DELETED | None
+    raw_source_hash: Mapped[str] = mapped_column(String(64))
+    archive_id: Mapped[str] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    parser_version: Mapped[str] = mapped_column(String(40))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class SecuritySuccession(Base):
+    """Continuity between two securities (ADR-0033). A new security_id (reorganisation, new CUSIP) is NOT an index exit + entry:
+    ``membership_continuity`` says whether the index membership continues through the succession."""
+
+    __tablename__ = "security_succession"
+
+    succession_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    security_predecessor_id: Mapped[str] = mapped_column(
+        ForeignKey("securities.security_id"), index=True
+    )
+    security_successor_id: Mapped[str] = mapped_column(
+        ForeignKey("securities.security_id"), index=True
+    )
+    effective_at: Mapped[datetime | None] = mapped_column(
+        UTCDateTime
+    )  # NULL = same security identified later (no event date)
+    event_type: Mapped[str] = mapped_column(String(32))
+    exchange_ratio: Mapped[float | None] = mapped_column(Float)
+    membership_continuity: Mapped[bool] = mapped_column(Boolean)
+    source: Mapped[str] = mapped_column(String(80))
+    source_hash: Mapped[str | None] = mapped_column(String(64))
+    note: Mapped[str | None] = mapped_column(String(400))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        CheckConstraint(
+            "event_type IN ('NAME_CHANGE_SAME_SECURITY','TICKER_CHANGE_SAME_SECURITY','SECURITY_REPLACEMENT_SUCCESSOR','SHARE_CLASS_CHANGE','TRUE_INDEX_EXIT','TRUE_INDEX_ENTRY','SAME_SECURITY_IDENTITY_LINK')",
+            name="event_type_values",
+        ),
+        CheckConstraint(
+            "security_predecessor_id != security_successor_id", name="distinct_securities"
+        ),
+    )
+
+
 IMMUTABLE_TABLES: frozenset[str] = frozenset(
     {
         "raw_records",
@@ -1679,5 +1732,7 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "sp500_anchor_crosschecks",
         "sp500_membership_segments",
         "security_ticker_alias",
+        "sec_13f_list_entries",
+        "security_succession",
     }
 )

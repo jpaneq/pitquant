@@ -50,6 +50,7 @@ class World:
         s.add(self.arch)
         s.flush()
         self.n = 0
+        self.anchor_ids: list[str] = []
 
     def security(self, tag: str) -> str:
         if tag not in self.sec:
@@ -79,6 +80,7 @@ class World:
         a.source_available_at = datetime(as_of.year, as_of.month, as_of.day, 23, tzinfo=UTC)
         self.s.add(a)
         self.s.flush()
+        self.anchor_ids.append(a.anchor_id)
         for i, t in enumerate(tags):
             res = not (unresolved and i < unresolved)
             self.s.add(SP500AnchorMember(anchor_id=a.anchor_id, security_id=self.security(t) if res else None, cusip=f"SYN{t}", isin=None, issuer_name=f"SYN {t} Corp", lei=(lei or {}).get(t), source_position=i, shares=1000.0, value_usd=5e7,
@@ -269,7 +271,8 @@ def test_csv_rename_pair_is_a_ticker_alias_not_a_transient_member(
     w.event("DISCOVERY_ONLY", "NEW1", None, None, date(2020, 5, 4))
     w.event("DISCOVERY_ONLY", None, "OLD1", None, date(2020, 5, 4))
     rep = reconstruct(session, date(2020, 4, 1), date(2020, 6, 30))
-    assert rep.segments[0].status == "VALIDATED" and rep.ready == 3 and rep.strict
+    assert rep.segments[0].status == "VALIDATED" and rep.ready == 3
+    assert reconstruct(session, date(2020, 4, 1), date(2020, 6, 30), standard="DAILY").ready == 3
 
 
 # ───────────────────────────────────────────── the pre-trade of a Tier B schedule, conflicts, persistence
@@ -288,23 +291,17 @@ def test_tier_b_schedule_pre_trades_next_session_additions(w: World, session: Se
     )
 
 
-def test_dates_conflicting_between_official_and_csv_only_block_the_cohorts_between_them(
-    w: World, session: Session
-) -> None:
+def test_official_date_wins_so_a_csv_conflict_blocks_no_cohort(w: World, session: Session) -> None:
     w.anchor(date(2020, 3, 31), ["A", "B"])
     w.anchor(date(2020, 6, 30), ["A", "C"])
     w.event(
         "CONFLICT", "C", "B", date(2020, 5, 5), date(2020, 4, 29)
-    )  # official 05-05, CSV 04-29: the 05-01 open lies between
+    )  # official 05-05, CSV 04-29: the primary date stands
     st = {
         str(c.date): c.status
         for c in reconstruct(session, date(2020, 4, 1), date(2020, 6, 30)).cohorts
     }
-    assert (
-        st["2020-04-01"] == "MEMBERSHIP_READY"
-        and st["2020-05-01"] == "BLOCKED"
-        and st["2020-06-01"] == "MEMBERSHIP_READY"
-    )
+    assert st["2020-04-01"] == st["2020-05-01"] == st["2020-06-01"] == "MEMBERSHIP_READY"
 
 
 def test_segments_are_persisted_append_only_and_idempotently(w: World, session: Session) -> None:

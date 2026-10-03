@@ -38,7 +38,7 @@ from pitquant.db.models import (
 from pitquant.universe.sources.spy_sec_anchors import PARSER_VERSION as ANCHOR_PARSER
 from pitquant.universe.sources.spy_sec_anchors import norm_name
 
-ENGINE_VERSION = "anchor-graph-1"
+ENGINE_VERSION = "anchor-graph-2"
 CONFIRMED = {"OFFICIAL_CONFIRMED", "OFFICIAL_REPUBLISHED_CONFIRMED"}
 
 
@@ -89,6 +89,15 @@ def load_anchors(
         cur = best.get(a.as_of_date)
         if cur is None or (a.form == "NPORT-P" and cur.form != "NPORT-P"):
             best[a.as_of_date] = a
+    from pitquant.universe.identity_bridge import succession_map
+
+    canon = succession_map(
+        session
+    )  # predecessor -> final successor (membership-preserving successions only)
+
+    def cn(x: str) -> str:
+        return canon.get(x, x)
+
     out: list[AnchorNode] = []
     for d in sorted(best):
         a = best[d]
@@ -101,12 +110,12 @@ def load_anchors(
         out.append(
             AnchorNode(
                 a.anchor_id, d, a.evidence_tier, a.form, a.source_available_at,
-                frozenset(m.security_id for m in cands if m.security_id and m.status == "RESOLVED"),
+                frozenset(cn(m.security_id) for m in cands if m.security_id and m.status == "RESOLVED"),
                 sum(1 for m in cands if not m.security_id or m.status != "RESOLVED") + sum(1 for m in mem if m.classification == "UNRESOLVED"),
-                {m.security_id: m.identity_basis for m in cands if m.security_id},
-                {m.security_id: m.issuer_name for m in cands if m.security_id},
-                {m.security_id: (m.shares or 0.0) for m in cands if m.security_id},
-                lei={m.security_id: m.lei for m in cands if m.security_id and m.lei and m.lei not in ("N/A", "")},
+                {cn(m.security_id): m.identity_basis for m in cands if m.security_id},
+                {cn(m.security_id): m.issuer_name for m in cands if m.security_id},
+                {cn(m.security_id): (m.shares or 0.0) for m in cands if m.security_id},
+                lei={cn(m.security_id): m.lei for m in cands if m.security_id and m.lei and m.lei not in ("N/A", "")},
             )
         )  # fmt: skip
     return out
@@ -127,6 +136,9 @@ class Leg:
     security_id: str | None = None
     resolution: str = "UNRESOLVED"
     reason: str = ""
+    conflict_csv: date | None = (
+        None  # a discovery-CSV date that disagrees with the OFFICIAL one (never widens the primary date)
+    )
 
 
 _PHRASE = re.compile(
@@ -295,13 +307,19 @@ def load_legs(session: Session, run_id: str | None = None) -> list[Leg]:
         ann_d = a.announcement_at.date() if a and a.announcement_at else None
         lo: date | None
         hi: date | None
+        conflict_csv: date | None = None
         if e.status in CONFIRMED and official:
             lo = hi = official
             exact = True
         elif e.status == "CONFLICT" and official and e.discovery_date:
             csv = _session(cal, e.discovery_date)
             assert csv is not None
-            lo, hi, exact = min(official, csv), max(official, csv), False
+            lo, hi, exact = (
+                official,
+                official,
+                True,
+            )  # PRIMARY (official release) wins; the CSV date is only a recorded conflict
+            conflict_csv = csv if csv != official else None
         elif e.status in ("DATE_TBA", "UNRESOLVED") and ann_d:
             lo, hi, exact = _session(cal, ann_d), None, False
         else:
@@ -323,6 +341,7 @@ def load_legs(session: Session, run_id: str | None = None) -> list[Leg]:
                         hi,
                         exact,
                         e.discovery_date,
+                        conflict_csv=conflict_csv,
                     )
                 )
     return legs
@@ -447,6 +466,7 @@ def validate_segment(
 ) -> SegmentResult:
     cal = get_calendar("XNYS")
     seg_lo, seg_hi = _next_session(cal, a.as_of), b.as_of
+    cohort_ts = cal.first_sessions_of_months(seg_lo, seg_hi)
     inside = [
         leg for leg in legs_all
         if (leg.lo is not None and seg_lo <= leg.lo <= seg_hi) or (leg.lo is None and leg.discovery_date and a.as_of < leg.discovery_date <= b.as_of)
@@ -545,9 +565,7 @@ def validate_segment(
         else:
             dt = "UNEXPLAINED"
         ev_status = ",".join(f"{e.kind}:{e.status}" for e in evs) or "none"
-        if any(e.status == "CONFLICT" for e in evs):
-            dt = "DATE_CONFLICT"
-        elif any(e.status in ("DATE_TBA", "UNRESOLVED") for e in evs):
+        if any(e.status in ("DATE_TBA", "UNRESOLVED") for e in evs):
             dt = "PARSER_MISS" if False else "DATE_MISSING_IN_RELEASE"
         elif not ok:
             dt = "UNEXPLAINED"
@@ -590,6 +608,9 @@ def validate_segment(
                         f"possible identity link with {other.name} (name token overlap, shares ratio {rb / ra:.2f}): CUSIP/name change of ONE issuer?"
                     )
                     d_.difference_type = "SECURITY_IDENTITY_GAP"
+    for lg in inside:
+        if lg.conflict_csv and lg.exact and lg.security_id:
+            deltas.append(Delta(lg.security_id, a.names.get(lg.security_id) or b.names.get(lg.security_id) or lg.ticker, "n/a", f"{lg.kind}:{lg.status}", "n/a", "official date", "CSV date differs", "DISCOVERY_CONFLICT", None, [f"official effective {lg.lo} vs discovery CSV {lg.conflict_csv}: the primary date stands; the CSV never widens it"]))  # fmt: skip
     # confirmed-but-unresolved legs: identity gap, the segment cannot be trusted for the dates around them
     seg_block: str | None = None
     for leg in unresolved_confirmed:
@@ -609,6 +630,22 @@ def validate_segment(
             )
         )
         windows[f"{leg.ticker}?{leg.event_id}"] = (lo, max(hi, lo + timedelta(days=1)))
+    # an unresolved PRIMARY add and remove of the SAME ticker inside the segment: a transient member whose identity is unknown. It is a
+    # member between the two dates, so the cohorts in between cannot be reconstructed.
+    for tk in {x.ticker for x in unresolved_confirmed}:
+        adds = [
+            x.lo
+            for x in unresolved_confirmed
+            if x.ticker == tk and x.kind == "ADD" and x.exact and x.lo
+        ]
+        rems = [
+            x.lo
+            for x in unresolved_confirmed
+            if x.ticker == tk and x.kind == "REMOVE" and x.exact and x.lo
+        ]
+        if adds and rems and min(adds) < max(rems):
+            windows[f"transient-primary:{tk}"] = (min(adds), max(rems))
+            deltas.append(Delta(f"{tk}?", tk, "ABSENT", "ADD+REMOVE:PRIMARY", "ABSENT", "?", "?", "SECURITY_IDENTITY_GAP", (str(min(adds)), str(max(rems))), ["primary add and remove of the same ticker inside the segment; the security is in no anchor, so it has no security_id"]))  # fmt: skip
     # Unconfirmed discovery-CSV legs never give a date. Each CSV ROW is first classified against the anchors:
     #  1. both legs resolve to ONE security                       -> TICKER_ALIAS_ONLY (rename artifact of the CSV)
     #  2. a leg resolves into the LEI lineage (old or new)         -> alias of that security (rename), not membership
@@ -674,23 +711,42 @@ def validate_segment(
                         1  # matched to an anchor-visible unexplained change: a hint for that gap
                     )
                     continue
-                gap_type = (
-                    "TRANSIENT_HOLDING"
-                    if x.ticker in transient_tickers
-                    else "SECURITY_IDENTITY_GAP"
-                )
+                is_trans = x.ticker in transient_tickers
+                gap_type = "TRANSIENT_HOLDING" if is_trans else "SECURITY_IDENTITY_GAP"
                 why = (
                     "same ticker added and removed inside the segment (transient member the anchors cannot see)"
-                    if x.ticker in transient_tickers
+                    if is_trans
                     else "more discovery legs than anchor-visible changes (unresolved ticker)"
                 )
+                win: tuple[str, str] | None = None
+                if is_trans:
+                    ds = [
+                        lg.discovery_date
+                        for lg in unconfirmed
+                        if lg.ticker == x.ticker and lg.discovery_date
+                    ]
+                    if ds:
+                        lo_t, hi_t = _session(cal, min(ds)), _session(cal, max(ds))
+                        crosses = (
+                            lo_t is not None
+                            and hi_t is not None
+                            and any(lo_t <= m < hi_t for m in cohort_ts)
+                        )
+                        if crosses and res.phrases.get(x.ticker) and lo_t and hi_t:
+                            # DISCOVERY corroborated by a mention in an archived S&P release AND able to change a monthly decision
+                            windows[f"transient:{x.ticker}"] = (lo_t, hi_t)
+                            win = (str(lo_t), str(hi_t))
+                monthly = (
+                    "blocks only the monthly cohorts in its window"
+                    if win
+                    else "DISCOVERY_UNCORROBORATED: warning only for monthly research"
+                )
                 deltas.append(Delta(x.security_id or f"{x.ticker}?", x.name or x.ticker, "n/a", f"{x.kind}:{x.status}", "n/a", "no change (anchors)" if x.security_id else "?", "CSV claims a change", gap_type,
-                                    None, [f"discovery CSV {x.kind} {x.ticker} {x.discovery_date}: unconfirmed, date not trusted; {why}; {'blocks the segment (strict)' if strict else 'QA only (lenient)'}"]))  # fmt: skip
-                if strict:
-                    seg_block = (
-                        seg_block
-                        or f"unconfirmed discovery leg {x.kind} {x.ticker} {x.discovery_date}: {why}"
-                    )
+                                    win, [f"discovery CSV {x.kind} {x.ticker} {x.discovery_date}: unconfirmed, date not trusted; {why}; monthly: {monthly}; daily canonical: blocks the segment"]))  # fmt: skip
+                seg_block = (
+                    seg_block
+                    or f"unconfirmed discovery leg {x.kind} {x.ticker} {x.discovery_date}: {why}"
+                )
     # replay forward / backward on confirmed exact events
     exact = sorted(
         [
@@ -744,12 +800,22 @@ def validate_segment(
 # ───────────────────────────────────────────── cohorts
 @dataclass
 class Cohort:
-    date: date
+    date: date  # decision_at (open of the first session of the month)
     status: str  # MEMBERSHIP_READY | BLOCKED | NO_ANCHOR
     segment: str | None
     n_members: int | None
     reasons: list[str] = field(default_factory=list)
     members: frozenset[str] | None = None
+    forward_set: frozenset[str] | None = (
+        None  # anchor A + every change certain to have happened by decision_at
+    )
+    backward_set: frozenset[str] | None = (
+        None  # anchor B - every change certain to happen after decision_at
+    )
+    sets_equal: bool | None = None
+    primary_conflicts: list[str] = field(default_factory=list)
+    monthly_ambiguity: list[str] = field(default_factory=list)
+    daily_ready: bool = False  # the stricter DAILY_CANONICAL standard for the same cohort
 
 
 @dataclass
@@ -757,32 +823,58 @@ class GraphReport:
     anchors: list[AnchorNode]
     segments: list[SegmentResult]
     cohorts: list[Cohort]
-    strict: bool
+    strict: bool  # True = DAILY_CANONICAL standard; False = MONTHLY_RESEARCH standard
     longest_run: int
     ready: int
     post_limit_events_used: int = 0
+    daily_longest_run: int = 0
+    daily_ready: int = 0
+    weak_identity: list[str] = field(
+        default_factory=list
+    )  # securities in the anchors WITHOUT official CUSIP/ISIN evidence
+
+    @property
+    def standard(self) -> str:
+        return "DAILY_CANONICAL" if self.strict else "MONTHLY_RESEARCH"
+
+
+def sets_at(seg: SegmentResult, t: date) -> tuple[frozenset[str], frozenset[str]]:
+    """(forward_set, backward_set) at the OPEN of session ``t``. Forward starts from anchor A and applies only changes CERTAIN to have
+    happened by ``t`` (exact events <= t; uncertain intervals whose last possible session is <= t); backward starts from anchor B and
+    undoes only changes certain to happen after ``t``. They differ exactly for a security whose uncertain interval covers ``t``."""
+    fwd, bwd = set(seg.a.members), set(seg.b.members)
+    for sid in set(seg.a.members) | set(seg.b.members) | set(seg.pinned) | set(seg.windows):
+        in_a, in_b = sid in seg.a.members, sid in seg.b.members
+        if sid in seg.pinned:
+            ev = sorted(seg.pinned[sid])
+            f, b = in_a, in_b
+            for d, k in ev:
+                if d <= t:
+                    f = k == "ADD"
+            for d, k in reversed(ev):
+                if d > t:
+                    b = k != "ADD"
+        elif sid in seg.windows:
+            lo, hi = seg.windows[sid]
+            f = in_b if hi <= t else in_a
+            b = in_a if lo > t else in_b
+        else:
+            f, b = in_a, in_b
+        if sid in seg.windows or sid in seg.pinned or sid in seg.a.members or sid in seg.b.members:
+            (fwd.add if f else fwd.discard)(sid)
+            (bwd.add if b else bwd.discard)(sid)
+    return frozenset(x for x in fwd if x in _ids(seg)), frozenset(x for x in bwd if x in _ids(seg))
+
+
+def _ids(seg: SegmentResult) -> set[str]:
+    return set(seg.a.members) | set(seg.b.members) | set(seg.pinned)
 
 
 def members_at(seg: SegmentResult, t: date) -> frozenset[str] | None:
     """Membership at the OPEN of session ``t`` inside the segment, or None when a security is uncertain at ``t``."""
-    state = set(seg.a.members)
-    for sid in set(seg.b.members) | state | set(seg.pinned):
-        w = seg.windows.get(sid)
-        if w and w[0] <= t < w[1]:
-            return None
-        if sid in seg.pinned:
-            st = sid in seg.a.members
-            for d, kind in sorted(seg.pinned[sid]):
-                if d <= t:
-                    st = kind == "ADD"
-            (state.add if st else state.discard)(sid)
-        elif w:  # uncertain interval elsewhere: before it the A-state, after it the B-state
-            (
-                state.add
-                if (sid in seg.b.members if t >= w[1] else sid in seg.a.members)
-                else state.discard
-            )(sid)
-    return frozenset(state)
+    f, b = sets_at(seg, t)
+    covering = [w for w in seg.windows.values() if w[0] <= t < w[1]]
+    return f if f == b and not covering else None
 
 
 def reconstruct(
@@ -790,10 +882,17 @@ def reconstruct(
     start: date,
     end: date,
     *,
-    strict: bool = True,
+    standard: str = "MONTHLY",
+    strict: bool | None = None,
     settings: Settings | None = None,
     persist: bool = False,
 ) -> GraphReport:
+    """``standard``: MONTHLY (the Research Lab gate: an uncertainty blocks a cohort only if it can change the membership at THAT
+    decision_at) or DAILY (canonical: any unresolved change or unconfirmed discovery leg blocks its whole segment).
+    ``strict`` (legacy): True -> DAILY, False -> MONTHLY."""
+    if strict is not None:
+        standard = "DAILY" if strict else "MONTHLY"
+    daily = standard == "DAILY"
     cfg = settings or get_settings()
     limit = pre_holdout_limit(cfg)
     anchors = load_anchors(session, settings=cfg)
@@ -803,7 +902,7 @@ def reconstruct(
     anchors = adjust_tier_b(anchors, legs, res)
     segs: dict[tuple[date, date], SegmentResult] = {}
     for a, b in itertools.pairwise(anchors):
-        segs[(a.as_of, b.as_of)] = validate_segment(session, a, b, legs, res, strict=strict)
+        segs[(a.as_of, b.as_of)] = validate_segment(session, a, b, legs, res, strict=True)
     cohorts: list[Cohort] = []
     for t in cal.first_sessions_of_months(start, end):
         prev = [x for x in anchors if x.as_of < t]
@@ -821,29 +920,80 @@ def reconstruct(
             continue
         seg = segs[(prev[-1].as_of, nxt[0].as_of)]
         label = f"{seg.a.as_of}→{seg.b.as_of}"
-        reasons: list[str] = []
-        if seg.a.unresolved_lines or seg.b.unresolved_lines:
-            reasons.append("anchor holdings not resolved to a security_id")
-        if seg.segment_blocked:
-            reasons.append(seg.segment_blocked)
-        m = members_at(seg, t)
-        if m is None:
-            unc = [
-                d
-                for d in seg.deltas
-                if d.window and d.window[0] and d.window[1] and d.window[0] <= str(t) < d.window[1]
-            ]
-            reasons.append(
-                f"{len(unc)} securities with an uncertain effective date covering this cohort"
+        fwd, bwd = sets_at(seg, t)
+        cover = [
+            d
+            for d in seg.deltas
+            if d.window and d.window[0] and d.window[1] and d.window[0] <= str(t) < d.window[1]
+        ]
+        conflicts = [
+            f"{d.difference_type}: {d.name}"
+            for d in cover
+            if d.difference_type in ("UNEXPLAINED", "DATE_CONFLICT")
+        ]
+        ambiguity = [f"{d.difference_type}: {d.name}" for d in cover]
+        ident = bool(seg.a.unresolved_lines or seg.b.unresolved_lines)
+        daily_ok = (
+            not ident and seg.status == "VALIDATED" and not seg.segment_blocked and not seg.windows
+        )
+        monthly_reasons: list[str] = []
+        if ident:
+            monthly_reasons.append("anchor holdings not resolved to a security_id")
+        if ambiguity:
+            monthly_reasons.append(
+                f"{len(ambiguity)} securities with an effective-date uncertainty covering this decision_at"
             )
-        if reasons:
-            cohorts.append(Cohort(t, "BLOCKED", label, None, reasons))
-        else:
-            cohorts.append(Cohort(t, "MEMBERSHIP_READY", label, len(m or ()), [], m))
+        if fwd != bwd and not ambiguity:
+            monthly_reasons.append(
+                "forward and backward reconstructions disagree without an explained uncertainty: fail closed"
+            )
+        daily_reasons = list(monthly_reasons)
+        if not daily_ok:
+            daily_reasons.append(
+                seg.segment_blocked or "daily canonical: the segment has unresolved changes"
+            )
+        reasons = daily_reasons if daily else monthly_reasons
+        c = Cohort(
+            t,
+            "BLOCKED" if reasons else "MEMBERSHIP_READY",
+            label,
+            None if reasons else len(fwd),
+            reasons,
+            None if reasons else fwd,
+            fwd,
+            bwd,
+            fwd == bwd,
+            conflicts,
+            ambiguity,
+            daily_ok and not monthly_reasons,
+        )
+        cohorts.append(c)
+    rep = GraphReport(anchors, list(segs.values()), cohorts, daily, _run(cohorts, lambda c: c.status == "MEMBERSHIP_READY"), sum(c.status == "MEMBERSHIP_READY" for c in cohorts),
+                      sum(1 for s_ in segs.values() for leg in s_.legs if leg.lo and leg.lo > limit), _run(cohorts, lambda c: c.daily_ready), sum(c.daily_ready for c in cohorts))  # fmt: skip
+    have = {
+        x
+        for (x,) in session.execute(
+            select(SecurityIdentifierEvidence.security_id).where(
+                SecurityIdentifierEvidence.kind == "OFFICIAL",
+                SecurityIdentifierEvidence.id_type.in_(("CUSIP", "ISIN")),
+            )
+        )
+    }
+    from pitquant.universe.identity_bridge import succession_map
+
+    cn = succession_map(session)
+    have |= {
+        cn[k] for k in cn if k in have
+    }  # a successor inherits the identity evidence of its predecessor chain
+    rep.weak_identity = sorted({x for a_ in anchors for x in a_.members if x not in have})
+    return rep
+
+
+def _run(cohorts: list[Cohort], ok: Any) -> int:
     best = run = 0
     prev_d: date | None = None
     for c in cohorts:
-        if c.status == "MEMBERSHIP_READY":
+        if ok(c):
             run = (
                 run + 1
                 if prev_d
@@ -853,17 +1003,7 @@ def reconstruct(
             best, prev_d = max(best, run), c.date
         else:
             run, prev_d = 0, None
-    used_after = sum(1 for s in segs.values() for leg in s.legs if leg.lo and leg.lo > limit)
-    rep = GraphReport(
-        anchors,
-        list(segs.values()),
-        cohorts,
-        strict,
-        best,
-        sum(c.status == "MEMBERSHIP_READY" for c in cohorts),
-        used_after,
-    )
-    return rep
+    return best
 
 
 # ───────────────────────────────────────────── persistence + metrics
@@ -924,9 +1064,7 @@ def graph_metrics(rep: GraphReport) -> dict[str, Any]:
     for a in rep.anchors:
         tiers[a.tier] = tiers.get(a.tier, 0) + 1
     members = sum(len(a.members) for a in rep.anchors)
-    weak = sum(
-        1 for a in rep.anchors for b in a.basis.values() if b in ("NAME_ONLY", "NAME_TEMPORAL")
-    )
+    weak = len(rep.weak_identity)
     return {
         "verified_anchors": len(rep.anchors),
         "anchors_by_tier": tiers,
@@ -940,5 +1078,74 @@ def graph_metrics(rep: GraphReport) -> dict[str, Any]:
         "longest_continuous_period": rep.longest_run,
         "security_identity_resolution": {"anchor_members": members, "weak_identity_members": weak, "unresolved_lines": sum(a.unresolved_lines for a in rep.anchors)},
         "post_limit_events_used": rep.post_limit_events_used,
-        "mode": "STRICT" if rep.strict else "LENIENT_QA",
+        "mode": rep.standard,
+        "daily_canonical_cohorts": rep.daily_ready,
+        "daily_canonical_longest_run": rep.daily_longest_run,
     }  # fmt: skip
+
+
+# ───────────────────────────────────────────── gap reclassification (ADR-0033)
+CATEGORIES = (
+    "PRIMARY_DELTA_UNEXPLAINED", "PRIMARY_EVENT_MISSING", "MONTHLY_DATE_AMBIGUITY", "SECURITY_IDENTITY_ONLY", "TICKER_OR_NAME_CHANGE",
+    "SUCCESSOR_SECURITY", "DISCOVERY_UNCORROBORATED", "DISCOVERY_CONFLICT", "TRANSIENT_EVENT_POSSIBLE", "RESOLVED",
+)  # fmt: skip
+
+
+def classify_gaps(rep: GraphReport) -> list[dict[str, Any]]:
+    """One record per delta/alias of every segment with its ADR-0033 category and whether it can really block a monthly membership
+    (``blocks_membership``) or only an identity join (``blocks_identity``). The cohorts it blocks are listed."""
+    out: list[dict[str, Any]] = []
+    cohort_dates = [c.date for c in rep.cohorts]
+    for sg in rep.segments:
+        label = f"{sg.a.as_of}→{sg.b.as_of}"
+        for d in sg.deltas:
+            crossing = [
+                str(t)
+                for t in cohort_dates
+                if d.window and d.window[0] and d.window[1] and d.window[0] <= str(t) < d.window[1]
+            ]
+            t = d.difference_type
+            if t == "TICKER_ALIAS_ONLY":
+                cat, bm, bi = "TICKER_OR_NAME_CHANGE", False, False
+            elif t == "DISCOVERY_CONFLICT":
+                cat, bm, bi = "DISCOVERY_CONFLICT", False, False
+            elif t in ("MISSING_ADDITION_EVENT", "MISSING_REMOVAL_EVENT"):
+                cat, bm, bi = (
+                    ("PRIMARY_EVENT_MISSING", True, False)
+                    if crossing
+                    else ("RESOLVED", False, False)
+                )
+            elif t == "DATE_MISSING_IN_RELEASE":
+                cat, bm, bi = (
+                    ("MONTHLY_DATE_AMBIGUITY", True, False)
+                    if crossing
+                    else ("RESOLVED", False, False)
+                )
+            elif t == "UNEXPLAINED":
+                cat, bm, bi = (
+                    ("PRIMARY_DELTA_UNEXPLAINED", True, False)
+                    if crossing
+                    else ("RESOLVED", False, False)
+                )
+            elif t == "TRANSIENT_HOLDING":
+                cat, bm, bi = (
+                    ("TRANSIENT_EVENT_POSSIBLE", True, False)
+                    if crossing
+                    else ("DISCOVERY_UNCORROBORATED", False, False)
+                )
+            elif t == "SECURITY_IDENTITY_GAP":
+                if d.window:  # an anchor delta (or a primary leg) whose identity is unresolved: membership unknown until the identity is
+                    cat, bm, bi = (
+                        ("SECURITY_IDENTITY_ONLY", bool(crossing), True)
+                        if crossing
+                        else ("RESOLVED", False, False)
+                    )
+                else:  # a discovery-CSV leg whose ticker resolves to nothing
+                    cat, bm, bi = "DISCOVERY_UNCORROBORATED", False, False
+            else:
+                cat, bm, bi = "PRIMARY_DELTA_UNEXPLAINED", bool(crossing), False
+            out.append({"segment": label, "difference_type": t, "category": cat, "security": d.name, "events": d.events_status, "window": list(d.window) if d.window else None, "cohorts_blocked": crossing, "blocks_membership": bm, "blocks_identity": bi, "hints": d.hints})  # fmt: skip
+        for al in sg.alias_candidates:
+            kind = "SUCCESSOR_SECURITY" if "LEI" in al["evidence"] else "TICKER_OR_NAME_CHANGE"
+            out.append({"segment": label, "difference_type": "ALIAS", "category": kind, "security": al["tickers"], "events": "anchor LEI / discovery pair", "window": None, "cohorts_blocked": [], "blocks_membership": False, "blocks_identity": False, "hints": [al["evidence"]]})  # fmt: skip
+    return out

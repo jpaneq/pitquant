@@ -38,6 +38,8 @@ GROUPS = {
         "sp500_anchor_crosschecks",
         "sp500_membership_segments",
         "security_ticker_alias",
+        "sec_13f_list_entries",
+        "security_succession",
         "index_anchor_snapshots",
         "index_current_anchors",
         "security_profiles",

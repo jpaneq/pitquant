@@ -413,7 +413,7 @@ def _anchor_window(args: argparse.Namespace) -> int:
             session,
             date.fromisoformat(args.start),
             date.fromisoformat(args.end),
-            strict=not args.lenient,
+            standard=args.standard.upper(),
         )
     m = graph_metrics(rep)
     blocked = [c for c in rep.cohorts if c.status != "MEMBERSHIP_READY"]
@@ -675,7 +675,10 @@ def main(argv: list[str] | None = None) -> int:
         "--legacy", action="store_true", help="single-current-anchor reconstruction (superseded)"
     )
     wr.add_argument(
-        "--lenient", action="store_true", help="QA: do not block on unconfirmed discovery-CSV legs"
+        "--standard",
+        choices=["monthly", "daily"],
+        default="monthly",
+        help="monthly = Research Lab gate; daily = DAILY_CANONICAL",
     )
     wr.set_defaults(func=_window)
     tp = sub.add_parser("tiingo-backfill-plan", help="D-05 demand plan for a window (no API calls)")

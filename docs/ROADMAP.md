@@ -140,3 +140,7 @@ de alias de ticker de miembros; después Tiingo (D-05).
 24 presentaciones SPY verificadas contra EDGAR (13 NPORT-P + 11 N-30D, 2017-09-30 → 2022-09-30) = 17 fechas de ancla, identidad por
 CUSIP/ISIN/LEI, 16 segmentos con gaps LOCALES. Pendiente: evidencia oficial de las fechas de cada cambio (docs/SP500_LOCAL_GAPS.md) y
 vínculos de identidad por cambio de CUSIP; extensión a 2014-2017 sólo cuando 2017-10→2022-09 llegue a 60/60.
+
+## Iteración 10 (2026-10-03): estándar mensual, lista SEC 13(f) y sucesión de securities (ADR-0033)
+Puerta mensual del Research Lab separada del criterio diario canónico, DISCOVERY sin poder de bloqueo, 21 listas 13(f) archivadas, puente de identidad
+y seis sucesiones verificadas. Pendiente: fecha oficial de los cambios primarios (docs/SP500_LOCAL_GAPS.md) y los 21 N-30D sin CUSIP.

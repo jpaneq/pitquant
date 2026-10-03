@@ -35,8 +35,8 @@ temporal, se rechaza.
   "FIXTURE"). Nunca presentarlos como históricos reales.
 - No dar una funcionalidad por terminada porque "ejecuta": correcta, testeada, tipada,
   documentada, reproducible, point-in-time.
-- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0033).
-- Migraciones: `0001`…`0013` fijadas (`0013` grafo de anclas SEC SPY: `sp500_anchors`, `sp500_anchor_members`, `sp500_anchor_crosschecks`, `sp500_membership_segments`, `security_ticker_alias`) (`0011` perfiles descriptivos `security_profiles`) (`0010` anclas de índice SPY/IVV) (`0009` evidencia de membresía S&P 500) (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
+- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0034).
+- Migraciones: `0001`…`0014` fijadas (`0014` lista SEC 13(f) y sucesión de securities) (`0013` grafo de anclas SEC SPY: `sp500_anchors`, `sp500_anchor_members`, `sp500_anchor_crosschecks`, `sp500_membership_segments`, `security_ticker_alias`) (`0011` perfiles descriptivos `security_profiles`) (`0010` anclas de índice SPY/IVV) (`0009` evidencia de membresía S&P 500) (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
   código↔ISIN, `0006` transiciones de ISIN, `0007` traza de corporate actions, `role` de
   security e `issuer_id` en filings SEC); **todo cambio de esquema = revisión nueva**.
 - Identidad (ADR-0022): sólo evidencia oficial EXACTA desempata o ancla un código; subir
@@ -214,3 +214,10 @@ Etiquetas humanas del Analyzer nunca son feature ni target. `pitquant research-d
 - `pitquant sp500-window-readiness --start 2017-10-01 --end 2022-09-30` usa el grafo (`--legacy` = ancla única; `--lenient` = QA).
 - Un gap sólo bloquea SU segmento entre dos anclas. Nunca se carga un ancla posterior a 2022-09-30 (holdout). Las anclas son dato de
   referencia: `features`, `analyzer`, `backtest`, `api` no pueden importarlas.
+
+## Estándar mensual vs diario, 13F y sucesiones (ADR-0033)
+- `D02_MONTHLY_RESEARCH_READY` es la puerta del Research Lab (decision_at mensuales); `D02_DAILY_CANONICAL_READY` el criterio estricto.
+  `pitquant sp500-window-readiness --standard monthly|daily`. El CSV de discovery nunca bloquea por sí solo ni invalida evidencia primaria.
+- Lista SEC 13(f): `python scripts/ingest_13f_lists.py` (PDF archivados); puente + seis sucesiones verificadas: `python scripts/apply_identity_bridge.py`;
+  informes: `python scripts/build_sp500_anchor_graph.py` → `docs/SP500_ANCHOR_GRAPH.md`, `docs/US_IDENTITY_BRIDGE.md`, `docs/SP500_LOCAL_GAPS.md`.
+- Un security_id nuevo (reorganización, nuevo CUSIP) NO es salida + entrada del índice: `security_succession` con `membership_continuity`.
