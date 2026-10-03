@@ -37,7 +37,7 @@ test.describe('Analyzer + Research Lab on the synthetic fixture', () => {
   test('Research Lab: HOLDOUT SEALED, empty states, no fake results', async ({ page }) => {
     await page.goto('/research')
     await expect(page.getByText('HOLDOUT SEALED')).toBeVisible()
-    await expect(page.getByText('RESEARCH_DATA_READY')).toBeVisible()
+    await expect(page.getByText('RESEARCH_DATA_READY').first()).toBeVisible()
     for (const tab of ['Experiments', 'Backtests']) {
       await page.getByRole('button', { name: tab }).click()
       await expect(page.getByTestId('empty-state')).toContainText(/No .* yet/)
