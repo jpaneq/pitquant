@@ -522,15 +522,21 @@ def _sim_update(args: argparse.Namespace) -> int:
     if as_of is not None and as_of.tzinfo is None:
         as_of = as_of.replace(tzinfo=UTC)
     with make_session_factory(make_engine(settings.database.url))() as session:
-        results = sim.update_active(session, settings, as_of, args.simulation_id)
-        session.commit()
+        results = sim.update_active(session, settings, as_of, args.simulation_id, commit=True)
     total = sum(r.new_events for r in results)
     out: dict[str, Any] = {
         "simulations": len(results),
         "new_events": total,
         "outcomes_created": sum(r.outcome_created for r in results),
+        "failed": sum(r.status != "OK" for r in results),
         "detail": [
-            {"simulation_id": r.simulation_id, "state": r.state, "new_events": r.new_events}
+            {
+                "simulation_id": r.simulation_id,
+                "status": r.status,
+                "state": r.state,
+                "new_events": r.new_events,
+                "error": r.error,
+            }
             for r in results
         ],
     }
@@ -541,8 +547,11 @@ def _sim_update(args: argparse.Namespace) -> int:
             f"PAPER TRADING — NO REAL MONEY\nsimulations {out['simulations']}  new_events = {total}  outcomes_created {out['outcomes_created']}"
         )
         for d in out["detail"]:
-            print(f"  {d['simulation_id']}  {d['state']:<20} +{d['new_events']}")
-    return 0
+            print(
+                f"  {d['simulation_id']}  {d['status']:<9} {d['state']:<20} +{d['new_events']}"
+                + (f"  {d['error']}" if d["error"] else "")
+            )
+    return 1 if out["failed"] else 0
 
 
 def _sim_replay(args: argparse.Namespace) -> int:

@@ -387,3 +387,30 @@ def test_http_surface_events_replay_compare_explain_insights_hypothesis(client: 
     assert h.json()["status"] == "UNTESTED"
     assert client.get("/simulations/hypotheses").json()[0]["status"] == "UNTESTED"
     assert client.get(f"/simulations/{sid}").json()["events"][0]["sequence"] == 0
+
+
+def test_a_v0_row_without_event_zero_hash_or_exit_policy_still_updates_with_the_legacy_behaviour(
+    env: Env,
+) -> None:
+    """Rows created before ADR-0036 have no event #0, no snapshot hash and no exit policy: they update (event #0 is written by the first update)."""
+    s, cfg, sf, _ = env
+    src = make(env)
+    cols = {
+        c.key: getattr(src, c.key)
+        for c in Simulation.__table__.columns
+        if c.key not in ("simulation_id", "snapshot_hash", "source_provenance")
+    }
+    plan = {
+        k: v
+        for k, v in src.final_simulated_plan.items()
+        if k not in ("exit_policy", "exit_fractions", "risk_reward", "sizing", "stop_distance_pct")
+    }
+    old = Simulation(**{**cols, "final_simulated_plan": plan})
+    s.add(old)
+    s.flush()
+    assert old.snapshot_hash is None and sim.stored_events(s, old.simulation_id) == []
+    sim.update_simulation(s, cfg, old.simulation_id, LATER)
+    ev = sim.stored_events(s, old.simulation_id)
+    assert ev[0].sequence_number == 0 and ev[0].event_type == "SIMULATION_CREATED"
+    assert sim.plan_of(old).exit_policy == "LEGACY_HALF_AT_TP1"
+    assert sim.replay_simulation(s, old.simulation_id).match

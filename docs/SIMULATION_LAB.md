@@ -121,6 +121,18 @@ benchmark, versión del motor de eventos, hash del snapshot y si verifica.
 | UI: timeline por eventos, pestañas, wizard, dashboard con filtros | PARTIAL | IMPLEMENTED |
 | SIZING `FIXED_NOTIONAL`, `target_3` | MISSING | IMPLEMENTED |
 | rutas SPA `/simulations*` al recargar | BUG (devolvía JSON) | corregido |
+| leer sólo barras nuevas (4.3) | MISSING | **PARTIAL**: se releen todas, se añaden sólo eventos nuevos |
+| versión del motor fijada por simulación (54) | MISSING | **MISSING** (se guarda `engine_version`, no se usa para evaluar) |
+| contenido de las observaciones T+n (11) | PARTIAL | **PARTIAL** (precio/retorno/benchmark; tendencia, ATR, fundamentales, valoración, S/R, régimen sólo con *Thesis snapshot* manual) |
+| `bars_to_entry` | MISSING | **MISSING** (`days_waiting_entry` sí) |
+
+## 18b. Qué cambia al reevaluar una simulación V0
+Se conserva `LEGACY_HALF_AT_TP1`. Cambian: gap al open ⇒ stop/objetivo de esa misma barra se evalúan; invalidación tras entrar ⇒ salida al cierre; una entrada intrabarra ya
+no cuenta el máximo/mínimo de su barra en MFE/MAE; la entrada `MARKET` sólo es ambigua si stop y objetivo caben en la barra. Detalle y razones en ADR-0036.
+
+## 18c. Operación
+`simulation-update` aísla cada simulación (savepoint + commit): `OK` / `DIVERGED` (`EVENT_LOG_DIVERGENCE`) / `TAMPERED` (`SNAPSHOT_TAMPERED`) / `ERROR`, y sale con 1 si alguna falla.
+Un benchmark que llega tarde no es divergencia. La BD local pasa a `0018` con `alembic upgrade head` (haz copia antes).
 
 ## 19. Limitaciones conocidas
 Sólo LONG y EQUITY (BTC: columnas NULL, sin conectores); sólo barras diarias (la ambigüedad intradía es real, no se resuelve); sin dividendos, comisiones ni

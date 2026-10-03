@@ -39,6 +39,19 @@ sin `simulation-update`/`simulation-replay`, sin comparación PITQuant vs usuari
     JSON la API, con `Vary: Accept` (V0 devolvía JSON al recargar el detalle).
 
 ## Consecuencias
-Nada de esto cambia modelos, datasets, Feature Engine, holdout ni D-02. Las simulaciones V0 se siguen evaluando con su comportamiento original.
+Nada de esto cambia modelos, datasets, Feature Engine, holdout ni D-02. **Las simulaciones V0 conservan sólo el esquema de salidas** (`LEGACY_HALF_AT_TP1`); el motor v2
+corrige además cuatro comportamientos que SÍ cambian al reevaluar una fila V0: (a) una entrada con gap al open ahora evalúa stop y objetivo en la misma barra (V0
+ignoraba un stop posterior en esa barra); (b) la invalidación DESPUÉS de entrar cierra la posición al cierre (V0 sólo la miraba antes de entrar); (c) una entrada intrabarra
+ya no cuenta el máximo/mínimo de esa barra en `mfe`/`mae` (pudo ser anterior a la entrada); (d) la entrada `MARKET` (siguiente apertura) sólo es ambigua si stop y objetivo
+caben en la barra, no por el mero hecho de poder tocarse. Una fila V0 se actualiza igualmente (el evento #0 lo escribe el primer update) y `replay` la verifica.
+Un benchmark que llega después de la barra del valor (`bench_close`, `benchmark_return_since_entry`) no cuenta como divergencia; cualquier otra diferencia
+sí, y `update_active` la aísla por simulación (savepoint + commit propio; estados `OK` / `DIVERGED` / `TAMPERED` / `ERROR`; código de salida 1 si alguna falla).
 Limitación: `simulation-update` re-evalúa todas las barras posteriores a T0 y añade sólo los eventos nuevos (el motor no se reanuda desde un
 checkpoint); el resultado es idéntico y el coste es lineal en el horizonte (≤ 60 sesiones).
+
+## Pendiente / fuera de alcance (honesto)
+- **Leer sólo barras nuevas** (requisito 4.3): NO cumplido literalmente; el update lee todas las barras posteriores a T0 y añade sólo los eventos nuevos.
+- **Fijar la versión del motor por simulación**: NO implementado. Los eventos guardan `engine_version` pero la evaluación usa el motor vigente: el próximo cambio de
+  motor hará divergir las simulaciones abiertas (`DIVERGED`) hasta que se decida una política de migración.
+- **Observaciones T+n**: sólo precio, retorno y benchmark; sin tendencia, ATR, fundamentales, valoración, S/R ni régimen (eso sigue en `THESIS_SNAPSHOT` manual).
+- `bars_to_entry` no se calcula (siempre NULL); sí `days_waiting_entry`.

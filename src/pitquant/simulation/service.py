@@ -395,8 +395,15 @@ def _cancel_date(session: Session, sim: Simulation) -> date | None:
     return date.fromisoformat(ob.payload["date"]) if ob else None
 
 
+BENCHMARK_KEYS = (
+    "bench_close",
+    "benchmark_return_since_entry",
+)  # a benchmark bar may arrive AFTER the security's bar: not an integrity signal
+
+
 def _norm(e: dict[str, Any]) -> str:
-    return json.dumps([e["type"], str(e["date"]), e["payload"]], sort_keys=True, default=str)
+    payload = {k: v for k, v in e["payload"].items() if k not in BENCHMARK_KEYS}
+    return json.dumps([e["type"], str(e["date"]), payload], sort_keys=True, default=str)
 
 
 def stored_events(session: Session, simulation_id: str) -> list[SimulationEvent]:
@@ -434,6 +441,8 @@ class UpdateResult:
     outcome_created: bool
     state: str
     outcome: SimulationOutcome | None
+    status: str = "OK"  # OK | DIVERGED | TAMPERED | ERROR
+    error: str | None = None
 
 
 def _evaluate(
@@ -551,8 +560,12 @@ def update_active(
     settings: Settings,
     as_of: datetime | None = None,
     simulation_id: str | None = None,
+    *,
+    commit: bool = False,
 ) -> list[UpdateResult]:
-    """``pitquant simulation-update``: every simulation that is not closed (or one), in creation order."""
+    """``pitquant simulation-update``: every simulation that is not closed (or one), in creation order. Each simulation runs in its OWN savepoint (and
+    its own commit with ``commit=True``): one divergent, tampered or failing simulation is reported (``DIVERGED`` / ``TAMPERED`` / ``ERROR``) and never
+    rolls back the events of the others."""
     ids = (
         [simulation_id]
         if simulation_id
@@ -563,7 +576,21 @@ def update_active(
         lo = latest_outcome(session, sid)
         if simulation_id is None and lo is not None and lo.is_closed:
             continue
-        out.append(update_simulation(session, settings, sid, as_of))
+        try:
+            with session.begin_nested():
+                out.append(update_simulation(session, settings, sid, as_of))
+            if commit:
+                session.commit()
+        except PITQuantError as e:
+            msg = str(e)
+            status = (
+                "DIVERGED"
+                if "EVENT_LOG_DIVERGENCE" in msg
+                else "TAMPERED"
+                if "SNAPSHOT_TAMPERED" in msg
+                else "ERROR"
+            )
+            out.append(UpdateResult(sid, 0, False, lo.state if lo else "UNKNOWN", lo, status, msg))
     return out
 
 
