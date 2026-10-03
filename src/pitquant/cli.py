@@ -402,7 +402,79 @@ def _explain_panel(args: argparse.Namespace) -> int:
     return 0
 
 
+def _anchor_window(args: argparse.Namespace) -> int:
+    """D-02 over the HISTORICAL ANCHOR GRAPH (ADR-0032): local segments, never the single current anchor."""
+    from pitquant.universe.sp500_anchor_graph import graph_metrics, reconstruct
+
+    settings = get_settings()
+    factory = make_session_factory(make_engine(settings.database.url))
+    with factory() as session:
+        rep = reconstruct(
+            session,
+            date.fromisoformat(args.start),
+            date.fromisoformat(args.end),
+            strict=not args.lenient,
+        )
+    m = graph_metrics(rep)
+    blocked = [c for c in rep.cohorts if c.status != "MEMBERSHIP_READY"]
+    local = [
+        s
+        for s in rep.segments
+        if s.status != "VALIDATED" and any(c.segment == f"{s.a.as_of}→{s.b.as_of}" for c in blocked)
+    ]
+    status = "READY" if rep.longest_run >= 60 else "BLOCKED_LOCAL_SEGMENTS"
+    if args.json:
+        print(
+            json.dumps(
+                {
+                    **m,
+                    "status": status,
+                    "start": args.start,
+                    "end": args.end,
+                    "membership_ready": rep.ready,
+                    "blocked": len(blocked),
+                    "cohorts": [
+                        {
+                            "date": str(c.date),
+                            "status": c.status,
+                            "segment": c.segment,
+                            "reasons": c.reasons,
+                        }
+                        for c in rep.cohorts
+                    ],
+                    "local_blocking_segments": [f"{s.a.as_of}→{s.b.as_of}" for s in local],
+                },
+                indent=2,
+            )
+        )
+        return 0 if status == "READY" else 1
+    print(f"window {args.start} → {args.end}  [{m['mode']}]  status: {status}")
+    for k in (
+        "verified_anchors",
+        "segments",
+        "validated_segments",
+        "forward_validated_segments",
+        "backward_validated_segments",
+        "monthly_cohorts",
+        "monthly_cohorts_reconstructible",
+        "longest_continuous_period",
+        "post_limit_events_used",
+    ):
+        print(f"  {k:<34} {m[k]}")
+    print(f"  identity_ready                     {m['security_identity_resolution']}")
+    print(f"  blocked cohorts                    {len(blocked)}")
+    print(f"  local_blocking_segments            {len(local)}")
+    for sg in local:
+        kinds: dict[str, int] = {}
+        for d in sg.deltas:
+            kinds[d.difference_type] = kinds.get(d.difference_type, 0) + 1
+        print(f"    {sg.a.as_of} → {sg.b.as_of}  {sg.status:<20} {kinds}")
+    return 0 if status == "READY" else 1
+
+
 def _window(args: argparse.Namespace) -> int:
+    if not args.legacy:
+        return _anchor_window(args)
     from pitquant.universe.sp500_window import window_readiness
 
     settings = get_settings()
@@ -599,6 +671,12 @@ def main(argv: list[str] | None = None) -> int:
     wr.add_argument("--start", required=True, help="YYYY-MM-DD")
     wr.add_argument("--end", required=True, help="YYYY-MM-DD")
     wr.add_argument("--json", action="store_true")
+    wr.add_argument(
+        "--legacy", action="store_true", help="single-current-anchor reconstruction (superseded)"
+    )
+    wr.add_argument(
+        "--lenient", action="store_true", help="QA: do not block on unconfirmed discovery-CSV legs"
+    )
     wr.set_defaults(func=_window)
     tp = sub.add_parser("tiingo-backfill-plan", help="D-05 demand plan for a window (no API calls)")
     tp.add_argument("--start", default="2017-10-01")

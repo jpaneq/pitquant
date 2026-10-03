@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **62**.
+Tablas: **67**.
 
 ## Procedencia y calidad
 
@@ -336,6 +336,113 @@ Tablas: **62**.
 
 - CHECK `status IN ('OFFICIAL_CONFIRMED','OFFICIAL_REPUBLISHED_CONFIRMED','DISCOVERY_ONLY','DATE_TBA','CONFLICT','UNRESOLVED')`
 - INDEX ix_sp500_membership_events_run_id (run_id)
+
+### `sp500_anchors` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `anchor_id` | VARCHAR(36) | no | PK |
+| `as_of_date` | DATE | no |  |
+| `source_type` | VARCHAR(30) | no |  |
+| `evidence_kind` | VARCHAR(50) | no |  |
+| `evidence_tier` | VARCHAR(40) | no |  |
+| `form` | VARCHAR(12) | no |  |
+| `accession` | VARCHAR(20) | no |  |
+| `filer_cik` | VARCHAR(10) | no |  |
+| `source_available_at` | DATETIME | no |  |
+| `archive_id` | VARCHAR(36) | no | FK→`raw_source_archive.archive_id` |
+| `source_sha256` | VARCHAR(64) | no |  |
+| `member_count` | INTEGER | no |  |
+| `resolved_count` | INTEGER | no |  |
+| `unresolved_count` | INTEGER | no |  |
+| `excluded_count` | INTEGER | no |  |
+| `status` | VARCHAR(20) | no |  |
+| `notes` | JSON | no |  |
+| `parser_version` | VARCHAR(50) | no |  |
+| `ingested_at` | DATETIME | no |  |
+
+- CHECK `source_available_at >= as_of_date`
+- INDEX ix_sp500_anchors_as_of_date (as_of_date)
+- UNIQUE (accession, parser_version)
+
+### `sp500_anchor_members` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `member_id` | VARCHAR(36) | no | PK |
+| `anchor_id` | VARCHAR(36) | no | FK→`sp500_anchors.anchor_id` |
+| `security_id` | VARCHAR(36) | sí | FK→`securities.security_id` |
+| `cusip` | VARCHAR(9) | sí |  |
+| `isin` | VARCHAR(12) | sí |  |
+| `ticker_as_reported` | VARCHAR(20) | sí |  |
+| `issuer_name` | VARCHAR(300) | no |  |
+| `title` | VARCHAR(300) | sí |  |
+| `lei` | VARCHAR(20) | sí |  |
+| `source_position` | INTEGER | no |  |
+| `shares` | FLOAT | sí |  |
+| `value_usd` | FLOAT | sí |  |
+| `pct_net_assets` | FLOAT | sí |  |
+| `classification` | VARCHAR(30) | no |  |
+| `identity_basis` | VARCHAR(30) | no |  |
+| `status` | VARCHAR(20) | no |  |
+
+- CHECK `classification IN ('INDEX_EQUITY_CANDIDATE','NON_EQUITY','TRANSIENT_CORPORATE_ACTION','UNRESOLVED')`
+- INDEX ix_sp500_anchor_members_anchor_id (anchor_id)
+- INDEX ix_sp500_anchor_members_security_id (security_id)
+
+### `sp500_anchor_crosschecks` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `check_id` | VARCHAR(36) | no | PK |
+| `anchor_a_id` | VARCHAR(36) | no | FK→`sp500_anchors.anchor_id` |
+| `anchor_b_id` | VARCHAR(36) | no | FK→`sp500_anchors.anchor_id` |
+| `metrics` | JSON | no |  |
+| `details` | JSON | no |  |
+| `created_at` | DATETIME | no |  |
+
+### `sp500_membership_segments` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `segment_id` | VARCHAR(36) | no | PK |
+| `anchor_a_id` | VARCHAR(36) | no | FK→`sp500_anchors.anchor_id` |
+| `anchor_b_id` | VARCHAR(36) | no | FK→`sp500_anchors.anchor_id` |
+| `run_id` | VARCHAR(36) | sí |  |
+| `engine_version` | VARCHAR(40) | no |  |
+| `n_confirmed_events` | INTEGER | no |  |
+| `n_delta_added` | INTEGER | no |  |
+| `n_delta_removed` | INTEGER | no |  |
+| `forward_ok` | BOOLEAN | no |  |
+| `backward_ok` | BOOLEAN | no |  |
+| `status` | VARCHAR(24) | no |  |
+| `deltas` | JSON | no |  |
+| `created_at` | DATETIME | no |  |
+
+- CHECK `status IN ('VALIDATED','LOCAL_GAPS','IDENTITY_UNRESOLVED')`
+- INDEX ix_sp500_membership_segments_anchor_a_id (anchor_a_id)
+- INDEX ix_sp500_membership_segments_anchor_b_id (anchor_b_id)
+
+### `security_ticker_alias` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `alias_id` | VARCHAR(36) | no | PK |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `ticker` | VARCHAR(20) | no |  |
+| `valid_from` | DATE | sí |  |
+| `valid_to` | DATE | sí |  |
+| `bounds` | VARCHAR(10) | no |  |
+| `source` | VARCHAR(60) | no |  |
+| `source_hash` | VARCHAR(64) | sí |  |
+| `confidence` | VARCHAR(12) | no |  |
+| `note` | VARCHAR(300) | sí |  |
+| `ingested_at` | DATETIME | no |  |
+
+- CHECK `bounds IN ('EXACT','PARTIAL')`
+- CHECK `valid_to IS NULL OR valid_from IS NULL OR valid_to >= valid_from`
+- INDEX ix_security_ticker_alias_security_id (security_id)
+- INDEX ix_security_ticker_alias_ticker (ticker)
 
 ### `index_anchor_snapshots` 🔒
 

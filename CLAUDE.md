@@ -35,8 +35,8 @@ temporal, se rechaza.
   "FIXTURE"). Nunca presentarlos como históricos reales.
 - No dar una funcionalidad por terminada porque "ejecuta": correcta, testeada, tipada,
   documentada, reproducible, point-in-time.
-- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0032).
-- Migraciones: `0001`…`0011` fijadas (`0011` perfiles descriptivos `security_profiles`) (`0010` anclas de índice SPY/IVV) (`0009` evidencia de membresía S&P 500) (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
+- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0033).
+- Migraciones: `0001`…`0013` fijadas (`0013` grafo de anclas SEC SPY: `sp500_anchors`, `sp500_anchor_members`, `sp500_anchor_crosschecks`, `sp500_membership_segments`, `security_ticker_alias`) (`0011` perfiles descriptivos `security_profiles`) (`0010` anclas de índice SPY/IVV) (`0009` evidencia de membresía S&P 500) (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
   código↔ISIN, `0006` transiciones de ISIN, `0007` traza de corporate actions, `role` de
   security e `issuer_id` en filings SEC); **todo cambio de esquema = revisión nueva**.
 - Identidad (ADR-0022): sólo evidencia oficial EXACTA desempata o ancla un código; subir
@@ -206,3 +206,11 @@ Etiquetas humanas del Analyzer nunca son feature ni target. `pitquant research-d
   `python scripts/ingest_sp500_evidence.py --offline` (parser `sp500-evidence-3`).
 - D-05 sin clave: `pitquant tiingo-backfill-plan`, `pitquant us-window-dryrun` (demanda CANDIDATA, no cobertura).
 - `scripts/register_us_baseline_v0.py` registra `US_BASELINE_V0` BLOCKED. Con train_min 60m, 60 cohortes = 0 folds.
+
+## D-02 por GRAFO DE ANCLAS (ADR-0032) — sustituye la ancla única
+- Anclas históricas = composiciones de SPY presentadas a la SEC (NPORT-P Tier A, N-30D Tier B); **no** `OFFICIAL_SPDJI`. Ingesta:
+  `PITQUANT_SEC_USER_AGENT=... python scripts/ingest_spy_anchors.py` (verifica cada accession contra EDGAR; falla cerrado). Informes:
+  `python scripts/build_sp500_anchor_graph.py` → `docs/SP500_ANCHOR_GRAPH.md`, `docs/SP500_LOCAL_GAPS.md/.json`.
+- `pitquant sp500-window-readiness --start 2017-10-01 --end 2022-09-30` usa el grafo (`--legacy` = ancla única; `--lenient` = QA).
+- Un gap sólo bloquea SU segmento entre dos anclas. Nunca se carga un ancla posterior a 2022-09-30 (holdout). Las anclas son dato de
+  referencia: `features`, `analyzer`, `backtest`, `api` no pueden importarlas.

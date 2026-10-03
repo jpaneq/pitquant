@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 """SQLAlchemy models for every table in the data model (docs/DATA_MODEL.md is generated
 from this module by ``scripts/gen_data_model_doc.py``).
 
@@ -1498,6 +1499,140 @@ class HoldoutEvaluation(Base):
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
 
 
+class SP500Anchor(Base):
+    """One HISTORICAL S&P 500 reference composition from a SEC-filed SPY document (ADR-0032).
+
+    ``as_of_date`` is the state it describes; ``source_available_at`` is the SEC acceptance time (weeks later).
+    Two clocks, never merged: the anchor is REFERENCE truth, never information available at a decision. It is
+    ``SEC_FILED_INDEX_REPLICATION_ANCHOR`` evidence, never OFFICIAL_SPDJI. Append-only."""
+
+    __tablename__ = "sp500_anchors"
+
+    anchor_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    as_of_date: Mapped[date] = mapped_column(Date, index=True)
+    source_type: Mapped[str] = mapped_column(String(30))  # SEC_NPORT_P | SEC_N30D
+    evidence_kind: Mapped[str] = mapped_column(
+        String(50), default="SEC_FILED_INDEX_REPLICATION_ANCHOR"
+    )
+    evidence_tier: Mapped[str] = mapped_column(String(40))
+    form: Mapped[str] = mapped_column(String(12))
+    accession: Mapped[str] = mapped_column(String(20))
+    filer_cik: Mapped[str] = mapped_column(String(10))
+    source_available_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    archive_id: Mapped[str] = mapped_column(ForeignKey("raw_source_archive.archive_id"))
+    source_sha256: Mapped[str] = mapped_column(String(64))
+    member_count: Mapped[int] = mapped_column(Integer)
+    resolved_count: Mapped[int] = mapped_column(Integer)
+    unresolved_count: Mapped[int] = mapped_column(Integer)
+    excluded_count: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20))
+    notes: Mapped[list[str]] = mapped_column(JSON)
+    parser_version: Mapped[str] = mapped_column(String(50))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        UniqueConstraint("accession", "parser_version", name="uq_sp500_anchor_accession"),
+        CheckConstraint("source_available_at >= as_of_date", name="available_after_period"),
+    )
+
+
+class SP500AnchorMember(Base):
+    """One holding of an anchor with its classification. Only INDEX_EQUITY_CANDIDATE rows are members."""
+
+    __tablename__ = "sp500_anchor_members"
+
+    member_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    anchor_id: Mapped[str] = mapped_column(ForeignKey("sp500_anchors.anchor_id"), index=True)
+    security_id: Mapped[str | None] = mapped_column(
+        ForeignKey("securities.security_id"), index=True
+    )
+    cusip: Mapped[str | None] = mapped_column(String(9))
+    isin: Mapped[str | None] = mapped_column(String(12))
+    ticker_as_reported: Mapped[str | None] = mapped_column(String(20))
+    issuer_name: Mapped[str] = mapped_column(String(300))
+    title: Mapped[str | None] = mapped_column(String(300))
+    lei: Mapped[str | None] = mapped_column(String(20))
+    source_position: Mapped[int] = mapped_column(Integer)
+    shares: Mapped[float | None] = mapped_column(Float)
+    value_usd: Mapped[float | None] = mapped_column(Float)
+    pct_net_assets: Mapped[float | None] = mapped_column(Float)
+    classification: Mapped[str] = mapped_column(String(30))
+    identity_basis: Mapped[str] = mapped_column(String(30))  # CUSIP | NAME_MATCH | NAME_ONLY | NONE
+    status: Mapped[str] = mapped_column(String(20))  # RESOLVED | UNRESOLVED | EXCLUDED
+
+    __table_args__ = (
+        CheckConstraint(
+            "classification IN ('INDEX_EQUITY_CANDIDATE','NON_EQUITY','TRANSIENT_CORPORATE_ACTION','UNRESOLVED')",
+            name="classification_values",
+        ),
+    )
+
+
+class SP500AnchorCrossCheck(Base):
+    """NPORT-P vs Schedule of Investments of the same (or nearby) period end. Discrepancies are kept."""
+
+    __tablename__ = "sp500_anchor_crosschecks"
+
+    check_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    anchor_a_id: Mapped[str] = mapped_column(ForeignKey("sp500_anchors.anchor_id"))
+    anchor_b_id: Mapped[str] = mapped_column(ForeignKey("sp500_anchors.anchor_id"))
+    metrics: Mapped[dict[str, Any]] = mapped_column(JSON)
+    details: Mapped[list[dict[str, Any]]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class SP500MembershipSegment(Base):
+    """Validation of the interval between two consecutive anchors (ADR-0032). Independent of every other segment."""
+
+    __tablename__ = "sp500_membership_segments"
+
+    segment_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    anchor_a_id: Mapped[str] = mapped_column(ForeignKey("sp500_anchors.anchor_id"), index=True)
+    anchor_b_id: Mapped[str] = mapped_column(ForeignKey("sp500_anchors.anchor_id"), index=True)
+    run_id: Mapped[str | None] = mapped_column(String(36))  # membership-event run used
+    engine_version: Mapped[str] = mapped_column(String(40))
+    n_confirmed_events: Mapped[int] = mapped_column(Integer)
+    n_delta_added: Mapped[int] = mapped_column(Integer)
+    n_delta_removed: Mapped[int] = mapped_column(Integer)
+    forward_ok: Mapped[bool] = mapped_column(Boolean)
+    backward_ok: Mapped[bool] = mapped_column(Boolean)
+    status: Mapped[str] = mapped_column(String(24))
+    deltas: Mapped[list[dict[str, Any]]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('VALIDATED','LOCAL_GAPS','IDENTITY_UNRESOLVED')", name="status_values"
+        ),
+    )
+
+
+class SecurityTickerAlias(Base):
+    """A dated (or PARTIALLY dated) ticker of a security: a ticker change is an IDENTITY event, never a membership
+    exit + entry. ``valid_from``/``valid_to`` stay NULL until a source states them (``bounds`` = PARTIAL)."""
+
+    __tablename__ = "security_ticker_alias"
+
+    alias_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"), index=True)
+    ticker: Mapped[str] = mapped_column(String(20), index=True)
+    valid_from: Mapped[date | None] = mapped_column(Date)
+    valid_to: Mapped[date | None] = mapped_column(Date)
+    bounds: Mapped[str] = mapped_column(String(10))  # EXACT | PARTIAL
+    source: Mapped[str] = mapped_column(String(60))
+    source_hash: Mapped[str | None] = mapped_column(String(64))
+    confidence: Mapped[str] = mapped_column(String(12))  # HIGH | MEDIUM | LOW
+    note: Mapped[str | None] = mapped_column(String(300))
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        CheckConstraint("bounds IN ('EXACT','PARTIAL')", name="bounds_values"),
+        CheckConstraint(
+            "valid_to IS NULL OR valid_from IS NULL OR valid_to >= valid_from", name="alias_order"
+        ),
+    )
+
+
 IMMUTABLE_TABLES: frozenset[str] = frozenset(
     {
         "raw_records",
@@ -1539,5 +1674,10 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "realized_outcomes",
         "metric_sets",
         "champion_challenger_comparisons",
+        "sp500_anchors",
+        "sp500_anchor_members",
+        "sp500_anchor_crosschecks",
+        "sp500_membership_segments",
+        "security_ticker_alias",
     }
 )

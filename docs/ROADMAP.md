@@ -135,3 +135,8 @@ Diagnóstico exacto de las ventanas 2017-10→2022-09 (60) y 2014-10→2022-09 (
 fichas de gap para investigación externa, plan de backfill de demanda sin llamadas, `US_BASELINE_V0` BLOCKED.
 Siguiente: segunda ancla verificada ~2022-09/10, evidencia de los comunicados que faltan (`NO_DOCUMENT`) y tabla fechada
 de alias de ticker de miembros; después Tiingo (D-05).
+
+## Iteración 9 (2026-10-03): D-02 por grafo de anclas SEC (ADR-0032)
+24 presentaciones SPY verificadas contra EDGAR (13 NPORT-P + 11 N-30D, 2017-09-30 → 2022-09-30) = 17 fechas de ancla, identidad por
+CUSIP/ISIN/LEI, 16 segmentos con gaps LOCALES. Pendiente: evidencia oficial de las fechas de cada cambio (docs/SP500_LOCAL_GAPS.md) y
+vínculos de identidad por cambio de CUSIP; extensión a 2014-2017 sólo cuando 2017-10→2022-09 llegue a 60/60.
