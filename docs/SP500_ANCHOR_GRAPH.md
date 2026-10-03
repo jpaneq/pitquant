@@ -34,24 +34,24 @@ Holdout 2022-10-01 → 2025-09-30 sellado; ningún ancla posterior a 2022-09-30.
 
 | decision_at | estado | segmento | forward = backward | ambigüedad mensual | conflictos primarios |
 |---|---|---|---|---|---|
-| 2017-10-02 | BLOCKED | 2017-09-30→2018-03-31 | False | 14 | 0 |
-| 2017-11-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 14 | 0 |
-| 2017-12-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 14 | 0 |
-| 2018-01-02 | BLOCKED | 2017-09-30→2018-03-31 | False | 14 | 0 |
-| 2018-02-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 14 | 0 |
-| 2018-03-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 14 | 0 |
+| 2017-10-02 | BLOCKED | 2017-09-30→2018-03-31 | False | 8 | 0 |
+| 2017-11-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 8 | 0 |
+| 2017-12-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 8 | 0 |
+| 2018-01-02 | BLOCKED | 2017-09-30→2018-03-31 | False | 8 | 0 |
+| 2018-02-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 8 | 0 |
+| 2018-03-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 8 | 0 |
 | 2018-04-02 | BLOCKED | 2018-03-31→2018-09-30 | False | 4 | 0 |
 | 2018-05-01 | BLOCKED | 2018-03-31→2018-09-30 | False | 4 | 0 |
 | 2018-06-01 | BLOCKED | 2018-03-31→2018-09-30 | False | 4 | 0 |
 | 2018-07-02 | BLOCKED | 2018-03-31→2018-09-30 | False | 4 | 0 |
 | 2018-08-01 | BLOCKED | 2018-03-31→2018-09-30 | False | 4 | 0 |
 | 2018-09-04 | BLOCKED | 2018-03-31→2018-09-30 | False | 4 | 0 |
-| 2018-10-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 9 | 0 |
-| 2018-11-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 9 | 0 |
-| 2018-12-03 | BLOCKED | 2018-09-30→2019-03-31 | False | 9 | 0 |
-| 2019-01-02 | BLOCKED | 2018-09-30→2019-03-31 | False | 10 | 1 |
-| 2019-02-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 10 | 1 |
-| 2019-03-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 10 | 1 |
+| 2018-10-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 7 | 0 |
+| 2018-11-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 7 | 0 |
+| 2018-12-03 | BLOCKED | 2018-09-30→2019-03-31 | False | 7 | 0 |
+| 2019-01-02 | BLOCKED | 2018-09-30→2019-03-31 | False | 8 | 1 |
+| 2019-02-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 8 | 1 |
+| 2019-03-01 | BLOCKED | 2018-09-30→2019-03-31 | False | 8 | 1 |
 | 2019-04-01 | BLOCKED | 2019-03-31→2019-09-30 | False | 9 | 0 |
 | 2019-05-01 | BLOCKED | 2019-03-31→2019-09-30 | False | 9 | 0 |
 | 2019-06-03 | BLOCKED | 2019-03-31→2019-09-30 | False | 9 | 0 |
@@ -102,9 +102,9 @@ Antes (ficha global, ADR-0032): **95** gaps. Tras la reclasificación y las reso
 | categoría | n | bloquea membresía | bloquea identidad |
 |---|---|---|---|
 | PRIMARY_DELTA_UNEXPLAINED | 1 | 1 | 0 |
-| PRIMARY_EVENT_MISSING | 42 | 42 | 0 |
+| PRIMARY_EVENT_MISSING | 37 | 37 | 0 |
 | MONTHLY_DATE_AMBIGUITY | 0 | 0 | 0 |
-| SECURITY_IDENTITY_ONLY | 11 | 11 | 11 |
+| SECURITY_IDENTITY_ONLY | 8 | 8 | 8 |
 | TICKER_OR_NAME_CHANGE | 18 | 0 | 0 |
 | SUCCESSOR_SECURITY | 12 | 0 | 0 |
 | DISCOVERY_UNCORROBORATED | 12 | 0 | 0 |
@@ -112,5 +112,5 @@ Antes (ficha global, ADR-0032): **95** gaps. Tras la reclasificación y las reso
 | TRANSIENT_EVENT_POSSIBLE | 0 | 0 | 0 |
 | RESOLVED | 6 | 0 | 0 |
 
-Blockers de membresía reales: **54** · de identidad: **11** + 19 securities sin evidencia oficial de CUSIP/ISIN.
+Blockers de membresía reales: **46** · de identidad: **8** + 15 securities sin evidencia oficial de CUSIP/ISIN.
 

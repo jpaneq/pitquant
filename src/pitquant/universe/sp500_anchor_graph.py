@@ -1144,7 +1144,7 @@ def classify_gaps(rep: GraphReport) -> list[dict[str, Any]]:
                     cat, bm, bi = "DISCOVERY_UNCORROBORATED", False, False
             else:
                 cat, bm, bi = "PRIMARY_DELTA_UNEXPLAINED", bool(crossing), False
-            out.append({"segment": label, "difference_type": t, "category": cat, "security": d.name, "events": d.events_status, "window": list(d.window) if d.window else None, "cohorts_blocked": crossing, "blocks_membership": bm, "blocks_identity": bi, "hints": d.hints})  # fmt: skip
+            out.append({"segment": label, "difference_type": t, "category": cat, "security": d.name, "events": d.events_status, "window": list(d.window) if d.window else None, "cohorts_blocked": crossing, "blocking_decision_dates": crossing, "blocks_monthly_membership": bm, "blocks_membership": bm, "blocks_identity": bi, "hints": d.hints})  # fmt: skip
         for al in sg.alias_candidates:
             kind = "SUCCESSOR_SECURITY" if "LEI" in al["evidence"] else "TICKER_OR_NAME_CHANGE"
             out.append({"segment": label, "difference_type": "ALIAS", "category": kind, "security": al["tickers"], "events": "anchor LEI / discovery pair", "window": None, "cohorts_blocked": [], "blocks_membership": False, "blocks_identity": False, "hints": [al["evidence"]]})  # fmt: skip

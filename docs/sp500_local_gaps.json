@@ -17,6 +17,15 @@
    "2018-02-01",
    "2018-03-01"
   ],
+  "blocking_decision_dates": [
+   "2017-10-02",
+   "2017-11-01",
+   "2017-12-01",
+   "2018-01-02",
+   "2018-02-01",
+   "2018-03-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": true,
   "hints": [
@@ -41,21 +50,7 @@
    "2018-02-01",
    "2018-03-01"
   ],
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": []
- },
- {
-  "segment": "2017-09-30\u21922018-03-31",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Cboe Global Markets, Inc.",
-  "events": "none",
-  "window": [
-   "2017-10-02",
-   "2018-03-31"
-  ],
-  "cohorts_blocked": [
+  "blocking_decision_dates": [
    "2017-10-02",
    "2017-11-01",
    "2017-12-01",
@@ -63,6 +58,7 @@
    "2018-02-01",
    "2018-03-01"
   ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -85,6 +81,15 @@
    "2018-02-01",
    "2018-03-01"
   ],
+  "blocking_decision_dates": [
+   "2017-10-02",
+   "2017-11-01",
+   "2017-12-01",
+   "2018-01-02",
+   "2018-02-01",
+   "2018-03-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": true,
   "hints": [
@@ -109,23 +114,7 @@
    "2018-02-01",
    "2018-03-01"
   ],
-  "blocks_membership": true,
-  "blocks_identity": true,
-  "hints": [
-   "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ]
- },
- {
-  "segment": "2017-09-30\u21922018-03-31",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "SECURITY_IDENTITY_ONLY",
-  "security": "CBOE Holdings, Inc.",
-  "events": "none",
-  "window": [
-   "2017-10-02",
-   "2018-03-31"
-  ],
-  "cohorts_blocked": [
+  "blocking_decision_dates": [
    "2017-10-02",
    "2017-11-01",
    "2017-12-01",
@@ -133,30 +122,7 @@
    "2018-02-01",
    "2018-03-01"
   ],
-  "blocks_membership": true,
-  "blocks_identity": true,
-  "hints": [
-   "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ]
- },
- {
-  "segment": "2017-09-30\u21922018-03-31",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "SECURITY_IDENTITY_ONLY",
-  "security": "Coach, Inc.",
-  "events": "none",
-  "window": [
-   "2017-10-02",
-   "2018-03-31"
-  ],
-  "cohorts_blocked": [
-   "2017-10-02",
-   "2017-11-01",
-   "2017-12-01",
-   "2018-01-02",
-   "2018-02-01",
-   "2018-03-01"
-  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": true,
   "hints": [
@@ -181,6 +147,15 @@
    "2018-02-01",
    "2018-03-01"
   ],
+  "blocking_decision_dates": [
+   "2017-10-02",
+   "2017-11-01",
+   "2017-12-01",
+   "2018-01-02",
+   "2018-02-01",
+   "2018-03-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": true,
   "hints": [
@@ -205,6 +180,15 @@
    "2018-02-01",
    "2018-03-01"
   ],
+  "blocking_decision_dates": [
+   "2017-10-02",
+   "2017-11-01",
+   "2017-12-01",
+   "2018-01-02",
+   "2018-02-01",
+   "2018-03-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -227,6 +211,15 @@
    "2018-02-01",
    "2018-03-01"
   ],
+  "blocking_decision_dates": [
+   "2017-10-02",
+   "2017-11-01",
+   "2017-12-01",
+   "2018-01-02",
+   "2018-02-01",
+   "2018-03-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": true,
   "hints": [
@@ -251,21 +244,7 @@
    "2018-02-01",
    "2018-03-01"
   ],
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": []
- },
- {
-  "segment": "2017-09-30\u21922018-03-31",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "SECURITY_IDENTITY_ONLY",
-  "security": "Priceline Group, Inc.",
-  "events": "none",
-  "window": [
-   "2017-10-02",
-   "2018-03-31"
-  ],
-  "cohorts_blocked": [
+  "blocking_decision_dates": [
    "2017-10-02",
    "2017-11-01",
    "2017-12-01",
@@ -273,52 +252,7 @@
    "2018-02-01",
    "2018-03-01"
   ],
-  "blocks_membership": true,
-  "blocks_identity": true,
-  "hints": [
-   "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ]
- },
- {
-  "segment": "2017-09-30\u21922018-03-31",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Tapestry, Inc.",
-  "events": "none",
-  "window": [
-   "2017-10-02",
-   "2018-03-31"
-  ],
-  "cohorts_blocked": [
-   "2017-10-02",
-   "2017-11-01",
-   "2017-12-01",
-   "2018-01-02",
-   "2018-02-01",
-   "2018-03-01"
-  ],
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": []
- },
- {
-  "segment": "2017-09-30\u21922018-03-31",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Booking Holdings, Inc.",
-  "events": "none",
-  "window": [
-   "2017-10-02",
-   "2018-03-31"
-  ],
-  "cohorts_blocked": [
-   "2017-10-02",
-   "2017-11-01",
-   "2017-12-01",
-   "2018-01-02",
-   "2018-02-01",
-   "2018-03-01"
-  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -331,6 +265,8 @@
   "events": "ADD:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -345,6 +281,8 @@
   "events": "REMOVE:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -362,6 +300,8 @@
    "2018-03-07"
   ],
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -379,6 +319,8 @@
    "2018-03-19"
   ],
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -403,6 +345,15 @@
    "2018-08-01",
    "2018-09-04"
   ],
+  "blocking_decision_dates": [
+   "2018-04-02",
+   "2018-05-01",
+   "2018-06-01",
+   "2018-07-02",
+   "2018-08-01",
+   "2018-09-04"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -425,6 +376,15 @@
    "2018-08-01",
    "2018-09-04"
   ],
+  "blocking_decision_dates": [
+   "2018-04-02",
+   "2018-05-01",
+   "2018-06-01",
+   "2018-07-02",
+   "2018-08-01",
+   "2018-09-04"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": [
@@ -449,6 +409,15 @@
    "2018-08-01",
    "2018-09-04"
   ],
+  "blocking_decision_dates": [
+   "2018-04-02",
+   "2018-05-01",
+   "2018-06-01",
+   "2018-07-02",
+   "2018-08-01",
+   "2018-09-04"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": true,
   "hints": [
@@ -473,6 +442,15 @@
    "2018-08-01",
    "2018-09-04"
   ],
+  "blocking_decision_dates": [
+   "2018-04-02",
+   "2018-05-01",
+   "2018-06-01",
+   "2018-07-02",
+   "2018-08-01",
+   "2018-09-04"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": [
@@ -487,6 +465,8 @@
   "events": "ADD:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -501,6 +481,8 @@
   "events": "REMOVE:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -515,6 +497,8 @@
   "events": "REMOVE:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -529,6 +513,8 @@
   "events": "REMOVE:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -553,6 +539,15 @@
    "2019-02-01",
    "2019-03-01"
   ],
+  "blocking_decision_dates": [
+   "2018-10-01",
+   "2018-11-01",
+   "2018-12-03",
+   "2019-01-02",
+   "2019-02-01",
+   "2019-03-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": true,
   "hints": [
@@ -577,6 +572,15 @@
    "2019-02-01",
    "2019-03-01"
   ],
+  "blocking_decision_dates": [
+   "2018-10-01",
+   "2018-11-01",
+   "2018-12-03",
+   "2019-01-02",
+   "2019-02-01",
+   "2019-03-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -599,6 +603,15 @@
    "2019-02-01",
    "2019-03-01"
   ],
+  "blocking_decision_dates": [
+   "2018-10-01",
+   "2018-11-01",
+   "2018-12-03",
+   "2019-01-02",
+   "2019-02-01",
+   "2019-03-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -618,6 +631,12 @@
    "2019-02-01",
    "2019-03-01"
   ],
+  "blocking_decision_dates": [
+   "2019-01-02",
+   "2019-02-01",
+   "2019-03-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -640,6 +659,15 @@
    "2019-02-01",
    "2019-03-01"
   ],
+  "blocking_decision_dates": [
+   "2018-10-01",
+   "2018-11-01",
+   "2018-12-03",
+   "2019-01-02",
+   "2019-02-01",
+   "2019-03-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -662,6 +690,15 @@
    "2019-02-01",
    "2019-03-01"
   ],
+  "blocking_decision_dates": [
+   "2018-10-01",
+   "2018-11-01",
+   "2018-12-03",
+   "2019-01-02",
+   "2019-02-01",
+   "2019-03-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -684,21 +721,7 @@
    "2019-02-01",
    "2019-03-01"
   ],
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": []
- },
- {
-  "segment": "2018-09-30\u21922019-03-31",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Praxair, Inc.",
-  "events": "none",
-  "window": [
-   "2018-10-01",
-   "2019-03-31"
-  ],
-  "cohorts_blocked": [
+  "blocking_decision_dates": [
    "2018-10-01",
    "2018-11-01",
    "2018-12-03",
@@ -706,28 +729,7 @@
    "2019-02-01",
    "2019-03-01"
   ],
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": []
- },
- {
-  "segment": "2018-09-30\u21922019-03-31",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Linde PLC",
-  "events": "none",
-  "window": [
-   "2018-10-01",
-   "2019-03-31"
-  ],
-  "cohorts_blocked": [
-   "2018-10-01",
-   "2018-11-01",
-   "2018-12-03",
-   "2019-01-02",
-   "2019-02-01",
-   "2019-03-01"
-  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -750,6 +752,15 @@
    "2019-02-01",
    "2019-03-01"
   ],
+  "blocking_decision_dates": [
+   "2018-10-01",
+   "2018-11-01",
+   "2018-12-03",
+   "2019-01-02",
+   "2019-02-01",
+   "2019-03-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -762,6 +773,8 @@
   "events": "ADD:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -776,6 +789,8 @@
   "events": "REMOVE:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -790,6 +805,8 @@
   "events": "ADD:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -804,6 +821,8 @@
   "events": "REMOVE:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -818,6 +837,8 @@
   "events": "ADD:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -832,6 +853,8 @@
   "events": "REMOVE:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -846,6 +869,8 @@
   "events": "ADD:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -860,6 +885,8 @@
   "events": "REMOVE:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -884,6 +911,15 @@
    "2019-08-01",
    "2019-09-03"
   ],
+  "blocking_decision_dates": [
+   "2019-04-01",
+   "2019-05-01",
+   "2019-06-03",
+   "2019-07-01",
+   "2019-08-01",
+   "2019-09-03"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": true,
   "hints": [
@@ -908,6 +944,15 @@
    "2019-08-01",
    "2019-09-03"
   ],
+  "blocking_decision_dates": [
+   "2019-04-01",
+   "2019-05-01",
+   "2019-06-03",
+   "2019-07-01",
+   "2019-08-01",
+   "2019-09-03"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": [
@@ -932,6 +977,15 @@
    "2019-08-01",
    "2019-09-03"
   ],
+  "blocking_decision_dates": [
+   "2019-04-01",
+   "2019-05-01",
+   "2019-06-03",
+   "2019-07-01",
+   "2019-08-01",
+   "2019-09-03"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -954,6 +1008,15 @@
    "2019-08-01",
    "2019-09-03"
   ],
+  "blocking_decision_dates": [
+   "2019-04-01",
+   "2019-05-01",
+   "2019-06-03",
+   "2019-07-01",
+   "2019-08-01",
+   "2019-09-03"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -976,6 +1039,15 @@
    "2019-08-01",
    "2019-09-03"
   ],
+  "blocking_decision_dates": [
+   "2019-04-01",
+   "2019-05-01",
+   "2019-06-03",
+   "2019-07-01",
+   "2019-08-01",
+   "2019-09-03"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -998,6 +1070,15 @@
    "2019-08-01",
    "2019-09-03"
   ],
+  "blocking_decision_dates": [
+   "2019-04-01",
+   "2019-05-01",
+   "2019-06-03",
+   "2019-07-01",
+   "2019-08-01",
+   "2019-09-03"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": [
@@ -1022,6 +1103,15 @@
    "2019-08-01",
    "2019-09-03"
   ],
+  "blocking_decision_dates": [
+   "2019-04-01",
+   "2019-05-01",
+   "2019-06-03",
+   "2019-07-01",
+   "2019-08-01",
+   "2019-09-03"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": [
@@ -1046,6 +1136,15 @@
    "2019-08-01",
    "2019-09-03"
   ],
+  "blocking_decision_dates": [
+   "2019-04-01",
+   "2019-05-01",
+   "2019-06-03",
+   "2019-07-01",
+   "2019-08-01",
+   "2019-09-03"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -1068,6 +1167,15 @@
    "2019-08-01",
    "2019-09-03"
   ],
+  "blocking_decision_dates": [
+   "2019-04-01",
+   "2019-05-01",
+   "2019-06-03",
+   "2019-07-01",
+   "2019-08-01",
+   "2019-09-03"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": [
@@ -1082,6 +1190,8 @@
   "events": "REMOVE:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1096,6 +1206,8 @@
   "events": "REMOVE:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1113,6 +1225,8 @@
    "2019-06-07"
   ],
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1130,6 +1244,8 @@
    "2019-09-23"
   ],
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1144,6 +1260,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1158,6 +1276,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1172,6 +1292,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1186,6 +1308,8 @@
   "events": "REMOVE:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1200,6 +1324,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1214,6 +1340,8 @@
   "events": "REMOVE:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1228,6 +1356,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1242,6 +1372,8 @@
   "events": "REMOVE:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1256,6 +1388,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1270,10 +1404,26 @@
   "events": "REMOVE:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
    "discovery CSV REMOVE JEC 2019-12-10: unconfirmed, date not trusted; more discovery legs than anchor-visible changes (unresolved ticker); monthly: DISCOVERY_UNCORROBORATED: warning only for monthly research; daily canonical: blocks the segment"
+  ]
+ },
+ {
+  "segment": "2019-09-30\u21922019-12-31",
+  "difference_type": "ALIAS",
+  "category": "SUCCESSOR_SECURITY",
+  "security": "HCP Inc -> Healthpeak Properties Inc",
+  "events": "anchor LEI / discovery pair",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "same issuer LEI PZ9HF5U52KPF0MH0QN75 in both NPORT-P filings (identity transition, not membership)"
   ]
  },
  {
@@ -1294,20 +1444,6 @@
   "segment": "2019-09-30\u21922019-12-31",
   "difference_type": "ALIAS",
   "category": "SUCCESSOR_SECURITY",
-  "security": "BB&T Corp -> Truist Financial Corp",
-  "events": "anchor LEI / discovery pair",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "same issuer LEI 549300DRQQI75D2JP341 in both NPORT-P filings (identity transition, not membership)"
-  ]
- },
- {
-  "segment": "2019-09-30\u21922019-12-31",
-  "difference_type": "ALIAS",
-  "category": "SUCCESSOR_SECURITY",
   "security": "Symantec Corp -> NortonLifeLock Inc",
   "events": "anchor LEI / discovery pair",
   "window": null,
@@ -1322,14 +1458,14 @@
   "segment": "2019-09-30\u21922019-12-31",
   "difference_type": "ALIAS",
   "category": "SUCCESSOR_SECURITY",
-  "security": "HCP Inc -> Healthpeak Properties Inc",
+  "security": "BB&T Corp -> Truist Financial Corp",
   "events": "anchor LEI / discovery pair",
   "window": null,
   "cohorts_blocked": [],
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
-   "same issuer LEI PZ9HF5U52KPF0MH0QN75 in both NPORT-P filings (identity transition, not membership)"
+   "same issuer LEI 549300DRQQI75D2JP341 in both NPORT-P filings (identity transition, not membership)"
   ]
  },
  {
@@ -1347,6 +1483,12 @@
    "2020-02-03",
    "2020-03-02"
   ],
+  "blocking_decision_dates": [
+   "2020-01-02",
+   "2020-02-03",
+   "2020-03-02"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -1362,6 +1504,8 @@
    "2020-03-03"
   ],
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1397,6 +1541,12 @@
    "2020-05-01",
    "2020-06-01"
   ],
+  "blocking_decision_dates": [
+   "2020-04-01",
+   "2020-05-01",
+   "2020-06-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": [
@@ -1418,6 +1568,12 @@
    "2020-05-01",
    "2020-06-01"
   ],
+  "blocking_decision_dates": [
+   "2020-04-01",
+   "2020-05-01",
+   "2020-06-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": [
@@ -1439,6 +1595,12 @@
    "2020-05-01",
    "2020-06-01"
   ],
+  "blocking_decision_dates": [
+   "2020-04-01",
+   "2020-05-01",
+   "2020-06-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -1458,6 +1620,12 @@
    "2020-05-01",
    "2020-06-01"
   ],
+  "blocking_decision_dates": [
+   "2020-04-01",
+   "2020-05-01",
+   "2020-06-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": [
@@ -1472,6 +1640,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1486,6 +1656,8 @@
   "events": "REMOVE:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1500,6 +1672,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1542,6 +1716,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1556,6 +1732,8 @@
   "events": "REMOVE:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1577,6 +1755,12 @@
    "2020-11-02",
    "2020-12-01"
   ],
+  "blocking_decision_dates": [
+   "2020-10-01",
+   "2020-11-02",
+   "2020-12-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": [
@@ -1598,6 +1782,12 @@
    "2020-11-02",
    "2020-12-01"
   ],
+  "blocking_decision_dates": [
+   "2020-10-01",
+   "2020-11-02",
+   "2020-12-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -1617,6 +1807,12 @@
    "2020-11-02",
    "2020-12-01"
   ],
+  "blocking_decision_dates": [
+   "2020-10-01",
+   "2020-11-02",
+   "2020-12-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -1629,24 +1825,12 @@
   "events": "ADD:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
    "official effective 2020-10-09 vs discovery CSV 2020-10-12: the primary date stands; the CSV never widens it"
-  ]
- },
- {
-  "segment": "2020-12-31\u21922021-03-31",
-  "difference_type": "ALIAS",
-  "category": "SUCCESSOR_SECURITY",
-  "security": "CenturyLink Inc -> Lumen Technologies Inc",
-  "events": "anchor LEI / discovery pair",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "same issuer LEI 8M3THTGWLTYZVE6BBY25 in both NPORT-P filings (identity transition, not membership)"
   ]
  },
  {
@@ -1664,6 +1848,20 @@
   ]
  },
  {
+  "segment": "2020-12-31\u21922021-03-31",
+  "difference_type": "ALIAS",
+  "category": "SUCCESSOR_SECURITY",
+  "security": "CenturyLink Inc -> Lumen Technologies Inc",
+  "events": "anchor LEI / discovery pair",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "same issuer LEI 8M3THTGWLTYZVE6BBY25 in both NPORT-P filings (identity transition, not membership)"
+  ]
+ },
+ {
   "segment": "2021-03-31\u21922021-06-30",
   "difference_type": "MISSING_ADDITION_EVENT",
   "category": "RESOLVED",
@@ -1674,6 +1872,8 @@
    "2021-06-30"
   ],
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": []
@@ -1693,6 +1893,12 @@
    "2021-05-03",
    "2021-06-01"
   ],
+  "blocking_decision_dates": [
+   "2021-04-01",
+   "2021-05-03",
+   "2021-06-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": [
@@ -1707,6 +1913,8 @@
   "events": "ADD:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1721,6 +1929,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1735,6 +1945,8 @@
   "events": "REMOVE:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1777,6 +1989,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1791,6 +2005,8 @@
   "events": "REMOVE:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1805,6 +2021,8 @@
   "events": "ADD:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1819,6 +2037,8 @@
   "events": "REMOVE:CONFLICT",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1833,6 +2053,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1847,6 +2069,8 @@
   "events": "REMOVE:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1861,6 +2085,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1875,6 +2101,8 @@
   "events": "REMOVE:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -1910,6 +2138,12 @@
    "2022-05-02",
    "2022-06-01"
   ],
+  "blocking_decision_dates": [
+   "2022-04-01",
+   "2022-05-02",
+   "2022-06-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -1929,6 +2163,12 @@
    "2022-05-02",
    "2022-06-01"
   ],
+  "blocking_decision_dates": [
+   "2022-04-01",
+   "2022-05-02",
+   "2022-06-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": [
@@ -1950,6 +2190,12 @@
    "2022-05-02",
    "2022-06-01"
   ],
+  "blocking_decision_dates": [
+   "2022-04-01",
+   "2022-05-02",
+   "2022-06-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -1969,6 +2215,12 @@
    "2022-05-02",
    "2022-06-01"
   ],
+  "blocking_decision_dates": [
+   "2022-04-01",
+   "2022-05-02",
+   "2022-06-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": [
@@ -1990,6 +2242,12 @@
    "2022-05-02",
    "2022-06-01"
   ],
+  "blocking_decision_dates": [
+   "2022-04-01",
+   "2022-05-02",
+   "2022-06-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": [
@@ -2011,6 +2269,12 @@
    "2022-05-02",
    "2022-06-01"
   ],
+  "blocking_decision_dates": [
+   "2022-04-01",
+   "2022-05-02",
+   "2022-06-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": [
@@ -2032,6 +2296,12 @@
    "2022-05-02",
    "2022-06-01"
   ],
+  "blocking_decision_dates": [
+   "2022-04-01",
+   "2022-05-02",
+   "2022-06-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -2051,6 +2321,12 @@
    "2022-05-02",
    "2022-06-01"
   ],
+  "blocking_decision_dates": [
+   "2022-04-01",
+   "2022-05-02",
+   "2022-06-01"
+  ],
+  "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
   "hints": []
@@ -2063,6 +2339,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -2077,6 +2355,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -2091,6 +2371,8 @@
   "events": "REMOVE:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -2105,6 +2387,8 @@
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
@@ -2119,6 +2403,8 @@
   "events": "REMOVE:DISCOVERY_ONLY",
   "window": null,
   "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [

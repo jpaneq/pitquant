@@ -35,6 +35,21 @@ _CLASS_13F = re.compile(r"\b(?:CL|CLASS|SER|SERIES)\s+([A-Z])\b")
 _NOT_COMMON = re.compile(r"\b(PFD|WT|WTS|RIGHT|RTS|UNIT|UNITS|NOTE|NOTES|DEBT|SUB)\b")
 
 
+_ABBR = {
+    "HLDGS": "HOLDINGS",
+    "HLDG": "HOLDING",
+    "GRP": "GROUP",
+    "INTL": "INTERNATIONAL",
+    "CORPORATION": "CORP",
+    "COMPANY": "CO",
+}
+
+
+def expand13f(name: str) -> str:
+    """Deterministic expansion of the standard abbreviations the SEC 13(f) list prints (HLDGS, GRP, INTL): not similarity, a fixed table."""
+    return " ".join(_ABBR.get(w, w) for w in name.upper().split())
+
+
 def quarter_of(d: date) -> str:
     return f"{d.year}Q{(d.month - 1) // 3 + 1}"
 
@@ -64,7 +79,7 @@ def candidates_for(session: Session, name: str, quarter: str) -> list[Sec13FList
             Sec13FListEntry.quarter == quarter, Sec13FListEntry.parser_version == F13_VERSION
         )
     ):
-        if _NOT_COMMON.search(e.issuer_description) or norm_name(e.issuer_name) != base:
+        if _NOT_COMMON.search(e.issuer_description) or norm_name(expand13f(e.issuer_name)) != base:
             continue
         m = _CLASS_13F.search(e.issuer_description)
         if (cls is None and m is None) or (cls is not None and m is not None and m.group(1) == cls):
