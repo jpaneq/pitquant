@@ -72,7 +72,13 @@ def test_t0_snapshot_is_immutable_and_never_receives_future_data(
     before = {c.key: getattr(sm, c.key) for c in sm.__table__.columns}
     sim.evaluate_simulation(s, cfg, sm.simulation_id, LATER)
     sim.thesis_snapshot(s, cfg, sm.simulation_id, LATER)
-    sim.close_manual(s, cfg, sm.simulation_id, at=LATER, price=1.0)
+    lo = sim.latest_outcome(s, sm.simulation_id)
+    if lo is not None and lo.entry_date is not None and not lo.is_closed:
+        sim.close_manual(s, cfg, sm.simulation_id, at=LATER, price=1.0)
+    elif lo is not None and not lo.is_closed:
+        sim.cancel_simulation(
+            s, cfg, sm.simulation_id, at=LATER
+        )  # ADR-0036: a manual close needs an open position
     s.refresh(sm)
     assert {
         c.key: getattr(sm, c.key) for c in sm.__table__.columns

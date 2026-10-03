@@ -1667,7 +1667,7 @@ class SecuritySuccession(Base):
     effective_at: Mapped[datetime | None] = mapped_column(
         UTCDateTime
     )  # NULL = same security identified later (no event date)
-    event_type: Mapped[str] = mapped_column(String(32))
+    event_type: Mapped[str] = mapped_column(String(64))
     exchange_ratio: Mapped[float | None] = mapped_column(Float)
     membership_continuity: Mapped[bool] = mapped_column(Boolean)
     source: Mapped[str] = mapped_column(String(80))
@@ -1722,7 +1722,7 @@ class Simulation(Base):
     original_pitquant_plan: Mapped[dict[str, Any] | None] = mapped_column(JSON)
     final_simulated_plan: Mapped[dict[str, Any]] = mapped_column(JSON)
     side: Mapped[str] = mapped_column(String(5), default="LONG")
-    entry_type: Mapped[str] = mapped_column(String(12))
+    entry_type: Mapped[str] = mapped_column(String(20))
     entry_zone_low: Mapped[float] = mapped_column(Float)
     entry_zone_high: Mapped[float] = mapped_column(Float)
     entry_price_actual: Mapped[float | None] = mapped_column(
@@ -1739,6 +1739,10 @@ class Simulation(Base):
     time_horizon_sessions: Mapped[int] = mapped_column(Integer)
     expiration_at: Mapped[datetime] = mapped_column(UTCDateTime)
     benchmark_security_id: Mapped[str | None] = mapped_column(String(36))
+    snapshot_hash: Mapped[str | None] = mapped_column(
+        String(64)
+    )  # SHA-256 of the frozen T0 content (ADR-0036)
+    source_provenance: Mapped[dict[str, Any] | None] = mapped_column(JSON)
 
     __table_args__ = (
         CheckConstraint("asset_type IN ('EQUITY','BTC')", name="asset_type_values"),
@@ -1795,6 +1799,53 @@ class SimulationOutcome(Base):
     )  # NULL until the Prediction Engine is validated
     timeline: Mapped[list[dict[str, Any]]] = mapped_column(JSON)
     details: Mapped[dict[str, Any]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+    # ADR-0036: the two questions are kept apart. ``prediction_outcome`` stays NULL while the Prediction Engine is NOT_YET_VALIDATED.
+    prediction_outcome: Mapped[str | None] = mapped_column(String(30))
+    execution_outcome: Mapped[str | None] = mapped_column(String(30))
+    event_count: Mapped[int | None] = mapped_column(
+        Integer
+    )  # events of the log this outcome was materialised from
+    engine_version: Mapped[str | None] = mapped_column(String(30))
+
+
+class SimulationEvent(Base):
+    """The EVENT LOG of a simulation (ADR-0036): append-only, ordered by ``sequence_number``. The state in ``simulation_outcomes`` is a
+    materialisation; ``simulation-replay`` rebuilds it from the T0 row + these events alone."""
+
+    __tablename__ = "simulation_events"
+
+    event_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    simulation_id: Mapped[str] = mapped_column(ForeignKey("simulations.simulation_id"), index=True)
+    sequence_number: Mapped[int] = mapped_column(Integer)
+    event_type: Mapped[str] = mapped_column(String(30))
+    occurred_at: Mapped[date] = mapped_column(Date)  # the session the event belongs to
+    source_bar_timestamp: Mapped[date | None] = mapped_column(Date)
+    payload_json: Mapped[dict[str, Any]] = mapped_column(JSON)
+    engine_version: Mapped[str] = mapped_column(String(30))
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+    __table_args__ = (
+        UniqueConstraint("simulation_id", "sequence_number", name="uq_simulation_event_seq"),
+    )
+
+
+class SimulationCounterfactual(Base):
+    """COUNTERFACTUAL (never the real outcome): the ORIGINAL PITQuant plan of a USER_MODIFIED simulation run over the SAME bars."""
+
+    __tablename__ = "simulation_counterfactuals"
+
+    counterfactual_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    simulation_id: Mapped[str] = mapped_column(ForeignKey("simulations.simulation_id"), index=True)
+    evaluated_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    plan_label: Mapped[str] = mapped_column(String(40), default="ORIGINAL_PITQUANT_PLAN")
+    last_bar: Mapped[date | None] = mapped_column(Date)
+    state: Mapped[str] = mapped_column(String(20))
+    plan: Mapped[dict[str, Any]] = mapped_column(JSON)
+    metrics: Mapped[dict[str, Any]] = mapped_column(JSON)
+    details: Mapped[dict[str, Any]] = mapped_column(JSON)
+    timeline: Mapped[list[dict[str, Any]]] = mapped_column(JSON)
+    label: Mapped[str] = mapped_column(String(20), default="COUNTERFACTUAL")
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
 
 
@@ -1880,5 +1931,7 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "simulation_outcomes",
         "simulation_postmortems",
         "research_hypotheses",
+        "simulation_events",
+        "simulation_counterfactuals",
     }
 )

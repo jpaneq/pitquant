@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 """PostgreSQL-only: migrations and DB-level immutability triggers (ADR-0010).
 
 Locally these are skipped without ``PITQUANT_PG_URL``. In CI the dedicated job sets
@@ -288,3 +289,61 @@ def test_cnmv_filing_is_append_only(pg: Engine) -> None:
             )
         ).scalar_one()
     assert trig >= 1
+
+
+def test_long_corporate_identity_event_type_is_not_truncated(pg: Engine) -> None:
+    event_type = "NAME_TICKER_IDENTIFIER_CHANGE_SAME_SECURITY"
+    with pg.connect() as connection:
+        transaction = connection.begin()
+        try:
+            connection.execute(
+                text(
+                    "INSERT INTO securities (security_id, name, exchange, currency, delisted, "
+                    "is_synthetic, role, created_at) VALUES "
+                    "('width-old', 'SYN OLD', 'XNYS', 'USD', false, true, 'TRADED', now()), "
+                    "('width-new', 'SYN NEW', 'XNYS', 'USD', false, true, 'TRADED', now())"
+                )
+            )
+            connection.execute(
+                text(
+                    "INSERT INTO security_succession (succession_id, security_predecessor_id, "
+                    "security_successor_id, event_type, membership_continuity, "
+                    "source, ingested_at) "
+                    "VALUES ('width-event', 'width-old', 'width-new', "
+                    ":kind, true, 'SYNTHETIC', now())"
+                ),
+                {"kind": event_type},
+            )
+            assert (
+                connection.execute(
+                    text(
+                        "SELECT event_type FROM security_succession "
+                        "WHERE succession_id='width-event'"
+                    )
+                ).scalar_one()
+                == event_type
+            )
+        finally:
+            transaction.rollback()
+
+
+def test_simulation_lab_tables_are_append_only(pg: Engine) -> None:
+    """ADR-0034/0036: the T0 snapshot, the event log, observations, outcomes, post-mortems, counterfactuals and hypotheses reject UPDATE/DELETE."""
+    tables = (
+        "simulations",
+        "simulation_events",
+        "simulation_observations",
+        "simulation_outcomes",
+        "simulation_postmortems",
+        "simulation_counterfactuals",
+        "research_hypotheses",
+    )
+    with pg.connect() as c:
+        for t in tables:
+            trig = c.execute(
+                text(
+                    "SELECT count(*) FROM information_schema.triggers "
+                    f"WHERE event_object_table='{t}' AND trigger_name LIKE '%_append_only'"
+                )
+            ).scalar_one()
+            assert trig >= 1, t

@@ -1,0 +1,127 @@
+{
+  "version": "d02-documentary-1",
+  "sources": [
+    {
+      "url": "https://ir.iqvia.com/press-releases/press-release-details/2017/QuintilesIMS-is-now-IQVIA/default.aspx",
+      "status": "ARCHIVED",
+      "archive_id": "042f5c9b-5840-4730-bd4f-db6b051e915b",
+      "sha256": "09e28fa486dea85f062fb47594efab73584216d044cbcf1a7070f5c69f25cb86",
+      "published_on": "2017-11-06",
+      "provider": "D02_PRIMARY_CORPORATE_RELEASE"
+    },
+    {
+      "url": "https://www.capriholdings.com/news/news-details/2018/Capri-Holdings-Limited-Completes-Acquisition-of-Versace/default.aspx",
+      "status": "ARCHIVED",
+      "archive_id": "4957bc7c-0a14-4f4b-b6e8-7673b1ef88d5",
+      "sha256": "6e45dd9d4ae70dabb270c0a3e9c831ea18449a5a8117c5c6a2d8f80049482bf7",
+      "published_on": "2018-12-31",
+      "provider": "D02_PRIMARY_CORPORATE_RELEASE"
+    },
+    {
+      "url": "https://investors.globelifeinsurance.com/news-releases/2019/august/torchmark-corporation-has-officially-been-renamed-globe-life-inc?accessibility=true",
+      "status": "ARCHIVED",
+      "archive_id": "50c842ac-753a-4421-b7bf-b3c9ddbd1d3b",
+      "sha256": "a442207184973669c7868c4a97e78664410cf256bf7610ec6b089b9d5d2fc716",
+      "published_on": "2019-08-09",
+      "provider": "D02_PRIMARY_CORPORATE_RELEASE"
+    },
+    {
+      "url": "https://investors.l3harris.com/news/news-details/2019/L3Harris-Technologies-Merger-Successfully-Completed-Board-of-Directors-Leadership-and-Organization-Structure-Announced-07-01-2019/default.aspx",
+      "status": "ARCHIVED",
+      "archive_id": "a69280b0-2a31-4ef4-a5d6-4a96774d5d96",
+      "sha256": "7200f196ba0ce85c52eedb62b95aefc2e691edbbdab903bb6c6fb5c113ce4008",
+      "published_on": "2019-07-01",
+      "provider": "D02_PRIMARY_CORPORATE_RELEASE"
+    },
+    {
+      "url": "https://www.miaxglobal.com/sites/default/files/alert-files/LUK_Symbol_Name___43106.pdf",
+      "status": "ARCHIVED",
+      "archive_id": "658e8703-c855-40f3-b40a-c873fc561d9d",
+      "sha256": "ea6541854a9ae6bf1f2e5f0bd2bf307908fa3e4d071dbddb645d7f651396e049",
+      "published_on": "2018-05-23",
+      "provider": "D02_PRIMARY_CORPORATE_RELEASE"
+    },
+    {
+      "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2020-208",
+      "status": "ARCHIVED",
+      "archive_id": "32988350-20f4-4b83-8c76-dc973bb8936a",
+      "sha256": "89f86466e5fc71e91cfbcd70b758cb183b4449402772730ae3559a18b9bc090b",
+      "published_on": "2020-11-16",
+      "provider": "D02_PRIMARY_CORPORATE_RELEASE"
+    },
+    {
+      "url": "https://ir.wbd.com/news-and-events/financial-news/financial-news-details/2022/Combination-of-Discovery-and-WarnerMedia-Creates-Warner-Bros.-Discovery-Global-Leader-in-Entertainment-and-Streaming/",
+      "status": "ARCHIVED",
+      "archive_id": "d9a86f67-6dbd-485b-a4f3-e1750ec2253e",
+      "sha256": "6f714548b91a20163bbc85a9ee9df382b16332ee11b36b3a82efdf9eba6ff059",
+      "published_on": "2022-04-08",
+      "provider": "D02_PRIMARY_CORPORATE_RELEASE"
+    },
+    {
+      "url": "https://ir.wbd.com/news-and-events/financial-news/financial-news-details/2022/WARNER-BROS.-DISCOVERY-INC.-REPORTS-FIRST-QUARTER-2022-RESULTS/default.aspx",
+      "status": "ARCHIVED",
+      "archive_id": "a6027a07-2b36-411a-bdc8-2fdd06c1770e",
+      "sha256": "34f52b6364af6ac6a3698213c25ff0af0a8194fa9553731b49bd57fd22d799ff",
+      "published_on": "2022-04-26",
+      "provider": "D02_PRIMARY_CORPORATE_RELEASE"
+    },
+    {
+      "url": "https://press.spglobal.com/2022-04-07-S-P-Dow-Jones-Indices-Announces-Treatment-of-AT-T-Transaction-with-Discovery",
+      "status": "ARCHIVED",
+      "archive_id": "c8889101-2d1a-4c87-bbcd-650f327e9fc8",
+      "sha256": "bdb6da71980c3750391ed4eb2d8402e9698f03bb6583f471ef1439205206fbd2",
+      "published_on": "2022-04-07",
+      "provider": "SP_PRESS:press.spglobal.com"
+    },
+    {
+      "url": "https://press.spglobal.com/2020-05-06-DexCom-Dominos-Pizza-Set-to-Join-S-P-500-Salesforce-com-to-Join-S-P-100-STORE-Capital-to-Join-S-P-MidCap-400-Capri-Holdings-to-Join-S-P-SmallCap-600",
+      "status": "ARCHIVED",
+      "archive_id": "86fbf6cd-c684-4ec6-acd1-56423498fa04",
+      "sha256": "44d9a850b32635d8307f667f97130369b98141a0d6fa1d6d547db8715ecc57fe",
+      "published_on": "2020-05-06",
+      "provider": "SP_PRESS:press.spglobal.com"
+    }
+  ],
+  "events": [
+    {
+      "key": "QUINTILES_IQVIA",
+      "applied": true,
+      "reason": "QUINTILES_IQVIA: primary original 042f5c9b-5840-4730-bd4f-db6b051e915b; legal 2017-11-06; ticker 2017-11-15; CUSIP transition PARTIAL; no index exit/entry; support hashes "
+    },
+    {
+      "key": "KORS_CAPRI",
+      "applied": true,
+      "reason": "KORS_CAPRI: primary original 4957bc7c-0a14-4f4b-b6e8-7673b1ef88d5; legal 2018-12-31; ticker 2019-01-02; CUSIP transition PARTIAL; no index exit/entry; support hashes "
+    },
+    {
+      "key": "TORCHMARK_GLOBE",
+      "applied": true,
+      "reason": "TORCHMARK_GLOBE: primary original 50c842ac-753a-4421-b7bf-b3c9ddbd1d3b; legal 2019-08-08; ticker 2019-08-09; CUSIP transition PARTIAL; no index exit/entry; support hashes "
+    },
+    {
+      "key": "HARRIS_L3HARRIS",
+      "applied": true,
+      "reason": "HARRIS_L3HARRIS: primary original a69280b0-2a31-4ef4-a5d6-4a96774d5d96; legal 2019-06-29; ticker 2019-07-01; CUSIP transition PARTIAL; no index exit/entry; support hashes "
+    },
+    {
+      "key": "LEUCADIA_JEFFERIES",
+      "applied": true,
+      "reason": "LEUCADIA_JEFFERIES: primary original 658e8703-c855-40f3-b40a-c873fc561d9d; legal None; ticker 2018-05-24; CUSIP transition PARTIAL; no index exit/entry; support hashes "
+    },
+    {
+      "key": "MYLAN_VIATRIS",
+      "applied": true,
+      "reason": "MYLAN_VIATRIS: primary original 32988350-20f4-4b83-8c76-dc973bb8936a; legal 2020-11-16; ticker 2020-11-17; CUSIP transition PARTIAL; no index exit/entry; support hashes "
+    },
+    {
+      "key": "DISCOVERY_A_WBD",
+      "applied": true,
+      "reason": "DISCOVERY_A_WBD: primary original d9a86f67-6dbd-485b-a4f3-e1750ec2253e; legal 2022-04-08; ticker 2022-04-11; CUSIP transition PARTIAL; no index exit/entry; support hashes 34f52b6364af6ac6a3698213c25ff0af0a8194fa9553731b49bd57fd22d799ff,bdb6da71980c3750391ed4eb2d8402e9698f03bb6583f471ef1439205206fbd2"
+    },
+    {
+      "key": "DISCOVERY_C_WBD",
+      "applied": true,
+      "reason": "DISCOVERY_C_WBD: primary original d9a86f67-6dbd-485b-a4f3-e1750ec2253e; legal 2022-04-08; ticker 2022-04-11; CUSIP transition PARTIAL; no index exit/entry; support hashes 34f52b6364af6ac6a3698213c25ff0af0a8194fa9553731b49bd57fd22d799ff,bdb6da71980c3750391ed4eb2d8402e9698f03bb6583f471ef1439205206fbd2"
+    }
+  ]
+}

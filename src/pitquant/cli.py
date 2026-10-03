@@ -511,6 +511,69 @@ def _window(args: argparse.Namespace) -> int:
     return 0 if rep.status == "READY" else 1
 
 
+def _sim_update(args: argparse.Namespace) -> int:
+    """Append-only event-log update of the active paper trades; idempotent (a second run without new bars appends 0 events)."""
+    from datetime import UTC
+
+    from pitquant.simulation import service as sim
+
+    settings = get_settings()
+    as_of = datetime.fromisoformat(args.as_of) if args.as_of else None
+    if as_of is not None and as_of.tzinfo is None:
+        as_of = as_of.replace(tzinfo=UTC)
+    with make_session_factory(make_engine(settings.database.url))() as session:
+        results = sim.update_active(session, settings, as_of, args.simulation_id)
+        session.commit()
+    total = sum(r.new_events for r in results)
+    out: dict[str, Any] = {
+        "simulations": len(results),
+        "new_events": total,
+        "outcomes_created": sum(r.outcome_created for r in results),
+        "detail": [
+            {"simulation_id": r.simulation_id, "state": r.state, "new_events": r.new_events}
+            for r in results
+        ],
+    }
+    if args.json:
+        print(json.dumps(out, indent=2))
+    else:
+        print(
+            f"PAPER TRADING — NO REAL MONEY\nsimulations {out['simulations']}  new_events = {total}  outcomes_created {out['outcomes_created']}"
+        )
+        for d in out["detail"]:
+            print(f"  {d['simulation_id']}  {d['state']:<20} +{d['new_events']}")
+    return 0
+
+
+def _sim_replay(args: argparse.Namespace) -> int:
+    """Rebuild the state from the T0 row + the event log ONLY (no market data) and compare it with the persisted outcome."""
+    from pitquant.simulation import service as sim
+
+    settings = get_settings()
+    with make_session_factory(make_engine(settings.database.url))() as session:
+        r = sim.replay_simulation(session, args.simulation_id)
+    if args.json:
+        print(
+            json.dumps(
+                {
+                    "match": r.match,
+                    "differences": r.differences,
+                    "n_events": r.n_events,
+                    "folded": r.folded,
+                },
+                indent=2,
+                default=str,
+            )
+        )
+    elif r.match:
+        print(f"MATCH ({r.n_events} events)  state={r.folded['state']}")
+    else:
+        print("DIFFERENCES")
+        for d in r.differences:
+            print(f"  - {d}")
+    return 0 if (r.match or not args.verify) else 1
+
+
 def _tiingo_plan(args: argparse.Namespace) -> int:
     """Demand planning only: NO network, NO API key is read for any request."""
     from pitquant.market.providers.tiingo import CREDENTIAL
@@ -686,6 +749,21 @@ def main(argv: list[str] | None = None) -> int:
     tp.add_argument("--end", default="2022-09-30")
     tp.add_argument("--json", action="store_true")
     tp.set_defaults(func=_tiingo_plan)
+    su = sub.add_parser(
+        "simulation-update", help="update the active paper trades from new bars (idempotent)"
+    )
+    su.add_argument("--simulation-id", default=None)
+    su.add_argument("--as-of", default=None, help="ISO instant with offset (default: now)")
+    su.add_argument("--json", action="store_true")
+    su.set_defaults(func=_sim_update)
+    sr = sub.add_parser(
+        "simulation-replay",
+        help="rebuild a paper trade from T0 + events and compare (no market data)",
+    )
+    sr.add_argument("simulation_id")
+    sr.add_argument("--verify", action="store_true", help="exit 1 unless the replay MATCHES")
+    sr.add_argument("--json", action="store_true")
+    sr.set_defaults(func=_sim_replay)
     wd = sub.add_parser(
         "us-window-dryrun", help="fundamental/dataset/walk-forward dry-run of a window"
     )

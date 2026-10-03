@@ -470,7 +470,7 @@ Tablas: **74**.
 | `security_predecessor_id` | VARCHAR(36) | no | FK→`securities.security_id` |
 | `security_successor_id` | VARCHAR(36) | no | FK→`securities.security_id` |
 | `effective_at` | DATETIME | sí |  |
-| `event_type` | VARCHAR(32) | no |  |
+| `event_type` | VARCHAR(64) | no |  |
 | `exchange_ratio` | FLOAT | sí |  |
 | `membership_continuity` | BOOLEAN | no |  |
 | `source` | VARCHAR(80) | no |  |

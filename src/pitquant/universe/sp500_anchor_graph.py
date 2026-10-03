@@ -26,6 +26,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from pitquant.config.settings import Settings, get_settings
+from pitquant.core.errors import DataQualityError
 from pitquant.data.calendars.market_calendar import get_calendar
 from pitquant.db.models import (
     IndexCurrentAnchor,
@@ -39,7 +40,7 @@ from pitquant.universe.sources.sp500_evidence import PARSER_VERSION as EVIDENCE_
 from pitquant.universe.sources.spy_sec_anchors import PARSER_VERSION as ANCHOR_PARSER
 from pitquant.universe.sources.spy_sec_anchors import norm_name
 
-ENGINE_VERSION = "anchor-graph-3"
+ENGINE_VERSION = "anchor-graph-5"
 CONFIRMED = {"OFFICIAL_CONFIRMED", "OFFICIAL_REPUBLISHED_CONFIRMED"}
 
 
@@ -973,6 +974,9 @@ def reconstruct(
     limit = pre_holdout_limit(cfg)
     anchors = load_anchors(session, settings=cfg)
     cal = get_calendar("XNYS")
+    from pitquant.universe.succession_timeline import SuccessionTimeline
+
+    timeline = SuccessionTimeline(session)
     legs = load_legs(session)
     from pitquant.universe.sp500_rename_links import scan_rename_statements
 
@@ -1036,6 +1040,13 @@ def reconstruct(
                 seg.segment_blocked or "daily canonical: the segment has unresolved changes"
             )
         reasons = daily_reasons if daily else monthly_reasons
+        # Reconciliation IDs denote lineages; publish the legal securities at this open.
+        try:
+            fwd = timeline.at(fwd, cal.session_open(t))
+            bwd = timeline.at(bwd, cal.session_open(t))
+        except DataQualityError as exc:
+            reasons.append(str(exc))
+            daily_ok = False
         c = Cohort(
             t,
             "BLOCKED" if reasons else "MEMBERSHIP_READY",

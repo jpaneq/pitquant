@@ -49,6 +49,9 @@ class PlanBody(BaseModel):
     target_1: float | None = None
     target_2: float | None = None
     target_3_optional: float | None = None
+    entry_price: float | None = None
+    exit_policy: str | None = None
+    exit_fractions: list[float] | None = None
 
 
 class CreateBody(BaseModel):
@@ -60,11 +63,19 @@ class CreateBody(BaseModel):
     risk_pct: float = 1.0
     horizon_sessions: int = 20
     mode: str = "MANUAL_SIMULATION"
+    sizing_mode: str = "RISK_BASED"
+    notional: float | None = None
 
 
 class CloseBody(BaseModel):
     price: float
     reason: str = ""
+
+
+class HypothesisBody(BaseModel):
+    statement: str
+    created_by: str
+    evidence: dict[str, Any] = {}
 
 
 class PostMortemBody(BaseModel):
@@ -115,14 +126,43 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
     def summary(db: DB) -> dict[str, Any]:
         s = sim.evidence_summary(db)
         sims = list(db.scalars(select(Simulation.simulation_id)))
-        groups = {"OPEN": 0, "CLOSED": 0, "WAITING_ENTRY": 0, "STOPPED": 0, "TP1": 0, "TP2": 0}
+        groups = {
+            "OPEN": 0,
+            "CLOSED": 0,
+            "WAITING_ENTRY": 0,
+            "STOPPED": 0,
+            "TP1": 0,
+            "TP2": 0,
+            "TP3": 0,
+            "EXPIRED": 0,
+            "AMBIGUOUS_INTRABAR": 0,
+            "TARGETS_REACHED": 0,
+        }
         for sid in sims:
             o = sim.latest_outcome(db, sid)
             st = o.state if o else SimState.CREATED.value
             groups["CLOSED" if (o and o.is_closed) else "OPEN"] += 1
             if st in groups:
                 groups[st] += 1
+            if o and (o.details or {}).get("targets_touched"):
+                groups["TARGETS_REACHED"] += 1
         return {"banner": PAPER, "groups": groups, "evidence": s.__dict__}
+
+    @r.get("/insights")
+    def insights_(db: DB, by: str = "setup_type") -> dict[str, Any]:
+        out: dict[str, Any] = wrap(lambda: sim.insights(db, by))
+        return out
+
+    @r.get("/hypotheses")
+    def hypotheses(db: DB) -> list[dict[str, Any]]:
+        from pitquant.db.models import ResearchHypothesis
+
+        return [
+            row(h)
+            for h in db.scalars(
+                select(ResearchHypothesis).order_by(ResearchHypothesis.created_at.desc())
+            )
+        ]
 
     @r.get("")
     def listing(db: DB) -> list[dict[str, Any]]:
@@ -150,6 +190,8 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
                 risk_pct=body.risk_pct,
                 horizon_sessions=body.horizon_sessions,
                 mode=body.mode,
+                sizing_mode=body.sizing_mode,
+                notional=body.notional,
             )
             db.commit()
             return {
@@ -178,6 +220,9 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
             "observations": [row(o) for o in db.scalars(select(SimulationObservation).where(SimulationObservation.simulation_id == simulation_id).order_by(SimulationObservation.observed_at))],
             "postmortems": [row(p) for p in db.scalars(select(SimulationPostMortem).where(SimulationPostMortem.simulation_id == simulation_id))],
             "bars": [{"date": str(d), **{k: float(v) for k, v in b.items()}} for d, b in bars.iterrows()], "analysis_now": analysis_now,
+            "events": [{"sequence": e.sequence_number, "type": e.event_type, "date": str(e.occurred_at), "payload": e.payload_json, "engine_version": e.engine_version} for e in sim.stored_events(db, simulation_id)],
+            "comparison": sim.compare_plans(db, simulation_id), "explain": sim.explain_simulation(db, simulation_id),
+            "plan_levels": {"exit_policy": (s.final_simulated_plan or {}).get("exit_policy") or "LEGACY_HALF_AT_TP1", "risk_reward": (s.final_simulated_plan or {}).get("risk_reward"), "sizing": (s.final_simulated_plan or {}).get("sizing")},
         }  # fmt: skip
 
     @r.post("/{simulation_id}/evaluate")
@@ -218,6 +263,123 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
             o = sim.evaluate_simulation(db, cfg, simulation_id)
             db.commit()
             return row(o)
+
+        out: dict[str, Any] = wrap(go)
+        return out
+
+    @r.post("/{simulation_id}/update")
+    def update_(simulation_id: str, db: DB) -> dict[str, Any]:
+        if db.get(Simulation, simulation_id) is None:
+            raise HTTPException(404, "unknown simulation")
+
+        def go() -> dict[str, Any]:
+            u = sim.update_simulation(db, cfg, simulation_id)
+            db.commit()
+            return {
+                "new_events": u.new_events,
+                "outcome_created": u.outcome_created,
+                "state": u.state,
+            }
+
+        out: dict[str, Any] = wrap(go)
+        return out
+
+    @r.post("/{simulation_id}/cancel")
+    def cancel(simulation_id: str, db: DB) -> dict[str, Any]:
+        if db.get(Simulation, simulation_id) is None:
+            raise HTTPException(404, "unknown simulation")
+
+        def go() -> dict[str, Any]:
+            sim.update_simulation(db, cfg, simulation_id)
+            sim.cancel_simulation(db, cfg, simulation_id, at=utc_now())
+            o = sim.evaluate_simulation(db, cfg, simulation_id)
+            db.commit()
+            return row(o)
+
+        out: dict[str, Any] = wrap(go)
+        return out
+
+    def known(simulation_id: str, db: Any) -> None:
+        if db.get(Simulation, simulation_id) is None:
+            raise HTTPException(404, "unknown simulation")
+
+    @r.get("/{simulation_id}/events")
+    def events(simulation_id: str, db: DB) -> list[dict[str, Any]]:
+        known(simulation_id, db)
+        return [
+            {
+                "sequence": e.sequence_number,
+                "type": e.event_type,
+                "date": str(e.occurred_at),
+                "payload": e.payload_json,
+                "engine_version": e.engine_version,
+            }
+            for e in sim.stored_events(db, simulation_id)
+        ]
+
+    @r.get("/{simulation_id}/observations")
+    def observations(simulation_id: str, db: DB) -> list[dict[str, Any]]:
+        known(simulation_id, db)
+        return [
+            row(o)
+            for o in db.scalars(
+                select(SimulationObservation)
+                .where(SimulationObservation.simulation_id == simulation_id)
+                .order_by(SimulationObservation.observed_at)
+            )
+        ]
+
+    @r.get("/{simulation_id}/postmortem")
+    def postmortem_facts(simulation_id: str, db: DB) -> dict[str, Any]:
+        known(simulation_id, db)
+        facts: dict[str, Any] = wrap(lambda: sim.postmortem_facts(db, cfg, simulation_id))
+        return {
+            "facts": facts,
+            "classifications": [
+                row(p)
+                for p in db.scalars(
+                    select(SimulationPostMortem).where(
+                        SimulationPostMortem.simulation_id == simulation_id
+                    )
+                )
+            ],
+        }
+
+    @r.get("/{simulation_id}/explain")
+    def explain(simulation_id: str, db: DB) -> dict[str, Any]:
+        known(simulation_id, db)
+        return sim.explain_simulation(db, simulation_id)
+
+    @r.get("/{simulation_id}/compare")
+    def compare(simulation_id: str, db: DB) -> dict[str, Any]:
+        known(simulation_id, db)
+        return sim.compare_plans(db, simulation_id)
+
+    @r.get("/{simulation_id}/replay")
+    def replay(simulation_id: str, db: DB) -> dict[str, Any]:
+        known(simulation_id, db)
+        x = sim.replay_simulation(db, simulation_id)
+        return {
+            "match": x.match,
+            "differences": x.differences,
+            "n_events": x.n_events,
+            "folded": x.folded,
+        }
+
+    @r.post("/{simulation_id}/hypothesis")
+    def hypothesis(simulation_id: str, body: HypothesisBody, db: DB) -> dict[str, Any]:
+        known(simulation_id, db)
+
+        def go() -> dict[str, Any]:
+            h = sim.propose_hypothesis(
+                db,
+                statement=body.statement,
+                evidence=body.evidence,
+                created_by=body.created_by,
+                simulation_id=simulation_id,
+            )
+            db.commit()
+            return row(h)
 
         out: dict[str, Any] = wrap(go)
         return out

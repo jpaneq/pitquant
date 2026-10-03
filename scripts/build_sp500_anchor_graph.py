@@ -168,7 +168,7 @@ def main() -> int:
     (DOCS / "SP500_ANCHOR_GRAPH.md").write_text("\n".join(L) + "\n", encoding="utf-8")
     G = [
         "# S&P 500 — blockers PRIMARIOS locales (generado)\n",
-        "> Sólo lo que puede cambiar una composición mensual. Para investigación externa; no se ha buscado nada.\n",
+        "> Sólo lo que puede cambiar una composición mensual. Generado tras incorporar los originales archivados; las fichas restantes requieren evidencia adicional.\n",
         "| # | segmento | categoría | security | eventos | ventana posible | cohortes bloqueadas | qué falta |",
         "|---|---|---|---|---|---|---|---|",
     ]

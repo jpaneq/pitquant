@@ -31,12 +31,12 @@ from pitquant.universe.sp500_rename_links import iter_releases
 
 MIN_W = (date(2017, 10, 1), date(2022, 9, 30))
 BEFORE = {
-    "ready": 21,
-    "longest": 9,
-    "membership_blockers": 46,
-    "identity_blockers": 8,
-    "weak_identity": 15,
-}  # measured at HEAD 8af040b
+    "ready": 27,
+    "longest": 15,
+    "membership_blockers": 21,
+    "identity_blockers": 3,
+    "weak_identity": 2,
+}  # measured at HEAD f84f38d
 PROMPT = (
     "Busca fuentes oficiales para estas fichas. Devuelve por caso URL, accession si aplica, fecha de publicación/acceptance, cita breve que demuestra "
     "el evento, fecha efectiva y evidencia de continuidad/clase. Separa lo probado de lo incierto. No uses CSV comunitarios como prueba."
@@ -146,7 +146,7 @@ def main() -> int:
             "# D-02 — paquete documental residual (generado)\n",
             "> Generado por `scripts/gen_d02_residual_package.py` desde la base y el archivo local. No editar a mano. Las pistas de discovery NO son evidencia.\n",
             "## Antes / después (ventana 2017-10 → 2022-09)\n",
-            "| métrica | inicio de la iteración (HEAD 8af040b) | ahora |",
+            "| métrica | inicio de la iteración (HEAD f84f38d) | ahora |",
             "|---|---|---|",
             f"| cohortes mensuales listas | {BEFORE['ready']}/60 | {w60.ready}/60 |",
             f"| racha continua máxima | {BEFORE['longest']} | {w60.longest_run} |",
