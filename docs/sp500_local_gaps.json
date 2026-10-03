@@ -1711,21 +1711,6 @@
   "segment": "2019-09-30\u21922019-12-31",
   "difference_type": "ALIAS",
   "category": "SUCCESSOR_SECURITY",
-  "security": "HCP Inc -> Healthpeak Properties Inc",
-  "events": "anchor LEI / discovery pair",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "same issuer LEI PZ9HF5U52KPF0MH0QN75 in both NPORT-P filings (identity transition, not membership)"
-  ],
-  "missing_evidence": ""
- },
- {
-  "segment": "2019-09-30\u21922019-12-31",
-  "difference_type": "ALIAS",
-  "category": "SUCCESSOR_SECURITY",
   "security": "CBS Corp -> ViacomCBS Inc",
   "events": "anchor LEI / discovery pair",
   "window": null,
@@ -1741,21 +1726,6 @@
   "segment": "2019-09-30\u21922019-12-31",
   "difference_type": "ALIAS",
   "category": "SUCCESSOR_SECURITY",
-  "security": "BB&T Corp -> Truist Financial Corp",
-  "events": "anchor LEI / discovery pair",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "same issuer LEI 549300DRQQI75D2JP341 in both NPORT-P filings (identity transition, not membership)"
-  ],
-  "missing_evidence": ""
- },
- {
-  "segment": "2019-09-30\u21922019-12-31",
-  "difference_type": "ALIAS",
-  "category": "SUCCESSOR_SECURITY",
   "security": "Symantec Corp -> NortonLifeLock Inc",
   "events": "anchor LEI / discovery pair",
   "window": null,
@@ -1764,6 +1734,36 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI YF6ZV0M6AU4FY94MK914 in both NPORT-P filings (identity transition, not membership)"
+  ],
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2019-09-30\u21922019-12-31",
+  "difference_type": "ALIAS",
+  "category": "SUCCESSOR_SECURITY",
+  "security": "HCP Inc -> Healthpeak Properties Inc",
+  "events": "anchor LEI / discovery pair",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "same issuer LEI PZ9HF5U52KPF0MH0QN75 in both NPORT-P filings (identity transition, not membership)"
+  ],
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2019-09-30\u21922019-12-31",
+  "difference_type": "ALIAS",
+  "category": "SUCCESSOR_SECURITY",
+  "security": "BB&T Corp -> Truist Financial Corp",
+  "events": "anchor LEI / discovery pair",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "same issuer LEI 549300DRQQI75D2JP341 in both NPORT-P filings (identity transition, not membership)"
   ],
   "missing_evidence": ""
  },
@@ -2029,21 +2029,6 @@
   "segment": "2020-03-31\u21922020-06-30",
   "difference_type": "ALIAS",
   "category": "SUCCESSOR_SECURITY",
-  "security": "United Technologies Corp -> Raytheon Technologies Corp",
-  "events": "anchor LEI / discovery pair",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "same issuer LEI I07WOS4YJ0N7YRFE7309 in both NPORT-P filings (identity transition, not membership)"
-  ],
-  "missing_evidence": ""
- },
- {
-  "segment": "2020-03-31\u21922020-06-30",
-  "difference_type": "ALIAS",
-  "category": "SUCCESSOR_SECURITY",
   "security": "Arconic Inc -> Howmet Aerospace Inc",
   "events": "anchor LEI / discovery pair",
   "window": null,
@@ -2052,6 +2037,21 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI 549300HO5WFZUT5N2T22 in both NPORT-P filings (identity transition, not membership)"
+  ],
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2020-03-31\u21922020-06-30",
+  "difference_type": "ALIAS",
+  "category": "SUCCESSOR_SECURITY",
+  "security": "United Technologies Corp -> Raytheon Technologies Corp",
+  "events": "anchor LEI / discovery pair",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "same issuer LEI I07WOS4YJ0N7YRFE7309 in both NPORT-P filings (identity transition, not membership)"
   ],
   "missing_evidence": ""
  },
@@ -2214,21 +2214,6 @@
   "segment": "2020-12-31\u21922021-03-31",
   "difference_type": "ALIAS",
   "category": "SUCCESSOR_SECURITY",
-  "security": "CenturyLink Inc -> Lumen Technologies Inc",
-  "events": "anchor LEI / discovery pair",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "same issuer LEI 8M3THTGWLTYZVE6BBY25 in both NPORT-P filings (identity transition, not membership)"
-  ],
-  "missing_evidence": ""
- },
- {
-  "segment": "2020-12-31\u21922021-03-31",
-  "difference_type": "ALIAS",
-  "category": "SUCCESSOR_SECURITY",
   "security": "National Oilwell Varco Inc -> NOV Inc",
   "events": "anchor LEI / discovery pair",
   "window": null,
@@ -2237,6 +2222,21 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI 549300EHF3IW1AR6U008 in both NPORT-P filings (identity transition, not membership)"
+  ],
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2020-12-31\u21922021-03-31",
+  "difference_type": "ALIAS",
+  "category": "SUCCESSOR_SECURITY",
+  "security": "CenturyLink Inc -> Lumen Technologies Inc",
+  "events": "anchor LEI / discovery pair",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "same issuer LEI 8M3THTGWLTYZVE6BBY25 in both NPORT-P filings (identity transition, not membership)"
   ],
   "missing_evidence": ""
  },
