@@ -1743,6 +1743,10 @@ class Simulation(Base):
         String(64)
     )  # SHA-256 of the frozen T0 content (ADR-0036)
     source_provenance: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    # ADR-0037: the execution rules this simulation is bound to FOR EVER (immutable like the whole row); rows that predate it are 'v1'.
+    simulation_engine_version: Mapped[str] = mapped_column(
+        String(20), default="v1", server_default="v1"
+    )
 
     __table_args__ = (
         CheckConstraint("asset_type IN ('EQUITY','BTC')", name="asset_type_values"),
@@ -1762,9 +1766,21 @@ class SimulationObservation(Base):
     observation_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
     simulation_id: Mapped[str] = mapped_column(ForeignKey("simulations.simulation_id"), index=True)
     observed_at: Mapped[datetime] = mapped_column(UTCDateTime)
-    kind: Mapped[str] = mapped_column(String(20))  # THESIS_SNAPSHOT | MANUAL_CLOSE
+    kind: Mapped[str] = mapped_column(
+        String(20)
+    )  # THESIS_SNAPSHOT | MANUAL_CLOSE | CANCEL | PERIODIC
     payload: Mapped[dict[str, Any]] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+    # ADR-0037: HISTORICAL observations (kind PERIODIC): the analysis as known at the bar date, with the versions that produced it.
+    horizon_label: Mapped[str | None] = mapped_column(String(120))
+    source_bar_date: Mapped[date | None] = mapped_column(Date)
+    observation_schema_version: Mapped[int | None] = mapped_column(Integer)
+    analyzer_version: Mapped[str | None] = mapped_column(String(60))
+    feature_version: Mapped[str | None] = mapped_column(String(40))
+
+    __table_args__ = (
+        UniqueConstraint("simulation_id", "horizon_label", name="uq_simulation_observation_label"),
+    )
 
 
 class SimulationOutcome(Base):
@@ -1807,6 +1823,7 @@ class SimulationOutcome(Base):
         Integer
     )  # events of the log this outcome was materialised from
     engine_version: Mapped[str | None] = mapped_column(String(30))
+    bars_to_entry: Mapped[int | None] = mapped_column(Integer)
 
 
 class SimulationEvent(Base):
@@ -1823,6 +1840,7 @@ class SimulationEvent(Base):
     source_bar_timestamp: Mapped[date | None] = mapped_column(Date)
     payload_json: Mapped[dict[str, Any]] = mapped_column(JSON)
     engine_version: Mapped[str] = mapped_column(String(30))
+    event_schema_version: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
 
     __table_args__ = (
@@ -1846,6 +1864,9 @@ class SimulationCounterfactual(Base):
     details: Mapped[dict[str, Any]] = mapped_column(JSON)
     timeline: Mapped[list[dict[str, Any]]] = mapped_column(JSON)
     label: Mapped[str] = mapped_column(String(20), default="COUNTERFACTUAL")
+    simulation_engine_version: Mapped[str] = mapped_column(
+        String(20), default="v1", server_default="v1"
+    )  # the engine that produced it (the pinned one)
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
 
 

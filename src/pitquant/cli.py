@@ -529,6 +529,10 @@ def _sim_update(args: argparse.Namespace) -> int:
         "new_events": total,
         "outcomes_created": sum(r.outcome_created for r in results),
         "failed": sum(r.status != "OK" for r in results),
+        "bars_loaded": sum(r.bars_loaded for r in results),
+        "bars_new": sum(r.bars_new for r in results),
+        "events_new": total,
+        "observations_new": sum(r.new_observations for r in results),
         "detail": [
             {
                 "simulation_id": r.simulation_id,
@@ -544,7 +548,7 @@ def _sim_update(args: argparse.Namespace) -> int:
         print(json.dumps(out, indent=2))
     else:
         print(
-            f"PAPER TRADING — NO REAL MONEY\nsimulations {out['simulations']}  new_events = {total}  outcomes_created {out['outcomes_created']}"
+            f"PAPER TRADING — NO REAL MONEY\nsimulations {out['simulations']}  new_events = {total}  outcomes_created {out['outcomes_created']}\nbars_loaded {out['bars_loaded']}  bars_new {out['bars_new']}  events_new {out['events_new']}  observations_new {out['observations_new']}"
         )
         for d in out["detail"]:
             print(
@@ -557,10 +561,15 @@ def _sim_update(args: argparse.Namespace) -> int:
 def _sim_replay(args: argparse.Namespace) -> int:
     """Rebuild the state from the T0 row + the event log ONLY (no market data) and compare it with the persisted outcome."""
     from pitquant.simulation import service as sim
+    from pitquant.simulation.registry import EngineVersionUnavailable
 
     settings = get_settings()
     with make_session_factory(make_engine(settings.database.url))() as session:
-        r = sim.replay_simulation(session, args.simulation_id)
+        try:
+            r = sim.replay_simulation(session, args.simulation_id)
+        except EngineVersionUnavailable as e:
+            print(f"ENGINE_VERSION_UNAVAILABLE\n  {e}")
+            return 1
     if args.json:
         print(
             json.dumps(
@@ -568,6 +577,8 @@ def _sim_replay(args: argparse.Namespace) -> int:
                     "match": r.match,
                     "differences": r.differences,
                     "n_events": r.n_events,
+                    "engine_version": r.engine_version,
+                    "event_schema_versions": list(r.event_schema_versions),
                     "folded": r.folded,
                 },
                 indent=2,
@@ -575,9 +586,13 @@ def _sim_replay(args: argparse.Namespace) -> int:
             )
         )
     elif r.match:
-        print(f"MATCH ({r.n_events} events)  state={r.folded['state']}")
+        print(
+            f"MATCH\n  simulation_id {r.simulation_id}\n  engine_version {r.engine_version}  event_schema {','.join(map(str, r.event_schema_versions))}\n  events {r.n_events}  state {r.folded['state']}"
+        )
     else:
-        print("DIFFERENCES")
+        print(
+            f"DIFFERENCES  (simulation {r.simulation_id}, engine {r.engine_version}, {r.n_events} events)"
+        )
         for d in r.differences:
             print(f"  - {d}")
     return 0 if (r.match or not args.verify) else 1

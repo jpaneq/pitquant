@@ -123,6 +123,9 @@ class Evaluation:
     entry_date: date | None = None
     entry_price: float | None = None
     entry_method: str | None = None
+    bars_to_entry: int | None = (
+        None  # market bars processed from the decision to the entry bar (MARKET_REFERENCE at T0 = 0)
+    )
     exit_date: date | None = None
     tp1_date: date | None = None
     tp2_date: date | None = None
@@ -203,6 +206,7 @@ def evaluate(
     def fill_entry(d: date, price: float, method: str) -> None:
         nonlocal risk
         ev.entry_date, ev.entry_price, ev.entry_method = d, price, method
+        ev.bars_to_entry = n_bar
         risk = price - plan.stop
         ev.state = SimState.ENTERED
         _e(ev, "ENTRY_TRIGGERED", d, level=price)
@@ -696,7 +700,7 @@ def _metrics(
 ) -> None:
     keys = (
         "realized_return", "excess_return_vs_benchmark", "realized_r", "mfe", "mae", "max_drawdown", "days_to_entry", "days_to_stop", "days_to_tp1", "days_to_tp2",
-        "days_to_tp3", "holding_period", "mfe_pct", "mae_pct", "mfe_r", "mae_r", "initial_risk_per_unit", "mark_to_market_return", "days_waiting_entry",
+        "days_to_tp3", "holding_period", "mfe_pct", "mae_pct", "mfe_r", "mae_r", "initial_risk_per_unit", "mark_to_market_return", "days_waiting_entry", "bars_to_entry",
     )  # fmt: skip
     m: dict[str, float | int | None] = {k: None for k in keys}
     ev.metrics = m
@@ -735,7 +739,8 @@ def _metrics(
         "REALIZED" if ev.is_closed else "UNREALIZED (position still open at the last bar)"
     )
     ev.details["bars_in_trade"] = len(closes)
-    ev.details["bars_to_entry"] = None
+    m["bars_to_entry"] = ev.bars_to_entry
+    ev.details["bars_to_entry"] = ev.bars_to_entry
     parts = [(x["fraction"], x["price"]) for x in ev.exits]
     if not ev.is_closed and last_close is not None and remaining > EPS:
         parts.append((remaining, last_close))
@@ -813,6 +818,11 @@ def fold_events(events: list[dict[str, Any]], plan: PlanLevels) -> dict[str, Any
         elif t == "MANUAL_CLOSE":
             exit_date = d
     closed = state in {s.value for s in CLOSED}
+    n_bars_to_entry = sum(
+        1
+        for e in events
+        if e["type"] == "BAR_PROCESSED" and entry_date is not None and e["date"] <= entry_date
+    )
     out: dict[str, Any] = {
         "state": state,
         "is_closed": closed,
@@ -826,6 +836,7 @@ def fold_events(events: list[dict[str, Any]], plan: PlanLevels) -> dict[str, Any
         out["exit_date"] = last_bar
     if entry is None:
         return out
+    out["bars_to_entry"] = n_bars_to_entry
     risk = entry - plan.stop
     parts = list(exits)
     if not closed and last_close is not None and remaining > EPS:

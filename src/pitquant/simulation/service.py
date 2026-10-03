@@ -13,7 +13,7 @@ import hashlib
 import json
 import math
 import statistics
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import UTC, date, datetime
 from typing import Any
 
@@ -42,14 +42,18 @@ from pitquant.db.models import (
 from pitquant.market.ca_resolve import (
     collapse_equivalent,  # noqa: F401 — documents that actions are the resolved ones
 )
+from pitquant.simulation import registry
 from pitquant.simulation.engine import (
     CLOSED,
-    SIM_ENGINE_VERSION,
     Evaluation,
     PlanLevels,
     SimState,
-    evaluate,
-    fold_events,
+)
+from pitquant.simulation.observations import (
+    ANALYZER_VERSION,
+    record_observations,
+    thesis_facts,
+    trend_flip,
 )
 
 AUTO_PAPER_ENABLED = False
@@ -148,6 +152,7 @@ def create_simulation(
         )
     if plan_origin not in ("PITQUANT", "USER_MODIFIED", "USER_DEFINED"):
         raise SimulationError("plan_origin must be PITQUANT, USER_MODIFIED or USER_DEFINED")
+    engine = registry.current_engine()  # the engine this NEW simulation is bound to for ever
     svc = AnalyzerService(session, settings)
     md = svc._md(security_id, at)
     if md.series.n_bars == 0:
@@ -254,8 +259,9 @@ def create_simulation(
     bench = svc._bench(at)
     risk_per = levels.entry_high - levels.stop
     sim = Simulation(
-        mode=mode, security_id=security_id, asset_type=asset_type, decision_at=at, analyzer_version="analyzer-v0", feature_version=svc.versions()["feature_engine_version"], model_id=None, model_version=None,
+        mode=mode, security_id=security_id, asset_type=asset_type, decision_at=at, analyzer_version=ANALYZER_VERSION, feature_version=svc.versions()["feature_engine_version"], model_id=None, model_version=None,
         rules_version=svc.versions()["trade_plan_version"], prediction_status="NOT_YET_VALIDATED",
+        simulation_engine_version=engine.version,
         price_snapshot=quote, fundamental_snapshot=fund, technical_snapshot=tech, valuation_snapshot=val, support_resistance_snapshot=tech.get("support_resistance") or {}, trade_plan_snapshot=tplan,
         market_regime_snapshot={"trend": tech.get("trend"), "risk": tech.get("risk"), "volume": tech.get("volume"), "overextension": tech.get("overextension")},
         data_quality=svc.data_quality(security_id, at), funding_snapshot=None, open_interest_snapshot=None, basis_snapshot=None, onchain_snapshot=None,
@@ -277,7 +283,8 @@ def create_simulation(
         "trade_plan_rules_version": sim.rules_version,
         "prediction": {"model_id": None, "model_version": None, "status": "NOT_YET_VALIDATED"},
         "benchmark": {"security_id": sim.benchmark_security_id, "kind": "SPY_TOTAL_RETURN_PROXY" if sim.benchmark_security_id else None},
-        "event_engine_version": SIM_ENGINE_VERSION,
+        "event_engine_version": engine.version,
+        "simulation_engine_version": engine.version,
         "versions": ver,
     }  # fmt: skip
     session.add(sim)
@@ -290,7 +297,8 @@ def create_simulation(
             occurred_at=at.date(),
             source_bar_timestamp=None,
             payload_json={"state_after": "CREATED"},
-            engine_version=SIM_ENGINE_VERSION,
+            engine_version=engine.version,
+            event_schema_version=engine.event_schema_version,
         )
     )
     session.flush()
@@ -441,8 +449,12 @@ class UpdateResult:
     outcome_created: bool
     state: str
     outcome: SimulationOutcome | None
-    status: str = "OK"  # OK | DIVERGED | TAMPERED | ERROR
+    status: str = "OK"  # OK | DIVERGED | TAMPERED | ENGINE_VERSION_UNAVAILABLE | ERROR
     error: str | None = None
+    bars_loaded: int = 0  # bars read from T0 (the update re-reads them: see ADR-0037 «performance»)
+    bars_new: int = 0  # BAR_PROCESSED events appended by THIS update
+    new_observations: int = 0
+    observation_errors: list[str] = field(default_factory=list)
 
 
 def _evaluate(
@@ -452,7 +464,7 @@ def _evaluate(
     bench = None
     if sim.benchmark_security_id:
         bench = load_market(session, sim.benchmark_security_id, as_of).bars["close"]
-    ev = evaluate(
+    ev = registry.resolve_engine(sim.simulation_engine_version).evaluate(
         plan_of(sim),
         bars,
         sim.decision_at.date(),
@@ -471,6 +483,9 @@ def update_simulation(
     prefix; only the events after the stored ones are appended (a second run with no new bars appends 0 events and no outcome). A stored event
     that the re-run does not reproduce raises ``EVENT_LOG_DIVERGENCE`` instead of rewriting history."""
     sim = session.get_one(Simulation, simulation_id)
+    engine = registry.resolve_engine(
+        sim.simulation_engine_version
+    )  # the PINNED engine; never the latest (ENGINE_VERSION_UNAVAILABLE fails closed)
     as_of = as_of or utc_now()
     _guard(as_of, settings)
     if as_of < sim.decision_at:
@@ -498,29 +513,48 @@ def update_simulation(
                 if e["type"] not in ("SIMULATION_CREATED", "MANUAL_CLOSE", "CANCELLED")
                 else None,
                 payload_json=e["payload"],
-                engine_version=SIM_ENGINE_VERSION,
+                engine_version=engine.version,
+                event_schema_version=engine.event_schema_version,
             )
         )
     session.flush()
     latest = latest_outcome(session, simulation_id)
+    bars_new = sum(1 for e in added if e["type"] == "BAR_PROCESSED")
     if (
         len(old) > len(ev.events)
     ):  # evaluated at an EARLIER instant than a previous update: nothing to add, no older state is materialised
         return UpdateResult(
-            simulation_id, 0, False, latest.state if latest else ev.state.value, latest
+            simulation_id,
+            0,
+            False,
+            latest.state if latest else ev.state.value,
+            latest,
+            bars_loaded=n_bars,
         )
+    created = False
+    out = latest
     if added or latest is None:
-        out = _materialise(sim, ev, as_of, len(old) + len(added), n_bars)
+        out = _materialise(sim, ev, as_of, len(old) + len(added), n_bars, engine.version)
         session.add(out)
         session.flush()
-        evaluate_counterfactual(session, sim, as_of)
-        return UpdateResult(simulation_id, len(added), True, ev.state.value, out)
+        created = True
     evaluate_counterfactual(session, sim, as_of)
-    return UpdateResult(simulation_id, 0, False, ev.state.value, latest)
+    rec = record_observations(
+        session, settings, sim, [_as_dict(r) for r in stored_events(session, simulation_id)], as_of
+    )
+    return UpdateResult(
+        simulation_id, len(added), created, ev.state.value, out, bars_loaded=n_bars, bars_new=bars_new,
+        new_observations=len(rec.created), observation_errors=rec.errors,
+    )  # fmt: skip
 
 
 def _materialise(
-    sim: Simulation, ev: Evaluation, as_of: datetime, n_events: int, n_bars: int
+    sim: Simulation,
+    ev: Evaluation,
+    as_of: datetime,
+    n_events: int,
+    n_bars: int,
+    engine_version: str,
 ) -> SimulationOutcome:
     m = ev.metrics
     extra = {
@@ -542,7 +576,7 @@ def _materialise(
         days_to_entry=m.get("days_to_entry"), days_to_stop=m.get("days_to_stop"), days_to_tp1=m.get("days_to_tp1"), days_to_tp2=m.get("days_to_tp2"), holding_period=m.get("holding_period"),
         prediction_direction_correct=None, trade_plan_execution_correct=None, timeline=ev.timeline,
         details={**ev.details, "metrics_extra": extra, "bars_used": n_bars, "paper_trade": "NO REAL MONEY"},
-        prediction_outcome=None, execution_outcome=execution_outcome(ev), event_count=n_events, engine_version=SIM_ENGINE_VERSION,
+        prediction_outcome=None, execution_outcome=execution_outcome(ev), event_count=n_events, engine_version=engine_version, bars_to_entry=m.get("bars_to_entry"),
     )  # fmt: skip
 
 
@@ -584,7 +618,9 @@ def update_active(
         except PITQuantError as e:
             msg = str(e)
             status = (
-                "DIVERGED"
+                "ENGINE_VERSION_UNAVAILABLE"
+                if isinstance(e, registry.EngineVersionUnavailable)
+                else "DIVERGED"
                 if "EVENT_LOG_DIVERGENCE" in msg
                 else "TAMPERED"
                 if "SNAPSHOT_TAMPERED" in msg
@@ -601,6 +637,8 @@ class ReplayResult:
     differences: list[str]
     folded: dict[str, Any]
     n_events: int
+    engine_version: str = ""
+    event_schema_versions: tuple[int, ...] = ()
 
 
 def replay_simulation(session: Session, simulation_id: str) -> ReplayResult:
@@ -612,12 +650,26 @@ def replay_simulation(session: Session, simulation_id: str) -> ReplayResult:
         diffs.append("event sequence has gaps or duplicates")
     if not verify_snapshot(sim):
         diffs.append("T0 snapshot hash mismatch")
-    folded = fold_events([_as_dict(r) for r in rows], plan_of(sim))
+    engine = registry.resolve_engine(sim.simulation_engine_version)
+    for r in rows:
+        if r.engine_version not in engine.event_labels:
+            diffs.append(
+                f"event #{r.sequence_number} was written by engine {r.engine_version!r}, the simulation is pinned to {sim.simulation_engine_version!r}"
+            )
+    folded = engine.fold_events([_as_dict(r) for r in rows], plan_of(sim))
     out = latest_outcome(session, simulation_id)
     if out is None:
         if len(rows) > 1:
             diffs.append("events beyond SIMULATION_CREATED but no materialised outcome")
-        return ReplayResult(simulation_id, not diffs, diffs, folded, len(rows))
+        return ReplayResult(
+            simulation_id,
+            not diffs,
+            diffs,
+            folded,
+            len(rows),
+            engine.version,
+            tuple(sorted({r.event_schema_version for r in rows})),
+        )
     if out.event_count is not None and out.event_count != len(rows):
         diffs.append(
             f"outcome materialised from {out.event_count} events, the log holds {len(rows)}"
@@ -659,7 +711,17 @@ def replay_simulation(session: Session, simulation_id: str) -> ReplayResult:
             folded["realized_return"] - hint,
             out.excess_return_vs_benchmark,
         )
-    return ReplayResult(simulation_id, not diffs, diffs, folded, len(rows))
+    if out.bars_to_entry is not None:
+        cmp("bars_to_entry", folded.get("bars_to_entry"), out.bars_to_entry)
+    return ReplayResult(
+        simulation_id,
+        not diffs,
+        diffs,
+        folded,
+        len(rows),
+        engine.version,
+        tuple(sorted({r.event_schema_version for r in rows})),
+    )
 
 
 def evaluate_counterfactual(
@@ -680,7 +742,10 @@ def evaluate_counterfactual(
         if sim.benchmark_security_id
         else None
     )
-    ev = evaluate(
+    engine = registry.resolve_engine(
+        sim.simulation_engine_version
+    )  # SAME pinned engine as the real simulation: only the plan differs
+    ev = engine.evaluate(
         plan,
         bars,
         sim.decision_at.date(),
@@ -697,7 +762,7 @@ def evaluate_counterfactual(
     if last is not None and last.last_bar == ev.last_bar and last.state == ev.state.value:
         return last
     row = SimulationCounterfactual(
-        simulation_id=sim.simulation_id, evaluated_at=as_of, last_bar=ev.last_bar, state=ev.state.value, plan={"entry_zone": [plan.entry_low, plan.entry_high], "stop": plan.stop, "target_1": plan.target_1, "target_2": plan.target_2, "exit_policy": plan.exit_policy},
+        simulation_id=sim.simulation_id, simulation_engine_version=engine.version, evaluated_at=as_of, last_bar=ev.last_bar, state=ev.state.value, plan={"entry_zone": [plan.entry_low, plan.entry_high], "stop": plan.stop, "target_1": plan.target_1, "target_2": plan.target_2, "exit_policy": plan.exit_policy},
         metrics={k: v for k, v in ev.metrics.items()}, details={"entry_price": ev.entry_price, "entry_method": ev.entry_method, "targets_touched": ev.details.get("targets_touched"), "execution_outcome": execution_outcome(ev), "label": "COUNTERFACTUAL — NOT THE REAL OUTCOME"}, timeline=ev.timeline,
     )  # fmt: skip
     session.add(row)
@@ -811,6 +876,36 @@ def latest_outcome(session: Session, simulation_id: str) -> SimulationOutcome | 
     ).first()
 
 
+def latest_periodic(session: Session, simulation_id: str) -> SimulationObservation | None:
+    return session.scalars(
+        select(SimulationObservation)
+        .where(
+            SimulationObservation.simulation_id == simulation_id,
+            SimulationObservation.kind == "PERIODIC",
+        )
+        .order_by(
+            SimulationObservation.source_bar_date.desc(), SimulationObservation.created_at.desc()
+        )
+    ).first()
+
+
+def thesis_evolution(session: Session, simulation_id: str) -> list[dict[str, Any]]:
+    """For every recorded observation: its label/date/versions and the descriptive facts against T0. READ-ONLY: nothing is recomputed."""
+    sim = session.get_one(Simulation, simulation_id)
+    rows = session.scalars(
+        select(SimulationObservation)
+        .where(
+            SimulationObservation.simulation_id == simulation_id,
+            SimulationObservation.kind == "PERIODIC",
+        )
+        .order_by(SimulationObservation.source_bar_date)
+    )
+    return [
+        {"observation_id": o.observation_id, "label": o.horizon_label, "bar_date": str(o.source_bar_date), "observed_at": o.observed_at.isoformat(), "observation_schema_version": o.observation_schema_version, "analyzer_version": o.analyzer_version, "feature_version": o.feature_version, "facts": thesis_facts(sim, o.payload, o.observation_id)}
+        for o in rows
+    ]  # fmt: skip
+
+
 def postmortem_facts(
     session: Session, settings: Settings, simulation_id: str, as_of: datetime | None = None
 ) -> dict[str, Any]:
@@ -835,7 +930,7 @@ def postmortem_facts(
         "target_quality": {"target_1_r": (sim.target_1 - entry) / stop_dist if entry and stop_dist > 0 else None, "mfe_r": ex.get("mfe_r"), "targets_touched": (out.details or {}).get("targets_touched")},
         "metrics": {k: getattr(out, k) for k in ("realized_return", "realized_r", "mfe", "mae", "max_drawdown", "holding_period", "excess_return_vs_benchmark")} | {"mfe_pct": ex.get("mfe_pct"), "mae_pct": ex.get("mae_pct")},
     }  # fmt: skip
-    flags: list[dict[str, str]] = []
+    flags: list[dict[str, Any]] = []
     if out.state == "STOPPED" and out.exit_date:
         bars, _ = _bars_after(session, sim, as_of)
         later = bars.loc[bars.index > out.exit_date]
@@ -868,14 +963,37 @@ def postmortem_facts(
                     "definition": "the highest price since entry never reached target 1",
                 }
             )
-    snaps = list(
-        session.scalars(
-            select(SimulationObservation)
-            .where(
-                SimulationObservation.simulation_id == simulation_id,
-                SimulationObservation.kind == "THESIS_SNAPSHOT",
+    periodic = latest_periodic(session, simulation_id)
+    if periodic is not None:
+        # recorded HISTORICAL observation (as known on its bar date) vs T0: descriptive facts with their source observation id, no cause inferred
+        names = {"trend_changed": "TREND_CHANGED", "support_broken": "SUPPORT_BROKEN", "resistance_broken": "RESISTANCE_BROKEN", "volatility_expanded": "VOLATILITY_EXPANDED",
+                 "valuation_expanded": "VALUATION_EXPANDED", "valuation_compressed": "VALUATION_COMPRESSED", "fundamental_snapshot_changed": "FUNDAMENTAL_SNAPSHOT_CHANGED", "regime_changed": "REGIME_CHANGED"}  # fmt: skip
+        for t in thesis_facts(sim, periodic.payload, periodic.observation_id):
+            flag = names[t["fact"]]
+            if flag == "TREND_CHANGED" and trend_flip(t["t0"], t["observed"]):
+                flag = "TREND_REVERSED"  # an up<->down flip, not any change
+            flags.append(
+                {
+                    "flag": flag,
+                    "definition": t["definition"],
+                    "t0": t["t0"],
+                    "observed": t["observed"],
+                    "source_observation_ids": [periodic.observation_id],
+                    "observation_bar_date": str(periodic.source_bar_date),
+                }
             )
-            .order_by(SimulationObservation.observed_at)
+    snaps = (
+        []
+        if periodic is not None
+        else list(
+            session.scalars(
+                select(SimulationObservation)
+                .where(
+                    SimulationObservation.simulation_id == simulation_id,
+                    SimulationObservation.kind == "THESIS_SNAPSHOT",
+                )
+                .order_by(SimulationObservation.observed_at)
+            )
         )
     )
     if snaps:
@@ -1030,6 +1148,7 @@ def evidence_summary(session: Session, min_n: int = MIN_N_FOR_STATS) -> Simulati
 
 # ───────────────────────────────────────────── Insights (descriptive only) and plan comparison
 SEGMENTS = (
+    "simulation_engine_version",
     "setup_type",
     "rules_version",
     "origin",
@@ -1046,6 +1165,8 @@ SEGMENTS = (
 def _segment_value(
     session: Session, sim: Simulation, by: str, vol_cuts: tuple[float, float] | None
 ) -> str:
+    if by == "simulation_engine_version":
+        return f"engine {sim.simulation_engine_version}"
     if by == "setup_type":
         return str((sim.original_pitquant_plan or {}).get("setup_type") or "USER_DEFINED")
     if by == "rules_version":
@@ -1103,6 +1224,9 @@ def insights(
         if v is not None
     )
     cuts = (vols[len(vols) // 3], vols[2 * len(vols) // 3]) if len(vols) >= 3 else None
+    engines: dict[str, int] = {}
+    for x in sims:
+        engines[x.simulation_engine_version] = engines.get(x.simulation_engine_version, 0) + 1
     groups: dict[str, list[tuple[Simulation, SimulationOutcome]]] = {}
     for x in sims:
         o = latest_outcome(session, x.simulation_id)
@@ -1148,6 +1272,8 @@ def insights(
         "min_n": min_n,
         "note": "descriptive statistics of paper trades: no recommendation, never a training label",
         "available_segmentations": list(SEGMENTS),
+        "engines": engines,
+        "mixed_engines": len(engines) > 1 and by != "simulation_engine_version",
     }
 
 
@@ -1230,7 +1356,7 @@ def explain_simulation(session: Session, simulation_id: str) -> dict[str, Any]:
     return {
         "simulation_id": simulation_id, "decision_at": sim.decision_at.isoformat(), "snapshot_hash": sim.snapshot_hash, "snapshot_verified": verify_snapshot(sim),
         "provenance": sim.source_provenance or {"note": "created before ADR-0036: provenance is reconstructed from the frozen snapshots only"},
-        "versions": {"analyzer": sim.analyzer_version, "feature": sim.feature_version, "trade_plan_rules": sim.rules_version, "prediction_model": sim.model_version, "prediction_status": sim.prediction_status, "event_engine": out.engine_version if out else SIM_ENGINE_VERSION},
+        "versions": {"analyzer": sim.analyzer_version, "feature": sim.feature_version, "trade_plan_rules": sim.rules_version, "prediction_model": sim.model_version, "prediction_status": sim.prediction_status, "event_engine": out.engine_version if out else sim.simulation_engine_version, "simulation_engine": sim.simulation_engine_version, "event_schema": ", ".join(str(v) for v in sorted({e.event_schema_version for e in stored_events(session, simulation_id)})) or "1"},
         "plan_origin": sim.plan_origin, "exit_policy": (sim.final_simulated_plan or {}).get("exit_policy") or "LEGACY_HALF_AT_TP1", "events": len(stored_events(session, simulation_id)),
         "banner": "PAPER TRADING — NO REAL MONEY",
     }  # fmt: skip

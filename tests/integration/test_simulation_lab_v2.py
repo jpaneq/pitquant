@@ -48,7 +48,8 @@ def test_creation_writes_the_first_event_and_a_snapshot_hash(env: Env) -> None:
     assert (
         sm.snapshot_hash
         and sim.verify_snapshot(sm)
-        and sm.source_provenance["event_engine_version"] == "sim-engine-2"
+        and sm.source_provenance["event_engine_version"] == "v1"
+        and sm.simulation_engine_version == "v1"
     )
     assert (
         sm.final_simulated_plan["exit_policy"] == "TRACK_TARGETS_ONLY"
@@ -346,7 +347,9 @@ def test_explain_lists_every_source_and_version(env: Env) -> None:
     assert (
         x["snapshot_verified"]
         and x["provenance"]["price"]["source"] == "SYN"
-        and x["versions"]["event_engine"] == "sim-engine-2"
+        and x["versions"]["event_engine"] == "v1"
+        and x["versions"]["simulation_engine"] == "v1"
+        and x["versions"]["event_schema"] == "1"
     )
     assert x["versions"]["prediction_status"] == "NOT_YET_VALIDATED" and x["provenance"][
         "benchmark"

@@ -26,6 +26,7 @@ from pitquant.db.models import (
 )
 from pitquant.simulation import service as sim
 from pitquant.simulation.engine import CLOSED, SimState
+from pitquant.simulation.registry import EngineVersionUnavailable
 
 PAPER = "PAPER TRADE — NO REAL MONEY"
 
@@ -112,6 +113,8 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
             return fn()
         except HoldoutAccessError as e:
             raise HTTPException(403, str(e)) from e
+        except EngineVersionUnavailable as e:
+            raise HTTPException(409, str(e)) from e
         except sim.PriceDataRequired as e:
             raise HTTPException(409, str(e)) from e
         except sim.AutoPaperDisabled as e:
@@ -172,7 +175,7 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
             o = sim.latest_outcome(db, s.simulation_id)
             ex = ((o.details or {}).get("metrics_extra") or {}) if o else {}
             sec = db.get(Security, s.security_id)
-            out.append({"simulation_id": s.simulation_id, "created_at": s.created_at.isoformat(), "security_id": s.security_id, "security": sec.name if sec else s.security_id, "decision_at": s.decision_at.isoformat(), "plan_origin": s.plan_origin, "mode": s.mode, "setup_type": (s.original_pitquant_plan or {}).get("setup_type") or "USER_DEFINED", "state": o.state if o else "CREATED", "outcome": row(o) if o else None, "mae_pct": ex.get("mae_pct"), "mfe_pct": ex.get("mfe_pct"), "mae_r": ex.get("mae_r"), "mfe_r": ex.get("mfe_r"), "exit_policy": (s.final_simulated_plan or {}).get("exit_policy") or "LEGACY_HALF_AT_TP1", "entry_zone": [s.entry_zone_low, s.entry_zone_high], "stop_loss": s.stop_loss, "target_1": s.target_1, "target_2": s.target_2, "banner": PAPER})  # fmt: skip
+            out.append({"simulation_id": s.simulation_id, "created_at": s.created_at.isoformat(), "security_id": s.security_id, "security": sec.name if sec else s.security_id, "decision_at": s.decision_at.isoformat(), "plan_origin": s.plan_origin, "simulation_engine_version": s.simulation_engine_version, "mode": s.mode, "setup_type": (s.original_pitquant_plan or {}).get("setup_type") or "USER_DEFINED", "state": o.state if o else "CREATED", "outcome": row(o) if o else None, "mae_pct": ex.get("mae_pct"), "mfe_pct": ex.get("mfe_pct"), "mae_r": ex.get("mae_r"), "mfe_r": ex.get("mfe_r"), "exit_policy": (s.final_simulated_plan or {}).get("exit_policy") or "LEGACY_HALF_AT_TP1", "entry_zone": [s.entry_zone_low, s.entry_zone_high], "stop_loss": s.stop_loss, "target_1": s.target_1, "target_2": s.target_2, "banner": PAPER})  # fmt: skip
         return out
 
     @r.post("")
@@ -234,7 +237,7 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
             "postmortems": [row(p) for p in db.scalars(select(SimulationPostMortem).where(SimulationPostMortem.simulation_id == simulation_id))],
             "bars": [{"date": str(d), **{k: float(v) for k, v in b.items()}} for d, b in bars.iterrows()], "analysis_now": analysis_now,
             "events": [{"sequence": e.sequence_number, "type": e.event_type, "date": str(e.occurred_at), "payload": e.payload_json, "engine_version": e.engine_version} for e in sim.stored_events(db, simulation_id)],
-            "comparison": sim.compare_plans(db, simulation_id), "explain": sim.explain_simulation(db, simulation_id),
+            "comparison": sim.compare_plans(db, simulation_id), "explain": sim.explain_simulation(db, simulation_id), "thesis_evolution": sim.thesis_evolution(db, simulation_id),
             "plan_levels": {"exit_policy": (s.final_simulated_plan or {}).get("exit_policy") or "LEGACY_HALF_AT_TP1", "risk_reward": (s.final_simulated_plan or {}).get("risk_reward"), "sizing": (s.final_simulated_plan or {}).get("sizing")},
         }  # fmt: skip
 
@@ -292,6 +295,10 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
                 "new_events": u.new_events,
                 "outcome_created": u.outcome_created,
                 "state": u.state,
+                "bars_loaded": u.bars_loaded,
+                "bars_new": u.bars_new,
+                "new_observations": u.new_observations,
+                "observation_errors": u.observation_errors,
             }
 
         out: dict[str, Any] = wrap(go)
@@ -371,12 +378,14 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
     @r.get("/{simulation_id}/replay")
     def replay(simulation_id: str, db: DB) -> dict[str, Any]:
         known(simulation_id, db)
-        x = sim.replay_simulation(db, simulation_id)
+        x = wrap(lambda: sim.replay_simulation(db, simulation_id))
         return {
             "match": x.match,
             "differences": x.differences,
             "n_events": x.n_events,
             "folded": x.folded,
+            "engine_version": x.engine_version,
+            "event_schema_versions": list(x.event_schema_versions),
         }
 
     @r.post("/{simulation_id}/hypothesis")
