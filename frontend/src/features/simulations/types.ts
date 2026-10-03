@@ -22,6 +22,7 @@ export type Outcome = {
   prediction_direction_correct: boolean | null
   trade_plan_execution_correct: boolean | null
   prediction_outcome?: string | null
+  bars_to_entry?: number | null
   execution_outcome?: string | null
   timeline: { date: string; state: string; note: string }[]
   details?: { return_basis?: string; metrics_extra?: Record<string, number | null>; targets_touched?: number[]; position_remaining?: number | null; ambiguity?: { kind: string; scenarios: { order: string; realized_r: number }[] }; exit_policy?: string; fills?: { entry: { price: number; method: string } } }
@@ -102,9 +103,11 @@ export type SimDetail = {
     valuation_snapshot: Record<string, unknown>
     data_quality: Record<string, unknown>
     snapshot_hash?: string | null
+    simulation_engine_version?: string
   }
   outcomes: Outcome[]
-  observations: { observation_id: string; observed_at: string; kind: string; payload: { comparison?: Record<string, unknown> } }[]
+  observations: { observation_id: string; observed_at: string; kind: string; horizon_label?: string | null; source_bar_date?: string | null; observation_schema_version?: number | null; analyzer_version?: string | null; feature_version?: string | null; payload: Record<string, unknown> & { comparison?: Record<string, unknown> } }[]
+  thesis_evolution?: ThesisEntry[]
   postmortems: { primary_cause: string; secondary_causes: string[]; classified_by: string; notes: string | null }[]
   bars: Bar[]
   analysis_now: Record<string, unknown>
@@ -119,4 +122,7 @@ export type PostMortemFacts = {
   classifications: { primary_cause: string; secondary_causes: string[]; classified_by: string; notes: string | null }[]
 }
 export type InsightRow = { segment: string; n: number; n_entered: number; sample: 'OK' | 'INSUFFICIENT_SAMPLE'; return?: { mean: number | null; median: number | null }; r?: { mean: number | null; median: number | null }; mae_pct?: { mean: number | null; median: number | null }; mfe_pct?: { mean: number | null; median: number | null }; stop_rate?: number; target_touch_rate?: number; expiration_rate?: number; ambiguous_rate?: number }
-export type Insights = { by: string; segments: InsightRow[]; min_n: number; note: string; available_segmentations: string[] }
+export type Insights = { by: string; segments: InsightRow[]; min_n: number; note: string; available_segmentations: string[]; engines?: Record<string, number>; mixed_engines?: boolean }
+
+export type ThesisFact = { fact: string; definition: string; t0: unknown; observed: unknown; source_observation_id: string | null }
+export type ThesisEntry = { observation_id: string; label: string; bar_date: string; observed_at: string; observation_schema_version: number | null; analyzer_version: string | null; feature_version: string | null; facts: ThesisFact[] }

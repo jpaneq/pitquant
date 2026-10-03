@@ -1,4 +1,4 @@
-import { comparePlanRows, describeEvent, fmtR, isClosedState, positionSize, riskReward, stateLabel, stateTone, validatePlan, type PlanDraft } from '../lib/simulation'
+import { changeRows, comparePlanRows, describeEvent, fmtR, isClosedState, positionSize, riskReward, snapFromCurrent, snapFromObservation, snapFromT0, stateLabel, stateTone, validatePlan, type PlanDraft } from '../lib/simulation'
 
 const plan: PlanDraft = { entryType: 'ENTRY_ZONE', zoneLow: 98, zoneHigh: 100, stop: 95, targets: [110, 120, 130] }
 
@@ -78,16 +78,41 @@ describe('PITQuant vs user plan', () => {
   })
 })
 
-describe('T0 vs current', () => {
-  it('reads both sides from their own source and never mixes them', async () => {
-    const { changeRows } = await import('../lib/simulation')
-    const t0 = { price_snapshot: { price: 210 }, technical_snapshot: { indicators: { rsi14: 54 }, trend: { state: 'UPTREND' } }, valuation_snapshot: { current: { pe: 20 } } }
-    const now = { quote: { price: 221 }, technical: { indicators: { rsi14: 67 }, trend: { state: 'DOWNTREND' } }, valuation: { current: { pe: 21 } } }
-    const rows = changeRows(t0, now)
-    expect(rows.find((r) => r.metric === 'Price')).toMatchObject({ t0: 210, current: 221, change: 11 })
-    expect(rows.find((r) => r.metric === 'RSI 14')?.change).toBe(13)
-    expect(rows.find((r) => r.metric === 'Trend state')).toMatchObject({ t0: 'UPTREND', current: 'DOWNTREND', change: null })
-    expect(rows.find((r) => r.metric === 'Market cap')).toMatchObject({ t0: null, current: null })
-    expect(changeRows(t0, undefined).every((r) => r.current === null)).toBe(true)
+describe('T0 vs observation vs current', () => {
+  const t0 = { decision_at: '2016-06-30T23:00:00Z', price_snapshot: { price: 210 }, support_resistance_snapshot: { supports: [{ lower: 200 }], resistances: [{ upper: 230 }] }, technical_snapshot: { indicators: { rsi14: 54 }, trend: { state: 'UPTREND' }, risk: { atr14_pct: 0.02, vol63: 0.2 }, support_resistance: { supports: [{ lower: 200 }], resistances: [{ upper: 230 }] } }, valuation_snapshot: { current: { pe: 20 } }, fundamental_snapshot: { ttm: { revenue: { value: 1000 } }, latest_period: '2015-12-31' }, market_regime_snapshot: { trend: { state: 'UPTREND' } }, data_quality: { overall: 'OK' } }
+  const obs = { horizon_label: 'T+20', observed_at: '2016-07-29T20:00:00Z', payload: { price: 221, return_since_entry: 0.052, benchmark_return: 0.01, technical_snapshot: { indicators: { rsi14: 67 }, trend: { state: 'DOWNTREND' }, risk: { atr14_pct: 0.03, vol63: 0.3 } }, valuation_snapshot: { current: { pe: 21 } }, fundamental_snapshot: { ttm: { revenue: { value: 1100 } }, latest_period: '2016-03-31' }, market_regime_snapshot: { trend: { state: 'DOWNTREND' } }, data_quality_snapshot: { overall: 'WARN' } } }
+  it('compares T0 with a RECORDED observation, each side read from its own source', () => {
+    const rows = changeRows(snapFromT0(t0), snapFromObservation(obs))
+    const by = Object.fromEntries(rows.map((r) => [r.metric, r]))
+    expect(by.Price).toMatchObject({ from: 210, to: 221, change: 11 })
+    expect(by['RSI 14'].change).toBe(13)
+    expect(by['Trend state']).toMatchObject({ from: 'UPTREND', to: 'DOWNTREND', change: null })
+    expect(by['Revenue TTM'].change).toBe(100)
+    expect(by['Return since entry']).toMatchObject({ from: null, to: 0.052 }) // T0 has no return: the cell stays empty, nothing is invented
+    expect(by['Benchmark return'].to).toBe(0.01)
+    expect(by['Data quality']).toMatchObject({ from: 'OK', to: 'WARN' })
+    expect(by['Nearest support (lower)']).toMatchObject({ from: 200, to: null })
+  })
+  it('omits a metric that exists on neither side', () => {
+    const rows = changeRows(snapFromT0(t0), snapFromObservation(obs))
+    expect(rows.find((r) => r.metric === 'FCF TTM')).toBeUndefined()
+    expect(rows.find((r) => r.metric === 'P/S')).toBeUndefined()
+  })
+  it('labels the sources so CURRENT is never presented as known at an earlier date', () => {
+    expect(snapFromT0(t0).source).toBe('T0')
+    expect(snapFromObservation(obs).label).toBe('T+20 · 2016-07-29')
+    const cur = snapFromCurrent({ quote: { price: 250, as_of: '2026-10-03T00:00:00Z' }, technical: { trend: { state: 'UPTREND' } } })
+    expect(cur?.source).toBe('CURRENT')
+    expect(cur?.label).toMatch(/not historical/)
+    expect(snapFromCurrent({ status: 'UNAVAILABLE' })).toBeNull()
+    expect(changeRows(snapFromT0(t0), null).every((r) => r.to === null)).toBe(true)
+  })
+})
+
+describe('PITQuant vs user plan', () => {
+  it('marks only the moved levels', () => {
+    const o = { entry_zone: [98, 100] as [number, number], stop_loss: 95, target_1: 110, target_2: 120, expected_r_tp1: 2, expected_r_tp2: 4 }
+    const rows = comparePlanRows(o, { ...o, stop_loss: 92, expected_r_tp1: 1.25 })
+    expect(rows.filter((r) => r.changed).map((r) => r.label)).toEqual(['Stop', 'Expected R (TP1)'])
   })
 })

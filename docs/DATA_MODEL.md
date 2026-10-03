@@ -532,6 +532,7 @@ Tablas: **76**.
 | `benchmark_security_id` | VARCHAR(36) | sí |  |
 | `snapshot_hash` | VARCHAR(64) | sí |  |
 | `source_provenance` | JSON | sí |  |
+| `simulation_engine_version` | VARCHAR(20) | no |  |
 
 - CHECK `asset_type IN ('EQUITY','BTC')`
 - CHECK `created_at >= decision_at`
@@ -549,8 +550,14 @@ Tablas: **76**.
 | `kind` | VARCHAR(20) | no |  |
 | `payload` | JSON | no |  |
 | `created_at` | DATETIME | no |  |
+| `horizon_label` | VARCHAR(120) | sí |  |
+| `source_bar_date` | DATE | sí |  |
+| `observation_schema_version` | INTEGER | sí |  |
+| `analyzer_version` | VARCHAR(60) | sí |  |
+| `feature_version` | VARCHAR(40) | sí |  |
 
 - INDEX ix_simulation_observations_simulation_id (simulation_id)
+- UNIQUE (simulation_id, horizon_label)
 
 ### `simulation_outcomes` 🔒
 
@@ -584,6 +591,7 @@ Tablas: **76**.
 | `execution_outcome` | VARCHAR(30) | sí |  |
 | `event_count` | INTEGER | sí |  |
 | `engine_version` | VARCHAR(30) | sí |  |
+| `bars_to_entry` | INTEGER | sí |  |
 
 - INDEX ix_simulation_outcomes_simulation_id (simulation_id)
 
@@ -599,6 +607,7 @@ Tablas: **76**.
 | `source_bar_timestamp` | DATE | sí |  |
 | `payload_json` | JSON | no |  |
 | `engine_version` | VARCHAR(30) | no |  |
+| `event_schema_version` | INTEGER | no |  |
 | `created_at` | DATETIME | no |  |
 
 - INDEX ix_simulation_events_simulation_id (simulation_id)
@@ -619,6 +628,7 @@ Tablas: **76**.
 | `details` | JSON | no |  |
 | `timeline` | JSON | no |  |
 | `label` | VARCHAR(20) | no |  |
+| `simulation_engine_version` | VARCHAR(20) | no |  |
 | `created_at` | DATETIME | no |  |
 
 - INDEX ix_simulation_counterfactuals_simulation_id (simulation_id)

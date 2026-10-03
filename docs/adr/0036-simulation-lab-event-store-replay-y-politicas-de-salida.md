@@ -55,3 +55,5 @@ checkpoint); el resultado es idéntico y el coste es lineal en el horizonte (≤
   motor hará divergir las simulaciones abiertas (`DIVERGED`) hasta que se decida una política de migración.
 - **Observaciones T+n**: sólo precio, retorno y benchmark; sin tendencia, ATR, fundamentales, valoración, S/R ni régimen (eso sigue en `THESIS_SNAPSHOT` manual).
 - `bars_to_entry` no se calcula (siempre NULL); sí `days_waiting_entry`.
+
+**Addendum (2026-10-03):** el pinning de motor, las observaciones históricas y `bars_to_entry` pendientes arriba se resuelven en [ADR-0037](0037-motores-de-simulacion-fijados-y-observaciones-historicas.md). Sigue pendiente leer sólo barras nuevas (se mide, no se cambia).

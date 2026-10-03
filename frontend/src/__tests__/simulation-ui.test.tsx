@@ -159,3 +159,91 @@ describe('insights', () => {
     expect(t.querySelector('[data-sample="OK"]')).toHaveTextContent('+0.30R')
   })
 })
+
+describe('historical observations, changes and provenance (ADR-0037)', () => {
+  const obs = (id: string, label: string, bar: string, over: object = {}) => ({ observation_id: id, observed_at: `${bar}T20:00:00Z`, kind: 'PERIODIC', horizon_label: label, source_bar_date: bar, observation_schema_version: 1, analyzer_version: 'analyzer-v0', feature_version: 'v0.2', payload: { price: 105, return_since_entry: 0.05, benchmark_return: 0.01, technical_snapshot: { trend: { state: 'DOWNTREND' }, indicators: { rsi14: 61 } }, valuation_snapshot: {}, fundamental_snapshot: {}, market_regime_snapshot: { trend: { state: 'DOWNTREND' } }, data_quality_snapshot: { overall: 'OK' }, ...over }, comparison: undefined })
+  const withObs = () => detail({
+    simulation: { ...detail().simulation, simulation_engine_version: 'v1', technical_snapshot: { trend: { state: 'UPTREND' }, indicators: { rsi14: 50 } }, market_regime_snapshot: { trend: { state: 'UPTREND' } }, data_quality: { overall: 'OK' } },
+    observations: [obs('o1', 'T+1', '2017-01-03'), obs('o2', 'T+5', '2017-01-09', { price: 110 })],
+    thesis_evolution: [{ observation_id: 'o1', label: 'T+1', bar_date: '2017-01-03', observed_at: '2017-01-03T20:00:00Z', observation_schema_version: 1, analyzer_version: 'analyzer-v0', feature_version: 'v0.2', facts: [] }, { observation_id: 'o2', label: 'T+5', bar_date: '2017-01-09', observed_at: '2017-01-09T20:00:00Z', observation_schema_version: 1, analyzer_version: 'analyzer-v0', feature_version: 'v0.2', facts: [{ fact: 'trend_changed', definition: 'the trend state differs from T0', t0: 'UPTREND', observed: 'DOWNTREND', source_observation_id: 'o2' }] }],
+    current: { quote: { price: 250, as_of: '2026-10-03T00:00:00Z' }, technical: { trend: { state: 'UPTREND' } } },
+    explain: { snapshot_hash: 'f'.repeat(64), snapshot_verified: true, provenance: {}, versions: { simulation_engine: 'v1', event_schema: '1' }, exit_policy: 'TRACK_TARGETS_ONLY', events: 5, banner: 'x' },
+  } as unknown as Partial<SimDetail>)
+  const mount = (d: SimDetail) => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(() => json(d))
+    wrap(<Routes><Route path="/simulations/:id" element={<SimulationDetail />} /></Routes>, '/simulations/abcdef012345')
+  }
+  it('shows the pinned engine in the header and in Provenance (engine and event schema)', async () => {
+    mount(withObs())
+    expect(await screen.findByTestId('engine-badge')).toHaveTextContent('Engine v1')
+    fireEvent.click(screen.getByText('Provenance'))
+    expect(screen.getByTestId('engine-provenance')).toHaveTextContent('Simulation Engine')
+    expect(screen.getByTestId('engine-provenance')).toHaveTextContent('v1')
+    expect(screen.getByTestId('engine-provenance')).toHaveTextContent('Event Schema')
+  })
+  it('lists the recorded observations with their versions and descriptive facts (never causes)', async () => {
+    mount(withObs())
+    await screen.findByTestId('engine-badge')
+    fireEvent.click(screen.getByText('Recorded observations'))
+    const rows = screen.getAllByTestId('obs-row')
+    expect(rows).toHaveLength(2)
+    expect(rows[1]).toHaveTextContent('T+5')
+    expect(rows[1]).toHaveTextContent('analyzer analyzer-v0')
+    expect(rows[1]).toHaveTextContent('trend_changed')
+    expect(screen.getByTestId('tab-observations')).toHaveTextContent('never recomputed')
+  })
+  it('says there is no observation yet instead of inventing one', async () => {
+    mount(detail())
+    await screen.findByTestId('sim-header')
+    fireEvent.click(screen.getByText('Recorded observations'))
+    expect(screen.getByTestId('obs-empty')).toBeInTheDocument()
+  })
+  it('Changes compares T0 with the latest RECORDED observation by default and lets the user pick another pair', async () => {
+    mount(withObs())
+    await screen.findByTestId('engine-badge')
+    fireEvent.click(screen.getByText('Changes'))
+    expect(screen.getByTestId('to-source')).toHaveTextContent('RECORDED — historical')
+    const t = screen.getByTestId('tab-changes')
+    expect(t).toHaveTextContent('Price') // T0 100 -> 110 (latest = T+5)
+    expect(t.textContent).toMatch(/110\.00/)
+    expect(t).toHaveTextContent('Return since entry')
+    expect(screen.getByTestId('thesis-facts')).toHaveTextContent('trend_changed')
+    expect(screen.getByTestId('thesis-facts')).toHaveTextContent('not a cause')
+    fireEvent.change(screen.getByLabelText('Changes to'), { target: { value: 'o1' } })
+    expect(screen.getByTestId('tab-changes').textContent).toMatch(/105\.00/)
+    expect(screen.getByTestId('thesis-facts')).toHaveTextContent('No descriptive fact')
+  })
+  it('CURRENT is clearly labelled as not historical, and the Current analysis tab says it was not known earlier', async () => {
+    mount(withObs())
+    await screen.findByTestId('engine-badge')
+    fireEvent.click(screen.getByText('Changes'))
+    fireEvent.change(screen.getByLabelText('Changes to'), { target: { value: 'CURRENT' } })
+    expect(screen.getByTestId('to-source')).toHaveTextContent('CURRENT — not known on any earlier date')
+    fireEvent.click(screen.getByText('Current analysis'))
+    expect(screen.getByTestId('tab-current')).toHaveTextContent('NOT known on any earlier date')
+  })
+  it('Changes omits metrics that exist on neither side', async () => {
+    mount(withObs())
+    await screen.findByTestId('engine-badge')
+    fireEvent.click(screen.getByText('Changes'))
+    const t = screen.getByTestId('tab-changes')
+    expect(t).not.toHaveTextContent('FCF TTM')
+    expect(t).not.toHaveTextContent('P/S')
+  })
+})
+
+describe('insights by engine', () => {
+  it('warns when segments mix engines and shows N per engine', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(() => json({ by: 'origin', min_n: 10, note: 'descriptive', available_segmentations: ['simulation_engine_version', 'origin'], engines: { v1: 12, v2: 3 }, mixed_engines: true, segments: [] }))
+    wrap(<InsightsPage />)
+    expect(await screen.findByTestId('mixed-engines')).toHaveTextContent('DIFFERENT simulation engines')
+    expect(screen.getByTestId('engines-note')).toHaveTextContent('engine v1 N=12')
+    expect(screen.getByTestId('engines-note')).toHaveTextContent('engine v2 N=3')
+  })
+  it('shows no warning when segmenting by engine', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(() => json({ by: 'simulation_engine_version', min_n: 10, note: 'descriptive', available_segmentations: ['simulation_engine_version'], engines: { v1: 12 }, mixed_engines: false, segments: [{ segment: 'engine v1', n: 12, n_entered: 4, sample: 'INSUFFICIENT_SAMPLE' }] }))
+    wrap(<InsightsPage />)
+    expect(await screen.findByText('engine v1')).toBeInTheDocument()
+    expect(screen.queryByTestId('mixed-engines')).toBeNull()
+  })
+})

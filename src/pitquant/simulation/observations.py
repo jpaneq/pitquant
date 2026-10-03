@@ -44,6 +44,7 @@ def is_horizon(k: int) -> bool:
 def milestones(events: list[dict[str, Any]]) -> dict[str, list[str]]:
     """PURE: ``{iso date: sorted labels}`` of the observations the event log calls for. ``k`` counts processed BARS from the decision (not calendar days)."""
     out: dict[str, set[str]] = {}
+    created = next((e["date"] for e in events if e["type"] == "SIMULATION_CREATED"), None)
     k = 0
     last_state = None
     last_date = None
@@ -61,6 +62,10 @@ def milestones(events: list[dict[str, Any]]) -> dict[str, list[str]]:
             last_date = d
     if last_state in CLOSED_VALUES and last_date is not None:
         out.setdefault(last_date, set()).add("FINAL")
+    if (
+        created is not None
+    ):  # T0 already IS the snapshot of the decision date: an observation on or before it would repeat it
+        out = {d: v for d, v in out.items() if d > created}
     return {d: sorted(v) for d, v in sorted(out.items())}
 
 

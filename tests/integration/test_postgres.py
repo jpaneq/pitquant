@@ -347,3 +347,24 @@ def test_simulation_lab_tables_are_append_only(pg: Engine) -> None:
                 )
             ).scalar_one()
             assert trig >= 1, t
+
+
+def test_engine_pinning_columns_exist_with_the_v1_backfill_default(pg: Engine) -> None:
+    """ADR-0037 / migration 0019: the pin and the event schema version are NOT NULL with a deterministic default (v1 / 1) on PostgreSQL."""
+    with pg.connect() as c:
+        rows = {
+            (t, col): (nullable, str(default))
+            for t, col, nullable, default in c.execute(
+                text(
+                    "SELECT table_name, column_name, is_nullable, column_default FROM information_schema.columns "
+                    "WHERE (table_name='simulations' AND column_name='simulation_engine_version') "
+                    "OR (table_name='simulation_events' AND column_name='event_schema_version') "
+                    "OR (table_name='simulation_counterfactuals' AND column_name='simulation_engine_version')"
+                )
+            )
+        }
+    assert len(rows) == 3 and all(n == "NO" for n, _ in rows.values())
+    assert (
+        "'v1'" in rows[("simulations", "simulation_engine_version")][1]
+        and "1" in rows[("simulation_events", "event_schema_version")][1]
+    )

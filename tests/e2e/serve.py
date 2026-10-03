@@ -19,6 +19,7 @@ os.environ["PITQUANT_DATABASE_URL"] = f"sqlite:///{_db}"
 
 import uvicorn  # noqa: E402
 from fastapi import FastAPI  # noqa: E402
+from pydantic import BaseModel  # noqa: E402
 
 from pitquant.api.app import create_app  # noqa: E402
 from pitquant.config.settings import get_settings  # noqa: E402
@@ -114,7 +115,38 @@ def build() -> FastAPI:
             now=NOW,
         )
         s.commit()
-    return create_app(factory, settings)
+    app = create_app(factory, settings)
+    _install_engine_fixture(app)
+    return app
+
+
+class _EngineBody(BaseModel):
+    version: str
+
+
+def _install_engine_fixture(app: FastAPI) -> None:
+    """E2E-only (PITQUANT_E2E_FIXTURE=1): register a FIXTURE simulation engine with a different rule and switch the engine used by NEW simulations,
+    to prove in the browser that an existing simulation stays pinned to the engine it was created under (ADR-0037). Not part of the product."""
+    import dataclasses
+
+    from pitquant.simulation import registry
+
+    class E2EDifferentEngine(registry.SimulationEngineV1):
+        version: str = "v_e2e_different"
+        event_labels: tuple[str, ...] = ("v_e2e_different",)
+
+        def evaluate(self, plan, bars, decision_date, **kw):  # type: ignore[no-untyped-def]
+            return super().evaluate(
+                dataclasses.replace(plan, expiration=None), bars, decision_date, **kw
+            )
+
+    registry.SIMULATION_ENGINES["v_e2e_different"] = E2EDifferentEngine()
+
+    @app.post("/__e2e__/current-engine")
+    def set_current(body: _EngineBody) -> dict[str, str]:
+        registry.resolve_engine(body.version)
+        registry.CURRENT_SIMULATION_ENGINE_VERSION = body.version
+        return {"current": registry.CURRENT_SIMULATION_ENGINE_VERSION}
 
 
 if __name__ == "__main__":

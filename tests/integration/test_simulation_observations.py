@@ -475,3 +475,10 @@ def test_update_reports_bars_loaded_and_bars_new(env: Env) -> None:
         if not sim.latest_outcome(s, sm.simulation_id).is_closed
         else True
     )
+
+
+def test_nothing_is_observed_on_or_before_the_decision_date() -> None:
+    """A MARKET_REFERENCE entry is dated T0: its event must not create an observation that merely repeats the T0 snapshot."""
+    e = bar_events(2)
+    e.insert(1, ev("ENTRY_FILLED", "2024-01-01", price=100.0, state_after="ENTERED"))
+    assert obs.milestones(e) == {"2024-01-02": ["T+1"]}

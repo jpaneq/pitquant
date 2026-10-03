@@ -94,22 +94,47 @@ export function comparePlanRows(original: PlanView, user: PlanView): { label: st
 
 const at = (o: unknown, path: string): unknown => path.split('.').reduce<unknown>((a, k) => (a && typeof a === 'object' ? (a as Record<string, unknown>)[k] : undefined), o)
 const num = (x: unknown): number | null => (typeof x === 'number' && Number.isFinite(x) ? x : null)
-export type ChangeRow = { metric: string; t0: number | string | null; current: number | string | null; change: number | null; kind: 'num' | 'pct' | 'text' }
-/** T0 (frozen) vs a later reading of the same quantities. T0 is never altered by the later reading. */
-export function changeRows(t0: Record<string, unknown>, now: Record<string, unknown> | undefined): ChangeRow[] {
-  const spec: [string, string, string, string, 'num' | 'pct' | 'text'][] = [
-    ['Price', 'price_snapshot.price', 'quote.price', 'price', 'num'],
-    ['RSI 14', 'technical_snapshot.indicators.rsi14', 'technical.indicators.rsi14', 'tech', 'num'],
-    ['ATR 14 (% of price)', 'technical_snapshot.risk.atr14_pct', 'technical.risk.atr14_pct', 'tech', 'pct'],
-    ['Trend state', 'technical_snapshot.trend.state', 'technical.trend.state', 'tech', 'text'],
-    ['P/E', 'valuation_snapshot.current.pe', 'valuation.current.pe', 'val', 'num'],
-    ['Market cap', 'valuation_snapshot.market_cap', 'valuation.market_cap', 'val', 'num'],
-    ['Net margin', 'fundamental_snapshot.profitability.net_margin.value', 'fundamental.profitability.net_margin.value', 'fund', 'pct'],
-    ['Latest fundamental period', 'fundamental_snapshot.latest_period', 'fundamental.latest_period', 'fund', 'text'],
-  ]
-  return spec.map(([metric, a, b, , kind]) => {
-    const x = at(t0, a), y = now ? at(now, b) : undefined
-    const nx = kind === 'text' ? (typeof x === 'string' ? x : null) : num(x), ny = kind === 'text' ? (typeof y === 'string' ? y : null) : num(y)
-    return { metric, t0: nx, current: ny, change: typeof nx === 'number' && typeof ny === 'number' ? ny - nx : null, kind }
-  })
+const txt = (x: unknown): string | null => (typeof x === 'string' && x !== '' ? x : null)
+
+/** One comparable reading of a simulation: T0 (frozen), a RECORDED observation (historical) or the CURRENT analysis (computed now). */
+export type Snap = { source: 'T0' | 'OBSERVATION' | 'CURRENT'; label: string; at: string | null; price: number | null; returnSinceEntry: number | null; benchmarkReturn: number | null; technical?: unknown; fundamental?: unknown; valuation?: unknown; supportResistance?: unknown; regime?: unknown; dataQuality?: unknown }
+
+export function snapFromT0(sim: Record<string, unknown>): Snap {
+  return { source: 'T0', label: 'T0 (decision)', at: txt(sim.decision_at), price: num(at(sim, 'price_snapshot.price')), returnSinceEntry: null, benchmarkReturn: null, technical: sim.technical_snapshot, fundamental: sim.fundamental_snapshot, valuation: sim.valuation_snapshot, supportResistance: sim.support_resistance_snapshot, regime: sim.market_regime_snapshot, dataQuality: sim.data_quality }
+}
+export function snapFromObservation(o: { horizon_label?: string | null; observed_at: string; payload: Record<string, unknown> }): Snap {
+  const p = o.payload
+  return { source: 'OBSERVATION', label: `${o.horizon_label ?? 'observation'} · ${o.observed_at.slice(0, 10)}`, at: o.observed_at, price: num(p.price), returnSinceEntry: num(p.return_since_entry), benchmarkReturn: num(p.benchmark_return), technical: p.technical_snapshot, fundamental: p.fundamental_snapshot, valuation: p.valuation_snapshot, supportResistance: p.support_resistance_snapshot, regime: p.market_regime_snapshot, dataQuality: p.data_quality_snapshot }
+}
+export function snapFromCurrent(cur: Record<string, unknown> | undefined): Snap | null {
+  if (!cur || cur.status === 'UNAVAILABLE') return null
+  const tech = cur.technical as Record<string, unknown> | undefined
+  return { source: 'CURRENT', label: 'CURRENT (computed now, not historical)', at: txt(at(cur, 'quote.as_of')), price: num(at(cur, 'quote.price')), returnSinceEntry: null, benchmarkReturn: null, technical: tech, fundamental: cur.fundamental, valuation: cur.valuation, supportResistance: tech?.support_resistance, regime: tech ? { trend: tech.trend, risk: tech.risk, volume: tech.volume, overextension: tech.overextension } : undefined, dataQuality: undefined }
+}
+
+export type ChangeRow = { metric: string; from: number | string | null; to: number | string | null; change: number | null; kind: 'num' | 'pct' | 'text' }
+const first = (o: unknown, key: string): number | null => num(at(((at(o, key) as unknown[]) ?? [])[0], key === 'supports' ? 'lower' : 'upper'))
+type Getter = (s: Snap) => number | string | null
+const SPEC: [string, 'num' | 'pct' | 'text', Getter][] = [
+  ['Price', 'num', (s) => s.price], ['Return since entry', 'pct', (s) => s.returnSinceEntry], ['Benchmark return', 'pct', (s) => s.benchmarkReturn],
+  ['Trend state', 'text', (s) => txt(at(s.technical, 'trend.state'))], ['RSI 14', 'num', (s) => num(at(s.technical, 'indicators.rsi14'))],
+  ['ATR 14 (% of price)', 'pct', (s) => num(at(s.technical, 'risk.atr14_pct'))], ['Volatility 63d', 'pct', (s) => num(at(s.technical, 'risk.vol63'))],
+  ['P/E', 'num', (s) => num(at(s.valuation, 'current.pe'))], ['P/S', 'num', (s) => num(at(s.valuation, 'current.price_to_sales'))], ['P/B', 'num', (s) => num(at(s.valuation, 'current.price_to_book'))], ['FCF yield', 'pct', (s) => num(at(s.valuation, 'current.fcf_yield'))],
+  ['Market cap', 'num', (s) => num(at(s.valuation, 'market_cap'))],
+  ['Revenue TTM', 'num', (s) => num(at(s.fundamental, 'ttm.revenue.value'))], ['FCF TTM', 'num', (s) => num(at(s.fundamental, 'ttm.fcf.value'))], ['Net income TTM', 'num', (s) => num(at(s.fundamental, 'ttm.net_income.value'))],
+  ['Net margin', 'pct', (s) => num(at(s.fundamental, 'profitability.net_margin.value'))], ['Operating margin', 'pct', (s) => num(at(s.fundamental, 'profitability.operating_margin.value'))],
+  ['Latest fundamental period', 'text', (s) => txt(at(s.fundamental, 'latest_period'))],
+  ['Nearest support (lower)', 'num', (s) => first(s.supportResistance, 'supports')], ['Nearest resistance (upper)', 'num', (s) => first(s.supportResistance, 'resistances')],
+  ['Market regime (trend)', 'text', (s) => txt(at(s.regime, 'trend.state'))], ['Market regime (extension)', 'text', (s) => txt(at(s.regime, 'overextension.state'))],
+  ['Data quality', 'text', (s) => txt(at(s.dataQuality, 'overall'))],
+]
+/** Rows of ``from`` vs ``to``. A metric missing on BOTH sides is omitted (nothing is invented as «—» rows); a metric on one side only keeps the other as null. */
+export function changeRows(from: Snap, to: Snap | null): ChangeRow[] {
+  const rows: ChangeRow[] = []
+  for (const [metric, kind, get] of SPEC) {
+    const a = get(from), b = to ? get(to) : null
+    if (a === null && b === null) continue
+    rows.push({ metric, from: a, to: b, change: typeof a === 'number' && typeof b === 'number' ? b - a : null, kind })
+  }
+  return rows
 }

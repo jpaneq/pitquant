@@ -21,6 +21,8 @@ export function InsightsPage() {
       <p className="text-xs text-muted">Descriptive statistics of paper trades. Not a recommendation, not a validation of the algorithm, never a training label.</p>
       {q.isPending ? <Skeleton className="h-40" /> : q.isError ? <PanelError what="Insights" error={q.error} onRetry={() => q.refetch()} /> : (
         <>
+          <div data-testid="engines-note" className="text-xs text-muted">Engines in the data: {Object.entries(q.data.engines ?? {}).map(([k, n]) => `engine ${k} N=${n}`).join(' · ') || '—'}</div>
+          {q.data.mixed_engines ? <p role="note" data-testid="mixed-engines" className="rounded border border-warn/40 bg-warn/10 px-2 py-1 text-xs text-warn">These segments mix simulations run by DIFFERENT simulation engines (different execution rules). Segment by «simulation_engine_version» before comparing results.</p> : null}
           <Segmented label="Segment by" value={by} options={q.data.available_segmentations} onChange={setBy} />
           <Card><CardHeader title={`By ${by.replaceAll('_', ' ')}`} sub={`statistics need at least ${q.data.min_n} entered trades per segment`} /><CardBody className="overflow-x-auto p-0">
             {q.data.segments.length === 0 ? <p data-testid="insights-empty" className="p-4 text-xs text-muted">No simulation yet.</p> : (

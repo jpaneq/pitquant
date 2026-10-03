@@ -106,6 +106,27 @@ Holdout ⇒ 403, sin precios ⇒ 409 `PRICE_DATA_REQUIRED`, `AUTO_PAPER` ⇒ 409
 *Explain Simulation* (`GET …/explain`, pestaña *Provenance*): fuente y marca del precio, filing/versión fundamental, versiones de analyzer/features/reglas del Trade Plan/modelo,
 benchmark, versión del motor de eventos, hash del snapshot y si verifica.
 
+## 17b. Motores fijados por simulación (ADR-0037)
+- `simulations.simulation_engine_version` es inmutable (las anteriores = `v1` por backfill de la migración 0019). Las nuevas usan `CURRENT_SIMULATION_ENGINE_VERSION`.
+- **Registry** `SIMULATION_ENGINES = {"v1": SimulationEngineV1}`: `simulation-update`, `simulation-replay` y el contrafactual resuelven el motor por el pin; versión no registrada ⇒
+  `ENGINE_VERSION_UNAVAILABLE` (fail closed, no `DIVERGED`, nunca otro motor).
+- **Ciclo de vida:** simulación existente ⇒ motor original para siempre; simulación nueva ⇒ motor actual; sin migración silenciosa ni recálculo del historial v1 con v2.
+  Ver reglas nuevas ⇒ COUNTERFACTUAL o FORK (`EngineMigrationContract`, sólo contrato).
+- **V1 está congelado** (`test_simulation_engine_v1_frozen.py` fija su digest). Un cambio de comportamiento ⇒ `SimulationEngineV2`.
+- **`event_schema_version`** (por evento) distinto de `engine_version`; las filas de la era V1 llevan la etiqueta `sim-engine-2`, que `v1` acepta; `replay --verify` rechaza eventos de otro motor.
+- CLI: `simulation-replay` muestra `simulation_id`, `engine_version`, `event_schema`, eventos y `MATCH`; `simulation-update` muestra `bars_loaded`, `bars_new`, `events_new`, `observations_new`
+  y el estado por simulación (`OK` / `DIVERGED` / `TAMPERED` / `ENGINE_VERSION_UNAVAILABLE` / `ERROR`).
+
+## 17c. Observaciones históricas (ADR-0037)
+`simulation_observations` (`kind = PERIODIC`): cadencia T+1, T+5, T+20, cada 20 barras, eventos clave y estado final (hitos del mismo día ⇒ una observación; nada en o antes de T0).
+Contenido: precio, retorno desde la entrada, benchmark, técnico, fundamental, valoración, S/R, régimen y calidad de datos, más `observation_schema_version`, `analyzer_version`,
+`feature_version`. **Garantías PIT:** se calcula al cierre de la sesión de la fecha (barras ≤ fecha, filings por `available_at`, valoración con ese precio, S/R y régimen con la historia
+de entonces). **Inmutables y append-only:** nunca se recalculan; un Analyzer nuevo sólo crea observaciones nuevas con sus versiones. El *Current analysis* de la UI es distinto y está
+etiquetado como no histórico. Un fallo del Analyzer se informa y se reintenta sin bloquear el event log.
+`thesis_facts` (descriptivos, con definición y observación de origen) alimentan el post-mortem: `trend_changed`, `support_broken`, `resistance_broken`, `volatility_expanded`,
+`valuation_expanded/compressed`, `fundamental_snapshot_changed`, `regime_changed` (`TREND_REVERSED` sólo si hay vuelco arriba↔abajo). `bars_to_entry` cuenta barras de mercado
+(MARKET_REFERENCE ⇒ 0; primera barra ⇒ 1).
+
 ## 18. Auditoría de V0 (matriz inicial → estado)
 | requisito | V0 | ahora |
 |---|---|---|
@@ -122,9 +143,9 @@ benchmark, versión del motor de eventos, hash del snapshot y si verifica.
 | SIZING `FIXED_NOTIONAL`, `target_3` | MISSING | IMPLEMENTED |
 | rutas SPA `/simulations*` al recargar | BUG (devolvía JSON) | corregido |
 | leer sólo barras nuevas (4.3) | MISSING | **PARTIAL**: se releen todas, se añaden sólo eventos nuevos |
-| versión del motor fijada por simulación (54) | MISSING | **MISSING** (se guarda `engine_version`, no se usa para evaluar) |
-| contenido de las observaciones T+n (11) | PARTIAL | **PARTIAL** (precio/retorno/benchmark; tendencia, ATR, fundamentales, valoración, S/R, régimen sólo con *Thesis snapshot* manual) |
-| `bars_to_entry` | MISSING | **MISSING** (`days_waiting_entry` sí) |
+| versión del motor fijada por simulación (54) | MISSING | **IMPLEMENTED** (ADR-0037, migración 0019) |
+| contenido de las observaciones T+n (11) | PARTIAL | **IMPLEMENTED** (observaciones históricas PIT, ADR-0037) |
+| `bars_to_entry` | MISSING | **IMPLEMENTED** |
 
 ## 18b. Qué cambia al reevaluar una simulación V0
 Se conserva `LEGACY_HALF_AT_TP1`. Cambian: gap al open ⇒ stop/objetivo de esa misma barra se evalúan; invalidación tras entrar ⇒ salida al cierre; una entrada intrabarra ya
