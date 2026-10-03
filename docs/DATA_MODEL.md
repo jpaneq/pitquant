@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **69**.
+Tablas: **74**.
 
 ## Procedencia y calidad
 
@@ -478,10 +478,135 @@ Tablas: **69**.
 | `note` | VARCHAR(400) | sí |  |
 | `ingested_at` | DATETIME | no |  |
 
-- CHECK `event_type IN ('NAME_CHANGE_SAME_SECURITY','TICKER_CHANGE_SAME_SECURITY','SECURITY_REPLACEMENT_SUCCESSOR','SHARE_CLASS_CHANGE','TRUE_INDEX_EXIT','TRUE_INDEX_ENTRY','SAME_SECURITY_IDENTITY_LINK')`
+- CHECK `event_type IN ('NAME_CHANGE_SAME_SECURITY','TICKER_CHANGE_SAME_SECURITY','NAME_TICKER_CHANGE_SAME_SECURITY','NAME_TICKER_IDENTIFIER_CHANGE_SAME_SECURITY','IDENTIFIER_CHANGE_SAME_SECURITY','SECURITY_REPLACEMENT_SUCCESSOR','SHARE_CLASS_CHANGE','TRUE_INDEX_EXIT','TRUE_INDEX_ENTRY','SAME_SECURITY_IDENTITY_LINK')`
 - CHECK `security_predecessor_id != security_successor_id`
 - INDEX ix_security_succession_security_predecessor_id (security_predecessor_id)
 - INDEX ix_security_succession_security_successor_id (security_successor_id)
+
+### `simulations` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `simulation_id` | VARCHAR(36) | no | PK |
+| `created_at` | DATETIME | no |  |
+| `mode` | VARCHAR(20) | no |  |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `asset_type` | VARCHAR(10) | no |  |
+| `decision_at` | DATETIME | no |  |
+| `analyzer_version` | VARCHAR(60) | no |  |
+| `feature_version` | VARCHAR(40) | no |  |
+| `model_id` | VARCHAR(64) | sí |  |
+| `model_version` | VARCHAR(64) | sí |  |
+| `rules_version` | VARCHAR(40) | no |  |
+| `prediction_status` | VARCHAR(30) | no |  |
+| `price_snapshot` | JSON | no |  |
+| `fundamental_snapshot` | JSON | no |  |
+| `technical_snapshot` | JSON | no |  |
+| `valuation_snapshot` | JSON | no |  |
+| `support_resistance_snapshot` | JSON | no |  |
+| `trade_plan_snapshot` | JSON | no |  |
+| `market_regime_snapshot` | JSON | no |  |
+| `data_quality` | JSON | no |  |
+| `funding_snapshot` | JSON | sí |  |
+| `open_interest_snapshot` | JSON | sí |  |
+| `basis_snapshot` | JSON | sí |  |
+| `onchain_snapshot` | JSON | sí |  |
+| `plan_origin` | VARCHAR(14) | no |  |
+| `original_pitquant_plan` | JSON | sí |  |
+| `final_simulated_plan` | JSON | no |  |
+| `side` | VARCHAR(5) | no |  |
+| `entry_type` | VARCHAR(12) | no |  |
+| `entry_zone_low` | FLOAT | no |  |
+| `entry_zone_high` | FLOAT | no |  |
+| `entry_price_actual` | FLOAT | sí |  |
+| `stop_loss` | FLOAT | no |  |
+| `invalidation_level` | FLOAT | sí |  |
+| `target_1` | FLOAT | no |  |
+| `target_2` | FLOAT | sí |  |
+| `target_3_optional` | FLOAT | sí |  |
+| `risk_reward_expected` | FLOAT | sí |  |
+| `position_size_simulated` | FLOAT | no |  |
+| `capital_at_risk` | FLOAT | no |  |
+| `time_horizon_sessions` | INTEGER | no |  |
+| `expiration_at` | DATETIME | no |  |
+| `benchmark_security_id` | VARCHAR(36) | sí |  |
+
+- CHECK `asset_type IN ('EQUITY','BTC')`
+- CHECK `created_at >= decision_at`
+- CHECK `mode IN ('MANUAL_SIMULATION','AUTO_PAPER')`
+- CHECK `plan_origin IN ('PITQUANT','USER_MODIFIED','USER_DEFINED')`
+- INDEX ix_simulations_security_id (security_id)
+
+### `simulation_observations` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `observation_id` | VARCHAR(36) | no | PK |
+| `simulation_id` | VARCHAR(36) | no | FK→`simulations.simulation_id` |
+| `observed_at` | DATETIME | no |  |
+| `kind` | VARCHAR(20) | no |  |
+| `payload` | JSON | no |  |
+| `created_at` | DATETIME | no |  |
+
+- INDEX ix_simulation_observations_simulation_id (simulation_id)
+
+### `simulation_outcomes` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `outcome_id` | VARCHAR(36) | no | PK |
+| `simulation_id` | VARCHAR(36) | no | FK→`simulations.simulation_id` |
+| `evaluated_at` | DATETIME | no |  |
+| `state` | VARCHAR(20) | no |  |
+| `is_closed` | BOOLEAN | no |  |
+| `entry_date` | DATE | sí |  |
+| `entry_price` | FLOAT | sí |  |
+| `exit_date` | DATE | sí |  |
+| `realized_return` | FLOAT | sí |  |
+| `excess_return_vs_benchmark` | FLOAT | sí |  |
+| `realized_r` | FLOAT | sí |  |
+| `mfe` | FLOAT | sí |  |
+| `mae` | FLOAT | sí |  |
+| `max_drawdown` | FLOAT | sí |  |
+| `days_to_entry` | INTEGER | sí |  |
+| `days_to_stop` | INTEGER | sí |  |
+| `days_to_tp1` | INTEGER | sí |  |
+| `days_to_tp2` | INTEGER | sí |  |
+| `holding_period` | INTEGER | sí |  |
+| `prediction_direction_correct` | BOOLEAN | sí |  |
+| `trade_plan_execution_correct` | BOOLEAN | sí |  |
+| `timeline` | JSON | no |  |
+| `details` | JSON | no |  |
+| `created_at` | DATETIME | no |  |
+
+- INDEX ix_simulation_outcomes_simulation_id (simulation_id)
+
+### `simulation_postmortems` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `postmortem_id` | VARCHAR(36) | no | PK |
+| `simulation_id` | VARCHAR(36) | no | FK→`simulations.simulation_id` |
+| `primary_cause` | VARCHAR(40) | no |  |
+| `secondary_causes` | JSON | no |  |
+| `notes` | VARCHAR(2000) | sí |  |
+| `classified_by` | VARCHAR(60) | no |  |
+| `metrics` | JSON | no |  |
+| `created_at` | DATETIME | no |  |
+
+- INDEX ix_simulation_postmortems_simulation_id (simulation_id)
+
+### `research_hypotheses` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `hypothesis_id` | VARCHAR(36) | no | PK |
+| `source` | VARCHAR(30) | no |  |
+| `statement` | VARCHAR(1000) | no |  |
+| `evidence` | JSON | no |  |
+| `status` | VARCHAR(20) | no |  |
+| `created_by` | VARCHAR(60) | no |  |
+| `created_at` | DATETIME | no |  |
 
 ### `index_anchor_snapshots` 🔒
 

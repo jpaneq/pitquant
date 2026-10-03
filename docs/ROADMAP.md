@@ -144,3 +144,7 @@ vínculos de identidad por cambio de CUSIP; extensión a 2014-2017 sólo cuando 
 ## Iteración 10 (2026-10-03): estándar mensual, lista SEC 13(f) y sucesión de securities (ADR-0033)
 Puerta mensual del Research Lab separada del criterio diario canónico, DISCOVERY sin poder de bloqueo, 21 listas 13(f) archivadas, puente de identidad
 y seis sucesiones verificadas. Pendiente: fecha oficial de los cambios primarios (docs/SP500_LOCAL_GAPS.md) y los 21 N-30D sin CUSIP.
+
+## Iteración 11 (2026-10-03): identidad 8-K y Simulation Lab V0 (ADR-0034)
+Booking, Tapestry y Linde resueltos con 8-K archivados; blockers de membresía 54 → 46 (21/60 cohortes). Esqueleto de Simulation Lab (paper trading,
+sin conexión a modelos). Pendiente D-02: fechas oficiales de los 46 blockers primarios (docs/SP500_LOCAL_GAPS.md).

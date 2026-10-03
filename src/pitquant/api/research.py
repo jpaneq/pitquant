@@ -103,6 +103,13 @@ def make_research_router(cfg: Settings) -> APIRouter:
     def backtests(db: DB) -> dict[str, Any]:
         return {"folds": _rows(db, ResearchFold), "metric_sets": _rows(db, MetricSet)}
 
+    @r.get("/simulation-evidence")
+    def simulation_evidence(db: DB) -> dict[str, Any]:
+        """Read-only SimulationEvidenceSummary: paper trades are forward evidence, never a training label or dataset row."""
+        from pitquant.simulation.service import evidence_summary
+
+        return {"read_only": True, **evidence_summary(db).__dict__}
+
     @r.get("/audit")
     def audit(request: Request, db: DB) -> dict[str, Any]:
         rf = research_readiness(db, cfg)

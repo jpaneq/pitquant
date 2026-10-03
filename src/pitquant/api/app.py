@@ -173,6 +173,9 @@ def create_app(factory: sessionmaker[Session], settings: Settings | None = None)
     from pitquant.api.research import make_research_router
 
     app.include_router(make_research_router(cfg))
+    from pitquant.api.simulations import make_simulation_router
+
+    app.include_router(make_simulation_router(cfg))
 
     @app.middleware("http")
     async def _timing(request: Request, call_next):  # type: ignore[no-untyped-def]

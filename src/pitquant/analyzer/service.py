@@ -401,6 +401,10 @@ class AnalyzerService:
                 "trade_plan": plan.get("status"),
                 "prediction": "NOT_YET_VALIDATED",
             },
+            "simulation": {
+                "enabled": q.get("status") != "NO_DATA" and tech.get("status") == "OK",
+                "reason": None if tech.get("status") == "OK" else "PRICE_DATA_REQUIRED",
+            },
             "summary": {k: v.get("label") for k, v in an["labels"].items()},
             "summary_detail": an["labels"],
             "positives": an["positives"],

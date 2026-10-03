@@ -1,3 +1,4 @@
+import { SimulateTrade } from '../simulations/SimulateTrade'
 import { ExplainDetails } from './ExplainDetails'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -34,6 +35,7 @@ export function AnalyzerPage() {
   return (
     <div className="mx-auto max-w-[1500px] space-y-4">
       <Safe what="Security header"><SecurityHeader summary={s} sec={id} onDataQuality={() => setDq(true)} /></Safe>
+      <Safe what="Simulate"><SimulateTrade sec={id} summary={s} /></Safe>
       {s.warnings.length ? <div role="status" className="space-y-1 rounded-md border border-warn/30 bg-warn/5 px-3 py-2 text-xs text-warn">{s.warnings.map((w) => <div key={w}>{w}</div>)}</div> : null}
       <Safe what="Price chart">{noPrice ? <div className="rounded-lg border border-border bg-surface p-8 text-center text-sm text-muted">No price chart: no market-data source has bars for {s.security.ticker}. Fundamentals below are real SEC data.</div> : <MarketChart sec={id} />}</Safe>
       <Safe what="Analysis summary"><AnalysisSummary summary={s} /><ExplainDetails sec={id} panel="analysis" /></Safe>

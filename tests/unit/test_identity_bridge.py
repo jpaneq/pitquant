@@ -182,7 +182,7 @@ def test_fuzzy_similarity_alone_never_promotes_an_identity(fw: F13World, session
     sid = fw.sec("Praxair, Inc.")
     fw.member(sid, "Praxair, Inc.", "NAME_ONLY")
     fw.e13(
-        "2019Q1", "74005P104", "PRAXAIR INCORPORATED HLDG", "COM"
+        "2019Q1", "74005P104", "PRAXAIR TECHNOLOGY INC", "COM"
     )  # similar, not the exact normalised legal name
     fw.e13("2019Q1", "74005P999", "PRAXIS INC", "COM")
     assert candidates_for(session, "Praxair, Inc.", "2019Q1") == []

@@ -30,7 +30,12 @@
   "blocks_identity": true,
   "hints": [
    "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ]
+  ],
+  "security_id": "0321f8b1-d4b5-4391-b23d-03ab63d619ea",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
  },
  {
   "segment": "2017-09-30\u21922018-03-31",
@@ -61,7 +66,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "07b912e9-b028-4ff5-b3c2-25a09e7046e1",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2017-09-30\u21922018-03-31",
@@ -94,7 +104,12 @@
   "blocks_identity": true,
   "hints": [
    "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ]
+  ],
+  "security_id": "2021d710-e71c-44fc-a78b-45881cc06ae5",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
  },
  {
   "segment": "2017-09-30\u21922018-03-31",
@@ -127,7 +142,12 @@
   "blocks_identity": true,
   "hints": [
    "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ]
+  ],
+  "security_id": "27afc16f-5e69-4eb1-825a-a5e504ed1b64",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
  },
  {
   "segment": "2017-09-30\u21922018-03-31",
@@ -160,7 +180,12 @@
   "blocks_identity": true,
   "hints": [
    "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ]
+  ],
+  "security_id": "9a15337e-8be3-478a-b111-9097461e0997",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
  },
  {
   "segment": "2017-09-30\u21922018-03-31",
@@ -191,7 +216,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "9f07514a-12bd-4507-94bb-3cb681fcf0ce",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2017-09-30\u21922018-03-31",
@@ -224,7 +254,12 @@
   "blocks_identity": true,
   "hints": [
    "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ]
+  ],
+  "security_id": "acac7cab-36e8-4829-ae50-239b39b19460",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
  },
  {
   "segment": "2017-09-30\u21922018-03-31",
@@ -255,7 +290,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "b483e600-410b-4916-ad7f-cec18bc42ac0",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2017-09-30\u21922018-03-31",
@@ -271,7 +311,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2018-01-03 vs discovery CSV 2017-12-29: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "9785df2c-116a-4956-9aeb-2fc080f5c62a",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2017-09-30\u21922018-03-31",
@@ -287,7 +332,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2018-01-03 vs discovery CSV 2017-12-29: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "5d0106aa-35be-494b-a9d5-7c518cd43155",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2017-09-30\u21922018-03-31",
@@ -306,7 +356,12 @@
   "blocks_identity": false,
   "hints": [
    "name/ticker unknown to the anchors"
-  ]
+  ],
+  "security_id": "SNI?",
+  "anchor_A_status": "?",
+  "anchor_B_status": "?",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2017-09-30\u21922018-03-31",
@@ -325,7 +380,12 @@
   "blocks_identity": false,
   "hints": [
    "name/ticker unknown to the anchors"
-  ]
+  ],
+  "security_id": "PDCO?",
+  "anchor_A_status": "?",
+  "anchor_B_status": "?",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2018-03-31\u21922018-09-30",
@@ -356,7 +416,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "545885d8-f14c-4e9c-9859-d43739979d1e",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2018-03-31\u21922018-09-30",
@@ -389,7 +454,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV leg REMOVE NAVI 2018-06-05 (unconfirmed, date not trusted)"
-  ]
+  ],
+  "security_id": "6de30449-4eb8-4357-8c96-3358de21a5cb",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2018-03-31\u21922018-09-30",
@@ -422,7 +492,12 @@
   "blocks_identity": true,
   "hints": [
    "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ]
+  ],
+  "security_id": "ab14ed13-8c2d-4f10-8ef2-27529b2bdf2e",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
  },
  {
   "segment": "2018-03-31\u21922018-09-30",
@@ -455,7 +530,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV leg ADD EVRG 2018-06-05 (unconfirmed, date not trusted)"
-  ]
+  ],
+  "security_id": "e000ee7a-1600-45bf-a48f-0935d7fcdc41",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2018-03-31\u21922018-09-30",
@@ -471,7 +551,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2018-06-20 vs discovery CSV 2018-06-15: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "71c306e8-f4db-48dc-acd3-8c2d05cb627b",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2018-03-31\u21922018-09-30",
@@ -487,7 +572,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2018-06-20 vs discovery CSV 2018-06-15: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "89a3e90d-32de-4930-bae5-4490cd90275c",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2018-03-31\u21922018-09-30",
@@ -503,7 +593,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV REMOVE KDP 2018-07-02: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "99c85f46-9282-4b1c-b235-14993dc6a089",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2018-03-31\u21922018-09-30",
@@ -519,7 +614,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV REMOVE KORS 2018-09-19: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "e2ba7cc7-007d-433a-a6d4-c081dac1ce11",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -552,7 +652,12 @@
   "blocks_identity": true,
   "hints": [
    "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ]
+  ],
+  "security_id": "0f6c5249-2aac-4d61-bbbc-2dd6d0ff2ab5",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -583,7 +688,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "1e3e2789-8cab-46e2-ac2c-9767f209748b",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -614,7 +724,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "5be82e3d-b3f4-473d-9ef4-c6d7cb16f44a",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -639,7 +754,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "5e5c26b4-c86d-4bb9-8a86-7717849f1cd3",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": "primary events contradict the anchors for this security"
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -670,7 +790,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "70ba7a4c-b5a8-4093-960e-c31c80d2a350",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -701,7 +826,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "8563d9ba-428f-410e-8b8d-828f3907c194",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -732,7 +862,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "e2ba7cc7-007d-433a-a6d4-c081dac1ce11",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -763,7 +898,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "feb9e370-2c97-4048-8c69-76845dd0fdd2",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -779,7 +919,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2018-11-14 vs discovery CSV 2018-11-13: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "0f8ecb32-ba1d-47a3-8683-05d4d4628544",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -795,7 +940,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2018-11-14 vs discovery CSV 2018-11-13: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "b569a79a-c4d9-4d40-9029-5d223e821ae9",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -811,7 +961,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2018-12-03 vs discovery CSV 2018-11-27: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "bdbe933f-21d9-4a44-8c0c-f93c16a1929b",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -827,7 +982,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2018-12-03 vs discovery CSV 2018-11-27: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "98578540-a267-47aa-98a7-c6cb921b81a2",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -843,7 +1003,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2018-12-03 vs discovery CSV 2018-11-29: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "6f0bc76f-a59f-4ab9-819e-153cedb351f5",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -859,7 +1024,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2018-12-03 vs discovery CSV 2018-11-29: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "aaa5ce4e-1291-4eaf-a03c-3c6a85938440",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -875,7 +1045,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2018-12-24 vs discovery CSV 2018-12-21: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "5e5c26b4-c86d-4bb9-8a86-7717849f1cd3",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2018-09-30\u21922019-03-31",
@@ -891,7 +1066,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2018-12-24 vs discovery CSV 2018-12-21: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "c4b1ce86-f245-41df-9ab6-1117f5b09039",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-03-31\u21922019-09-30",
@@ -924,7 +1104,12 @@
   "blocks_identity": true,
   "hints": [
    "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ]
+  ],
+  "security_id": "0f6c5249-2aac-4d61-bbbc-2dd6d0ff2ab5",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
  },
  {
   "segment": "2019-03-31\u21922019-09-30",
@@ -957,7 +1142,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV leg ADD LHX 2019-06-01 (unconfirmed, date not trusted)"
-  ]
+  ],
+  "security_id": "5ae0498c-f341-4e79-9bf2-7e65f137c2c3",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2019-03-31\u21922019-09-30",
@@ -988,7 +1178,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "5e5c26b4-c86d-4bb9-8a86-7717849f1cd3",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2019-03-31\u21922019-09-30",
@@ -1019,7 +1214,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "642ab60a-57d3-4046-ab08-2a9fe9ce7893",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2019-03-31\u21922019-09-30",
@@ -1050,7 +1250,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "b008c8ec-8f7e-4be4-8745-c8085e0e4f77",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2019-03-31\u21922019-09-30",
@@ -1083,7 +1288,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV leg REMOVE DWDP 2019-06-03 (unconfirmed, date not trusted)"
-  ]
+  ],
+  "security_id": "b102449c-9f0e-4a7c-a3ea-9a68c168363e",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2019-03-31\u21922019-09-30",
@@ -1116,7 +1326,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV leg ADD GL 2019-08-08 (unconfirmed, date not trusted)"
-  ]
+  ],
+  "security_id": "b71cba2b-5058-42f6-bafb-11259cf127a6",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2019-03-31\u21922019-09-30",
@@ -1147,7 +1362,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "c47f88fd-276c-43dc-a696-f9c7e48c2d23",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2019-03-31\u21922019-09-30",
@@ -1180,7 +1400,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV leg REMOVE HRS 2019-06-01 (unconfirmed, date not trusted)"
-  ]
+  ],
+  "security_id": "e5e10193-f543-447d-afeb-69011b4d629b",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2019-03-31\u21922019-09-30",
@@ -1196,7 +1421,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2019-04-03 vs discovery CSV 2019-04-02: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "3846da8e-b729-43ae-adcc-077c7babb152",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-03-31\u21922019-09-30",
@@ -1212,7 +1442,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2019-06-04 vs discovery CSV 2019-06-03: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "6f8f5799-ab74-4f5b-815c-e65b5160008f",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-03-31\u21922019-09-30",
@@ -1231,7 +1466,12 @@
   "blocks_identity": false,
   "hints": [
    "name/ticker unknown to the anchors"
-  ]
+  ],
+  "security_id": "BMS?",
+  "anchor_A_status": "?",
+  "anchor_B_status": "?",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-03-31\u21922019-09-30",
@@ -1250,7 +1490,12 @@
   "blocks_identity": false,
   "hints": [
    "name/ticker unknown to the anchors"
-  ]
+  ],
+  "security_id": "TSS?",
+  "anchor_A_status": "?",
+  "anchor_B_status": "?",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-09-30\u21922019-12-31",
@@ -1266,7 +1511,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD BKR 2019-10-18: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "0e608a5d-d01a-4b6e-8b69-878e1e7197a2",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-09-30\u21922019-12-31",
@@ -1282,7 +1532,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD NLOK 2019-11-05: unconfirmed, date not trusted; more discovery legs than anchor-visible changes (unresolved ticker); monthly: DISCOVERY_UNCORROBORATED: warning only for monthly research; daily canonical: blocks the segment"
-  ]
+  ],
+  "security_id": "NLOK?",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-09-30\u21922019-12-31",
@@ -1298,7 +1553,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD PEAK 2019-11-05: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "4f3401d2-927b-4289-b98f-fa0cfe71bf36",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-09-30\u21922019-12-31",
@@ -1314,7 +1574,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV REMOVE SYMC 2019-11-05: unconfirmed, date not trusted; more discovery legs than anchor-visible changes (unresolved ticker); monthly: DISCOVERY_UNCORROBORATED: warning only for monthly research; daily canonical: blocks the segment"
-  ]
+  ],
+  "security_id": "SYMC?",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-09-30\u21922019-12-31",
@@ -1330,7 +1595,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD VIAC 2019-12-05: unconfirmed, date not trusted; more discovery legs than anchor-visible changes (unresolved ticker); monthly: DISCOVERY_UNCORROBORATED: warning only for monthly research; daily canonical: blocks the segment"
-  ]
+  ],
+  "security_id": "VIAC?",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-09-30\u21922019-12-31",
@@ -1346,7 +1616,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV REMOVE CBS 2019-12-05: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "3a3116df-1f48-4044-99fa-1776db6af61e",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-09-30\u21922019-12-31",
@@ -1362,7 +1637,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD TFC 2019-12-09: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "afacfd67-2cf2-4431-b6fc-afacf6ca6bf8",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-09-30\u21922019-12-31",
@@ -1378,7 +1658,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV REMOVE BBT 2019-12-09: unconfirmed, date not trusted; more discovery legs than anchor-visible changes (unresolved ticker); monthly: DISCOVERY_UNCORROBORATED: warning only for monthly research; daily canonical: blocks the segment"
-  ]
+  ],
+  "security_id": "BBT?",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-09-30\u21922019-12-31",
@@ -1394,7 +1679,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD J 2019-12-10: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "22a41f73-829d-4d21-b9c7-501e72404d04",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-09-30\u21922019-12-31",
@@ -1410,7 +1700,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV REMOVE JEC 2019-12-10: unconfirmed, date not trusted; more discovery legs than anchor-visible changes (unresolved ticker); monthly: DISCOVERY_UNCORROBORATED: warning only for monthly research; daily canonical: blocks the segment"
-  ]
+  ],
+  "security_id": "JEC?",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-09-30\u21922019-12-31",
@@ -1424,7 +1719,8 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI PZ9HF5U52KPF0MH0QN75 in both NPORT-P filings (identity transition, not membership)"
-  ]
+  ],
+  "missing_evidence": ""
  },
  {
   "segment": "2019-09-30\u21922019-12-31",
@@ -1438,21 +1734,8 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI 5KYC8KF17ROCY24M3H09 in both NPORT-P filings (identity transition, not membership)"
-  ]
- },
- {
-  "segment": "2019-09-30\u21922019-12-31",
-  "difference_type": "ALIAS",
-  "category": "SUCCESSOR_SECURITY",
-  "security": "Symantec Corp -> NortonLifeLock Inc",
-  "events": "anchor LEI / discovery pair",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "same issuer LEI YF6ZV0M6AU4FY94MK914 in both NPORT-P filings (identity transition, not membership)"
-  ]
+  ],
+  "missing_evidence": ""
  },
  {
   "segment": "2019-09-30\u21922019-12-31",
@@ -1466,7 +1749,23 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI 549300DRQQI75D2JP341 in both NPORT-P filings (identity transition, not membership)"
-  ]
+  ],
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2019-09-30\u21922019-12-31",
+  "difference_type": "ALIAS",
+  "category": "SUCCESSOR_SECURITY",
+  "security": "Symantec Corp -> NortonLifeLock Inc",
+  "events": "anchor LEI / discovery pair",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "same issuer LEI YF6ZV0M6AU4FY94MK914 in both NPORT-P filings (identity transition, not membership)"
+  ],
+  "missing_evidence": ""
  },
  {
   "segment": "2019-12-31\u21922020-03-31",
@@ -1491,7 +1790,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "a8df5b68-9721-49a9-a88f-b5a5be083568",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2019-12-31\u21922020-03-31",
@@ -1510,7 +1814,12 @@
   "blocks_identity": false,
   "hints": [
    "name/ticker unknown to the anchors"
-  ]
+  ],
+  "security_id": "GDI?",
+  "anchor_A_status": "?",
+  "anchor_B_status": "?",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2019-12-31\u21922020-03-31",
@@ -1524,7 +1833,8 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI 549300BURLR9SLYY2705 in both NPORT-P filings (identity transition, not membership)"
-  ]
+  ],
+  "missing_evidence": ""
  },
  {
   "segment": "2020-03-31\u21922020-06-30",
@@ -1551,7 +1861,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV leg ADD DXCM 2020-05-12 (unconfirmed, date not trusted)"
-  ]
+  ],
+  "security_id": "0aac833a-a933-4d3f-bcca-72983f1360aa",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2020-03-31\u21922020-06-30",
@@ -1578,7 +1893,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV leg ADD DPZ 2020-05-12 (unconfirmed, date not trusted)"
-  ]
+  ],
+  "security_id": "6e7ad054-62b6-48f4-9afa-bbd7ff071510",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2020-03-31\u21922020-06-30",
@@ -1603,7 +1923,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "86f51cd9-087b-460c-aeed-7a3fc50b0de1",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2020-03-31\u21922020-06-30",
@@ -1630,7 +1955,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV leg REMOVE CPRI 2020-05-12 (unconfirmed, date not trusted)"
-  ]
+  ],
+  "security_id": "feb9e370-2c97-4048-8c69-76845dd0fdd2",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2020-03-31\u21922020-06-30",
@@ -1646,7 +1976,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD RTX 2020-04-03: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "9ee3c224-5967-4b00-806a-d12192b8ecd1",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2020-03-31\u21922020-06-30",
@@ -1662,7 +1997,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV REMOVE UTX 2020-04-03: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "9ee3c224-5967-4b00-806a-d12192b8ecd1",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2020-03-31\u21922020-06-30",
@@ -1678,21 +2018,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD HWM 2020-04-06: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
- },
- {
-  "segment": "2020-03-31\u21922020-06-30",
-  "difference_type": "ALIAS",
-  "category": "SUCCESSOR_SECURITY",
-  "security": "Arconic Inc -> Howmet Aerospace Inc",
-  "events": "anchor LEI / discovery pair",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "same issuer LEI 549300HO5WFZUT5N2T22 in both NPORT-P filings (identity transition, not membership)"
-  ]
+  ],
+  "security_id": "35c2f15a-5222-4155-b7d5-893b992e08f8",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2020-03-31\u21922020-06-30",
@@ -1706,7 +2037,23 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI I07WOS4YJ0N7YRFE7309 in both NPORT-P filings (identity transition, not membership)"
-  ]
+  ],
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2020-03-31\u21922020-06-30",
+  "difference_type": "ALIAS",
+  "category": "SUCCESSOR_SECURITY",
+  "security": "Arconic Inc -> Howmet Aerospace Inc",
+  "events": "anchor LEI / discovery pair",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "same issuer LEI 549300HO5WFZUT5N2T22 in both NPORT-P filings (identity transition, not membership)"
+  ],
+  "missing_evidence": ""
  },
  {
   "segment": "2020-06-30\u21922020-09-30",
@@ -1722,7 +2069,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD LUMN 2020-09-18: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "82df0256-286b-4b8e-930f-6ad34fa6b74d",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2020-06-30\u21922020-09-30",
@@ -1738,7 +2090,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV REMOVE CTL 2020-09-18: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "b7d78934-4434-4125-896c-358056c9084b",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2020-09-30\u21922020-12-31",
@@ -1765,7 +2122,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV leg ADD VTRS 2020-11-17 (unconfirmed, date not trusted)"
-  ]
+  ],
+  "security_id": "88f15fae-b855-4c59-bcfd-460e0e788845",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2020-09-30\u21922020-12-31",
@@ -1790,7 +2152,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "afca9ea0-6e22-4a21-8577-8ff27c3d82bc",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2020-09-30\u21922020-12-31",
@@ -1815,7 +2182,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "e49460c7-854b-463b-8bf8-de77dda56c9c",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2020-09-30\u21922020-12-31",
@@ -1831,21 +2203,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2020-10-09 vs discovery CSV 2020-10-12: the primary date stands; the CSV never widens it"
-  ]
- },
- {
-  "segment": "2020-12-31\u21922021-03-31",
-  "difference_type": "ALIAS",
-  "category": "SUCCESSOR_SECURITY",
-  "security": "National Oilwell Varco Inc -> NOV Inc",
-  "events": "anchor LEI / discovery pair",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "same issuer LEI 549300EHF3IW1AR6U008 in both NPORT-P filings (identity transition, not membership)"
-  ]
+  ],
+  "security_id": "0163312c-f7d4-4937-bf78-f0afb2111882",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2020-12-31\u21922021-03-31",
@@ -1859,7 +2222,23 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI 8M3THTGWLTYZVE6BBY25 in both NPORT-P filings (identity transition, not membership)"
-  ]
+  ],
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2020-12-31\u21922021-03-31",
+  "difference_type": "ALIAS",
+  "category": "SUCCESSOR_SECURITY",
+  "security": "National Oilwell Varco Inc -> NOV Inc",
+  "events": "anchor LEI / discovery pair",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "same issuer LEI 549300EHF3IW1AR6U008 in both NPORT-P filings (identity transition, not membership)"
+  ],
+  "missing_evidence": ""
  },
  {
   "segment": "2021-03-31\u21922021-06-30",
@@ -1876,7 +2255,12 @@
   "blocks_monthly_membership": false,
   "blocks_membership": false,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "c58e60b6-60b8-41d3-88d2-1f2caf55ee5f",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": ""
  },
  {
   "segment": "2021-03-31\u21922021-06-30",
@@ -1903,7 +2287,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV leg REMOVE HFC 2021-06-04 (unconfirmed, date not trusted)"
-  ]
+  ],
+  "security_id": "d56464eb-5e9b-4bfa-88c9-21fd54819bac",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2021-03-31\u21922021-06-30",
@@ -1919,7 +2308,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2021-06-03 vs discovery CSV 2021-06-04: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "c58e60b6-60b8-41d3-88d2-1f2caf55ee5f",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2021-06-30\u21922021-09-30",
@@ -1935,7 +2329,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD BBWI 2021-08-03: unconfirmed, date not trusted; more discovery legs than anchor-visible changes (unresolved ticker); monthly: DISCOVERY_UNCORROBORATED: warning only for monthly research; daily canonical: blocks the segment"
-  ]
+  ],
+  "security_id": "BBWI?",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2021-06-30\u21922021-09-30",
@@ -1951,21 +2350,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV REMOVE LB 2021-08-03: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
- },
- {
-  "segment": "2021-06-30\u21922021-09-30",
-  "difference_type": "ALIAS",
-  "category": "SUCCESSOR_SECURITY",
-  "security": "L Brands Inc -> Bath & Body Works Inc",
-  "events": "anchor LEI / discovery pair",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "same issuer LEI GR3KVMWVCR54YWQNXU90 in both NPORT-P filings (identity transition, not membership)"
-  ]
+  ],
+  "security_id": "b9fd7f7a-c1ef-4300-ab7c-0f5f10f878db",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2021-06-30\u21922021-09-30",
@@ -1979,7 +2369,23 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI 3C7474T6CDKPR9K6YT90 in both NPORT-P filings (identity transition, not membership)"
-  ]
+  ],
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2021-06-30\u21922021-09-30",
+  "difference_type": "ALIAS",
+  "category": "SUCCESSOR_SECURITY",
+  "security": "L Brands Inc -> Bath & Body Works Inc",
+  "events": "anchor LEI / discovery pair",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "same issuer LEI GR3KVMWVCR54YWQNXU90 in both NPORT-P filings (identity transition, not membership)"
+  ],
+  "missing_evidence": ""
  },
  {
   "segment": "2021-09-30\u21922021-12-31",
@@ -1995,7 +2401,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD CTRA 2021-10-04: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "732e1483-aa29-4bd7-b6f4-6fb088592a7d",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2021-09-30\u21922021-12-31",
@@ -2011,7 +2422,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV REMOVE COG 2021-10-04: unconfirmed, date not trusted; more discovery legs than anchor-visible changes (unresolved ticker); monthly: DISCOVERY_UNCORROBORATED: warning only for monthly research; daily canonical: blocks the segment"
-  ]
+  ],
+  "security_id": "COG?",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2021-12-31\u21922022-03-31",
@@ -2027,7 +2443,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2022-02-03 vs discovery CSV 2022-02-02: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "e9120093-1d94-4411-8e9c-054bd68fe372",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2021-12-31\u21922022-03-31",
@@ -2043,7 +2464,12 @@
   "blocks_identity": false,
   "hints": [
    "official effective 2022-02-03 vs discovery CSV 2022-02-02: the primary date stands; the CSV never widens it"
-  ]
+  ],
+  "security_id": "0afdf552-9598-482c-a27c-9b9b03996172",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2021-12-31\u21922022-03-31",
@@ -2059,7 +2485,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD WTW 2022-01-20: unconfirmed, date not trusted; more discovery legs than anchor-visible changes (unresolved ticker); monthly: DISCOVERY_UNCORROBORATED: warning only for monthly research; daily canonical: blocks the segment"
-  ]
+  ],
+  "security_id": "WTW?",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2021-12-31\u21922022-03-31",
@@ -2075,7 +2506,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV REMOVE WLTW 2022-01-20: unconfirmed, date not trusted; more discovery legs than anchor-visible changes (unresolved ticker); monthly: DISCOVERY_UNCORROBORATED: warning only for monthly research; daily canonical: blocks the segment"
-  ]
+  ],
+  "security_id": "WLTW?",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2021-12-31\u21922022-03-31",
@@ -2091,7 +2527,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD PARA 2022-02-17: unconfirmed, date not trusted; more discovery legs than anchor-visible changes (unresolved ticker); monthly: DISCOVERY_UNCORROBORATED: warning only for monthly research; daily canonical: blocks the segment"
-  ]
+  ],
+  "security_id": "PARA?",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2021-12-31\u21922022-03-31",
@@ -2107,7 +2548,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV REMOVE VIAC 2022-02-17: unconfirmed, date not trusted; more discovery legs than anchor-visible changes (unresolved ticker); monthly: DISCOVERY_UNCORROBORATED: warning only for monthly research; daily canonical: blocks the segment"
-  ]
+  ],
+  "security_id": "VIAC?",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2021-12-31\u21922022-03-31",
@@ -2121,7 +2567,8 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI 549300LI6XZ51GOCJ427 in both NPORT-P filings (identity transition, not membership)"
-  ]
+  ],
+  "missing_evidence": ""
  },
  {
   "segment": "2022-03-31\u21922022-06-30",
@@ -2146,7 +2593,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "0c9152f4-4bb9-4970-84ad-1dbeef1049eb",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2022-03-31\u21922022-06-30",
@@ -2173,7 +2625,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV leg REMOVE IPGP 2022-06-21 (unconfirmed, date not trusted)"
-  ]
+  ],
+  "security_id": "0df69dbd-b51d-4726-a609-ccf1716f510c",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2022-03-31\u21922022-06-30",
@@ -2198,7 +2655,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "26e0b041-be73-41b2-aeb5-814ca37bd4e6",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2022-03-31\u21922022-06-30",
@@ -2225,7 +2687,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV leg ADD KDP 2022-06-21 (unconfirmed, date not trusted)"
-  ]
+  ],
+  "security_id": "99c85f46-9282-4b1c-b235-14993dc6a089",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2022-03-31\u21922022-06-30",
@@ -2252,7 +2719,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV leg ADD ON 2022-06-21 (unconfirmed, date not trusted)"
-  ]
+  ],
+  "security_id": "ad61ec7d-9272-4dbe-bf26-92e1f4483a22",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2022-03-31\u21922022-06-30",
@@ -2279,7 +2751,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV leg ADD WBD 2022-04-11 (unconfirmed, date not trusted)"
-  ]
+  ],
+  "security_id": "be661ebb-3515-4c84-8bd4-82a2feae8bbe",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2022-03-31\u21922022-06-30",
@@ -2304,7 +2781,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "dcaf9064-1047-472d-aa3a-80757af6d705",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2022-03-31\u21922022-06-30",
@@ -2329,7 +2811,12 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": []
+  "hints": [],
+  "security_id": "ea33aaa6-2990-475f-b03d-3852d591c274",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2022-03-31\u21922022-06-30",
@@ -2345,7 +2832,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD BALL 2022-05-10: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "bb927a11-bb33-41ce-8319-17318bcbcee8",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2022-03-31\u21922022-06-30",
@@ -2361,7 +2853,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD META 2022-06-09: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "0bf5c31c-04f1-48cd-8ff5-092bb96a8b52",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2022-03-31\u21922022-06-30",
@@ -2377,7 +2874,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV REMOVE FB 2022-06-09: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "0bf5c31c-04f1-48cd-8ff5-092bb96a8b52",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2022-03-31\u21922022-06-30",
@@ -2393,7 +2895,12 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV ADD ELV 2022-06-28: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ]
+  ],
+  "security_id": "379f67e4-0090-403b-8c15-34fd1bf760dc",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  },
  {
   "segment": "2022-03-31\u21922022-06-30",
@@ -2409,6 +2916,11 @@
   "blocks_identity": false,
   "hints": [
    "discovery CSV REMOVE ANTM 2022-06-28: unconfirmed, date not trusted; more discovery legs than anchor-visible changes (unresolved ticker); monthly: DISCOVERY_UNCORROBORATED: warning only for monthly research; daily canonical: blocks the segment"
-  ]
+  ],
+  "security_id": "ANTM?",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
  }
 ]

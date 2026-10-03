@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import sys
-from collections import Counter
+from collections import Counter, defaultdict, deque
 from datetime import date
 from pathlib import Path
 
@@ -29,6 +29,7 @@ from pitquant.research.walkforward import WalkForwardConfig, plan_folds
 from pitquant.universe.identity_bridge import bridge_name_only
 from pitquant.universe.sp500_anchor_graph import (
     CATEGORIES,
+    Delta,
     classify_gaps,
     graph_metrics,
     load_anchors,
@@ -77,6 +78,26 @@ def main() -> int:
             ).all()
         )
     gaps = classify_gaps(w60)
+    # Enrich the export from the actual anchor delta, never from discovery guesses.
+    deltas: dict[tuple[str, str, str], deque[Delta]] = defaultdict(deque)
+    for sg in w60.segments:
+        for d in sg.deltas:
+            deltas[(f"{sg.a.as_of}→{sg.b.as_of}", d.name, d.difference_type)].append(d)
+    for g in gaps:
+        matches = deltas.get((g["segment"], g["security"], g["difference_type"]))
+        if matches:
+            delta = matches.popleft()
+            g["security_id"] = delta.security_identifier
+            g["anchor_A_status"] = delta.anchor_A_status
+            g["anchor_B_status"] = delta.anchor_B_status
+            g["expected_event"] = (
+                "ADDITION_OR_SECURITY_CONTINUITY"
+                if delta.anchor_A_status == "ABSENT" and delta.anchor_B_status == "MEMBER"
+                else "REMOVAL_OR_SECURITY_CONTINUITY"
+                if delta.anchor_A_status == "MEMBER" and delta.anchor_B_status == "ABSENT"
+                else "RECONCILE_PRIMARY_TIMELINE"
+            )
+        g["missing_evidence"] = NEEDS.get(g["category"], "")
     cat = Counter(g["category"] for g in gaps)
     mem_block = [g for g in gaps if g["blocks_membership"]]
     id_block = [g for g in gaps if g["blocks_identity"]]
@@ -169,6 +190,41 @@ def main() -> int:
     (DOCS / "SP500_LOCAL_GAPS.md").write_text("\n".join(G) + "\n", encoding="utf-8")
     (DOCS / "sp500_local_gaps.json").write_text(
         json.dumps(gaps, indent=1, default=str) + "\n", encoding="utf-8"
+    )
+    priorities = Counter(g["segment"] for g in mem_block)
+    ordered = sorted(mem_block, key=lambda g: (-priorities[g["segment"]], g["segment"]))
+    cards = [
+        "# D-02 — fichas residuales para investigación documental\n",
+        "> Generado desde el archivo local. Las fechas de discovery son pistas, nunca evidencia. "
+        "Una diferencia entre anclas puede ser una sucesión; no prueba una entrada/salida real.\n",
+        f"Ventana 2017-10 → 2022-09: **{w60.ready}/60** cohortes, "
+        f"**{len(mem_block)}** bloqueos mensuales; **{len(id_block)}** requieren identidad. "
+        "Los bloqueos de identidad se cuentan también como mensuales sólo cuando "
+        "impiden determinar la composición.\n",
+        "## Prioridad por segmento\n",
+        "| Segmento | Bloqueos mensuales |",
+        "|---|---|",
+    ]
+    cards += [f"| {segment} | {count} |" for segment, count in priorities.most_common()]
+    for i, g in enumerate(ordered, 1):
+        cards += [
+            "",
+            f"## {i}. {g['security']} — {g.get('security_id', 'sin identificar')}\n",
+            f"- Segmento: {g['segment']}.",
+            f"- Clasificación: {g['category']}.",
+            f"- Estado ancla A → B: {g.get('anchor_A_status')} → {g.get('anchor_B_status')}.",
+            f"- Evento esperado por reconciliar: {g.get('expected_event')}.",
+            f"- Intervalo candidato: {g['window']} (límite superior excluido para las cohortes ambiguas).",
+            f"- Evidencia ausente: {g['missing_evidence']}.",
+            "- Por qué bloquea: sin una fecha efectiva o continuidad documentada, "
+            "las composiciones posibles difieren en los decision_at indicados.",
+            f"- Decision_at afectados: {', '.join(g['blocking_decision_dates'])}.",
+            f"- Evidencia de eventos disponible: {g['events']}.",
+        ]
+        cards += [f"- Pista QA: {hint}." for hint in g["hints"]]
+    (DOCS / "SP500_RESIDUAL_GAP_CARDS.md").write_text("\n".join(cards) + "\n", encoding="utf-8")
+    (DOCS / "sp500_residual_gap_cards.json").write_text(
+        json.dumps(ordered, indent=2, default=str) + "\n", encoding="utf-8"
     )
     B = [
         "# US — puente de identidad con evidencia SEC oficial (generado)\n",

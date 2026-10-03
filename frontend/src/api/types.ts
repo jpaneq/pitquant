@@ -64,6 +64,7 @@ export type Summary = {
   warnings: string[]
   data_notice: { live_reference: string; required_env: string | null; mode: string }
   engine_versions: Record<string, string>
+  simulation?: { enabled: boolean; reason: string | null }
 }
 export type Reason = { reason_code: string; metric: string; value: number; reference: string; rendered_text: string }
 
@@ -159,6 +160,9 @@ export type Setup = {
   stop_distance_atr: number
   structural_target: { price: number; potential_pct: number; r_multiple: number; label: string } | null
   r_targets: { r_multiple: number; price: number; potential_pct: number; label: string }[]
+  target_1?: number
+  target_2?: number
+  risk_reward_1?: number
   confluence: string[]
   conditions: string[]
   warnings: string[]

@@ -9,6 +9,7 @@ const NAV = [
   { to: '/', label: 'Analyzer', end: true },
   { to: '/watchlist', label: 'Watchlist' },
   { to: '/research', label: 'Research Lab' },
+  { to: '/simulations', label: 'Simulations' },
   { to: '/status', label: 'Data Status' },
   { to: '/settings', label: 'Settings' },
 ]

@@ -3,6 +3,8 @@ import { AppShell } from './components/AppShell'
 import { AnalyzerHome } from './features/analyzer/AnalyzerHome'
 import { AnalyzerPage } from './features/analyzer/AnalyzerPage'
 import { ResearchPage } from './features/research/ResearchPage'
+import { SimulationDetail } from './features/simulations/SimulationDetail'
+import { SimulationsPage } from './features/simulations/SimulationsPage'
 import { SettingsPage, StatusPage } from './features/status/StatusPages'
 import { WatchlistPage } from './features/watchlist/WatchlistPage'
 
@@ -14,6 +16,8 @@ export function App() {
         <Route path="analyzer/:id" element={<AnalyzerPage />} />
         <Route path="watchlist" element={<WatchlistPage />} />
         <Route path="research" element={<ResearchPage />} />
+        <Route path="simulations" element={<SimulationsPage />} />
+        <Route path="simulations/:id" element={<SimulationDetail />} />
         <Route path="status" element={<StatusPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<AnalyzerHome />} />

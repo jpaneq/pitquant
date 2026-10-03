@@ -1686,6 +1686,147 @@ class SecuritySuccession(Base):
     )
 
 
+class Simulation(Base):
+    """A PAPER TRADE (no real money, ADR-0034): the immutable T0 record. Everything the Analyzer knew at ``decision_at`` is frozen here;
+    later outcomes/observations live in their own tables and never touch this row. ``asset_type`` EQUITY | BTC (BTC extensions NULL)."""
+
+    __tablename__ = "simulations"
+
+    simulation_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+    mode: Mapped[str] = mapped_column(String(20), default="MANUAL_SIMULATION")
+    security_id: Mapped[str] = mapped_column(ForeignKey("securities.security_id"), index=True)
+    asset_type: Mapped[str] = mapped_column(String(10), default="EQUITY")
+    decision_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    analyzer_version: Mapped[str] = mapped_column(String(60))
+    feature_version: Mapped[str] = mapped_column(String(40))
+    model_id: Mapped[str | None] = mapped_column(String(64))
+    model_version: Mapped[str | None] = mapped_column(String(64))
+    rules_version: Mapped[str] = mapped_column(String(40))
+    prediction_status: Mapped[str] = mapped_column(String(30), default="NOT_YET_VALIDATED")
+    price_snapshot: Mapped[dict[str, Any]] = mapped_column(JSON)
+    fundamental_snapshot: Mapped[dict[str, Any]] = mapped_column(JSON)
+    technical_snapshot: Mapped[dict[str, Any]] = mapped_column(JSON)
+    valuation_snapshot: Mapped[dict[str, Any]] = mapped_column(JSON)
+    support_resistance_snapshot: Mapped[dict[str, Any]] = mapped_column(JSON)
+    trade_plan_snapshot: Mapped[dict[str, Any]] = mapped_column(JSON)
+    market_regime_snapshot: Mapped[dict[str, Any]] = mapped_column(JSON)
+    data_quality: Mapped[dict[str, Any]] = mapped_column(JSON)
+    # BTC extensions (nullable; no connector exists yet)
+    funding_snapshot: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    open_interest_snapshot: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    basis_snapshot: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    onchain_snapshot: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    # the simulated plan
+    plan_origin: Mapped[str] = mapped_column(String(14))  # PITQUANT | USER_MODIFIED | USER_DEFINED
+    original_pitquant_plan: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    final_simulated_plan: Mapped[dict[str, Any]] = mapped_column(JSON)
+    side: Mapped[str] = mapped_column(String(5), default="LONG")
+    entry_type: Mapped[str] = mapped_column(String(12))
+    entry_zone_low: Mapped[float] = mapped_column(Float)
+    entry_zone_high: Mapped[float] = mapped_column(Float)
+    entry_price_actual: Mapped[float | None] = mapped_column(
+        Float
+    )  # always NULL at T0 (set by outcomes)
+    stop_loss: Mapped[float] = mapped_column(Float)
+    invalidation_level: Mapped[float | None] = mapped_column(Float)
+    target_1: Mapped[float] = mapped_column(Float)
+    target_2: Mapped[float | None] = mapped_column(Float)
+    target_3_optional: Mapped[float | None] = mapped_column(Float)
+    risk_reward_expected: Mapped[float | None] = mapped_column(Float)
+    position_size_simulated: Mapped[float] = mapped_column(Float)
+    capital_at_risk: Mapped[float] = mapped_column(Float)
+    time_horizon_sessions: Mapped[int] = mapped_column(Integer)
+    expiration_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    benchmark_security_id: Mapped[str | None] = mapped_column(String(36))
+
+    __table_args__ = (
+        CheckConstraint("asset_type IN ('EQUITY','BTC')", name="asset_type_values"),
+        CheckConstraint(
+            "plan_origin IN ('PITQUANT','USER_MODIFIED','USER_DEFINED')", name="plan_origin_values"
+        ),
+        CheckConstraint("mode IN ('MANUAL_SIMULATION','AUTO_PAPER')", name="mode_values"),
+        CheckConstraint("created_at >= decision_at", name="created_after_decision"),
+    )
+
+
+class SimulationObservation(Base):
+    """Later observations of a simulation (thesis snapshots T+1d/T+7d/..., manual close). Append-only; never edits T0."""
+
+    __tablename__ = "simulation_observations"
+
+    observation_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    simulation_id: Mapped[str] = mapped_column(ForeignKey("simulations.simulation_id"), index=True)
+    observed_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    kind: Mapped[str] = mapped_column(String(20))  # THESIS_SNAPSHOT | MANUAL_CLOSE
+    payload: Mapped[dict[str, Any]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class SimulationOutcome(Base):
+    """One evaluation of a simulation against the bars available at ``evaluated_at`` (append-only history)."""
+
+    __tablename__ = "simulation_outcomes"
+
+    outcome_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    simulation_id: Mapped[str] = mapped_column(ForeignKey("simulations.simulation_id"), index=True)
+    evaluated_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    state: Mapped[str] = mapped_column(String(20))
+    is_closed: Mapped[bool] = mapped_column(Boolean)
+    entry_date: Mapped[date | None] = mapped_column(Date)
+    entry_price: Mapped[float | None] = mapped_column(Float)
+    exit_date: Mapped[date | None] = mapped_column(Date)
+    realized_return: Mapped[float | None] = mapped_column(Float)
+    excess_return_vs_benchmark: Mapped[float | None] = mapped_column(Float)
+    realized_r: Mapped[float | None] = mapped_column(Float)
+    mfe: Mapped[float | None] = mapped_column(Float)
+    mae: Mapped[float | None] = mapped_column(Float)
+    max_drawdown: Mapped[float | None] = mapped_column(Float)
+    days_to_entry: Mapped[int | None] = mapped_column(Integer)
+    days_to_stop: Mapped[int | None] = mapped_column(Integer)
+    days_to_tp1: Mapped[int | None] = mapped_column(Integer)
+    days_to_tp2: Mapped[int | None] = mapped_column(Integer)
+    holding_period: Mapped[int | None] = mapped_column(Integer)
+    prediction_direction_correct: Mapped[bool | None] = mapped_column(
+        Boolean
+    )  # NULL until the Prediction Engine is validated
+    trade_plan_execution_correct: Mapped[bool | None] = mapped_column(
+        Boolean
+    )  # NULL until the Prediction Engine is validated
+    timeline: Mapped[list[dict[str, Any]]] = mapped_column(JSON)
+    details: Mapped[dict[str, Any]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class SimulationPostMortem(Base):
+    """Explicit, auditable classification of a CLOSED simulation. Never an automatic LLM verdict; never feeds training."""
+
+    __tablename__ = "simulation_postmortems"
+
+    postmortem_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    simulation_id: Mapped[str] = mapped_column(ForeignKey("simulations.simulation_id"), index=True)
+    primary_cause: Mapped[str] = mapped_column(String(40))
+    secondary_causes: Mapped[list[str]] = mapped_column(JSON)
+    notes: Mapped[str | None] = mapped_column(String(2000))
+    classified_by: Mapped[str] = mapped_column(String(60))
+    metrics: Mapped[dict[str, Any]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
+class ResearchHypothesis(Base):
+    """A hypothesis suggested by simulation patterns. It becomes a Challenger only through the research workflow and a HUMAN promotion."""
+
+    __tablename__ = "research_hypotheses"
+
+    hypothesis_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    source: Mapped[str] = mapped_column(String(30))
+    statement: Mapped[str] = mapped_column(String(1000))
+    evidence: Mapped[dict[str, Any]] = mapped_column(JSON)
+    status: Mapped[str] = mapped_column(String(20), default="PROPOSED")
+    created_by: Mapped[str] = mapped_column(String(60))
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+
+
 IMMUTABLE_TABLES: frozenset[str] = frozenset(
     {
         "raw_records",
@@ -1734,5 +1875,10 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "security_ticker_alias",
         "sec_13f_list_entries",
         "security_succession",
+        "simulations",
+        "simulation_observations",
+        "simulation_outcomes",
+        "simulation_postmortems",
+        "research_hypotheses",
     }
 )

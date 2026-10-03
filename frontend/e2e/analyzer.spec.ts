@@ -46,4 +46,22 @@ test.describe('Analyzer + Research Lab on the synthetic fixture', () => {
     await page.getByRole('button', { name: 'Models' }).click()
     await expect(page.getByText(/No registered models or champion yet/)).toBeVisible()
   })
+
+  test('Simulation Lab: paper trade from the Analyzer, banner, disabled without price, no fake statistics', async ({ page }) => {
+    await page.goto('/analyzer/SYNO')
+    await expect(page.getByTestId('simulate-disabled')).toBeDisabled()
+    await expect(page.getByText('PRICE_DATA_REQUIRED').first()).toBeVisible()
+    const px = (await (await page.request.get('/analyzer/SYNF/quote')).json()).price as number
+    await page.goto('/analyzer/SYNF')
+    await page.getByTestId('simulate-open').click()
+    const set = async (label: string, v: number) => page.getByLabel(label, { exact: true }).fill(v.toFixed(2))
+    await set('Entry zone low', px * 0.97); await set('Entry zone high', px); await set('Stop loss', px * 0.9); await set('Target 1', px * 1.05); await set('Target 2', px * 1.1)
+    await page.getByTestId('simulate-submit').click()
+    await expect(page).toHaveURL(/simulations\//)
+    await expect(page.getByTestId('paper-banner')).toContainText('PAPER TRADE — NO REAL MONEY')
+    await expect(page.getByText('Prediction NOT_YET_VALIDATED')).toBeVisible()
+    await page.getByRole('link', { name: 'Simulations' }).first().click()
+    await expect(page.getByTestId('sim-insufficient')).toBeVisible()
+    await expect(page.getByTestId('sim-stats')).toHaveCount(0)
+  })
 })
