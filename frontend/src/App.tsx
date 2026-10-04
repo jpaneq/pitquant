@@ -7,6 +7,8 @@ import { InsightsPage } from './features/simulations/InsightsPage'
 import { SimulationDetail } from './features/simulations/SimulationDetail'
 import { SimulationsPage } from './features/simulations/SimulationsPage'
 import { SettingsPage, StatusPage } from './features/status/StatusPages'
+import { BitcoinUnavailable } from './features/help/BitcoinUnavailable'
+import { HelpPage } from './features/help/HelpPage'
 import { WatchlistPage } from './features/watchlist/WatchlistPage'
 
 export function App() {
@@ -20,6 +22,8 @@ export function App() {
         <Route path="simulations" element={<SimulationsPage />} />
         <Route path="simulations/insights" element={<InsightsPage />} />
         <Route path="simulations/:id" element={<SimulationDetail />} />
+        <Route path="ayuda" element={<HelpPage />} />
+        <Route path="bitcoin/*" element={<BitcoinUnavailable />} />
         <Route path="status" element={<StatusPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<AnalyzerHome />} />

@@ -1,6 +1,7 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../api/client'
+import { AppSwitcher } from './AppSwitcher'
 import { GlobalSearch } from './GlobalSearch'
 import { useTheme } from '../hooks/useTheme'
 import { ErrorBoundary } from './ErrorBoundary'
@@ -10,6 +11,7 @@ const NAV = [
   { to: '/watchlist', label: 'Watchlist' },
   { to: '/research', label: 'Research Lab' },
   { to: '/simulations', label: 'Simulations' },
+  { to: '/ayuda', label: 'Ayuda' },
   { to: '/status', label: 'Data Status' },
   { to: '/settings', label: 'Settings' },
 ]
@@ -51,8 +53,10 @@ export function AppShell() {
               </NavLink>
             ))}
           </nav>
+          <AppSwitcher />
           <GlobalSearch />
-          <button onClick={toggle} aria-label="Toggle light/dark theme" className="ml-auto rounded-md border border-border px-2.5 py-1.5 text-xs text-muted hover:text-fg">
+          <Link to="/ayuda" className="ml-auto rounded-md border border-border px-2.5 py-1.5 text-xs text-muted hover:text-fg">Ayuda</Link>
+          <button onClick={toggle} aria-label="Toggle light/dark theme" className="rounded-md border border-border px-2.5 py-1.5 text-xs text-muted hover:text-fg">
             {dark ? 'Light' : 'Dark'}
           </button>
         </header>

@@ -223,7 +223,16 @@ def _mount_frontend(app: FastAPI) -> None:
     def index() -> FileResponse:
         return FileResponse(dist / "index.html")
 
-    for path in ("/", "/analyzer/{ident}", "/watchlist", "/research", "/status", "/settings"):
+    for path in (
+        "/",
+        "/analyzer/{ident}",
+        "/watchlist",
+        "/research",
+        "/status",
+        "/settings",
+        "/ayuda",
+        "/bitcoin",
+    ):
         app.add_api_route(path, index, methods=["GET"], include_in_schema=False)
 
     # Simulation Lab SPA routes share their paths with the JSON API (/simulations, ...):
