@@ -129,7 +129,9 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
     @r.get("/summary")
     def summary(db: DB) -> dict[str, Any]:
         s = sim.evidence_summary(db)
-        sims = list(db.scalars(select(Simulation.simulation_id)))
+        sims = list(
+            db.scalars(select(Simulation.simulation_id).where(Simulation.is_synthetic.is_(False)))
+        )
         groups = {
             "OPEN": 0,
             "CLOSED": 0,
@@ -175,7 +177,7 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
             o = sim.latest_outcome(db, s.simulation_id)
             ex = ((o.details or {}).get("metrics_extra") or {}) if o else {}
             sec = db.get(Security, s.security_id)
-            out.append({"simulation_id": s.simulation_id, "created_at": s.created_at.isoformat(), "security_id": s.security_id, "security": sec.name if sec else s.security_id, "decision_at": s.decision_at.isoformat(), "plan_origin": s.plan_origin, "simulation_engine_version": s.simulation_engine_version, "mode": s.mode, "setup_type": (s.original_pitquant_plan or {}).get("setup_type") or "USER_DEFINED", "state": o.state if o else "CREATED", "outcome": row(o) if o else None, "mae_pct": ex.get("mae_pct"), "mfe_pct": ex.get("mfe_pct"), "mae_r": ex.get("mae_r"), "mfe_r": ex.get("mfe_r"), "exit_policy": (s.final_simulated_plan or {}).get("exit_policy") or "LEGACY_HALF_AT_TP1", "entry_zone": [s.entry_zone_low, s.entry_zone_high], "stop_loss": s.stop_loss, "target_1": s.target_1, "target_2": s.target_2, "banner": PAPER})  # fmt: skip
+            out.append({"simulation_id": s.simulation_id, "created_at": s.created_at.isoformat(), "security_id": s.security_id, "security": sec.name if sec else s.security_id, "decision_at": s.decision_at.isoformat(), "is_synthetic": s.is_synthetic, "plan_origin": s.plan_origin, "simulation_engine_version": s.simulation_engine_version, "mode": s.mode, "setup_type": (s.original_pitquant_plan or {}).get("setup_type") or "USER_DEFINED", "state": o.state if o else "CREATED", "outcome": row(o) if o else None, "mae_pct": ex.get("mae_pct"), "mfe_pct": ex.get("mfe_pct"), "mae_r": ex.get("mae_r"), "mfe_r": ex.get("mfe_r"), "exit_policy": (s.final_simulated_plan or {}).get("exit_policy") or "LEGACY_HALF_AT_TP1", "entry_zone": [s.entry_zone_low, s.entry_zone_high], "stop_loss": s.stop_loss, "target_1": s.target_1, "target_2": s.target_2, "banner": PAPER})  # fmt: skip
         return out
 
     @r.post("")

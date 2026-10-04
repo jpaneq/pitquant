@@ -1747,6 +1747,8 @@ class Simulation(Base):
     simulation_engine_version: Mapped[str] = mapped_column(
         String(20), default="v1", server_default="v1"
     )
+    # ADR-0038: a paper trade created by a SYNTHETIC strategy run (fixture data). Never counted as evidence; kept OUT of T0_FIELDS so old hashes verify.
+    is_synthetic: Mapped[bool] = mapped_column(Boolean, default=False, server_default=sa_false())
 
     __table_args__ = (
         CheckConstraint("asset_type IN ('EQUITY','BTC')", name="asset_type_values"),
@@ -1954,5 +1956,15 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "research_hypotheses",
         "simulation_events",
         "simulation_counterfactuals",
+        "prediction_snapshots",
+        "prediction_outcomes",
+        "strategy_definitions",
+        "strategy_runs",
+        "strategy_run_events",
+        "strategy_decisions",
+        "strategy_simulation_links",
+        "strategy_run_results",
     }
 )
+
+from pitquant.db import models_lab as _models_lab  # noqa: E402,F401  (prediction/strategy tables)

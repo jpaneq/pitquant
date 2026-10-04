@@ -64,7 +64,18 @@ LOGISTIC = BaselineConfig(
     {"C": (0.1, 1.0, 10.0)},
     selection_metrics=("brier", "log_loss", "calibration", "roc_auc"),
 )
-BASELINES = {c.kind: c for c in (ELASTIC_NET, LOGISTIC)}
+GRADIENT_BOOSTING = BaselineConfig(
+    "GRADIENT_BOOSTING",
+    "gradient_boosting_excess_return",
+    "future_excess_total_return",
+    (6, 12),
+    {"loss": "squared_error", "random_state": 20261001, "subsample": 1.0},
+    {"n_estimators": (100, 300), "max_depth": (2, 3), "learning_rate": (0.03, 0.1)},
+    selection_metrics=("spearman_ic", "mae", "rmse", "d10_d1_spread"),
+)  # CHALLENGER only, after the baselines (ADR-0038); no deep learning, no ensembles, no feature zoo
+BASELINES = {
+    c.kind: c for c in (ELASTIC_NET, LOGISTIC)
+}  # the registered baselines (the challenger is registered separately)
 FORBIDDEN_TARGETS = frozenset(
     {"human_label", "trend_state", "valuation_label", "analysis_label"}
 )  # human analysis is never a target

@@ -56,7 +56,32 @@ from pitquant.simulation.observations import (
     trend_flip,
 )
 
-AUTO_PAPER_ENABLED = False
+AUTO_PAPER_ENABLED = (
+    False  # legacy global switch: kept False; AUTO_PAPER needs an ``AutoPaperAuthority`` (ADR-0039)
+)
+
+
+@dataclass(frozen=True)
+class AutoPaperAuthority:
+    """Why an AUTO_PAPER trade may exist: a strategy decision of an allowed kind. Nothing else opens one."""
+
+    strategy_id: str
+    strategy_version: int
+    family: str
+    run_kind: str
+    decision_id: str | None = None
+
+    def allowed(self) -> tuple[bool, str]:
+        if self.run_kind == "SYNTHETIC":
+            return True, "SYNTHETIC run (fixture data, never evidence)"
+        if self.family == "TRADE_PLAN_ONLY":
+            return True, "TRADE_PLAN_ONLY needs no prediction"
+        return (
+            False,
+            "AUTO_PAPER_PREDICTION = DISABLED_NOT_VALIDATED (the Prediction Engine is NOT_YET_VALIDATED)",
+        )
+
+
 MIN_N_FOR_STATS = 10
 POSTMORTEM_CAUSES = (
     "MODEL_DIRECTION_ERROR", "MODEL_MAGNITUDE_ERROR", "TIMING_ERROR", "ENTRY_ERROR", "STOP_TOO_TIGHT", "STOP_TOO_WIDE", "TARGET_TOO_AGGRESSIVE",
@@ -139,13 +164,16 @@ def create_simulation(
     asset_type: str = "EQUITY",
     sizing_mode: str = "RISK_BASED",
     notional: float | None = None,
+    authority: AutoPaperAuthority | None = None,
 ) -> Simulation:
     at = at or utc_now()
     _guard(at, settings)
-    if mode == "AUTO_PAPER" and not AUTO_PAPER_ENABLED:
-        raise AutoPaperDisabled(
-            "AUTO_PAPER is DISABLED while the Prediction Engine is NOT_YET_VALIDATED"
-        )
+    if mode == "AUTO_PAPER":
+        # AUTO_PAPER is gated by AUTHORITY, not by a global flag: only a TRADE_PLAN_ONLY strategy decision (no model needed) or a SYNTHETIC run may open one;
+        # prediction-based real runs stay AUTO_PAPER_PREDICTION = DISABLED_NOT_VALIDATED. A bare mode="AUTO_PAPER" is always refused.
+        ok, why = authority.allowed() if authority is not None else (False, "no strategy authority")
+        if not ok:
+            raise AutoPaperDisabled(f"AUTO_PAPER is DISABLED_NOT_VALIDATED: {why}")
     if asset_type != "EQUITY":
         raise SimulationError(
             "only EQUITY simulations have an engine in V0 (BTC columns exist but no connector does)"
@@ -269,7 +297,7 @@ def create_simulation(
         entry_zone_low=levels.entry_low, entry_zone_high=levels.entry_high, entry_price_actual=None, stop_loss=levels.stop, invalidation_level=levels.invalidation, target_1=levels.target_1, target_2=levels.target_2,
         target_3_optional=final["target_3_optional"], risk_reward_expected=((levels.target_1 - levels.entry_high) / risk_per) if risk_per > 0 else None, position_size_simulated=float(sizing["shares"]),
         capital_at_risk=float(sizing["actual_risk"]), time_horizon_sessions=horizon_sessions, expiration_at=datetime(exp_session.year, exp_session.month, exp_session.day, 23, 59, tzinfo=UTC), benchmark_security_id=bench[0].security_id if bench[0] else None,
-        created_at=max(utc_now(), at),
+        created_at=max(utc_now(), at), is_synthetic=bool(authority is not None and authority.run_kind == "SYNTHETIC"),
     )  # fmt: skip
     ver = svc.versions()
     sim.snapshot_hash = snapshot_hash(sim)
@@ -1108,7 +1136,9 @@ class SimulationEvidenceSummary:
 
 
 def evidence_summary(session: Session, min_n: int = MIN_N_FOR_STATS) -> SimulationEvidenceSummary:
-    sims = list(session.scalars(select(Simulation.simulation_id)))
+    sims = list(
+        session.scalars(select(Simulation.simulation_id).where(Simulation.is_synthetic.is_(False)))
+    )  # synthetic trades are never evidence
     latest = [o for o in (latest_outcome(session, s) for s in sims) if o is not None]
     by_state: dict[str, int] = {}
     for o in latest:
@@ -1217,7 +1247,7 @@ def insights(
     trades shows its N and the flag INSUFFICIENT_SAMPLE instead of statistics."""
     if by not in SEGMENTS:
         raise SimulationError(f"unknown segmentation {by!r}; use one of {SEGMENTS}")
-    sims = list(session.scalars(select(Simulation)))
+    sims = list(session.scalars(select(Simulation).where(Simulation.is_synthetic.is_(False))))
     vols = sorted(
         v
         for v in (((x.technical_snapshot or {}).get("risk") or {}).get("vol63") for x in sims)

@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **76**.
+Tablas: **84**.
 
 ## Procedencia y calidad
 
@@ -533,6 +533,7 @@ Tablas: **76**.
 | `snapshot_hash` | VARCHAR(64) | sí |  |
 | `source_provenance` | JSON | sí |  |
 | `simulation_engine_version` | VARCHAR(20) | no |  |
+| `is_synthetic` | BOOLEAN | no |  |
 
 - CHECK `asset_type IN ('EQUITY','BTC')`
 - CHECK `created_at >= decision_at`
@@ -659,6 +660,192 @@ Tablas: **76**.
 | `status` | VARCHAR(20) | no |  |
 | `created_by` | VARCHAR(60) | no |  |
 | `created_at` | DATETIME | no |  |
+
+### `prediction_snapshots` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `prediction_id` | VARCHAR(36) | no | PK |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `decision_at` | DATETIME | no |  |
+| `generated_at` | DATETIME | no |  |
+| `horizon_months` | INTEGER | no |  |
+| `model_id` | VARCHAR(80) | no |  |
+| `model_version` | VARCHAR(80) | no |  |
+| `feature_set_version` | VARCHAR(80) | no |  |
+| `dataset_version` | VARCHAR(80) | sí |  |
+| `expected_excess_return` | FLOAT | sí |  |
+| `p_outperform` | FLOAT | sí |  |
+| `return_quantile_10` | FLOAT | sí |  |
+| `return_quantile_25` | FLOAT | sí |  |
+| `return_quantile_50` | FLOAT | sí |  |
+| `return_quantile_75` | FLOAT | sí |  |
+| `return_quantile_90` | FLOAT | sí |  |
+| `uncertainty` | JSON | sí |  |
+| `benchmark` | VARCHAR(60) | no |  |
+| `data_quality` | JSON | no |  |
+| `feature_contributions` | JSON | sí |  |
+| `warnings` | JSON | no |  |
+| `prediction_status` | VARCHAR(24) | no |  |
+| `is_synthetic` | BOOLEAN | no |  |
+| `data_available_at` | DATETIME | sí |  |
+| `provenance` | JSON | no |  |
+| `commit_sha` | VARCHAR(48) | sí |  |
+| `created_at` | DATETIME | no |  |
+
+- CHECK `(prediction_status = 'SYNTHETIC_FIXTURE') = is_synthetic`
+- CHECK `data_available_at IS NULL OR data_available_at <= decision_at`
+- CHECK `decision_at <= generated_at`
+- CHECK `horizon_months IN (6, 12)`
+- CHECK `p_outperform IS NULL OR (p_outperform >= 0 AND p_outperform <= 1)`
+- CHECK `prediction_status <> 'NOT_YET_VALIDATED' OR (expected_excess_return IS NULL AND p_outperform IS NULL AND return_quantile_10 IS NULL AND return_quantile_25 IS NULL AND return_quantile_50 IS NULL AND return_quantile_75 IS NULL AND return_quantile_90 IS NULL AND uncertainty IS NULL AND feature_contributions IS NULL)`
+- CHECK `prediction_status IN ('NOT_YET_VALIDATED','SYNTHETIC_FIXTURE')`
+- INDEX ix_prediction_snapshot_lookup (security_id, decision_at, horizon_months)
+- INDEX ix_prediction_snapshots_security_id (security_id)
+
+### `prediction_outcomes` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `outcome_row_id` | VARCHAR(36) | no | PK |
+| `prediction_id` | VARCHAR(36) | no | FK→`prediction_snapshots.prediction_id` |
+| `realized_outcome_id` | VARCHAR(36) | sí | FK→`realized_outcomes.outcome_id` |
+| `source` | VARCHAR(24) | no |  |
+| `resolved_at` | DATETIME | no |  |
+| `actual_return` | FLOAT | sí |  |
+| `benchmark_return` | FLOAT | sí |  |
+| `actual_excess_return` | FLOAT | sí |  |
+| `actual_outperform` | BOOLEAN | sí |  |
+| `predicted_excess_return` | FLOAT | sí |  |
+| `prediction_error` | FLOAT | sí |  |
+| `predicted_outperform` | BOOLEAN | sí |  |
+| `classification_correct` | BOOLEAN | sí |  |
+| `direction_correct` | BOOLEAN | sí |  |
+| `is_synthetic` | BOOLEAN | no |  |
+| `created_at` | DATETIME | no |  |
+
+- INDEX ix_prediction_outcomes_prediction_id (prediction_id)
+
+### `strategy_definitions` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `strategy_row_id` | VARCHAR(36) | no | PK |
+| `strategy_id` | VARCHAR(80) | no |  |
+| `strategy_version` | INTEGER | no |  |
+| `family` | VARCHAR(20) | no |  |
+| `name` | VARCHAR(120) | no |  |
+| `prediction_horizon_months` | INTEGER | sí |  |
+| `prediction_model_requirement` | JSON | no |  |
+| `entry_rules` | JSON | no |  |
+| `exit_rules` | JSON | no |  |
+| `risk_rules` | JSON | no |  |
+| `trade_plan_rules` | JSON | no |  |
+| `rebalance_frequency` | VARCHAR(20) | no |  |
+| `max_positions` | INTEGER | no |  |
+| `position_sizing` | JSON | no |  |
+| `costs` | JSON | no |  |
+| `status` | VARCHAR(28) | no |  |
+| `parent_version` | INTEGER | sí |  |
+| `spec_hash` | VARCHAR(64) | no |  |
+| `created_by` | VARCHAR(60) | no |  |
+| `created_at` | DATETIME | no |  |
+
+- CHECK `family IN ('TRADE_PLAN_ONLY','PREDICTION_ONLY','HYBRID','BUY_AND_HOLD')`
+- CHECK `max_positions >= 1`
+- INDEX ix_strategy_definitions_strategy_id (strategy_id)
+- UNIQUE (strategy_id, strategy_version)
+
+### `strategy_runs` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `run_id` | VARCHAR(36) | no | PK |
+| `run_kind` | VARCHAR(14) | no |  |
+| `strategy_row_id` | VARCHAR(36) | no | FK→`strategy_definitions.strategy_row_id` |
+| `strategy_id` | VARCHAR(80) | no |  |
+| `strategy_version` | INTEGER | no |  |
+| `universe` | JSON | no |  |
+| `activated_at` | DATETIME | sí |  |
+| `dataset_version` | VARCHAR(80) | sí |  |
+| `model_id` | VARCHAR(80) | sí |  |
+| `model_version` | VARCHAR(80) | sí |  |
+| `simulation_engine_version` | VARCHAR(20) | no |  |
+| `commit_sha` | VARCHAR(48) | no |  |
+| `readiness` | JSON | no |  |
+| `blocked_reasons` | JSON | no |  |
+| `params` | JSON | no |  |
+| `is_synthetic` | BOOLEAN | no |  |
+| `created_at` | DATETIME | no |  |
+
+- CHECK `run_kind IN ('HISTORICAL','FORWARD_PAPER','SYNTHETIC')`
+- INDEX ix_strategy_runs_strategy_row_id (strategy_row_id)
+
+### `strategy_run_events` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `event_id` | VARCHAR(36) | no | PK |
+| `run_id` | VARCHAR(36) | no | FK→`strategy_runs.run_id` |
+| `event_type` | VARCHAR(20) | no |  |
+| `occurred_at` | DATETIME | no |  |
+| `payload` | JSON | no |  |
+| `created_at` | DATETIME | no |  |
+
+- INDEX ix_strategy_run_events_run_id (run_id)
+
+### `strategy_decisions` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `decision_id` | VARCHAR(36) | no | PK |
+| `run_id` | VARCHAR(36) | no | FK→`strategy_runs.run_id` |
+| `strategy_id` | VARCHAR(80) | no |  |
+| `strategy_version` | INTEGER | no |  |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `decision_at` | DATETIME | no |  |
+| `prediction_snapshot_id` | VARCHAR(36) | sí | FK→`prediction_snapshots.prediction_id` |
+| `trade_plan_snapshot` | JSON | sí |  |
+| `trade_plan_hash` | VARCHAR(64) | sí |  |
+| `rule_inputs` | JSON | no |  |
+| `rules_evaluated` | JSON | no |  |
+| `rules_passed` | JSON | no |  |
+| `rules_failed` | JSON | no |  |
+| `decision` | VARCHAR(10) | no |  |
+| `exit_reason` | VARCHAR(30) | sí |  |
+| `is_synthetic` | BOOLEAN | no |  |
+| `created_at` | DATETIME | no |  |
+
+- CHECK `decision IN ('ENTER','HOLD','EXIT','NO_ACTION')`
+- INDEX ix_strategy_decisions_run_id (run_id)
+- INDEX ix_strategy_decisions_security_id (security_id)
+
+### `strategy_simulation_links` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `link_id` | VARCHAR(36) | no | PK |
+| `decision_id` | VARCHAR(36) | no | FK→`strategy_decisions.decision_id` |
+| `simulation_id` | VARCHAR(36) | no | FK→`simulations.simulation_id` |
+| `role` | VARCHAR(8) | no |  |
+| `created_at` | DATETIME | no |  |
+
+- INDEX ix_strategy_simulation_links_decision_id (decision_id)
+- INDEX ix_strategy_simulation_links_simulation_id (simulation_id)
+
+### `strategy_run_results` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `result_id` | VARCHAR(36) | no | PK |
+| `run_id` | VARCHAR(36) | no | FK→`strategy_runs.run_id` |
+| `evaluated_at` | DATETIME | no |  |
+| `prediction_series_hash` | VARCHAR(64) | no |  |
+| `metrics` | JSON | no |  |
+| `flags` | JSON | no |  |
+| `created_at` | DATETIME | no |  |
+
+- INDEX ix_strategy_run_results_run_id (run_id)
 
 ### `index_anchor_snapshots` 🔒
 
