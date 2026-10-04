@@ -58,13 +58,16 @@ def record(
 
 
 def pin_config(session: Session, config: ResearchConfig | None = None) -> BTCResearchRecord:
-    config = config or ResearchConfig()
     existing = session.scalars(
         select(BTCResearchRecord).where(BTCResearchRecord.kind == "RESEARCH_CONFIG")
     ).first()
-    if existing and existing.payload != asdict(config):
-        raise ValueError("research protocol already frozen; use a versioned challenger")
-    return record(session, "RESEARCH_CONFIG", Cohort.HISTORICAL_OOS, asdict(config))
+    if existing:
+        if config is not None and existing.payload != asdict(config):
+            raise ValueError("research protocol already frozen; use a versioned challenger")
+        return existing
+    return record(
+        session, "RESEARCH_CONFIG", Cohort.HISTORICAL_OOS, asdict(config or ResearchConfig())
+    )
 
 
 def guard_holdout(session: Session, at: datetime, cohort: str) -> None:
@@ -340,6 +343,12 @@ def historical_test(
             "model_version": model_version,
             "strategy_version": strategy_version,
             "config_hash": config.config_hash,
+            "predictions": [],
+            "outcomes": [],
+            "calibration": [],
+            "returns": [],
+            "drawdown": [],
+            "strategy_metrics": None,
         }
         record(session, "HISTORICAL_TEST", Cohort.HISTORICAL_OOS, result)
         return result
@@ -420,9 +429,15 @@ def historical_test(
                     "up": outcome.payload["UP_H"],
                     "actual": outcome.payload["future_simple_return_H"],
                     "expected": payload["expected_return"],
+                    "error": outcome.payload["future_simple_return_H"] - payload["expected_return"],
+                    "decision_at": t.isoformat(),
                     "prediction_hash": prediction.record_hash,
                 }
             )
+    from pitquant.btc.simulation import strategy_test
+
+    tested_dates = {datetime.fromisoformat(p["decision_at"]) for p in scored}
+    strategies = strategy_test(session, [snaps[t] for t in sorted(tested_dates)], horizon)
     result = {
         "status": "EXPERIMENTAL_OOS_NOT_PROMOTED",
         "trained": True,
@@ -432,6 +447,10 @@ def historical_test(
         "nonoverlap_cohorts": sum(f["nonoverlap_cohorts"] for f in folds),
         "calibration": calibration(scored),
         "predictions": scored,
+        "outcomes": [{"actual": p["actual"], "up": p["up"], "error": p["error"]} for p in scored],
+        "returns": strategies["returns"],
+        "drawdown": strategies["drawdown"],
+        "strategy_metrics": strategies,
         "mean_absolute_error": float(np.mean([abs(p["expected"] - p["actual"]) for p in scored])),
         "buy_and_hold": "REALIZED_BTC_RETURN_PER_MATCHING_HORIZON",
         "strategy_superiority": "NOT_CLAIMED",

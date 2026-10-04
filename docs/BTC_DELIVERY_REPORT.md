@@ -1,6 +1,6 @@
 # BTC Engine V0 — delivery report
 
-This delivers independent BTC contracts, auditable UI, archive and test harness. It does not claim scientifically validated prediction, a real OOS baseline, or complete validated strategy backtesting.
+This delivers independent BTC contracts, auditable UI, archive and test harness. It does not claim scientifically validated prediction, a real OOS baseline, or validated strategy performance.
 
 1. **Source HEAD:** f212b3d061d3bf94428c5a0fb9fd70149298ae39.
 
@@ -54,7 +54,7 @@ This delivers independent BTC contracts, auditable UI, archive and test harness.
 
 26. **Forward Paper:** Real archive activated2026-10-04; hourly heartbeat ACTIVE. Daily00UTC snapshot with explicit <=15min latency. No auto prediction trade, missed closes stay missing.
 
-27. **Historical harness:** Version/date/horizon inputs; sufficient frozen PIT history required. Purged WF independent horizon baseline, OOS prediction/reveal/error/calibration records prepared. Formal strategy-series backtests/drawdown/turnover remain subsequent gated work.
+27. **Historical harness:** Version/date/horizon inputs; sufficient frozen PIT history required. Purged WF independent horizon baseline, OOS prediction/reveal/error/calibration records prepared. Rule-plan strategy tests reuse simulations and return trade returns/drawdown/R/excess; overlapping trades are never represented as a portfolio curve. Portfolio turnover/ablation are future challenger work.
 
 28. **Blind replay:** Persist immutable T0/features/prediction before outcome access; experimental model record commits before reveal. Exact target and maturity required.
 
@@ -72,9 +72,9 @@ This delivers independent BTC contracts, auditable UI, archive and test harness.
 
 35. **Exact blockers:** NO_SUFFICIENT_HISTORICAL_PIT_SNAPSHOTS_BEFORE_FROZEN_HOLDOUT; current downloads lack historical publication/revision evidence; price/funding middle gaps; limited derivative retention;403 metrics optional, not mandatory core blockers.
 
-36. **Backend tests:** 664 passed,14 skipped,19 PostgreSQL tests deselected. Inherited optional ML/real-data skips; no BTC PIT skips.
+36. **Backend tests:** 666 passed,14 skipped,19 PostgreSQL tests deselected. Inherited optional ML/real-data skips; no BTC PIT skips.
 
-37. **PIT tests:** 299 passed,398 deselected; no skipped PIT tests.
+37. **PIT tests:** 301 passed,398 deselected; no skipped PIT tests.
 
 38. **Frontend:** 50 Vitest tests; strict TypeScript/build/lint. Existing lint warnings in WatchlistPage/SeriesChart retained.
 
@@ -88,11 +88,14 @@ This delivers independent BTC contracts, auditable UI, archive and test harness.
 
 43. **Screenshots:** frontend/artifacts/btc-analyzer.png, btc-simulation.png, btc-time-machine.png. All explicitly SYNTHETIC. Visually reviewed; audit JSON is collapsed behind details in final UI.
 
-44. **Next step:** Preserve and back up forward originals/vintages; audit missed closes and provider access. Obtain documented historical availability before any real baseline. Then version a challenger protocol/holdout, run core baseline OOS before derivatives ablation/boosting. Complete strategy-series backtesting when gates permit; do not promote automatically.
+44. **Next step:** Preserve and back up forward originals/vintages; audit missed closes and provider access. Obtain documented historical availability before any real baseline. Then version a challenger protocol/holdout, run core baseline OOS before derivatives ablation/boosting. Run the prepared rule-plan strategy harness when gates permit; do not promote automatically.
 
 ## File inventory
 
 - `docs/BTC_ARCHITECTURE.md`
+- `docs/DATA_MODEL.md`
+- `docs/BTC_DELIVERY_REPORT.md`
+- `scripts/gen_data_model_doc.py`
 - `docs/BTC_DATA_READINESS.md`
 - `docs/BTC_FEATURES_V0.md`
 - `docs/BTC_RESEARCH_PROTOCOL.md`

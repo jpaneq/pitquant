@@ -374,3 +374,58 @@ def postmortem(
     session.add(row)
     session.flush()
     return row
+
+
+def strategy_test(
+    session: Session, snapshots: list[BTCFeatureSnapshot], horizon: int
+) -> dict[str, Any]:
+    """Evaluate frozen rule plans through the existing event store, per independent decision.
+
+    Daily long-horizon decisions overlap: these are trade/cohort metrics, not an investable
+    portfolio equity curve. Cash during an unentered/closed trade earns zero.
+    """
+    existing = list(session.scalars(select(Simulation).where(Simulation.asset_type == "BTC")))
+    trades: list[dict[str, Any]] = []
+    for snap in snapshots:
+        if trade_plan(snap)["status"] == "BLOCKED_BY_DATA":
+            trades.append({"snapshot_id": snap.snapshot_id, "status": "BLOCKED_BY_DATA"})
+            continue
+        sim = next(
+            (
+                s
+                for s in existing
+                if (s.source_provenance or {}).get("btc_snapshot_id") == snap.snapshot_id
+                and s.time_horizon_sessions == horizon
+                and s.plan_origin == "PITQUANT"
+            ),
+            None,
+        )
+        if sim is None:
+            sim = create(session, snap, days=horizon)
+            existing.append(sim)
+        result = update(session, sim.simulation_id, snap.decision_at + timedelta(days=horizon))
+        outcome = latest_outcome(session, sim.simulation_id)
+        assert outcome is not None
+        trades.append(
+            {
+                "snapshot_id": snap.snapshot_id,
+                "simulation_id": sim.simulation_id,
+                "status": result["state"],
+                "return": outcome.realized_return,
+                "excess_vs_buy_and_hold": outcome.excess_return_vs_benchmark,
+                "drawdown": outcome.max_drawdown,
+                "r": outcome.realized_r,
+                "benchmark_return": outcome.details.get("benchmark_return"),
+                "cash_return": 0,
+            }
+        )
+    return {
+        "family": "TRADE_PLAN_ONLY",
+        "trades": trades,
+        "returns": [t.get("return") for t in trades],
+        "drawdown": [t.get("drawdown") for t in trades],
+        "benchmark": "BTC_BUY_AND_HOLD",
+        "evaluation_unit": "INDEPENDENT_OVERLAPPING_TRADES_NOT_PORTFOLIO",
+        "cost_warning": "COSTS_NOT_MODELED",
+        "superiority": "NOT_CLAIMED",
+    }

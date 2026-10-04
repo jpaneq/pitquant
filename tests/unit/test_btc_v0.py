@@ -190,3 +190,21 @@ def test_reverting_provider_revision_is_archived(session, tmp_path):
     assert (
         len(session.scalars(select(BTCDatum).where(BTCDatum.source == "REVISION_TEST")).all()) == 3
     )
+
+
+def test_strategy_harness_reuses_event_store_and_separates_overlapping_trades(btc):
+    from pitquant.btc.simulation import strategy_test
+
+    snap = freeze(btc, T0, Cohort.SYNTHETIC)
+    result = strategy_test(btc, [snap], 7)
+    assert result["returns"][0] == pytest.approx(0.06)
+    assert result["trades"][0]["excess_vs_buy_and_hold"] == pytest.approx(-0.02)
+    assert result["evaluation_unit"] == "INDEPENDENT_OVERLAPPING_TRADES_NOT_PORTFOLIO"
+    assert strategy_test(btc, [snap], 7) == result
+
+
+def test_custom_research_windows_remain_pinned_on_read(btc):
+    config = ResearchConfig(train_days=730, validation_days=90)
+    pinned = pin_config(btc, config)
+    assert pin_config(btc).record_hash == pinned.record_hash
+    assert readiness(btc, Cohort.HISTORICAL_OOS)["holdout"]["train_days"] == 730
