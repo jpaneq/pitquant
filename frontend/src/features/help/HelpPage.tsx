@@ -100,7 +100,7 @@ export function HelpPage() {
           <li><b>Seguimiento de predicciones:</b> cada predicción se comprueba sola al vencer su horizonte (7, 30, 90, 180 o 365 días). Hasta entonces aparece «Pendiente» con la fecha de madurez.</li>
           <li><b>Simulaciones BTC:</b> operaciones paper con importe fraccionario.</li>
         </Ul>
-        <P>Bitcoin vive en la rama <code>feature/btc-engine-v0</code>; si el servidor actual no la incluye, la entrada del menú aparece desactivada y te lo indica.</P>
+        <P>Ábrelo desde <Link className="text-accent underline" to="/bitcoin">Bitcoin</Link> (también en el menú Aplicaciones).</P>
 
         <H id="research">Research Lab</H>
         <WalkForward />

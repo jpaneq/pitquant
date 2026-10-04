@@ -23,7 +23,7 @@ test.describe('Analyzer + Research Lab on the synthetic fixture', () => {
     await expect(page.getByText(/Rule-based · not yet backtest validated/)).toBeVisible()
     // provenance is on demand
     await page.getByText(/Provenance of this analysis/).click()
-    await expect(page.getByText(/not a prediction/i)).toBeVisible()
+    await expect(page.getByText('not a prediction', { exact: true })).toBeVisible()
     // a holdout date is refused by the API, so it can never reach the UI
     const r = await page.request.get('/analyzer/SYNF/summary?as_of=2023-06-01T00:00:00%2B00:00')
     expect(r.status()).toBe(403)

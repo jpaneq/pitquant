@@ -177,7 +177,7 @@ def test_migration_matches_models(pg: Engine) -> None:
 def test_trigger_list_matches_models() -> None:
     """0001's list plus every later revision's ADDED_IMMUTABLE_TABLES == the models."""
     declared: set[str] = set()
-    for path in sorted((ROOT / "migrations" / "versions").glob("0*.py")):
+    for path in sorted((ROOT / "migrations" / "versions").glob("*.py")):
         spec = importlib.util.spec_from_file_location(path.stem, path)
         assert spec and spec.loader
         mod = importlib.util.module_from_spec(spec)
@@ -368,3 +368,20 @@ def test_engine_pinning_columns_exist_with_the_v1_backfill_default(pg: Engine) -
         "'v1'" in rows[("simulations", "simulation_engine_version")][1]
         and "1" in rows[("simulation_events", "event_schema_version")][1]
     )
+
+
+def test_btc_snapshot_update_is_rejected_by_postgres(pg: Engine) -> None:
+    with pg.begin() as connection:
+        connection.execute(
+            text(
+                "INSERT INTO btc_feature_snapshots "
+                "(snapshot_id,decision_at,cohort,feature_version,data_version,strategy_version,"
+                "simulation_engine_version,commit_sha,payload,snapshot_hash,created_at) "
+                "VALUES ('btc-pg',now(),'SYNTHETIC','btc-core-v0','btc-data-v0','btc-plan-v0',"
+                "'btc-v0','fixture','{}','btc-pg-hash',now())"
+            )
+        )
+    with pytest.raises(DBAPIError), pg.begin() as connection:
+        connection.execute(
+            text("UPDATE btc_feature_snapshots SET payload='{}' WHERE snapshot_id='btc-pg'")
+        )

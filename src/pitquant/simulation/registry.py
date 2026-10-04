@@ -96,6 +96,8 @@ CURRENT_SIMULATION_ENGINE_VERSION = "v1"  # used ONLY when a NEW simulation is c
 
 
 def resolve_engine(version: str) -> SimulationEngine:
+    if version == "btc-v0" and version not in SIMULATION_ENGINES:
+        from pitquant.btc import simulation as _btc  # noqa: F401
     try:
         return SIMULATION_ENGINES[version]
     except KeyError:

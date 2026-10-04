@@ -130,7 +130,7 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
     def summary(db: DB) -> dict[str, Any]:
         s = sim.evidence_summary(db)
         sims = list(
-            db.scalars(select(Simulation.simulation_id).where(Simulation.is_synthetic.is_(False)))
+            db.scalars(select(Simulation.simulation_id).where(Simulation.asset_type == "EQUITY", Simulation.is_synthetic.is_(False)))
         )
         groups = {
             "OPEN": 0,
@@ -173,7 +173,11 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
     @r.get("")
     def listing(db: DB) -> list[dict[str, Any]]:
         out = []
-        for s in db.scalars(select(Simulation).order_by(Simulation.created_at.desc())):
+        for s in db.scalars(
+            select(Simulation)
+            .where(Simulation.asset_type == "EQUITY")
+            .order_by(Simulation.created_at.desc())
+        ):
             o = sim.latest_outcome(db, s.simulation_id)
             ex = ((o.details or {}).get("metrics_extra") or {}) if o else {}
             sec = db.get(Security, s.security_id)

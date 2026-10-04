@@ -520,6 +520,8 @@ def update_simulation(
     prefix; only the events after the stored ones are appended (a second run with no new bars appends 0 events and no outcome). A stored event
     that the re-run does not reproduce raises ``EVENT_LOG_DIVERGENCE`` instead of rewriting history."""
     sim = session.get_one(Simulation, simulation_id)
+    if sim.asset_type != "EQUITY":
+        raise SimulationError("BTC_UPDATE_ROUTE_REQUIRED")
     engine = registry.resolve_engine(
         sim.simulation_engine_version
     )  # the PINNED engine; never the latest (ENGINE_VERSION_UNAVAILABLE fails closed)
@@ -640,7 +642,13 @@ def update_active(
     ids = (
         [simulation_id]
         if simulation_id
-        else list(session.scalars(select(Simulation.simulation_id).order_by(Simulation.created_at)))
+        else list(
+            session.scalars(
+                select(Simulation.simulation_id)
+                .where(Simulation.asset_type == "EQUITY")
+                .order_by(Simulation.created_at)
+            )
+        )
     )
     out: list[UpdateResult] = []
     for sid in ids:
@@ -1146,7 +1154,7 @@ class SimulationEvidenceSummary:
 
 def evidence_summary(session: Session, min_n: int = MIN_N_FOR_STATS) -> SimulationEvidenceSummary:
     sims = list(
-        session.scalars(select(Simulation.simulation_id).where(Simulation.is_synthetic.is_(False)))
+        session.scalars(select(Simulation.simulation_id).where(Simulation.asset_type == "EQUITY", Simulation.is_synthetic.is_(False)))
     )  # synthetic trades are never evidence
     latest = [o for o in (latest_outcome(session, s) for s in sims) if o is not None]
     by_state: dict[str, int] = {}
@@ -1256,7 +1264,7 @@ def insights(
     trades shows its N and the flag INSUFFICIENT_SAMPLE instead of statistics."""
     if by not in SEGMENTS:
         raise SimulationError(f"unknown segmentation {by!r}; use one of {SEGMENTS}")
-    sims = list(session.scalars(select(Simulation).where(Simulation.is_synthetic.is_(False))))
+    sims = list(session.scalars(select(Simulation).where(Simulation.asset_type == "EQUITY", Simulation.is_synthetic.is_(False))))
     vols = sorted(
         v
         for v in (((x.technical_snapshot or {}).get("risk") or {}).get("vol63") for x in sims)

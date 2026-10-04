@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
@@ -41,22 +41,13 @@ describe('InfoTip', () => {
 })
 
 describe('App switcher', () => {
-  it('opens Acciones, Bitcoin and Simulation Lab from any view and flags Bitcoin when it is not in this server', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: 404 })))
+  it('opens Acciones, Bitcoin and Simulation Lab from any view, plus the help guide', async () => {
     render(wrap(<AppSwitcher />))
     await userEvent.click(screen.getByRole('button', { name: /Aplicaciones/ }))
     expect(screen.getByRole('menuitem', { name: /Acciones/ })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /Bitcoin/ })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /Simulation Lab/ })).toBeInTheDocument()
-    expect(await screen.findByText(/no incluido en este servidor/)).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /Ayuda/ })).toBeInTheDocument()
-    vi.unstubAllGlobals()
-  })
-  it('says Bitcoin is available when the API answers', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: 200, headers: { 'Content-Type': 'application/json' } })))
-    render(wrap(<AppSwitcher />))
-    await userEvent.click(screen.getByRole('button', { name: /Aplicaciones/ }))
-    expect(await screen.findByText(/cotización, predicciones y simulaciones/)).toBeInTheDocument()
-    vi.unstubAllGlobals()
   })
 })
 

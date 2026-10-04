@@ -115,6 +115,13 @@ def build() -> FastAPI:
             now=NOW,
         )
         s.commit()
+    from pathlib import Path
+
+    from pitquant.btc.fixtures import load_synthetic_btc
+
+    with factory() as btc_session:
+        load_synthetic_btc(btc_session, Path("data/e2e-btc-archive"))
+        btc_session.commit()
     app = create_app(factory, settings)
     _install_engine_fixture(app)
     return app

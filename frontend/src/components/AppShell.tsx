@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../api/client'
 import { AppSwitcher } from './AppSwitcher'
@@ -8,6 +8,7 @@ import { ErrorBoundary } from './ErrorBoundary'
 
 const NAV = [
   { to: '/', label: 'Analyzer', end: true },
+  { to: '/bitcoin', label: 'Bitcoin' },
   { to: '/watchlist', label: 'Watchlist' },
   { to: '/research', label: 'Research Lab' },
   { to: '/simulations', label: 'Simulations' },
@@ -20,6 +21,7 @@ type Status = { data_notice: { live_reference: string; required_env: string | nu
 
 export function AppShell() {
   const { dark, toggle } = useTheme()
+  const isBitcoin = useLocation().pathname.startsWith('/bitcoin')
   const { data } = useQuery({ queryKey: ['analyzer-status'], queryFn: ({ signal }) => api<Status>('/analyzer/status', signal), staleTime: 5 * 60_000 })
   const notice = data?.data_notice
   return (
@@ -64,7 +66,7 @@ export function AppShell() {
           <div role="status" data-testid="demo-banner" className="border-b border-warn/30 bg-warn/5 px-4 py-1.5 text-[11px] text-warn">
             <b>DEMO DATA</b> — synthetic fixture, not market data. Nothing on this screen is a real price, filing or result.
           </div>
-        ) : notice && notice.live_reference !== 'CONFIGURED' ? (
+        ) : !isBitcoin && notice && notice.live_reference !== 'CONFIGURED' ? (
           <div role="status" className="border-b border-warn/30 bg-warn/5 px-4 py-1.5 text-[11px] text-warn">
             <b>DATA SOURCE NOT CONFIGURED</b> — live reference quotes need <code className="num">{notice.required_env}</code>. Showing persisted end-of-day bars ({notice.mode}).
           </div>
