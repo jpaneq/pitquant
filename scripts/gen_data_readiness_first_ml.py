@@ -17,7 +17,7 @@ from typing import Any
 from sqlalchemy import func, select
 
 from pitquant.config.settings import get_settings
-from pitquant.db.models import Price, Security
+from pitquant.db.models import DataSource, Price, Security
 from pitquant.db.session import make_engine, make_session_factory
 from pitquant.market.canonical import FEATURE_VERSION, TARGET_VERSION, audit_series
 from pitquant.positions import routine as rt
@@ -139,6 +139,28 @@ def main() -> None:
                     {s["security_id"] for s, r in zip(snaps, res, strict=True) if r["eligible"]}
                 ),
             }
+    targets6 = {
+        (t.security_id, t.decision_at): {
+            "status": t.status,
+            "reason": t.reason,
+            "outperform": t.outperform,
+            "details": t.details,
+        }
+        for t in S.scalars(
+            select(ResearchTarget).where(
+                ResearchTarget.target_set_version == TARGET_VERSION,
+                ResearchTarget.horizon_months == 6,
+            )
+        )
+    }
+    js["eligibility_6m"] = FM.funnel(
+        [
+            FM.first_ml_eligibility(
+                ctx, snap, targets6.get((snap["security_id"], snap["decision_at"])), family="PRICE"
+            )
+            for snap in snaps
+        ]
+    )
     js["funnel"] = out
     fm = FM.fundamentals_months(snaps)
     js["fundamentals"] = {"n_ok": fm["n_ok"], "required": C.REQUIRED_FUNDAMENTAL_SECURITIES, "per_security": {v["ticker"]: {"usable_months": v["usable"], "first": str(v["first"]) if v["first"] else None, "last": str(v["last"]) if v["last"] else None, "snapshots": v["n"]} for v in fm["per_security"].values()}}  # fmt: skip
@@ -152,9 +174,9 @@ def main() -> None:
     for s in securities:
         tk = ticker_of[s.security_id]
         dates = S.execute(
-            select(func.min(Price.session_date), func.max(Price.session_date), func.count()).where(
-                Price.security_id == s.security_id
-            )
+            select(func.min(Price.session_date), func.max(Price.session_date), func.count())
+            .join(DataSource)
+            .where(Price.security_id == s.security_id, DataSource.name == "YAHOO_CHART:eod")
         ).one()
         st = defaultdict(int)
         for x in snaps:
@@ -165,7 +187,18 @@ def main() -> None:
             reason = "BENCHMARK_SERIES (not a research security)"
         elif s.security_id not in snap_secs:
             reason = "PRICES: fewer than 30 bars" if dates[2] < 30 else "OTHER: no snapshots built"
-        audit.append({"security_id": s.security_id, "ticker_at_T": tk, "issuer_id": s.issuer_id, "market": s.exchange, "first_date": str(dates[0]), "last_date": str(dates[1]), "bars": dates[2], "identity_status": ("RESOLVED" if s.issuer_id else "NO_ISSUER_LINK") if s.exchange == "XNYS" else "NOT_ASSESSED_NON_US", "price_status": "YAHOO_CANONICAL (per-series QA required)", "fundamental_status": max(st, key=lambda k: st[k]) if st else "NONE", "reason_not_usable": reason})  # fmt: skip
+        eligibility = [
+            FM.first_ml_eligibility(
+                ctx, x, targets12.get((x["security_id"], x["decision_at"])), family="PRICE"
+            )
+            for x in snaps
+            if x["security_id"] == s.security_id
+        ]
+        eligible_rows = sum(r["eligible"] for r in eligibility)
+        exclusion_reasons = dict(Counter(reason for r in eligibility for reason in r["reasons"]))
+        if reason is None and not eligible_rows:
+            reason = "; ".join(sorted(exclusion_reasons)) or "NO_ELIGIBLE_SNAPSHOTS"
+        audit.append({"eligible_12m_rows": eligible_rows, "exclusion_reasons": exclusion_reasons,"security_id": s.security_id, "ticker_at_T": tk, "issuer_id": s.issuer_id, "market": s.exchange, "first_date": str(dates[0]), "last_date": str(dates[1]), "bars": dates[2], "identity_status": ("RESOLVED" if s.security_id in identity_ok else "UNRESOLVED_SECURITY_LINK") if s.exchange == "XNYS" else "NOT_ASSESSED_NON_US", "price_status": "YAHOO_CANONICAL (per-series QA required)", "fundamental_status": max(st, key=lambda k: st[k]) if st else "NONE", "reason_not_usable": reason})  # fmt: skip
     in_cfg = {t for t in cfg_tickers}
     have = {a["ticker_at_T"] for a in audit}
     missing_cfg = sorted(t for t in in_cfg if t not in have)
@@ -174,7 +207,8 @@ def main() -> None:
         for a in audit
         if a["ticker_at_T"] not in DS.BENCH_TICKERS and a["security_id"] in snap_secs
     ]
-    js["coverage"] = {"required": C.REQUIRED_SECURITIES, "configured_tickers": len(cfg_tickers) - 3, "with_prices": len([a for a in audit if a["ticker_at_T"] not in DS.BENCH_TICKERS]), "with_snapshots": len(research), "configured_without_prices": [t for t in missing_cfg if t not in DS.BENCH_TICKERS],
+    js["security_audit"] = audit
+    js["coverage"] = {"required": C.REQUIRED_SECURITIES, "configured_tickers": len(cfg_tickers) - 3, "with_prices": len([a for a in audit if a["ticker_at_T"] not in DS.BENCH_TICKERS]), "with_snapshots": len(research), "identity_ready": sum(a["security_id"] in identity_ok for a in research), "configured_labels_unmatched": [t for t in missing_cfg if t not in DS.BENCH_TICKERS],
                       "usable_strict": out["strict_PRICE"]["securities_with_eligible_rows"], "usable_preview": out["preview_if_D05_accepted_PRICE"]["securities_with_eligible_rows"]}  # fmt: skip
     # ---- benchmark table ------------------------------------------------------------------------------------------------------
     bt: dict[tuple[Any, ...], Counter[str]] = defaultdict(Counter)
@@ -252,16 +286,22 @@ def main() -> None:
             else "per-series quality checks remain blocked; see d05_quality and D05_YAHOO_QA.json",
         ),
         "BENCHMARK_RETURN_BASIS_READY": FM.gate(
-            "PARTIAL",
-            "comparable return + currency basis, accepted provenance",
+            "READY"
+            if us_rows
+            and us_ok == len(us_rows)
+            and any(DS._ticker(S, r["security_id"]) == "SPY" and r["status"] == "READY" for r in qa)
+            else "PARTIAL",
+            "first ML US scope: comparable return + currency basis, accepted provenance",
             f"US rows comparable {us_ok}/{len(us_rows)}; non-US via USD conversion (PROXY)",
-            "return basis comparable (TR vs TR, USD) but the benchmark series is a Yahoo ETF proxy with per-series D05 QA; Spain: IBEX Total Return MISSING, ^IBEX price-only",
+            None
+            if us_rows and us_ok == len(us_rows)
+            else "US return-basis comparability incomplete; Spain: IBEX Total Return not verified, ^IBEX price-only",
         ),
         "RESEARCH_SECURITY_COVERAGE_READY": FM.gate(
-            "BLOCKED",
+            "READY" if js["coverage"]["usable_strict"] >= C.REQUIRED_SECURITIES else "BLOCKED",
             f">= {C.REQUIRED_SECURITIES} usable securities",
             f"{js['coverage']['usable_strict']} usable (strict); {js['coverage']['usable_preview']} if D05 were accepted; {js['coverage']['with_snapshots']} with snapshots",
-            "fewer than 100 securities and none usable until D02/D05 close",
+            "fewer than 100 securities satisfy all PIT eligibility conditions; see the per-security audit",
         ),
         "US_FUNDAMENTALS_READY": FM.gate(
             "READY" if fund_ready else "BLOCKED",
@@ -340,7 +380,7 @@ def main() -> None:
             ],
         )
     )
-    w("## Cobertura de securities (96 vs 100)\n")
+    w("## Cobertura de securities frente al requisito de 100\n")
     w(table([[k, v] for k, v in js["coverage"].items()], ["métrica", "valor"]))
     w(
         table(
@@ -422,24 +462,19 @@ def main() -> None:
         )
     )
     w("## Blockers restantes y mínima acción correcta\n")
-    w("| gate | qué falla | evidencia que falta | mínima acción |")
-    w("|---|---|---|---|")
     w(
-        f"| D02_MONTHLY_RESEARCH_READY | cadena de {d02['longest_run']} meses consecutivos (60 requeridos por el gate existente; el contrato de folds necesita 61 + 12 por fold: {plan.reason_if_none}); 0 anclas antes de 2017-09 | identidad de la línea «PPoG Industries, Inc.» (N-30D 2017-09-30, sin CUSIP) con PPG Industries; anclas N-30D 2014-09→2017-03 (`--extend`) | decisión del propietario sobre la identidad PPoG→PPG (evidencia candidata: valor/acciones de la línea = 108,66 = cierre de PPG el 2017-09-29, Yahoo, VENDOR: NO se aplica como evidencia oficial) y después `scripts/ingest_spy_anchors.py --extend` |"
+        table(
+            [
+                [name, data["status"], data["actual"], data["blocking_reason"]]
+                for name, data in gates.items()
+                if data["status"] != "READY"
+            ],
+            ["gate", "estado", "actual", "bloqueo técnico"],
+        )
     )
     w(
-        "| US_SECURITY_IDENTITY_READY | 2 miembros con identidad débil (sin CUSIP/ISIN oficial); el puente investigación→ancla es DERIVADO (nombre exacto único) para 44 de 52 | CUSIP oficial por emisor (Schedule 13G, como AAPL/MSFT en ADR-0024) | extender `ingest_cusip_evidence.py` a los emisores de investigación |"
+        "PPoG→PPG está aprobado y aplicado como alias documental. La extensión SEC requiere el correo de contacto; no se inventan anclas anteriores.\n"
     )
-    w(
-        "| D05_READY | Yahoo canónico; QA por serie pendiente | suite D05 (cobertura ≥98 % activos / ≥95 % excluidos), corporate actions oficiales, método de ajuste y proveniencia aceptados | validar cobertura, identidad, acciones y reproducibilidad de cada serie Yahoo |"
-    )
-    w(
-        "| BENCHMARK_RETURN_BASIS_READY | base TR/USD comparable pero la serie es un ETF proxy de Yahoo; IBEX 35 Total Return (ES0SI0000047) sin serie histórica auditable | serie oficial IBEX TR; D05 | idem D05; España queda con URTH+FX sólo diagnóstico |"
-    )
-    w(
-        "| RESEARCH_SECURITY_COVERAGE_READY | 100 requeridos; ver tabla de cobertura | MSFT/AAPL (serie EODHD demo, QA, sin ticker/issuer: guarda de no mezclar fuentes), ENG (22 sesiones) | AAPL/MSFT/ENG reconstruidos con Yahoo; evaluar identidad y QA de cada serie; 100 NO se baja (propuesta separada) |"
-    )
-    w("")
     bc_md = [
         "# Contrato de retorno de benchmark (ADR-0049, generado)\n",
         "Versión `"

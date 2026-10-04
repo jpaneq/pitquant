@@ -171,17 +171,16 @@ def research_readiness(session: Session, settings: Settings) -> ResearchFlags:
 
     rf.flags["FEATURE_ENGINE_IMPLEMENTED"] = len(FEATURE_NAMES) > 0
     rf.metrics["n_features"] = len(FEATURE_NAMES)
-    spy_ok = (
-        session.scalar(
-            select(func.count()).select_from(Security).where(Security.name.like("%SPY%"))
-        )
-        or 0
+    spy_ok = any(
+        session.get_one(Security, r["security_id"]).name.startswith("SPY")
+        and r["status"] == "READY"
+        for r in qa
     )
     n_pre = cohorts.complete_pre_holdout
     gates = {
         "D02_RESEARCH_READY": bool(rf.flags["D02_RESEARCH_READY"]),
         "D05_market_data_research_ready": rf.flags["US_D05_RESEARCH_READY"],
-        "SPY_benchmark_available": spy_ok > 0 and tiingo_bars > 0,
+        "SPY_benchmark_available": spy_ok,
         "corporate_action_engine_real_validated": True,  # AAPL 4:1, MSFT special, ENG dividends (ADR-0023)
         "total_return_real_validated": True,
         "sec_fundamentals_pit_available": (
@@ -197,9 +196,7 @@ def research_readiness(session: Session, settings: Settings) -> ResearchFlags:
     rf.flags["FEATURE_RESEARCH_READY"] = (
         rf.flags["FEATURE_RESEARCH_READY_US"] and rf.flags["FEATURE_RESEARCH_READY_ES"]
     )
-    rf.flags["LABEL_ENGINE_READY_US"] = (
-        bool(rf.flags["FEATURE_ENGINE_IMPLEMENTED"]) and spy_ok > 0 and tiingo_bars > 0
-    )
+    rf.flags["LABEL_ENGINE_READY_US"] = bool(rf.flags["FEATURE_ENGINE_IMPLEMENTED"]) and spy_ok
     rf.reasons["LABEL_ENGINE_READY_US"] = (
         [
             "engine implemented (6M/12M, TR, ETF_PROXY benchmark); needs SPY and constituent prices (D-05)"

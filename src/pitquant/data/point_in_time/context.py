@@ -81,6 +81,7 @@ class PITContext:
                 Price.security_id == security_id,
                 DataSource.name == "YAHOO_CHART:eod",
                 Price.bar_close_at <= self.as_of,
+                *([Price.ingested_at <= self.ingested_before] if self.ingested_before else []),
             )
             .limit(1)
         ):

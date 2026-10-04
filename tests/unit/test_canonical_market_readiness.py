@@ -44,6 +44,7 @@ def test_exact_sec_formatting_keeps_class_identity():
         [row(27, 100), row(27, 100)],
         [row(28, 100), row(27, 100)],
         [(100, 90, 99, 100, 10, row(27, 100)[5])],
+        [row(27, -1)],
     ],
 )
 def test_yahoo_rejects_duplicate_chronology_and_impossible_ohlc(rows):

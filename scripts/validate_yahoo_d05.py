@@ -14,6 +14,7 @@ from pitquant.data.archive import ArchiveStore
 from pitquant.db.models import DataSource, Price, RawSourceArchive, Security
 from pitquant.db.session import make_engine, make_session_factory
 from pitquant.market.canonical import audit_series
+from pitquant.market.exchanges import SUFFIX
 from pitquant.market.pipeline import record_ca_ingestion
 from pitquant.market.providers.yahoo import YahooChartMarketDataProvider
 from pitquant.research.dataset_v1 import _ticker
@@ -55,7 +56,11 @@ def main() -> None:
                 failures.append({"archive_id": ar.archive_id, "reason": str(e)})
         for sec in securities:
             ticker = _ticker(s, sec.security_id)
-            symbol = ticker + ".MC" if sec.exchange == "XMAD" else ticker
+            suffix = next(
+                (suffix for suffix, (exchange, _, _) in SUFFIX.items() if exchange == sec.exchange),
+                "",
+            )
+            symbol = ticker + ("." + suffix if suffix else "") if ticker else None
             stored = {
                 p.session_date: p
                 for p in s.scalars(

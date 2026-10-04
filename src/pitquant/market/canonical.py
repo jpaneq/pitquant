@@ -17,7 +17,7 @@ ROLE = "CANONICAL_MARKET_PRICE_SOURCE"
 CONTRACT_VERSION = "yahoo-market-data-v1"
 SOURCE = "YAHOO_CHART:eod"
 FEATURE_VERSION = "research-features-v1-yahoo-v1"
-TARGET_VERSION = "research-targets-v2-yahoo-v1"
+TARGET_VERSION = "research-targets-v2-yahoo-v2"
 
 
 def source_status(name: str, synthetic: bool = False) -> str:

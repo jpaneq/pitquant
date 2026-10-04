@@ -153,7 +153,7 @@ class YahooChartMarketDataProvider:
             o, h, lo, c = (
                 quote.get(k, [None] * (i + 1))[i] for k in ("open", "high", "low", "close")
             )
-            if c is None or o is None or h is None or lo is None or c <= 0:
+            if c is None or o is None or h is None or lo is None:
                 continue  # holiday / incomplete row
             if not (0 < lo <= min(o, c) <= max(o, c) <= h):
                 raise DataQualityError(f"Yahoo {symbol} {d}: invalid OHLC")
