@@ -145,7 +145,9 @@ def test_no_source_module_assigns_validated_or_writes_synthetic_predictions() ->
     ).stdout
     assert out.strip() == "", out
     writers = subprocess.run(
-        ["grep", "-rln", "write_snapshot", str(ROOT / "src")], capture_output=True, text=True
+        ["grep", "-rln", "--include=*.py", "write_snapshot", str(ROOT / "src")],
+        capture_output=True,
+        text=True,
     ).stdout.split()
     assert {Path(p).name for p in writers} <= {"contract.py", "replay.py"} or all(
         "contract.py" in p or "replay.py" in p for p in writers

@@ -64,6 +64,7 @@ GROUPS = {
         "research_feature_snapshots",
         "research_targets",
         "filing_analysis_snapshots",
+        "fx_rates",
         "index_anchor_snapshots",
         "index_current_anchors",
         "security_profiles",

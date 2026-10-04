@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **97**.
+Tablas: **98**.
 
 ## Procedencia y calidad
 
@@ -1072,6 +1072,26 @@ Tablas: **97**.
 - INDEX ix_filing_analysis_snapshots_filing_available_at (filing_available_at)
 - INDEX ix_filing_analysis_snapshots_security_id (security_id)
 - UNIQUE (accession_number, analysis_schema_version, prompt_version, model_name, model_version, document_hash)
+
+### `fx_rates` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `fx_id` | VARCHAR(36) | no | PK |
+| `currency` | VARCHAR(3) | no |  |
+| `rate_date` | DATE | no |  |
+| `usd_per_unit` | FLOAT | no |  |
+| `quote_symbol` | VARCHAR(20) | no |  |
+| `source` | VARCHAR(40) | no |  |
+| `source_tier` | VARCHAR(12) | no |  |
+| `quality_status` | VARCHAR(24) | no |  |
+| `available_at` | DATETIME | no |  |
+| `ingested_at` | DATETIME | no |  |
+
+- INDEX ix_fx_rates_available_at (available_at)
+- INDEX ix_fx_rates_currency (currency)
+- INDEX ix_fx_rates_rate_date (rate_date)
+- UNIQUE (currency, rate_date, source)
 
 ### `index_anchor_snapshots` 🔒
 

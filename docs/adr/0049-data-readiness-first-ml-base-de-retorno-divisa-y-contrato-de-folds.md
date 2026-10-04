@@ -1,0 +1,16 @@
+# ADR-0049 — Data readiness for first ML: base de retorno, base de divisa, semántica de proxy y contrato del primer experimento
+
+Estado: aceptada (2026-10-04). Migración `0027` (`fx_rates`, append-only). Fuente de mercado/FX: **Yahoo Finance**, por decisión expresa del propietario («no pierdas tiempo con otras fuentes»): VENDOR, `EXPLORATORY_SOURCE`, nunca canónica sin aceptación D05.
+
+## Decisión
+1. **Base de retorno:** `future_excess_total_return` sólo se calcula si valor y benchmark están en la misma base (retorno total) y la misma divisa. Benchmark de precio (^IBEX) frente a valor de retorno total ⇒ `PRICE_RETURN_ONLY` / `NOT_COMPARABLE_RETURN_BASIS`: exceso NULL y fila fuera del ML. `research-targets-v2` (los v1 se conservan, append-only, y quedan sustituidos).
+2. **Base de divisa:** una única `return_currency_basis` por observación. Valor no-USD con benchmark USD ⇒ el valor se convierte a USD en cada instante con FX PIT (`fx_rates`: disponible a las 00:00 UTC del día siguiente, ≤7 días de antigüedad, nunca el tipo actual). Sin FX ⇒ `FX_MISMATCH`. Libras en peniques no afecta: los retornos son razones y sólo importa el multiplicador FX.
+3. **Semántica de proxy:** ETF ⇒ siempre `ETF_PROXY`. `READY` se reserva a una serie OFICIAL de retorno total; `PROXY_ACCEPTABLE` (ETF con dividendos, base comparable) es el estado aprobado por metodología para el primer ML (`APPROVED_FOR_ML`). SPY y URTH son proxies; IBEX 35 con dividendos (ES0SI0000047) no tiene serie auditable ⇒ `MISSING`; España cae a URTH+FX sólo como diagnóstico. El gate `BENCHMARK_RETURN_BASIS_READY` queda `PARTIAL` mientras la serie no esté aceptada por D05.
+4. **Elegibilidad única** (`research/first_ml.py::first_ml_eligibility`): motivos HOLDOUT, OOT, UNIVERSE_NOT_CANONICAL, NOT_INDEX_MEMBER_AT_T, SECURITY_IDENTITY_NOT_READY, PRICE_DATA_NOT_READY, BENCHMARK_NOT_READY, RETURN_BASIS_MISMATCH, FX_NOT_READY, TARGET_IMMATURE, INSUFFICIENT_HISTORY, FUNDAMENTALS_NOT_READY, UNSUPPORTED_SECTOR. Embudo acumulativo por primer motivo. Membresía por puente DERIVADO (nombre legal exacto único, regla ya sancionada para anclas); jamás cierra la identidad OFICIAL.
+5. **`FIRST_ML_BASELINE_READY`** = todos los gates requeridos en READY; calcularlo no entrena nada. `required_securities = 100` NO se modifica (ver propuesta separada).
+6. **Contrato del primer experimento** (`research/first_ml_contract.py`, sin entrenar): `FIRST_EQUITY_ML_12M_V0`, objetivo `outperform_12m`, M0 tasa base, M1 heurística V0 sin tocar pesos, M2 precio, M3 fundamentales, M4 combinado + riesgo; familias predefinidas (no la lista de IC de RUN 3); folds expansivos con purge de 12 m + embargo 1 m, train mínimo 36 m, test 12 m, ≥3 folds, un mes ausente rompe la racha; preprocesado (mediana + indicador de faltante, escalado, cribado) ajustado sólo con el TRAIN de cada fold; 0 filas de holdout/OOT en entrenamiento, selección, preprocesado, ajuste de benchmark o cribado.
+7. **Futuros contratos:** `FIRST_DOWNSIDE_MODEL_6M_V0` (drawdown ≥15 % a 6M; RISK_ALERT candidato, nunca SELL) y `FIRST_RETURN_MODEL_12M_V0` (Elastic Net sobre exceso a 12M).
+
+## Consecuencias
+- Hoy `FIRST_ML_BASELINE_READY=false`; los gates abiertos y la mínima acción para cerrarlos están en `docs/DATA_READINESS_FIRST_ML.md`.
+- La fuente Yahoo es suficiente para exploración y para fijar el contrato, no para declarar D05.

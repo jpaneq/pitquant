@@ -1,0 +1,989 @@
+{
+ "generated_at": "2026-10-04T21:01:53.139455+00:00",
+ "experiment": "FIRST_EQUITY_ML_12M_V0",
+ "d02": {
+  "total_months": 141,
+  "ready_months": 54,
+  "partial_months": 0,
+  "blocked_months": 6,
+  "no_anchor_months": 81,
+  "coverage_pct": 38.3,
+  "longest_run": 54,
+  "feasible_folds": 0,
+  "reason_if_no_folds": "longest consecutive usable run = 54 months; one fold needs 61 (train_min 36 + purge 12 + embargo 1 + test 12)"
+ },
+ "flags": {
+  "D02_MONTHLY_RESEARCH_READY": false,
+  "D02_RESEARCH_READY": false,
+  "D02_MEMBERSHIP_READY": false,
+  "D02_DAILY_CANONICAL_READY": false,
+  "BASELINE_TRAINING_READY": false,
+  "US_SECURITY_IDENTITY_READY": false,
+  "US_FUNDAMENTALS_READY": false,
+  "TIINGO_D05_CANDIDATE": false,
+  "US_D05_RESEARCH_READY": false,
+  "ES_D05_RESEARCH_READY": false,
+  "FEATURE_ENGINE_IMPLEMENTED": true,
+  "FEATURE_RESEARCH_READY_US": false,
+  "FEATURE_RESEARCH_READY_ES": false,
+  "FEATURE_RESEARCH_READY": false,
+  "LABEL_ENGINE_READY_US": false,
+  "RESEARCH_LAB_IMPLEMENTED": true,
+  "RESEARCH_DATA_READY": false,
+  "BASELINE_MODEL_READY": false
+ },
+ "identity_bridge": {
+  "evidence_class": "DERIVED_EXACT_NAME_UNIQUE",
+  "bridged": 89,
+  "unresolved": {
+   "67cab159-5fbf-468b-949e-4bde3dc3186d": "NO_EXACT_NAME_MATCH: ExxonMobil Holdings Corp",
+   "6e75fc3b-8959-4b17-ac9e-68875886e196": "AMBIGUOUS_NAME_MATCH: Alphabet Inc.",
+   "56b48939-013b-4350-8d49-9a8f7ec60aa6": "NO_EXACT_NAME_MATCH: COSTCO WHOLESALE CORP /NEW",
+   "50b87e9d-e150-4c0a-8175-63669fde388e": "NO_EXACT_NAME_MATCH: MCDONALDS CORP",
+   "485fa49d-8c1e-46d9-88c0-fc7cb011450d": "NO_EXACT_NAME_MATCH: WELLS FARGO & COMPANY/MN",
+   "9a8fc57b-326c-41d9-a2f2-7cad78e26b56": "AMBIGUOUS_NAME_MATCH: GENERAL ELECTRIC CO",
+   "fbca5260-70eb-4013-82d6-726fb10c66be": "NO_EXACT_NAME_MATCH: LOWES COMPANIES INC",
+   "ee89281c-258c-450d-b0ec-7c7d4f059117": "NO_EXACT_NAME_MATCH: RTX Corp",
+   "4dad41f0-89a6-4f99-a960-c829175ed898": "NO_EXACT_NAME_MATCH: ExxonMobil Holdings Corp",
+   "8e5da293-a9bf-46b0-b6d8-b03a917b7982": "AMBIGUOUS_NAME_MATCH: Alphabet Inc.",
+   "fdde20bb-c188-4899-82f1-9a1cbb1eb65b": "NO_EXACT_NAME_MATCH: COSTCO WHOLESALE CORP /NEW",
+   "f38a4af7-b5f4-4d71-8fa8-d39bab02fe04": "NO_EXACT_NAME_MATCH: MCDONALDS CORP",
+   "368bb502-3865-487b-8418-6f1b91b104f9": "AMBIGUOUS_NAME_MATCH: GENERAL ELECTRIC CO",
+   "1369234c-3de4-4512-a9d3-e9ad294da054": "NO_EXACT_NAME_MATCH: LOWES COMPANIES INC",
+   "cd824975-2a9d-497e-8bfa-4bccffdd0d75": "NO_EXACT_NAME_MATCH: RTX Corp",
+   "4bfcb8db-0a96-45ee-85ed-71c64558e8ea": "NO_EXACT_NAME_MATCH: WELLS FARGO & COMPANY/MN"
+  }
+ },
+ "funnel": {
+  "strict_PRICE": {
+   "raw": 14749,
+   "removed_by": {
+    "HOLDOUT": 0,
+    "OOT": 1261,
+    "UNIVERSE_NOT_CANONICAL": 10626,
+    "NOT_INDEX_MEMBER_AT_T": 40,
+    "SECURITY_IDENTITY_NOT_READY": 432,
+    "PRICE_DATA_NOT_READY": 2390,
+    "BENCHMARK_NOT_READY": 0,
+    "RETURN_BASIS_MISMATCH": 0,
+    "FX_NOT_READY": 0,
+    "TARGET_IMMATURE": 0,
+    "INSUFFICIENT_HISTORY": 0,
+    "FUNDAMENTALS_NOT_READY": 0,
+    "UNSUPPORTED_SECTOR": 0
+   },
+   "eligible": 0,
+   "securities_with_eligible_rows": 0
+  },
+  "strict_FUNDAMENTALS": {
+   "raw": 14749,
+   "removed_by": {
+    "HOLDOUT": 0,
+    "OOT": 1261,
+    "UNIVERSE_NOT_CANONICAL": 10626,
+    "NOT_INDEX_MEMBER_AT_T": 40,
+    "SECURITY_IDENTITY_NOT_READY": 432,
+    "PRICE_DATA_NOT_READY": 2390,
+    "BENCHMARK_NOT_READY": 0,
+    "RETURN_BASIS_MISMATCH": 0,
+    "FX_NOT_READY": 0,
+    "TARGET_IMMATURE": 0,
+    "INSUFFICIENT_HISTORY": 0,
+    "FUNDAMENTALS_NOT_READY": 0,
+    "UNSUPPORTED_SECTOR": 0
+   },
+   "eligible": 0,
+   "securities_with_eligible_rows": 0
+  },
+  "preview_if_D05_accepted_PRICE": {
+   "raw": 14749,
+   "removed_by": {
+    "HOLDOUT": 0,
+    "OOT": 1261,
+    "UNIVERSE_NOT_CANONICAL": 10626,
+    "NOT_INDEX_MEMBER_AT_T": 40,
+    "SECURITY_IDENTITY_NOT_READY": 432,
+    "PRICE_DATA_NOT_READY": 0,
+    "BENCHMARK_NOT_READY": 0,
+    "RETURN_BASIS_MISMATCH": 0,
+    "FX_NOT_READY": 0,
+    "TARGET_IMMATURE": 540,
+    "INSUFFICIENT_HISTORY": 0,
+    "FUNDAMENTALS_NOT_READY": 0,
+    "UNSUPPORTED_SECTOR": 0
+   },
+   "eligible": 1850,
+   "securities_with_eligible_rows": 45
+  },
+  "preview_if_D05_accepted_FUNDAMENTALS": {
+   "raw": 14749,
+   "removed_by": {
+    "HOLDOUT": 0,
+    "OOT": 1261,
+    "UNIVERSE_NOT_CANONICAL": 10626,
+    "NOT_INDEX_MEMBER_AT_T": 40,
+    "SECURITY_IDENTITY_NOT_READY": 432,
+    "PRICE_DATA_NOT_READY": 0,
+    "BENCHMARK_NOT_READY": 0,
+    "RETURN_BASIS_MISMATCH": 0,
+    "FX_NOT_READY": 0,
+    "TARGET_IMMATURE": 540,
+    "INSUFFICIENT_HISTORY": 0,
+    "FUNDAMENTALS_NOT_READY": 468,
+    "UNSUPPORTED_SECTOR": 0
+   },
+   "eligible": 1382,
+   "securities_with_eligible_rows": 38
+  }
+ },
+ "fundamentals": {
+  "n_ok": 38,
+  "required": 30,
+  "per_security": {
+   "SCH": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "ITX": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "ELE": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "FER": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "REP": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "CTG": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "CRI": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "AMS": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "TEF": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "BBVA": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "ACS": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "IBE": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "CBA": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "CSL": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "BHP": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "TXN": {
+    "usable_months": 127,
+    "first": "2012-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "PG": {
+    "usable_months": 133,
+    "first": "2011-09-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "UPS": {
+    "usable_months": 127,
+    "first": "2011-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "CRM": {
+    "usable_months": 100,
+    "first": "2013-10-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "WMT": {
+    "usable_months": 132,
+    "first": "2011-04-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "INTU": {
+    "usable_months": 132,
+    "first": "2011-10-03",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "DIS": {
+    "usable_months": 34,
+    "first": "2019-12-02",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "CAT": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "JNJ": {
+    "usable_months": 40,
+    "first": "2019-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "BA": {
+    "usable_months": 26,
+    "first": "2020-08-03",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "AMZN": {
+    "usable_months": 127,
+    "first": "2012-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "WFC": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "IBM": {
+    "usable_months": 55,
+    "first": "2018-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "MCD": {
+    "usable_months": 133,
+    "first": "2011-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "ADBE": {
+    "usable_months": 90,
+    "first": "2015-04-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "QCOM": {
+    "usable_months": 86,
+    "first": "2015-08-03",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "COST": {
+    "usable_months": 131,
+    "first": "2011-11-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "NEE": {
+    "usable_months": 94,
+    "first": "2011-03-01",
+    "last": "2020-04-01",
+    "snapshots": 140
+   },
+   "AVGO": {
+    "usable_months": 45,
+    "first": "2019-01-02",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "NFLX": {
+    "usable_months": 53,
+    "first": "2018-05-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "AMGN": {
+    "usable_months": 130,
+    "first": "2011-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "ORCL": {
+    "usable_months": 3,
+    "first": "2022-07-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "XOM": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "NVDA": {
+    "usable_months": 102,
+    "first": "2014-04-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "GOOGL": {
+    "usable_months": 73,
+    "first": "2016-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "TMO": {
+    "usable_months": 34,
+    "first": "2019-12-02",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "CVX": {
+    "usable_months": 130,
+    "first": "2011-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "UNH": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "MA": {
+    "usable_months": 133,
+    "first": "2011-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "LLY": {
+    "usable_months": 129,
+    "first": "2011-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "MRK": {
+    "usable_months": 130,
+    "first": "2011-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "UNP": {
+    "usable_months": 132,
+    "first": "2011-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "HON": {
+    "usable_months": 127,
+    "first": "2012-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "GE": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "CSCO": {
+    "usable_months": 132,
+    "first": "2011-10-03",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "PEP": {
+    "usable_months": 129,
+    "first": "2011-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "TSLA": {
+    "usable_months": 127,
+    "first": "2012-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "SPGI": {
+    "usable_months": 132,
+    "first": "2011-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "LMT": {
+    "usable_months": 132,
+    "first": "2011-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "JPM": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "VZ": {
+    "usable_months": 132,
+    "first": "2011-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "V": {
+    "usable_months": 130,
+    "first": "2011-12-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "ACN": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "ABT": {
+    "usable_months": 103,
+    "first": "2014-03-03",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "BAC": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "RTX": {
+    "usable_months": 132,
+    "first": "2011-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "LIN": {
+    "usable_months": 35,
+    "first": "2019-04-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "HD": {
+    "usable_months": 132,
+    "first": "2011-04-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "PFE": {
+    "usable_months": 130,
+    "first": "2011-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "LOW": {
+    "usable_months": 90,
+    "first": "2015-04-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   },
+   "META": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 124
+   },
+   "ABBV": {
+    "usable_months": 31,
+    "first": "2020-03-02",
+    "last": "2022-09-01",
+    "snapshots": 116
+   },
+   "ISP": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "ENEL": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "HSBA": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "ULVR": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "SHEL": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "BP": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "AZN": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "GSK": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "ALV": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "SAP": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "SIE": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "NESN": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "NOVN": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "RY": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "TD": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "ENB": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "SHOP": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 88
+   },
+   "7974": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "8306": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "7203": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "6758": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "9984": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "MC": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "TTE": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "OR": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "AIR": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "SU": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "NOVO-B": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "ASML": {
+    "usable_months": 0,
+    "first": null,
+    "last": null,
+    "snapshots": 140
+   },
+   "KO": {
+    "usable_months": 37,
+    "first": "2019-03-01",
+    "last": "2022-09-01",
+    "snapshots": 140
+   }
+  }
+ },
+ "coverage": {
+  "required": 100,
+  "configured_tickers": 100,
+  "with_prices": 100,
+  "with_snapshots": 97,
+  "configured_without_prices": [
+   "AAPL",
+   "CABK",
+   "MSFT",
+   "NTGY",
+   "ROG",
+   "SAN"
+  ],
+  "usable_strict": 0,
+  "usable_preview": 45
+ },
+ "benchmark_table": [
+  [
+   "XMAD",
+   "ES",
+   "EUR",
+   "URTH_ETF_PROXY_V1",
+   "USD",
+   "TOTAL_RETURN",
+   "USD",
+   "PROXY_ACCEPTABLE",
+   {
+    "rows": 1836,
+    "comparable": 1404,
+    "immature": 288
+   }
+  ],
+  [
+   "XASX",
+   "ASIA",
+   "AUD",
+   "URTH_ETF_PROXY_V1",
+   "USD",
+   "TOTAL_RETURN",
+   "USD",
+   "PROXY_ACCEPTABLE",
+   {
+    "rows": 459,
+    "comparable": 351,
+    "immature": 72
+   }
+  ],
+  [
+   "XNYS",
+   "US",
+   "USD",
+   "SPY_ETF_PROXY_V1",
+   "USD",
+   "TOTAL_RETURN",
+   "USD",
+   "PROXY_ACCEPTABLE",
+   {
+    "rows": 8069,
+    "comparable": 6797,
+    "immature": 1272
+   }
+  ],
+  [
+   "XMIL",
+   "EU",
+   "EUR",
+   "URTH_ETF_PROXY_V1",
+   "USD",
+   "TOTAL_RETURN",
+   "USD",
+   "PROXY_ACCEPTABLE",
+   {
+    "rows": 306,
+    "comparable": 234,
+    "immature": 48
+   }
+  ],
+  [
+   "XLON",
+   "EU",
+   "GBP",
+   "URTH_ETF_PROXY_V1",
+   "USD",
+   "TOTAL_RETURN",
+   "USD",
+   "PROXY_ACCEPTABLE",
+   {
+    "rows": 918,
+    "comparable": 702,
+    "immature": 144
+   }
+  ],
+  [
+   "XETR",
+   "EU",
+   "EUR",
+   "URTH_ETF_PROXY_V1",
+   "USD",
+   "TOTAL_RETURN",
+   "USD",
+   "PROXY_ACCEPTABLE",
+   {
+    "rows": 459,
+    "comparable": 351,
+    "immature": 72
+   }
+  ],
+  [
+   "XSWX",
+   "EU",
+   "CHF",
+   "URTH_ETF_PROXY_V1",
+   "USD",
+   "TOTAL_RETURN",
+   "USD",
+   "PROXY_ACCEPTABLE",
+   {
+    "rows": 306,
+    "comparable": 234,
+    "immature": 48
+   }
+  ],
+  [
+   "XTSE",
+   "NA",
+   "CAD",
+   "URTH_ETF_PROXY_V1",
+   "USD",
+   "TOTAL_RETURN",
+   "USD",
+   "PROXY_ACCEPTABLE",
+   {
+    "rows": 560,
+    "comparable": 428,
+    "immature": 96
+   }
+  ],
+  [
+   "XTKS",
+   "ASIA",
+   "JPY",
+   "URTH_ETF_PROXY_V1",
+   "USD",
+   "TOTAL_RETURN",
+   "USD",
+   "PROXY_ACCEPTABLE",
+   {
+    "rows": 765,
+    "comparable": 585,
+    "immature": 120
+   }
+  ],
+  [
+   "XPAR",
+   "EU",
+   "EUR",
+   "URTH_ETF_PROXY_V1",
+   "USD",
+   "TOTAL_RETURN",
+   "USD",
+   "PROXY_ACCEPTABLE",
+   {
+    "rows": 765,
+    "comparable": 585,
+    "immature": 120
+   }
+  ],
+  [
+   "XCSE",
+   "EU",
+   "DKK",
+   "URTH_ETF_PROXY_V1",
+   "USD",
+   "TOTAL_RETURN",
+   "USD",
+   "PROXY_ACCEPTABLE",
+   {
+    "rows": 153,
+    "comparable": 117,
+    "immature": 24
+   }
+  ],
+  [
+   "XAMS",
+   "EU",
+   "EUR",
+   "URTH_ETF_PROXY_V1",
+   "USD",
+   "TOTAL_RETURN",
+   "USD",
+   "PROXY_ACCEPTABLE",
+   {
+    "rows": 153,
+    "comparable": 117,
+    "immature": 24
+   }
+  ]
+ ],
+ "comparability": {
+  "BENCHMARK_UNAVAILABLE_IN_WINDOW": 516,
+  "COMPARABLE": 11905
+ },
+ "currency_methods": {
+  "SECURITY_TOTAL_RETURN_CONVERTED_TO_USD_AT_PIT_FX": 5624,
+  "NONE_SAME_CURRENCY": 6797
+ },
+ "gates": {
+  "D02_MONTHLY_RESEARCH_READY": {
+   "status": "BLOCKED",
+   "required": ">= 3 feasible walk-forward folds on consecutive READY months",
+   "actual": "54/141 months READY, longest run 54, folds 0",
+   "blocking_reason": "longest consecutive usable run = 54 months; one fold needs 61 (train_min 36 + purge 12 + embargo 1 + test 12)"
+  },
+  "US_SECURITY_IDENTITY_READY": {
+   "status": "PARTIAL",
+   "required": "0 weak identity members, 0 unresolved lines",
+   "actual": "see D02 graph metrics",
+   "blocking_reason": "weak_identity_members > 0 (PPoG Industries line without CUSIP)"
+  },
+  "D05_READY": {
+   "status": "BLOCKED",
+   "required": "accepted prices + corporate actions + adjustment method + provenance",
+   "actual": "Yahoo chart (VENDOR, EXPLORATORY_SOURCE)",
+   "blocking_reason": "price source is exploratory (owner chose Yahoo): not accepted as canonical; D05 suite (>=98% active / >=95% delisted coverage) not run"
+  },
+  "BENCHMARK_RETURN_BASIS_READY": {
+   "status": "PARTIAL",
+   "required": "comparable return + currency basis, accepted provenance",
+   "actual": "US rows comparable 6797/6797; non-US via USD conversion (PROXY)",
+   "blocking_reason": "return basis comparable (TR vs TR, USD) but the benchmark series is a Yahoo ETF proxy (not D05-accepted); Spain: IBEX Total Return MISSING, ^IBEX price-only"
+  },
+  "RESEARCH_SECURITY_COVERAGE_READY": {
+   "status": "BLOCKED",
+   "required": ">= 100 usable securities",
+   "actual": "0 usable (strict); 45 if D05 were accepted; 97 with snapshots",
+   "blocking_reason": "fewer than 100 securities and none usable until D02/D05 close"
+  },
+  "US_FUNDAMENTALS_READY": {
+   "status": "READY",
+   "required": ">= 30 securities with >= 36 usable PIT months",
+   "actual": "38 securities",
+   "blocking_reason": null
+  },
+  "HOLDOUT_SEALED": {
+   "status": "READY",
+   "required": "0 research rows inside 2022-10-01..2025-09-30",
+   "actual": "0 snapshots inside the holdout",
+   "blocking_reason": null
+  },
+  "RESEARCH_DATA_READY": {
+   "status": "BLOCKED",
+   "required": "all data gates READY",
+   "actual": "derived",
+   "blocking_reason": "at least one data gate is not READY"
+  },
+  "FIRST_ML_BASELINE_READY": {
+   "status": "BLOCKED",
+   "required": "all required gates READY",
+   "actual": "false",
+   "blocking_reason": "required gates not READY: D02_MONTHLY_RESEARCH_READY, US_SECURITY_IDENTITY_READY, D05_READY, BENCHMARK_RETURN_BASIS_READY, RESEARCH_SECURITY_COVERAGE_READY, RESEARCH_DATA_READY"
+  }
+ }
+}

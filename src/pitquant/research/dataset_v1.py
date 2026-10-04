@@ -24,7 +24,7 @@ from pitquant.config.settings import get_settings
 from pitquant.core.errors import LookAheadError
 from pitquant.core.hashing import content_hash
 from pitquant.data.calendars.market_calendar import get_calendar
-from pitquant.db.models import Price, Security, SecurityProfile, TickerHistory
+from pitquant.db.models import DataSource, Price, Security, SecurityProfile, TickerHistory
 from pitquant.db.models_research import ResearchFeatureSnapshot, ResearchTarget
 from pitquant.features.v0.engine import load_facts
 from pitquant.market.exchanges import SUFFIX
@@ -52,8 +52,30 @@ def _commit() -> str | None:
 
 
 def _ticker(session: Session, sid: str) -> str | None:
-    return session.scalars(
+    """Dated ticker if any; else the CURRENT profile ticker (a LABEL only, ``CURRENT_PROFILE_NOT_PIT``: identity never depends on it) for Yahoo-priced anchor securities that carry no ticker history."""
+    t = session.scalars(
         select(TickerHistory.ticker).where(TickerHistory.security_id == sid)
+    ).first()
+    if t:
+        return t
+    sec = session.get(Security, sid)
+    if sec is None or sec.exchange != "XNYS" or sec.role != "ISSUER_ANCHOR":
+        return None
+    srcs = {
+        n
+        for (n,) in session.execute(
+            select(DataSource.name)
+            .join(Price, Price.source_id == DataSource.source_id)
+            .where(Price.security_id == sid)
+            .distinct()
+        )
+    }
+    if srcs != {"YAHOO_CHART:eod"}:
+        return None
+    return session.scalars(
+        select(SecurityProfile.current_ticker)
+        .where(SecurityProfile.security_id == sid)
+        .order_by(SecurityProfile.ingested_at.desc())
     ).first()
 
 

@@ -75,6 +75,7 @@ def coverage_table(session: Any) -> list[dict[str, Any]]:
             md.bars.index[-1],
             float(md.bars["close"].iloc[-1]),
             md.actions,
+            float(md.series.split_adjusted["close"].iloc[-1]),
         )
         out.append({**r, "exchange": sec.exchange})
     return out

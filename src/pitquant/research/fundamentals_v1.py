@@ -204,6 +204,7 @@ def coverage_row(
     last_session: Any,
     raw_close: float,
     actions: Sequence[Any],
+    adj_close: float | None = None,
 ) -> dict[str, Any]:
     """One line of the SEC coverage table as of ``now``: READY / PARTIAL / UNSUPPORTED_SECTOR / MAPPING_GAP / NOT_REGISTERED / INSUFFICIENT_HISTORY, with the missing metrics."""
     base: dict[str, Any] = {"ticker": ticker, "sic": sic, "sector_group": sic_group(sic)}
@@ -233,7 +234,7 @@ def coverage_row(
         last_session=last_session,
         raw_close=raw_close,
         actions=actions,
-        adj_close=None,
+        adj_close=adj_close,
         history=ValuationHistory(),
         registered=True,
     )

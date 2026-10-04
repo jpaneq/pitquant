@@ -1977,6 +1977,7 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "research_feature_snapshots",
         "research_targets",
         "filing_analysis_snapshots",
+        "fx_rates",
     }
 )
 

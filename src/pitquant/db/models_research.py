@@ -138,3 +138,21 @@ class FilingAnalysisSnapshot(Base):
             name="analysis_not_before_filing",
         ),
     )
+
+
+class FxRate(Base):
+    """Daily FX close, USD per 1 unit of ``currency`` (ADR-0049). VENDOR tier (Yahoo chart, EXPLORATORY: not a canonical FX source). ``available_at`` = the END of the quoted day (+ a margin): a rate is
+    never used for an instant before it. Append-only: a corrected quote is a new row."""
+
+    __tablename__ = "fx_rates"
+    fx_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    currency: Mapped[str] = mapped_column(String(3), index=True)
+    rate_date: Mapped[date] = mapped_column(Date, index=True)
+    usd_per_unit: Mapped[float] = mapped_column(Float)
+    quote_symbol: Mapped[str] = mapped_column(String(20))
+    source: Mapped[str] = mapped_column(String(40))
+    source_tier: Mapped[str] = mapped_column(String(12))
+    quality_status: Mapped[str] = mapped_column(String(24))
+    available_at: Mapped[datetime] = mapped_column(UTCDateTime, index=True)
+    ingested_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+    __table_args__ = (UniqueConstraint("currency", "rate_date", "source", name="uq_fx_rate"),)
