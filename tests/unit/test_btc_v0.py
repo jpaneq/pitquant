@@ -212,7 +212,8 @@ def test_custom_research_windows_remain_pinned_on_read(btc):
 
 def test_identical_raw_response_preserves_new_fetch_receipt(session, tmp_path, monkeypatch):
     import io
-    from pitquant.btc.providers import PublicProvider, SPOT
+
+    from pitquant.btc.providers import SPOT, PublicProvider
     from pitquant.data.archive import ArchiveStore
 
     provider = PublicProvider(session, ArchiveStore(tmp_path))
