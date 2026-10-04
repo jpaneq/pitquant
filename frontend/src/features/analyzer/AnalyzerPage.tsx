@@ -11,6 +11,7 @@ import { MarketChart } from './MarketChart'
 import { AnalysisSummary, FilingsPanel, FundamentalsCard, PredictionPanel, RiskCard, TechnicalDetail, TechnicalsCard, ValuationCard } from './Panels'
 import { ReportButton } from './ReportButton'
 import { SecurityHeader } from './SecurityHeader'
+import { PositionsPanel } from '../positions/PositionsPanel'
 import { TradePlanSection } from './TradePlanSection'
 
 const Safe = ({ what, children }: { what: string; children: React.ReactNode }) => <ErrorBoundary what={what}>{children}</ErrorBoundary>
@@ -38,6 +39,8 @@ export function AnalyzerPage() {
       <Safe what="Simulate"><SimulateTrade sec={id} summary={s} /></Safe>
       {s.warnings.length ? <div role="status" className="space-y-1 rounded-md border border-warn/30 bg-warn/5 px-3 py-2 text-xs text-warn">{s.warnings.map((w) => <div key={w}>{w}</div>)}</div> : null}
       <Safe what="Price chart">{noPrice ? <div className="rounded-lg border border-border bg-surface p-8 text-center text-sm text-muted">No price chart: no market-data source has bars for {s.security.ticker}. Fundamentals below are real SEC data.</div> : <MarketChart sec={id} />}</Safe>
+      <Safe what="Trade plan"><TradePlanSection sec={id} /></Safe>
+      <Safe what="Positions"><PositionsPanel asset="EQUITY" security={s.security.ticker ?? id} /></Safe>
       <Safe what="Analysis summary"><AnalysisSummary summary={s} /><ExplainDetails sec={id} panel="analysis" /></Safe>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Safe what="Fundamentals"><FundamentalsCard sec={id} special={special} /></Safe>
@@ -47,7 +50,6 @@ export function AnalyzerPage() {
       </div>
       <Safe what="Fundamental history"><FundamentalHistory sec={id} /></Safe>
       <Safe what="Technical detail"><TechnicalDetail sec={id} /></Safe>
-      <Safe what="Trade plan"><TradePlanSection sec={id} /></Safe>
       <Safe what="Prediction"><PredictionPanel sec={id} /></Safe>
       <div className="grid gap-4 xl:grid-cols-[2fr_1fr]">
         <Safe what="Filings"><FilingsPanel sec={id} /></Safe>

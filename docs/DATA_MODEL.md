@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **88**.
+Tablas: **91**.
 
 ## Procedencia y calidad
 
@@ -846,6 +846,68 @@ Tablas: **88**.
 | `created_at` | DATETIME | no |  |
 
 - INDEX ix_strategy_run_results_run_id (run_id)
+
+### `paper_positions` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `position_id` | VARCHAR(36) | no | PK |
+| `asset_type` | VARCHAR(10) | no |  |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `horizon_months` | INTEGER | no |  |
+| `target_return` | FLOAT | sí |  |
+| `stop_price` | FLOAT | sí |  |
+| `stop_rule` | VARCHAR(40) | no |  |
+| `note` | VARCHAR(300) | no |  |
+| `is_synthetic` | BOOLEAN | no |  |
+| `opened_at` | DATETIME | no |  |
+| `created_at` | DATETIME | no |  |
+
+- CHECK `asset_type IN ('EQUITY','BTC')`
+- CHECK `horizon_months BETWEEN 1 AND 60`
+- INDEX ix_paper_positions_asset_type (asset_type)
+- INDEX ix_paper_positions_security_id (security_id)
+
+### `paper_position_events` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `event_id` | VARCHAR(36) | no | PK |
+| `position_id` | VARCHAR(36) | no | FK→`paper_positions.position_id` |
+| `event_type` | VARCHAR(10) | no |  |
+| `occurred_at` | DATETIME | no |  |
+| `price` | FLOAT | no |  |
+| `quantity` | FLOAT | no |  |
+| `price_source` | VARCHAR(40) | no |  |
+| `price_freshness` | VARCHAR(20) | sí |  |
+| `created_at` | DATETIME | no |  |
+
+- CHECK `event_type IN ('OPEN','ADD','REDUCE','CLOSE')`
+- CHECK `price > 0 AND quantity > 0`
+- INDEX ix_paper_position_events_position_id (position_id)
+
+### `position_reviews` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `review_id` | VARCHAR(36) | no | PK |
+| `position_id` | VARCHAR(36) | no | FK→`paper_positions.position_id` |
+| `reviewed_at` | DATETIME | no |  |
+| `engine_version` | VARCHAR(30) | no |  |
+| `horizon_bucket` | VARCHAR(10) | no |  |
+| `recommendation` | VARCHAR(6) | no |  |
+| `score` | FLOAT | no |  |
+| `price` | FLOAT | no |  |
+| `avg_cost` | FLOAT | no |  |
+| `quantity` | FLOAT | no |  |
+| `pnl_pct` | FLOAT | no |  |
+| `rules` | JSON | no |  |
+| `inputs` | JSON | no |  |
+| `context_hash` | VARCHAR(64) | no |  |
+| `created_at` | DATETIME | no |  |
+
+- CHECK `recommendation IN ('ADD','HOLD','SELL')`
+- INDEX ix_position_reviews_position_id (position_id)
 
 ### `index_anchor_snapshots` 🔒
 

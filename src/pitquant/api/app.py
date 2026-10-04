@@ -177,6 +177,9 @@ def create_app(factory: sessionmaker[Session], settings: Settings | None = None)
 
     app.include_router(make_simulation_router(cfg))
 
+    from pitquant.api.positions import make_positions_router
+
+    app.include_router(make_positions_router(cfg))
     from pitquant.api.btc import make_btc_router
 
     app.include_router(make_btc_router())

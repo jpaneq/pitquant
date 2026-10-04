@@ -9,6 +9,7 @@ export const SECTIONS = [
   ['acciones', 'Acciones (Analyzer)'],
   ['senales', 'Señales R y pruebas F en el gráfico'],
   ['plan', 'Plan de operación'],
+  ['posiciones', 'Compras simuladas: ampliar, mantener o vender'],
   ['simulation', 'Simulation Lab'],
   ['diaria', 'Pruebas diarias'],
   ['bitcoin', 'Bitcoin'],
@@ -65,7 +66,8 @@ export function HelpPage() {
         </Ul>
         <P>El periodo reservado (holdout) nunca se dibuja. Debajo del gráfico verás un resumen y una tabla de operaciones con entrada, salida, resultado y múltiplo de riesgo (R).</P>
 
-        <H id="plan">Plan de operación</H>
+        <H id="plan">Plan de operación (trade plan)</H>
+        <P><b>Qué es:</b> una receta escrita de antemano para una operación: <i>dónde entro, dónde salgo si me equivoco y dónde recojo beneficios</i>. Decidirlo antes evita decidir con miedo o euforia cuando el precio ya se mueve. Está disponible para <b>acciones</b> (en el Analyzer, justo bajo el gráfico) y para <b>Bitcoin</b> (pestaña Analyzer de Bitcoin, calculado con la última vela diaria cerrada).</P>
         <TradePlanDiagram />
         <Ul>
           <li><b>Zona de entrada:</b> donde el plan compraría. Si el precio no llega, no hay operación.</li>
@@ -74,6 +76,16 @@ export function HelpPage() {
           <li><b>Tamaño:</b> indica capital y % de riesgo; calcula cuántas acciones comprar arriesgando solo eso.</li>
         </Ul>
         <P>Es un escenario por reglas, <b>no validado con backtest</b>: no garantiza nada.</P>
+
+        <H id="posiciones">Compras simuladas: ampliar, mantener o vender</H>
+        <P>Bajo el plan de operación (acciones) y en la pestaña Analyzer de Bitcoin hay <b>Mis compras simuladas</b>. Eliges un importe y un <b>horizonte en meses</b> (y, si quieres, un objetivo de rentabilidad). El algoritmo revisa la posición con reglas visibles y responde:</P>
+        <Ul>
+          <li><b>AMPLIAR</b>: la puntuación es alta (≥ +2,5), la tendencia es alcista, el precio no está estirado y queda plazo.</li>
+          <li><b>MANTENER</b>: ninguna regla pide actuar, o hay señal favorable pero algo lo impide (se explica qué).</li>
+          <li><b>VENDER</b>: se toca tu stop, se cumple el objetivo con señal ya débil, vence el horizonte sin respaldo de las reglas, o la puntuación es muy negativa (≤ −2).</li>
+        </Ul>
+        <P><b>El horizonte cambia el peso de las reglas:</b> a 1-3 meses mandan la tendencia y el soporte del precio; a 4-8 meses pesan igual la tendencia, la media de 200 y el momentum; a 9 meses o más mandan la tendencia larga, la valoración y los fundamentales (en Bitcoin no hay valoración ni fundamentales, esas reglas se saltan y se indica). Puedes <b>ampliar</b>, <b>vender parte</b> o <b>cerrar</b> en simulado y guardar cada revisión.</P>
+        <P><b>Límites:</b> son reglas descriptivas con pesos sin validar, no una predicción ni consejo de inversión. La misma posición puede cambiar de «mantener» a «vender» si cambias el plazo.</P>
 
         <H id="simulation">Simulation Lab</H>
         <SimStates />

@@ -385,3 +385,26 @@ def test_btc_snapshot_update_is_rejected_by_postgres(pg: Engine) -> None:
         connection.execute(
             text("UPDATE btc_feature_snapshots SET payload='{}' WHERE snapshot_id='btc-pg'")
         )
+
+
+def test_simulated_positions_are_append_only_in_postgres(pg: Engine) -> None:
+    with pg.begin() as connection:
+        connection.execute(
+            text(
+                "INSERT INTO securities (security_id,name,exchange,currency,delisted,is_synthetic,created_at) "
+                "VALUES ('pos-pg','SYN POS','XNYS','USD',false,true,now())"
+            )
+        )
+        connection.execute(
+            text(
+                "INSERT INTO paper_positions (position_id,asset_type,security_id,horizon_months,"
+                "stop_rule,note,is_synthetic,opened_at,created_at) "
+                "VALUES ('pp1','EQUITY','pos-pg',6,'NONE','',true,now(),now())"
+            )
+        )
+    for stmt in (
+        "UPDATE paper_positions SET horizon_months=12 WHERE position_id='pp1'",
+        "DELETE FROM paper_positions WHERE position_id='pp1'",
+    ):
+        with pytest.raises(DBAPIError), pg.begin() as connection:
+            connection.execute(text(stmt))

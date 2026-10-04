@@ -1,0 +1,40 @@
+import { expect, test } from '@playwright/test'
+
+test('equity: simulate a purchase with a horizon and get an add/hold/sell review with its rules', async ({ page }) => {
+  await page.goto('/analyzer/SYNF')
+  const panel = page.getByLabel('Posiciones simuladas')
+  await expect(panel.getByText('Dinero simulado: no hay broker', { exact: false })).toBeVisible()
+  await panel.getByLabel('Horizonte en meses', { exact: true }).selectOption('12')
+  await panel.getByLabel('Objetivo de rentabilidad').fill('15')
+  await panel.getByRole('button', { name: 'Simular compra' }).click()
+  const article = panel.getByLabel('Posición simulada').first()
+  await expect(article.getByLabel('Recomendación')).toHaveText(/AMPLIAR|MANTENER|VENDER/)
+  await expect(article.getByText('horizonte 12 m (long)', { exact: false })).toBeVisible()
+  await article.getByText('Reglas que han decidido').click()
+  await expect(article.getByRole('columnheader', { name: 'Aporta' })).toBeVisible()
+  await expect(article.getByText('no es una predicción', { exact: false }).or(article.getByText('Reglas descriptivas', { exact: false })).first()).toBeVisible()
+  await article.getByLabel('Cantidad a ampliar o vender').fill('1')
+  await article.getByRole('button', { name: 'Simular ampliar' }).click()
+  await expect(panel.getByText('Ampliación simulada registrada.')).toBeVisible()
+  await page.screenshot({ path: 'artifacts/positions-equity.png', fullPage: false })
+})
+
+test('the trade plan sits right under the chart for stocks and is explained', async ({ page }) => {
+  await page.goto('/analyzer/SYNF')
+  await expect(page.getByText('Trade plan (long)', { exact: false }).first()).toBeVisible()
+  await page.getByRole('button', { name: /Qué es Plan de operación \(largo\)/ }).first().click()
+  await expect(page.getByRole('dialog', { name: 'Plan de operación (largo)' })).toContainText('hoja de ruta')
+})
+
+test('BTC: live-data trade plan card and simulated purchases (fixture, labelled SYNTHETIC TEST DATA)', async ({ page }) => {
+  await page.goto('/bitcoin')
+  await expect(page.getByLabel('Plan de operación BTC')).toBeVisible()
+  const panel = page.getByLabel('Posiciones simuladas')
+  await panel.getByLabel('Horizonte en meses', { exact: true }).selectOption('3')
+  await panel.getByRole('button', { name: 'Simular compra' }).click()
+  const article = panel.getByLabel('Posición simulada').first()
+  await expect(article.getByText('SYNTHETIC TEST DATA')).toBeVisible()
+  await expect(article.getByLabel('Recomendación')).toHaveText(/AMPLIAR|MANTENER|VENDER/)
+  await expect(article.getByText('horizonte 3 m (short)', { exact: false })).toBeVisible()
+  await page.screenshot({ path: 'artifacts/positions-btc.png', fullPage: false })
+})

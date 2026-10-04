@@ -60,7 +60,7 @@ describe('BTC model bar', () => {
 
 describe('BTC page wiring', () => {
   it('renders the live quote and the model bar from /btc/market/live', async () => {
-    vi.stubGlobal('fetch', vi.fn(async (url: string) => new Response(JSON.stringify(String(url).includes('/btc/snapshots') || String(url).includes('/btc/simulations') ? [] : String(url).includes('/btc/market/live') ? base : String(url).includes('market/bars') ? { bars: [] } : String(url).includes('/btc/evaluation') ? { items: [], horizons: {}, next_maturity: null, counts: {}, warning: 'NOT_VALIDATED' } : { readiness: { status: 'BLOCKED_BY_DATA', blockers: [] }, strategies: {}, availability: {}, missing_reasons: {}, provenance: [] }), { status: 200, headers: { 'Content-Type': 'application/json' } })))
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => new Response(JSON.stringify(String(url).includes('/btc/snapshots') || String(url).includes('/btc/simulations') || String(url).includes('/positions') ? [] : String(url).includes('/btc/trade-plan') ? { as_of_bar: '2026-10-03T00:00:00+00:00', label: 'RULE_BASED', plan: { status: 'BLOCKED_BY_DATA', reason: 'sin datos' } } : String(url).includes('/btc/market/live') ? base : String(url).includes('market/bars') ? { bars: [] } : String(url).includes('/btc/evaluation') ? { items: [], horizons: {}, next_maturity: null, counts: {}, warning: 'NOT_VALIDATED' } : { readiness: { status: 'BLOCKED_BY_DATA', blockers: [] }, strategies: {}, availability: {}, missing_reasons: {}, provenance: [] }), { status: 200, headers: { 'Content-Type': 'application/json' } })))
     render(wrap(<BitcoinPage />))
     expect(await screen.findByLabelText('BTC price')).toHaveTextContent('$61,234.50')
     expect(screen.getByLabelText('Model bar')).toBeInTheDocument()

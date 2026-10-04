@@ -114,6 +114,27 @@ def make_btc_router() -> APIRouter:
         except (OSError, ValueError, KeyError, TypeError, IndexError) as exc:
             raise HTTPException(503, "BTC_INTRADAY_HISTORY_UNAVAILABLE") from exc
 
+    @router.get("/trade-plan")
+    def live_trade_plan(db: DB) -> dict[str, Any]:
+        """Rule-based BTC trade plan from the latest CLOSED daily bar (no freeze needed). NOT validated; not a forecast."""  # noqa: E501
+        from types import SimpleNamespace
+
+        from pitquant.btc.contracts import STRATEGY_VERSION
+        from pitquant.positions.service import PositionError, btc_latest_payload
+
+        try:
+            payload = btc_latest_payload(db, utc_now())
+        except PositionError as exc:
+            raise HTTPException(409, str(exc)) from exc
+        plan = trade_plan(SimpleNamespace(payload=payload, strategy_version=STRATEGY_VERSION))  # type: ignore[arg-type]
+        return {
+            "as_of_bar": payload["decision_at"],
+            "plan": plan,
+            "label": "RULE_BASED · NOT BACKTEST VALIDATED",
+            "price_basis": "closed 1D UTC bar",
+            "price_features": payload["price_features"].get("price"),
+        }
+
     @router.get("/evaluation")
     def evaluation(db: DB, cohort: Cohort = Cohort.FORWARD_PAPER) -> dict[str, Any]:
         """Follow-up of frozen predictions: pending (with maturity date), evaluated, and per-horizon skill against history."""  # noqa: E501
