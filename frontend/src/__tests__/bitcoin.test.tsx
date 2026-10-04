@@ -6,7 +6,7 @@ import { BitcoinPage } from '../features/bitcoin/BitcoinPage'
 
 vi.mock('lightweight-charts', () => ({
   ColorType: { Solid: 'solid' }, LineSeries: {},
-  createChart: () => ({ addSeries: () => ({ setData: vi.fn() }), remove: vi.fn() }),
+  createChart: () => ({ addSeries: () => ({ setData: vi.fn() }), remove: vi.fn(), timeScale: () => ({ fitContent: vi.fn() }) }),
 }))
 
 describe('Bitcoin audit workspace', () => {

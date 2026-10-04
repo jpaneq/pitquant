@@ -70,22 +70,22 @@ def make_btc_router() -> APIRouter:
     live_quote = LiveQuote()
 
     @router.get("/quote")
-    def quote() -> dict[str, Any]:
+    def quote(symbol: str = "BTCUSDT") -> dict[str, Any]:
         if os.environ.get("PITQUANT_E2E_FIXTURE") == "1":
             return {"status": "DISABLED", "reason": "SYNTHETIC_FIXTURE_NO_EXTERNAL_DATA"}
         try:
-            return live_quote.get()
+            return live_quote.get(symbol)
         except (OSError, ValueError, KeyError, TypeError) as exc:
             raise HTTPException(
                 503, "BTC_LIVE_QUOTE_UNAVAILABLE", headers={"Retry-After": "5"}
             ) from exc
 
     @router.get("/quote/history")
-    def quote_history() -> dict[str, Any]:
+    def quote_history(symbol: str = "BTCUSDT", range: str = "LIVE") -> dict[str, Any]:
         if os.environ.get("PITQUANT_E2E_FIXTURE") == "1":
             return {"status": "DISABLED", "points": []}
         try:
-            return live_quote.history()
+            return live_quote.history(symbol, range)
         except (OSError, ValueError, KeyError, TypeError, IndexError) as exc:
             raise HTTPException(503, "BTC_INTRADAY_HISTORY_UNAVAILABLE") from exc
 
