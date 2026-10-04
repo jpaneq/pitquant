@@ -103,6 +103,7 @@ This delivers independent BTC contracts, auditable UI, archive and test harness.
 - `frontend/artifacts/btc-analyzer.png`
 - `frontend/artifacts/btc-simulation.png`
 - `frontend/artifacts/btc-time-machine.png`
+- `frontend/e2e/analyzer.spec.ts` (existing ambiguous text selector made exact; equity behavior unchanged)
 - `frontend/e2e/btc.spec.ts`
 - `frontend/playwright.config.ts`
 - `frontend/src/App.tsx`
@@ -134,3 +135,5 @@ This delivers independent BTC contracts, auditable UI, archive and test harness.
 ## Local evidence archive and operations
 
 Real evidence lives in data/btc.db and data/archive in this worktree, not Git. Heartbeat btc-archivo-forward-horario is ACTIVE hourly at minute10. Keep app/computer running and worktree on disk. The immutable initial holdout is2025-10-01–2026-09-30. Backfill fetched today is not PIT at historical dates.
+
+CI repair: one run failed an existing Analyzer E2E because its regex matched two visible disclaimer elements. The assertion now selects the exact disclaimer; no equity product logic changed.
