@@ -155,7 +155,7 @@ def build_targets_v2(
                 d["benchmark_contract"] = {
                     "contract_version": BC.BENCHMARK_CONTRACT_VERSION, "benchmark_id": spec.benchmark_id, "benchmark_security_id": bench[2] if bench else None, "benchmark_name": spec.name, "benchmark_type": spec.benchmark_type,
                     "benchmark_return_type": spec.return_type.value, "benchmark_currency": spec.currency, "security_currency": sec.currency, "return_currency_basis": assess["return_currency_basis"],
-                    "currency_conversion_method": assess["currency_conversion_method"], "fx_source": "YAHOO_CHART:fx (VENDOR, EXPLORATORY)" if use_usd else None, "benchmark_source": spec.source, "benchmark_version": BC.BENCHMARK_CONTRACT_VERSION,
+                    "currency_conversion_method": assess["currency_conversion_method"], "fx_source": "YAHOO_CHART:fx (CANONICAL_SOURCE, VENDOR)" if use_usd else None, "benchmark_source": spec.source, "benchmark_version": BC.BENCHMARK_CONTRACT_VERSION,
                     "benchmark_provenance": md.sources if md is not None else None, "benchmark_quality_status": assess["quality_status"], "comparability": "COMPARABLE" if comparable else (assess["comparability"] if assess["comparability"] != "COMPARABLE" else "BENCHMARK_UNAVAILABLE_IN_WINDOW"),
                     "skipped_candidates": skipped, "reason": assess["reason"], "security_return_basis": f"{b.return_type}_{assess['return_currency_basis'] or sec.currency}", "benchmark_return_basis": f"{spec.return_type.value}_{spec.currency}",
                 }  # fmt: skip

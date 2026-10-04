@@ -55,6 +55,14 @@ def main() -> None:
         if not target_id:
             raise ValueError("PPG_CANONICAL_CUSIP_AMBIGUOUS")
         target = s.get_one(Security, target_id)
+        if target.issuer_id is None:
+            issuer = s.scalars(select(Issuer).where(Issuer.name == PPG_RESOLVED)).first()
+            if issuer is None:
+                issuer = Issuer(name=PPG_RESOLVED, country="US")
+                s.add(issuer)
+                s.flush()
+            target.issuer_id = issuer.issuer_id
+
         link_same_security(
             s,
             member.security_id,

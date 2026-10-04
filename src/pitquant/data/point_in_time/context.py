@@ -73,6 +73,18 @@ class PITContext:
     # ── prices ─────────────────────────────────────────────────────────────
     def raw_bars(self, security_id: str, lookback_sessions: int | None = None) -> pd.DataFrame:
         """Raw daily bars whose close is <= as_of (an unfinished session is never returned)."""
+        selected_source = self.market_source
+        if selected_source is None and self.session.scalar(
+            select(Price.security_id)
+            .join(DataSource)
+            .where(
+                Price.security_id == security_id,
+                DataSource.name == "YAHOO_CHART:eod",
+                Price.bar_close_at <= self.as_of,
+            )
+            .limit(1)
+        ):
+            selected_source = "YAHOO_CHART:eod"
         rows = self.session.execute(
             select(
                 Price.session_date,
@@ -88,12 +100,10 @@ class PITContext:
                 *(
                     [
                         Price.source_id.in_(
-                            select(DataSource.source_id).where(
-                                DataSource.name == self.market_source
-                            )
+                            select(DataSource.source_id).where(DataSource.name == selected_source)
                         )
                     ]
-                    if self.market_source
+                    if selected_source
                     else []
                 ),
                 Price.bar_close_at <= self.as_of,

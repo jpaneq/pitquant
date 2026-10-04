@@ -84,7 +84,7 @@ def audit_series(session: Session, security: Security) -> dict[str, Any]:
             reasons.append("MISSING_SESSIONS")
         if rows[0].session_date > cal.session_on_or_after(
             max(date(2011, 1, 1), security.listing_start or date(2011, 1, 1))
-        ):
+        ) and not documented_inception(session, rows, cal):
             reasons.append("LEADING_HISTORY_UNVERIFIED")
         ingestions = list(
             session.scalars(
@@ -154,5 +154,41 @@ def verify_rebuild(session: Session, rows: list[Price], ingestions: list[Any]) -
             ):
                 return True
         except (ValueError, KeyError, OSError, TypeError, IndexError):
+            continue
+    return False
+
+
+def documented_inception(session: Session, rows: list[Price], calendar: Any) -> bool:
+    """Vendor listing metadata can establish the first price date, never issuer succession."""
+    import json
+    from datetime import UTC, datetime
+    from pathlib import Path
+
+    from pitquant.data.archive import sha256_hex
+    from pitquant.db.models import RawSourceArchive
+
+    for i in session.scalars(
+        select(CorporateActionIngestion).where(
+            CorporateActionIngestion.security_id == rows[0].security_id,
+            CorporateActionIngestion.provider == "YAHOO_CHART",
+            CorporateActionIngestion.status == "COMPLETED",
+        )
+    ):
+        ar = session.scalars(
+            select(RawSourceArchive).where(
+                RawSourceArchive.sha256 == i.source_hash, RawSourceArchive.provider == SOURCE
+            )
+        ).first()
+        if ar is None:
+            continue
+        try:
+            body = Path(ar.storage_uri).read_bytes()
+            if sha256_hex(body) != ar.sha256:
+                continue
+            meta = json.loads(body)["chart"]["result"][0]["meta"]
+            listed = datetime.fromtimestamp(meta["firstTradeDate"], UTC).date()
+            if calendar.session_on_or_after(listed) == rows[0].session_date:
+                return True
+        except (ValueError, KeyError, TypeError, OSError):
             continue
     return False

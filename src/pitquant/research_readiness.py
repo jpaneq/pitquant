@@ -193,7 +193,7 @@ def research_readiness(session: Session, settings: Settings) -> ResearchFlags:
     rf.flags["FEATURE_RESEARCH_READY_US"] = all(gates.values())
     rf.reasons["FEATURE_RESEARCH_READY_US"] = [f"gate {k} = {v}" for k, v in gates.items() if not v]
     rf.flags["FEATURE_RESEARCH_READY_ES"] = False
-    rf.status["FEATURE_RESEARCH_READY_ES"] = "ES_D05_BLOCKED_BY_ENTITLEMENT"
+    rf.status["FEATURE_RESEARCH_READY_ES"] = rf.status["ES_D05_RESEARCH_READY"]
     rf.flags["FEATURE_RESEARCH_READY"] = (
         rf.flags["FEATURE_RESEARCH_READY_US"] and rf.flags["FEATURE_RESEARCH_READY_ES"]
     )
