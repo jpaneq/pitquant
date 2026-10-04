@@ -588,6 +588,7 @@ def _backtest_run(args: argparse.Namespace) -> int:
     from pitquant.positions.backtest import run_backtest
 
     settings = get_settings()
+    out = Path(args.out or "data/reports") / f"backtest_rutina_{datetime.now(UTC).date()}.txt"
     with make_session_factory(make_engine(settings.database.url))() as session:
         text, summary = run_backtest(
             session,
@@ -595,13 +596,19 @@ def _backtest_run(args: argparse.Namespace) -> int:
             start=date.fromisoformat(args.start),
             step_sessions=args.step,
             max_tickers=args.max_tickers,
+            out_dir=out.parent,
+            progress=lambda t, n: print(f"  {t}: {n} observaciones", flush=True),
         )
-    out = Path(args.out or "data/reports") / f"backtest_rutina_{datetime.now(UTC).date()}.txt"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(text, encoding="utf-8")
     print(
         json.dumps(
-            {"report_file": str(out), "rows": summary["rows"], "skipped": summary["skipped"]},
+            {
+                "report_file": str(out),
+                "rows": summary["rows"],
+                "tickers": summary["tickers"],
+                "skipped": summary["skipped"],
+            },
             indent=2,
         )
     )

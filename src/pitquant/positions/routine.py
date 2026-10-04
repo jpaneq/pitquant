@@ -2,7 +2,7 @@
 """Daily simulated-trading routine (ADR-0042). Paper only: no broker, no real money, no prediction model.
 
 Every day, for each market (IBEX, SP500, MSCI_WORLD) ONE company is analysed (deterministic rotation over the configured list, skipping tickers with no price data) and BTC is analysed too.
-For each horizon (1, 3, 6, 12 months) the same rule engine as the position review decides whether an entry is justified (``ADD`` for a brand-new position at today's price). When it is,
+For each horizon (1, 3, 6, 12, 24 months) the same rule engine as the position review decides whether an entry is justified (``ADD`` for a brand-new position at today's price). When it is,
 a simulated purchase is opened with the entry price, a TARGET price and a protective STOP derived from realised volatility (``target = k·σ·√(h/12)``), all listed in ``PARAMS`` so they can
 be adjusted. Weekly (and at the end) each open prediction is evaluated against the bars that followed: target hit, stop hit, or expired. Nothing is back-dated: only bars after the entry count.
 Everything not accessible (no price data, no quote) is recorded as NO_DATA and shown in the report; nothing is invented.
@@ -29,6 +29,7 @@ from pitquant.db.models import Price
 from pitquant.db.models import new_id as new_pick_id
 from pitquant.db.models_positions import PaperPosition
 from pitquant.db.models_routine import DailyEvaluation, DailyPick, DailyVirtualEvaluation
+from pitquant.market.exchanges import calendar_of
 from pitquant.positions import review as engine
 from pitquant.positions import service as ps
 from pitquant.simulation.service import restated_bars
@@ -37,7 +38,7 @@ from pitquant.strategy.spec import StrategyError
 
 PARAMS_VERSION = "daily-routine-v0"
 PARAMS: dict[str, Any] = {
-    "horizons_months": [1, 3, 6, 12], "notional_per_position": 10_000.0, "entry_requires": "review recommendation == ADD (same rule engine as the position review, horizon-weighted)",
+    "horizons_months": [1, 3, 6, 12, 24], "notional_per_position": 10_000.0, "entry_requires": "review recommendation == ADD (same rule engine as the position review, horizon-weighted)",
     "target_k": 0.5, "target_floor": 0.02, "stop_k": 0.35, "stop_atr_mult": 2.0, "min_bars_for_data": 250,
     "target_rule": "target = entry · (1 + max(target_floor, target_k · σ_annual · sqrt(h/12)))", "stop_rule": "stop = entry − max(stop_atr_mult · ATR14, stop_k · σ_annual · sqrt(h/12) · entry)",
     "evaluation": "weekly (ISO week) and at the end: first touch of target or stop on daily bars AFTER the entry; both in one bar = AMBIGUOUS_STOP (counted as a stop); horizon end = EXPIRED",
@@ -49,16 +50,84 @@ DEFAULT_UNIVERSE: dict[str, list[str]] = {
     "IBEX": ["SAN", "BBVA", "ITX", "IBE", "TEF", "REP", "CABK", "AMS", "FER", "ELE", "ACS", "NTGY"],
     "SP500": ["AAPL", "MSFT", "KO", "JNJ", "JPM", "XOM", "PG", "AMZN", "GOOGL", "NVDA"],
     "MSCI_WORLD": [
-        "AAPL",
-        "MSFT",
-        "NVDA",
-        "AMZN",
-        "GOOGL",
         "META",
-        "JPM",
         "V",
         "UNH",
-        "XOM",
+        "LLY",
+        "AVGO",
+        "TSLA",
+        "MA",
+        "COST",
+        "HD",
+        "WMT",
+        "ABBV",
+        "MRK",
+        "CVX",
+        "BAC",
+        "ORCL",
+        "CRM",
+        "NFLX",
+        "ADBE",
+        "CSCO",
+        "PEP",
+        "TMO",
+        "ACN",
+        "MCD",
+        "ABT",
+        "LIN",
+        "DIS",
+        "WFC",
+        "CAT",
+        "IBM",
+        "GE",
+        "QCOM",
+        "TXN",
+        "AMGN",
+        "INTU",
+        "VZ",
+        "PFE",
+        "BA",
+        "HON",
+        "UNP",
+        "LOW",
+        "SPGI",
+        "NEE",
+        "RTX",
+        "LMT",
+        "UPS",
+        "ASML.AS",
+        "NESN.SW",
+        "NOVN.SW",
+        "ROG.SW",
+        "SAP.DE",
+        "SIE.DE",
+        "ALV.DE",
+        "AIR.PA",
+        "MC.PA",
+        "OR.PA",
+        "SU.PA",
+        "TTE.PA",
+        "AZN.L",
+        "SHEL.L",
+        "HSBA.L",
+        "ULVR.L",
+        "BP.L",
+        "GSK.L",
+        "NOVO-B.CO",
+        "ENEL.MI",
+        "ISP.MI",
+        "7203.T",
+        "6758.T",
+        "9984.T",
+        "8306.T",
+        "7974.T",
+        "BHP.AX",
+        "CBA.AX",
+        "CSL.AX",
+        "RY.TO",
+        "TD.TO",
+        "SHOP.TO",
+        "ENB.TO",
     ],  # US-listed names only until other exchange calendars are mapped
 }
 NOTE_PREFIX = f"routine:{PARAMS_VERSION}|"
@@ -72,25 +141,32 @@ VENDOR_SUFFIX = {
     "IBEX": ".MC",
     "SP500": ".US",
     "MSCI_WORLD": ".US",
+    "BENCHMARK": ".US",
 }  # EODHD exchange suffix when the list entry has none
 
 
-def market_is_open(market: str, now: datetime) -> bool:
-    """BTC trades 24/7; an equity market counts as open only inside today's session (open <= now < close)."""
-    code = MARKET_EXCHANGE.get(market)
-    if code is None:
-        return True
+def entry_exchange(entry: str, market: str) -> str:
+    """Calendar of a universe entry: its own suffix, else the market's default suffix (IBEX → Madrid, others → US)."""
+    return calendar_of(entry.upper() if "." in entry else "X" + VENDOR_SUFFIX[market])
+
+
+def exchange_open(code: str, now: datetime) -> bool:
+    """True when ``now`` is inside today's session of the exchange (local date), open <= now < close."""
+    from zoneinfo import ZoneInfo
+
     from pitquant.data.calendars.market_calendar import get_calendar
 
     cal = get_calendar(code)
-    d = (
-        now.astimezone(cal.session_open(now.date()).tzinfo).date()
-        if cal.is_session(now.date())
-        else None
-    )
-    if d is None or not cal.is_session(d):
+    local = now.astimezone(ZoneInfo(cal.tz)).date()
+    if local < cal.first_session or local > cal.last_session or not cal.is_session(local):
         return False
-    return cal.session_open(d) <= now < cal.session_close(d)
+    return cal.session_open(local) <= now < cal.session_close(local)
+
+
+def market_is_open(market: str, now: datetime) -> bool:
+    """BTC trades 24/7; an equity market counts as open only inside today's session. MSCI_WORLD has no single exchange (decided per ticker)."""
+    code = MARKET_EXCHANGE.get(market)
+    return True if code is None else exchange_open(code, now)
 
 
 def load_universe() -> dict[str, list[str]]:
@@ -241,12 +317,23 @@ def run_daily(
                 unavailable["BTC"] = str(exc)
         else:
             ok: dict[str, str] = {}
+            exch: dict[str, str] = {}
             for t in uni.get(market, []):
-                s, why = eligibility(session, t)
-                if s is None:
-                    unavailable[t] = why
-                elif s not in used:
-                    ok[t] = s
+                sid_t, why = eligibility(session, t)
+                base_t = t.upper().rsplit(".", 1)[0] if "." in t else t.upper()
+                if sid_t is None:
+                    unavailable[base_t] = why
+                elif sid_t not in used:
+                    ok[base_t] = sid_t
+                    exch[base_t] = entry_exchange(t, market)
+            if respect_hours and market == "MSCI_WORLD" and ok:
+                open_now = {b: v for b, v in ok.items() if exchange_open(exch[b], now)}
+                if not open_now:
+                    done.append(
+                        {"market": market, "status": "MARKET_CLOSED"}
+                    )  # every eligible exchange is closed right now
+                    continue
+                ok = open_now
             if ok:
                 ticker = pick_ticker(list(ok), market, today)
                 sid = ok[ticker]

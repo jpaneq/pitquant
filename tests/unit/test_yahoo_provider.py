@@ -111,7 +111,7 @@ def test_madrid_symbols_use_their_own_calendar_and_currency() -> None:
 
 def test_unsupported_exchanges_and_error_bodies_fail_loudly() -> None:
     with pytest.raises(DataQualityError, match="no calendar mapping"):
-        YahooChartMarketDataProvider().normalize("S", "ASML.AS", body([row(28, 1.0)]), NOW)
+        YahooChartMarketDataProvider().normalize("S", "XYZ.ZZ", body([row(28, 1.0)]), NOW)
     err = json.dumps(
         {
             "chart": {
@@ -139,3 +139,35 @@ def test_url_asks_for_daily_bars_with_events_and_needs_no_key() -> None:
         and "token" not in u.lower()
         and p.status().value
     )
+
+
+def test_exchange_suffix_table_drives_calendar_and_currency() -> None:
+    from pitquant.market.exchanges import SUFFIX, calendar_of, suffix_of
+
+    assert (
+        calendar_of("ASML.AS") == "XAMS"
+        and calendar_of("7203.T") == "XTKS"
+        and calendar_of("AAPL") == "XNYS"
+        and calendar_of("SAN.MC") == "XMAD"
+        and suffix_of("NOVO-B.CO") == "CO"
+    )
+    assert SUFFIX["L"][1] == "GBP" and set(SUFFIX) >= {
+        "",
+        "MC",
+        "AS",
+        "SW",
+        "DE",
+        "L",
+        "PA",
+        "T",
+        "AX",
+        "TO",
+    }
+    with pytest.raises(KeyError):
+        calendar_of("X.ZZ")
+    from pitquant.data.calendars.market_calendar import get_calendar
+
+    for code, *_ in SUFFIX.values():
+        assert (
+            get_calendar(code).first_session.year <= 2000
+        )  # every mapped exchange has calendar coverage from the canonical start

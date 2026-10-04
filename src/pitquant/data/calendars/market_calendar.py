@@ -30,7 +30,10 @@ def _to_dt(t: pd.Timestamp) -> datetime:
 class MarketCalendar:
     def __init__(self, code: str) -> None:
         self.code = code
-        self._cal = xcals.get_calendar(code, start=CALENDAR_START)
+        try:
+            self._cal = xcals.get_calendar(code, start=CALENDAR_START)
+        except ValueError:  # e.g. Tokyo is defined from 1997: V1 starts in 2011
+            self._cal = xcals.get_calendar(code, start="2000-01-01")
         self.tz = str(self._cal.tz)
         self.first_session: date = self._cal.first_session.date()
         self.last_session: date = self._cal.last_session.date()

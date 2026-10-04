@@ -18,6 +18,7 @@ from pitquant.core.timeutils import utc_now
 from pitquant.data.archive import ArchiveStore, archive_document
 from pitquant.db.models import DataSource, Price, SecurityProfile, TickerHistory
 from pitquant.market.credentials import SourceStatus
+from pitquant.market.exchanges import SUFFIX, suffix_of
 from pitquant.market.pipeline import store_batch
 from pitquant.market.providers.eodhd import EODHDMarketDataProvider
 from pitquant.market.providers.yahoo import YahooChartMarketDataProvider
@@ -27,7 +28,6 @@ from pitquant.security_master.service import SecurityMaster
 BENCHMARKS = {
     "BENCHMARK": ["SPY"]
 }  # the designated benchmark proxy of the Analyzer (relative strength, beta): ingested, never picked by the routine
-EXCHANGE_OF_SUFFIX = {"MC": ("XMAD", "EUR", "ES"), "US": ("XNYS", "USD", "US")}
 YAHOO_SOURCE = "YAHOO_CHART:eod"
 
 
@@ -58,8 +58,7 @@ def ensure_security(session: Session, base: str, vendor_symbol: str) -> str:
     sid = find_security(session, base)
     if sid:
         return sid
-    suffix = vendor_symbol.rsplit(".", 1)[-1]
-    exchange, currency, _ = EXCHANGE_OF_SUFFIX.get(suffix, ("XNYS", "USD", "US"))
+    exchange, currency, _ = SUFFIX.get(suffix_of(vendor_symbol), ("XNYS", "USD", "US"))
     sm = SecurityMaster(session)
     sec = sm.register(
         name=f"{base} (daily routine: price tracking only)",
@@ -144,7 +143,7 @@ def ingest_universe(
                     batch = prov.normalize(
                         base, vendor if "." in vendor and not vendor.endswith(".US") else base, body
                     )
-                    suffix = vendor.rsplit(".", 1)[-1] if not vendor.endswith(".US") else "US"
+                    suffix = suffix_of(vendor)
                 else:
                     raw: dict[str, bytes] = {}
                     for ep in ("eod", "splits", "div"):
@@ -168,7 +167,7 @@ def ingest_universe(
                     session,
                     batch,
                     key_to_security={base: sid},
-                    market=EXCHANGE_OF_SUFFIX.get(suffix, ("", "", "US"))[2],
+                    market=SUFFIX.get(suffix, ("", "", "US"))[2],
                 )
                 out[entry] = f"OK bars={len(batch.bars)} inserted={rep.bars_inserted}" + (
                     f" ({len(batch.warnings)} warnings)" if batch.warnings else ""

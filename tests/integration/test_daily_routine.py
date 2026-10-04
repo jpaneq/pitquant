@@ -68,7 +68,7 @@ def test_one_company_per_market_per_day_and_what_is_not_accessible_is_recorded(e
         sp.status == "ANALYZED"
         and sp.ticker == "SYNF"
         and sp.price
-        and [d["horizon_months"] for d in sp.decisions] == [1, 3, 6, 12]
+        and [d["horizon_months"] for d in sp.decisions] == [1, 3, 6, 12, 24]
     )
     assert all(d["decision"] in ("BUY", "NO_ORDER") and d["reason"] for d in sp.decisions)
 
@@ -104,7 +104,7 @@ def test_rotation_is_deterministic_and_cycles_through_the_eligible_tickers() -> 
 
 def test_target_and_stop_follow_the_documented_volatility_rule() -> None:
     ctx = Context(price=100.0, atr14=2.0, vol_annual=0.30)
-    for h in (1, 3, 6, 12):
+    for h in (1, 3, 6, 12, 24):
         lv = rt.levels(100.0, ctx, h)
         span = 0.30 * (h / 12) ** 0.5
         assert (
@@ -137,9 +137,9 @@ def test_a_justified_entry_opens_one_position_per_horizon_with_entry_target_and_
     rt.run_daily(s, cfg, NOW, UNI)
     sp = picks(s)["SP500"]
     bought = [d for d in sp.decisions if d["decision"] == "BUY"]
-    assert [d["horizon_months"] for d in bought] == [1, 3, 6, 12]
+    assert [d["horizon_months"] for d in bought] == [1, 3, 6, 12, 24]
     rows = rt.routine_positions(s)
-    assert len(rows) == 4 and {p.horizon_months for p in rows} == {1, 3, 6, 12}
+    assert len(rows) == 5 and {p.horizon_months for p in rows} == {1, 3, 6, 12, 24}
     for p, d in zip(sorted(rows, key=lambda x: x.horizon_months), bought, strict=True):
         ev = ps.events_of(s, p.position_id)[0]
         assert (
@@ -330,7 +330,7 @@ def test_routine_endpoints(client) -> None:
         and r.headers["content-type"].startswith("text/plain")
         and "INFORME DE LA RUTINA" in r.text
     )
-    assert client.get("/routine/params").json()["params"]["horizons_months"] == [1, 3, 6, 12]
+    assert client.get("/routine/params").json()["params"]["horizons_months"] == [1, 3, 6, 12, 24]
 
 
 # ───────────────────────────────────────────── market hours
@@ -598,4 +598,28 @@ def test_with_a_key_every_ticker_is_registered_and_its_bars_stored_and_failures_
         split_symbol("SAN", "IBEX") == ("SAN", "SAN.MC")
         and split_symbol("ASML.AS", "MSCI_WORLD") == ("ASML", "ASML.AS")
         and split_symbol("AAPL", "SP500") == ("AAPL", "AAPL.US")
+    )
+
+
+def test_msci_world_picks_only_tickers_whose_own_exchange_is_open(env: Env) -> None:
+    s, cfg, _, _ = env
+    sunday = datetime(2026, 10, 4, 12, 0, tzinfo=UTC)
+    out = rt.run_daily(
+        s,
+        cfg,
+        sunday,
+        {"IBEX": ["NOPE"], "SP500": ["NOPE"], "MSCI_WORLD": ["SYNF"]},
+        respect_hours=True,
+    )
+    assert {m["market"]: m["status"] for m in out["markets"]}[
+        "MSCI_WORLD"
+    ] == "MARKET_CLOSED"  # eligible, but its exchange is closed on a Sunday: nothing is stored
+    assert "MSCI_WORLD" not in picks(s)
+    assert (
+        rt.exchange_open("XTKS", datetime(2026, 10, 5, 3, 0, tzinfo=UTC)) is True
+        and rt.exchange_open("XTKS", datetime(2026, 10, 5, 12, 0, tzinfo=UTC)) is False
+    )
+    assert (
+        rt.exchange_open("XLON", datetime(2026, 10, 5, 9, 0, tzinfo=UTC)) is True
+        and rt.exchange_open("XASX", datetime(2026, 10, 4, 23, 30, tzinfo=UTC)) is True
     )

@@ -26,7 +26,7 @@ export function AppSwitcher() {
           <button role="menuitem" onClick={() => go('/')} className="block w-full rounded px-3 py-2 text-left text-sm hover:bg-surface-2">Acciones<span className="block text-[10px] text-muted">Analyzer, señales y plan</span></button>
           <button role="menuitem" onClick={() => go('/bitcoin')} className="block w-full rounded px-3 py-2 text-left text-sm hover:bg-surface-2">Bitcoin<span className="block text-[10px] text-muted">cotización, predicciones y simulaciones</span></button>
           <button role="menuitem" onClick={() => go('/simulations')} className="block w-full rounded px-3 py-2 text-left text-sm hover:bg-surface-2">Simulation Lab<span className="block text-[10px] text-muted">operaciones paper e Insights</span></button>
-          <button role="menuitem" onClick={() => go('/rutina')} className="block w-full rounded px-3 py-2 text-left text-sm hover:bg-surface-2">Rutina diaria<span className="block text-[10px] text-muted">compras simuladas 1/3/6/12 meses e informe</span></button>
+          <button role="menuitem" onClick={() => go('/rutina')} className="block w-full rounded px-3 py-2 text-left text-sm hover:bg-surface-2">Rutina diaria<span className="block text-[10px] text-muted">compras simuladas 1/3/6/12/24 meses e informe</span></button>
           <Link role="menuitem" to="/ayuda" onClick={() => setOpen(false)} className="block rounded px-3 py-2 text-sm hover:bg-surface-2">Ayuda y guía de uso</Link>
         </div>
       ) : null}

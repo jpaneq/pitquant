@@ -21,6 +21,7 @@ from pitquant.core.errors import DataQualityError
 from pitquant.data.archive import sha256_hex
 from pitquant.data.calendars.market_calendar import get_calendar
 from pitquant.market.credentials import SourceStatus
+from pitquant.market.exchanges import SUFFIX, suffix_of
 from pitquant.market.normalized import (
     CorporateAction,
     CorporateActionKind,
@@ -34,7 +35,6 @@ from pitquant.market.validation import calendar_status
 PROVIDER = "YAHOO_CHART"
 PARSER_VERSION = "yahoo-chart-1"
 API = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
-CALENDAR = {"MC": "XMAD", "": "XNYS"}  # Yahoo suffix → calendar; US symbols have no suffix
 Fetch = Callable[[str], bytes]
 
 
@@ -91,14 +91,14 @@ class YahooChartMarketDataProvider:
                 f"Yahoo chart response for {symbol} unusable: {err or exc}"
             ) from exc
         meta = result["meta"]
-        suffix = symbol.rsplit(".", 1)[-1] if "." in symbol else ""
-        if suffix not in CALENDAR:
+        suffix = suffix_of(symbol)
+        if suffix not in SUFFIX:
             raise DataQualityError(
-                f"Yahoo symbol {symbol!r}: exchange suffix {suffix!r} has no calendar mapping (supported: .MC and US)"
+                f"Yahoo symbol {symbol!r}: exchange suffix {suffix!r} has no calendar mapping (supported: {sorted(k for k in SUFFIX if k)})"
             )
-        cal = get_calendar(CALENDAR[suffix])
+        cal = get_calendar(SUFFIX[suffix][0])
         gmt = int(meta.get("gmtoffset", 0))
-        currency = str(meta.get("currency") or ("EUR" if suffix == "MC" else "USD"))
+        currency = str(meta.get("currency") or SUFFIX[suffix][1])
         sha = sha256_hex(body)
         out = NormalizedBatch()
 

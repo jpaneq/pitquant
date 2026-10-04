@@ -37,7 +37,7 @@ export function RoutinePage() {
     <section aria-label="Rutina diaria" className="mx-auto max-w-5xl space-y-4">
       <header className="space-y-1">
         <h1 className="text-2xl font-semibold">Rutina diaria de compras simuladas<InfoTip term={GLOSSARY['rutina diaria']} /></h1>
-        <p className="text-sm text-muted">Cada día analiza <b>una empresa del IBEX, una del S&amp;P 500, una del MSCI World y Bitcoin</b>. Para cada horizonte (1, 3, 6 y 12 meses) abre o no una compra simulada con precio de entrada, objetivo y stop; cada semana comprueba si se cumplen. Dinero simulado, reglas sin validar. <Link className="text-accent underline" to="/ayuda#rutina">Cómo funciona</Link>.</p>
+        <p className="text-sm text-muted">Cada día analiza <b>una empresa del IBEX, una del S&amp;P 500, una del MSCI World y Bitcoin</b>. Para cada horizonte (1, 3, 6, 12 y 24 meses) abre o no una compra simulada con precio de entrada, objetivo y stop; cada semana comprueba si se cumplen. Dinero simulado, reglas sin validar. <Link className="text-accent underline" to="/ayuda#rutina">Cómo funciona</Link>.</p>
       </header>
       <div className="flex flex-wrap items-center gap-3">
         <button disabled={busy} onClick={run} className="rounded bg-accent px-3 py-2 text-sm font-medium text-white disabled:opacity-40">Ejecutar rutina de hoy</button>
