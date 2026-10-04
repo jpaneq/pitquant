@@ -63,6 +63,12 @@ GROUPS = {
         "identity_resolution_runs",
         "membership_identity_segments",
     ],
+    "Bitcoin PIT V0 (branch independiente)": [
+        "btc_data",
+        "btc_feature_snapshots",
+        "btc_prediction_snapshots",
+        "btc_research_records",
+    ],
     "Universo": ["index_events", "membership_builds", "index_membership"],
     "Mercado": [
         "prices",

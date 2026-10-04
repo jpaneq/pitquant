@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **76**.
+Tablas: **80**.
 
 ## Procedencia y calidad
 
@@ -939,6 +939,80 @@ Tablas: **76**.
 - CHECK `status IN ('EXACT_OFFICIAL_IDENTIFIER','MULTI_SOURCE_CONFIRMED','PROVISIONAL','UNRESOLVED')`
 - INDEX ix_membership_identity_segments_membership_id (membership_id)
 - INDEX ix_membership_identity_segments_run_id (run_id)
+
+## Bitcoin PIT V0 (branch independiente)
+
+### `btc_data` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `datum_id` | VARCHAR(36) | no | PK |
+| `source` | VARCHAR(40) | no |  |
+| `metric` | VARCHAR(60) | no |  |
+| `cohort` | VARCHAR(20) | no |  |
+| `exchange_timestamp` | DATETIME | no |  |
+| `available_at` | DATETIME | no |  |
+| `retrieved_at` | DATETIME | no |  |
+| `payload` | JSON | no |  |
+| `raw_hash` | VARCHAR(64) | no |  |
+| `archive_id` | VARCHAR(36) | no | FK→`raw_source_archive.archive_id` |
+| `value_hash` | VARCHAR(64) | no |  |
+
+- INDEX ix_btc_data_available_at (available_at)
+- INDEX ix_btc_data_exchange_timestamp (exchange_timestamp)
+- INDEX ix_btc_data_metric (metric)
+- INDEX ix_btc_data_source (source)
+- UNIQUE (source, metric, cohort, exchange_timestamp, value_hash, retrieved_at)
+
+### `btc_feature_snapshots` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `snapshot_id` | VARCHAR(36) | no | PK |
+| `decision_at` | DATETIME | no |  |
+| `cohort` | VARCHAR(20) | no |  |
+| `feature_version` | VARCHAR(40) | no |  |
+| `data_version` | VARCHAR(40) | no |  |
+| `model_version` | VARCHAR(60) | sí |  |
+| `strategy_version` | VARCHAR(40) | no |  |
+| `simulation_engine_version` | VARCHAR(20) | no |  |
+| `commit_sha` | VARCHAR(40) | no |  |
+| `payload` | JSON | no |  |
+| `snapshot_hash` | VARCHAR(64) | no |  |
+| `created_at` | DATETIME | no |  |
+
+- INDEX ix_btc_feature_snapshots_decision_at (decision_at)
+- UNIQUE (decision_at, cohort, feature_version)
+- UNIQUE (snapshot_hash)
+
+### `btc_prediction_snapshots` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `prediction_id` | VARCHAR(36) | no | PK |
+| `snapshot_id` | VARCHAR(36) | no | FK→`btc_feature_snapshots.snapshot_id` |
+| `horizon` | INTEGER | no |  |
+| `payload` | JSON | no |  |
+| `prediction_hash` | VARCHAR(64) | no |  |
+| `created_at` | DATETIME | no |  |
+
+- UNIQUE (prediction_hash)
+- UNIQUE (snapshot_id, horizon)
+
+### `btc_research_records` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `record_id` | VARCHAR(36) | no | PK |
+| `kind` | VARCHAR(30) | no |  |
+| `cohort` | VARCHAR(20) | no |  |
+| `prediction_id` | VARCHAR(36) | sí | FK→`btc_prediction_snapshots.prediction_id` |
+| `payload` | JSON | no |  |
+| `record_hash` | VARCHAR(64) | no |  |
+| `created_at` | DATETIME | no |  |
+
+- INDEX ix_btc_research_records_kind (kind)
+- UNIQUE (record_hash)
 
 ## Universo
 
