@@ -18,7 +18,6 @@ from sqlalchemy.orm import Session
 
 from pitquant.config.settings import Settings
 from pitquant.db.models import (
-    CorporateActionEvent,
     DataSource,
     FeatureSnapshotRow,
     Price,
@@ -114,8 +113,35 @@ def research_readiness(session: Session, settings: Settings) -> ResearchFlags:
         and gm.get("security_identity_resolution", {}).get("weak_identity_members", 1) == 0
         and gm.get("security_identity_resolution", {}).get("unresolved_lines", 1) == 0
     )
+    from pitquant.db.models_research import ResearchFeatureSnapshot
+    from pitquant.market.canonical import FEATURE_VERSION
+    from pitquant.research.first_ml import fundamentals_months
+    from pitquant.research.first_ml_contract import REQUIRED_FUNDAMENTAL_SECURITIES
+
+    fundamental_rows = [
+        {
+            "security_id": row.security_id,
+            "decision_session": row.decision_session,
+            "ticker": row.meta.get("ticker"),
+            "meta": row.meta,
+            "features": {name: feature["value"] for name, feature in row.features.items()},
+        }
+        for row in session.scalars(
+            select(ResearchFeatureSnapshot).where(
+                ResearchFeatureSnapshot.feature_set_version == FEATURE_VERSION
+            )
+        )
+    ]
+    fundamental_coverage = fundamentals_months(fundamental_rows)
+    rf.metrics["fundamental_securities_36_months"] = fundamental_coverage["n_ok"]
     rf.flags["US_FUNDAMENTALS_READY"] = (
-        False  # separate denominator (D-02 answers only «who was a member»); needs SEC facts per member
+        fundamental_coverage["n_ok"] >= REQUIRED_FUNDAMENTAL_SECURITIES
+    )
+    rf.status["US_FUNDAMENTALS_READY"] = "READY" if rf.flags["US_FUNDAMENTALS_READY"] else "BLOCKED"
+    rf.reasons["US_FUNDAMENTALS_READY"] = (
+        []
+        if rf.flags["US_FUNDAMENTALS_READY"]
+        else ["fewer than 30 securities with at least 36 usable PIT fundamental months"]
     )
     rf.metrics["d02_anchor_graph"] = gm
     rf.metrics["d02"] = {
@@ -183,10 +209,7 @@ def research_readiness(session: Session, settings: Settings) -> ResearchFlags:
         "SPY_benchmark_available": spy_ok,
         "corporate_action_engine_real_validated": True,  # AAPL 4:1, MSFT special, ENG dividends (ADR-0023)
         "total_return_real_validated": True,
-        "sec_fundamentals_pit_available": (
-            session.scalar(select(func.count()).select_from(CorporateActionEvent)) or 0
-        )
-        >= 0,
+        "sec_fundamentals_pit_available": rf.flags["US_FUNDAMENTALS_READY"],
         "min_60_consecutive_cohorts_outside_holdout": longest >= 60 and n_pre >= 60,
     }
     rf.flags["FEATURE_RESEARCH_READY_US"] = all(gates.values())

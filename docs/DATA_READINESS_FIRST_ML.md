@@ -1,6 +1,6 @@
 # DATA READINESS FOR FIRST ML (generado desde la base)
 
-Generado 2026-10-04T22:31:13Z · experimento preparado `FIRST_EQUITY_ML_12M_V0` (NO ejecutado). Fuente de datos de mercado y FX: **Yahoo Finance** (decisión del propietario; VENDOR, `CANONICAL_PROVIDER_FOR_PITQUANT`). Ningún gate se ha bajado: `required_securities = 100`.
+Generado 2026-10-04T22:37:46Z · experimento preparado `FIRST_EQUITY_ML_12M_V0` (NO ejecutado). Fuente de datos de mercado y FX: **Yahoo Finance** (decisión del propietario; VENDOR, `CANONICAL_PROVIDER_FOR_PITQUANT`). Ningún gate se ha bajado: `required_securities = 100`.
 
 ## Matriz de gates
 
@@ -17,6 +17,8 @@ Generado 2026-10-04T22:31:13Z · experimento preparado `FIRST_EQUITY_ML_12M_V0` 
 | FIRST_ML_BASELINE_READY | all required gates READY | false | BLOCKED | required gates not READY: D02_MONTHLY_RESEARCH_READY, RESEARCH_SECURITY_COVERAGE_READY, RESEARCH_DATA_READY |
 
 `FIRST_ML_BASELINE_READY = false` (calcularlo no entrena nada).
+
+La matriz corresponde al primer ML. Los `flags` del JSON describen el Research Lab histórico y su disponibilidad para recopilar features; no autorizan entrenamiento ni sustituyen estos gates.
 
 ## D02 mensual
 

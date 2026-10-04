@@ -74,6 +74,9 @@ def main() -> None:
            "coverage_pct": round(100 * len(ready_dates) / max(len(months), 1), 1), "longest_run": rep.longest_run, "feasible_folds": len(plan.folds), "reason_if_no_folds": plan.reason_if_none}  # fmt: skip
     js["d02"] = d02
     js["flags"] = {k: bool(v) for k, v in rf.flags.items()}
+    js["flags_scope"] = (
+        "Legacy Research Lab feature-collection flags; experiment readiness is defined by gates, not flags."
+    )
     # ---- data ------------------------------------------------------------------------------------------------------------------
     securities = [
         s
@@ -117,7 +120,11 @@ def main() -> None:
         "bridged": len(bridge),
         "unresolved": unresolved_bridge,
     }
-    qa = [audit_series(S, s) for s in securities]
+    cached_qa = {row["security_id"]: row for row in rf.metrics["yahoo_d05"]}
+    qa = [
+        cached_qa[s.security_id] if s.security_id in cached_qa else audit_series(S, s)
+        for s in securities
+    ]
     js["d05_quality"] = qa
     present = {r["security_id"] for r in qa if r["status"] == "READY"}
     out: dict[str, Any] = {}
@@ -346,6 +353,9 @@ def main() -> None:
         )
     )
     w(f"`FIRST_ML_BASELINE_READY = {str(ml).lower()}` (calcularlo no entrena nada).\n")
+    w(
+        "La matriz corresponde al primer ML. Los `flags` del JSON describen el Research Lab histórico y su disponibilidad para recopilar features; no autorizan entrenamiento ni sustituyen estos gates.\n"
+    )
     w("## D02 mensual\n")
     w(table([[k, v] for k, v in d02.items()], ["métrica", "valor"]))
     w(

@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-04T22:31:13.204120+00:00",
+ "generated_at": "2026-10-04T22:37:46.835410+00:00",
  "experiment": "FIRST_EQUITY_ML_12M_V0",
  "d02": {
   "total_months": 141,
@@ -19,7 +19,7 @@
   "D02_DAILY_CANONICAL_READY": false,
   "BASELINE_TRAINING_READY": false,
   "US_SECURITY_IDENTITY_READY": true,
-  "US_FUNDAMENTALS_READY": false,
+  "US_FUNDAMENTALS_READY": true,
   "TIINGO_D05_CANDIDATE": false,
   "US_D05_RESEARCH_READY": true,
   "ES_D05_RESEARCH_READY": false,
@@ -32,6 +32,7 @@
   "RESEARCH_DATA_READY": false,
   "BASELINE_MODEL_READY": false
  },
+ "flags_scope": "Legacy Research Lab feature-collection flags; experiment readiness is defined by gates, not flags.",
  "identity_bridge": {
   "evidence_class": "DERIVED_EXACT_NAME_UNIQUE",
   "bridged": 99,
@@ -60,7 +61,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "cd8b8a8f-e550-49ee-86af-4370b15d03ec",
@@ -74,7 +76,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "4d1aedb4-ec20-414e-afe0-8eb25b30f2b7",
@@ -92,7 +95,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMAD"
   },
   {
    "security_id": "c078ea25-d448-4d52-a2b2-5a2d0cb3d217",
@@ -108,7 +112,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMAD"
   },
   {
    "security_id": "35c77f24-cbff-4c1d-9cb5-c557c7da1cf1",
@@ -124,7 +129,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMAD"
   },
   {
    "security_id": "95b1b253-adfa-40af-ae16-c6750a623ef4",
@@ -140,7 +146,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMAD"
   },
   {
    "security_id": "aa330b59-3cec-4632-a8d6-9ed04f699b11",
@@ -156,7 +163,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMAD"
   },
   {
    "security_id": "04499b95-d824-49c6-a1fa-88cff78bc518",
@@ -174,7 +182,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMAD"
   },
   {
    "security_id": "9eb07b86-e33c-40db-8ff4-f51e1bf8b706",
@@ -190,7 +199,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMAD"
   },
   {
    "security_id": "10fc3d3d-6a55-4a3a-989c-ddb469994b35",
@@ -206,7 +216,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMAD"
   },
   {
    "security_id": "ce79cc0a-00dd-4bcb-a653-9909fe94aa72",
@@ -222,7 +233,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMAD"
   },
   {
    "security_id": "52322e74-840f-4739-9cd0-c426cca5c823",
@@ -240,7 +252,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMAD"
   },
   {
    "security_id": "61f8190e-0ec4-4022-85e3-1477a135ba36",
@@ -256,7 +269,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMAD"
   },
   {
    "security_id": "23206ded-0008-4a35-92f6-0f33936cb542",
@@ -279,7 +293,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMAD"
   },
   {
    "security_id": "2c882a14-a9a9-4183-a2c9-4939a8f33c46",
@@ -300,7 +315,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMAD"
   },
   {
    "security_id": "1fecea5c-9f09-40ff-a8a4-e1e51bef0561",
@@ -314,7 +330,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "c24e70f1-9c6c-45e0-a342-3900fd6e48f3",
@@ -344,7 +361,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "b8dddadd-caa6-4267-8fe2-930f65df2165",
@@ -358,7 +376,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "67cab159-5fbf-468b-949e-4bde3dc3186d",
@@ -372,7 +391,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "140de420-7625-4e18-ab48-50eae5e7f194",
@@ -386,7 +406,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "3e44c4d0-ca47-4f7f-856e-6133b8a31396",
@@ -400,7 +421,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "6e75fc3b-8959-4b17-ac9e-68875886e196",
@@ -414,7 +436,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "6e6e9ba4-3c10-4c07-8191-d91dbd1a76df",
@@ -428,7 +451,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "b13f6397-47f7-4148-b9ea-57e4777f6b56",
@@ -442,7 +466,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "dccdb7a3-b30e-48bc-abb5-9d7ed1345cc7",
@@ -456,7 +481,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "7eba0f34-8e24-4be7-9aad-6662740f79e6",
@@ -470,7 +496,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "85875435-f01b-4178-8a4f-90237fbd6234",
@@ -484,7 +511,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "60e8375b-2fb0-4d6e-9a7a-9852511e8dd9",
@@ -498,7 +526,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "a39a3cf8-34e5-407b-a0d4-20026fc85075",
@@ -512,7 +541,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "7f98b411-3c33-4f09-aaa9-2ce760842986",
@@ -526,7 +556,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "56b48939-013b-4350-8d49-9a8f7ec60aa6",
@@ -540,7 +571,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "f32474b2-1203-49f9-8080-0cedcab7ae42",
@@ -554,7 +586,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "1dc79d7e-491c-4bf8-83cb-4d9618166cb4",
@@ -568,7 +601,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "b8194184-f6f1-430d-a660-09fdb02a99b7",
@@ -582,7 +616,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "8f5dd8bc-8c99-4207-a977-78c3d7fffade",
@@ -596,7 +631,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "71598032-06a2-465e-9319-c018070cd262",
@@ -610,7 +646,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "eb3c38c1-ae4f-4d81-b0b8-cde7ec5477f3",
@@ -624,7 +661,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "66217c41-2afe-4844-8e01-62a48d35de64",
@@ -638,7 +676,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "18bcc934-b210-4df4-ac05-f84be5a2e71b",
@@ -652,7 +691,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "631cae7f-54f2-49b4-95d0-e52289542bc0",
@@ -666,7 +706,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "52e8fe35-36f1-4f88-98fa-b71d3e6d4163",
@@ -680,7 +721,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "9abd13cb-99c9-48f9-aab8-1ce7457597a1",
@@ -694,7 +736,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "a358721b-9df7-45f4-853a-6020ac67aae4",
@@ -708,7 +751,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "6eb3dc49-805e-43fc-b7ec-2c653be07918",
@@ -722,7 +766,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "e8c5c52f-1f79-47e2-a26b-ce5d6fb863b3",
@@ -736,7 +781,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "50b87e9d-e150-4c0a-8175-63669fde388e",
@@ -750,7 +796,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "eaf31854-974e-4617-8bac-035515650cb2",
@@ -764,7 +811,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "f0efb37f-fdb1-4d50-88a4-cea02cd00394",
@@ -778,7 +826,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "1efeccbc-b79d-4fb6-bb41-992c297ebc79",
@@ -792,7 +841,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "485fa49d-8c1e-46d9-88c0-fc7cb011450d",
@@ -806,7 +856,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "257b7380-fe81-4d0d-a8be-89d7ad9d4fe3",
@@ -820,7 +871,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "4b7851e2-0e90-4d4b-98c6-7c7f74074975",
@@ -834,7 +886,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "9a8fc57b-326c-41d9-a2f2-7cad78e26b56",
@@ -848,7 +901,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "555f0c85-179f-45b3-847a-721096ae9fa6",
@@ -862,7 +916,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "0d560a31-4327-4817-923d-c62e67e1eaec",
@@ -876,7 +931,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "64352eea-7be5-4d74-b53a-fa6059cc0a36",
@@ -890,7 +946,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "1ea23764-dd3e-474d-8fbe-71ad843f3319",
@@ -904,7 +961,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "c2642c7d-42d7-4a95-930e-68b06f4de270",
@@ -918,7 +976,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "f597e07d-bc74-433f-8603-f69f911a5de4",
@@ -932,7 +991,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "2d773a5d-5b49-475a-a13b-dbc16a5677fd",
@@ -946,7 +1006,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "9983b4aa-f723-460b-a55b-004781fa3dc1",
@@ -960,7 +1021,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "93b9ac92-3ffc-49f8-860f-343c462b34da",
@@ -974,7 +1036,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "fbca5260-70eb-4013-82d6-726fb10c66be",
@@ -988,7 +1051,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "aed9f0f2-ac9b-4e28-8bd6-b53887173425",
@@ -1002,7 +1066,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "5ca6f391-c023-44ab-b30f-fab6b7f04f08",
@@ -1016,7 +1081,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "ee89281c-258c-450d-b0ec-7c7d4f059117",
@@ -1030,7 +1096,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "b36ce627-d777-4f43-945b-7e0fa46999b8",
@@ -1044,7 +1111,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "16d3f78c-49e0-4bac-a87b-91b6ccb5895a",
@@ -1058,7 +1126,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "beffff95-8f21-4e6f-8c9e-2be79eb2a078",
@@ -1081,7 +1150,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XAMS"
   },
   {
    "security_id": "28c786a4-8a01-4308-a693-34e718f47fcf",
@@ -1101,7 +1171,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XSWX"
   },
   {
    "security_id": "c48e7d66-6442-48b6-be91-2fd87e133bd5",
@@ -1121,7 +1192,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XSWX"
   },
   {
    "security_id": "48a569ee-db62-482f-873e-2e0d210df1f7",
@@ -1139,7 +1211,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XETR"
   },
   {
    "security_id": "5bc7a3d3-604b-4b25-ac25-4f0948bcb4a1",
@@ -1157,7 +1230,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XETR"
   },
   {
    "security_id": "238704f0-c6a4-46f1-9cad-8132967877ba",
@@ -1175,7 +1249,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XETR"
   },
   {
    "security_id": "afb82f95-8dd4-4a81-8da6-0e17e5cbedb2",
@@ -1193,7 +1268,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XPAR"
   },
   {
    "security_id": "42cd8596-707f-418c-821e-c5bbccd37591",
@@ -1211,7 +1287,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XPAR"
   },
   {
    "security_id": "6544caf0-bb46-42ee-9cd6-1ca23b18b79a",
@@ -1234,7 +1311,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XPAR"
   },
   {
    "security_id": "cae3f007-08aa-4964-a9cb-96b9fb1afd3b",
@@ -1252,7 +1330,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XPAR"
   },
   {
    "security_id": "5186a8c6-a8ae-4514-84a6-3294cbe717d0",
@@ -1270,7 +1349,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XPAR"
   },
   {
    "security_id": "d6164473-38d1-4038-b38b-b5c72e9a0d58",
@@ -1293,7 +1373,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XLON"
   },
   {
    "security_id": "4b803cf8-236f-410b-9bbc-55eeb3f3cdf9",
@@ -1315,7 +1396,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XLON"
   },
   {
    "security_id": "1d23d05c-6f8c-4508-b976-d68f63caf002",
@@ -1338,7 +1420,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XLON"
   },
   {
    "security_id": "359f0e99-e4c8-449e-8710-f73164490e33",
@@ -1360,7 +1443,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XLON"
   },
   {
    "security_id": "b0ffe77c-5d34-474c-bf6a-28848a415b59",
@@ -1383,7 +1467,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XLON"
   },
   {
    "security_id": "fecf17d4-4242-41a3-9339-438e31dad4fc",
@@ -1406,7 +1491,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XLON"
   },
   {
    "security_id": "928c725f-e66f-4339-b161-42fefea28004",
@@ -1423,7 +1509,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XCSE"
   },
   {
    "security_id": "7c4b1b9d-0ae1-454c-ac9f-4ce4713251c0",
@@ -1437,7 +1524,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMIL"
   },
   {
    "security_id": "17fedeb6-c825-4f2e-abfa-c20adfefba84",
@@ -1451,7 +1539,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMIL"
   },
   {
    "security_id": "d3376494-5ab4-45d0-8b32-1921a58a8156",
@@ -1470,7 +1559,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XASX"
   },
   {
    "security_id": "06c32c6f-7a3e-4f4f-8fd7-831ad8515d02",
@@ -1494,7 +1584,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XASX"
   },
   {
    "security_id": "82414aa2-72d3-4ada-9bd8-d44e7f7e9d0b",
@@ -1513,7 +1604,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XASX"
   },
   {
    "security_id": "2e35be8c-e0d9-44bb-b8a4-672ee8a6ff8d",
@@ -1527,7 +1619,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XTSE"
   },
   {
    "security_id": "6227956b-1a66-4f9d-bb67-9e15b319c37e",
@@ -1541,7 +1634,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XTSE"
   },
   {
    "security_id": "576169af-dd24-4e7c-bc66-408b6726a583",
@@ -1555,7 +1649,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XTSE"
   },
   {
    "security_id": "fe9d3e5c-4eee-48b3-b7d5-1bc4eb9aac4c",
@@ -1569,7 +1664,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XTSE"
   },
   {
    "security_id": "5cec853a-f69f-40b4-ab05-7c6e99b82f52",
@@ -1583,7 +1679,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XTKS"
   },
   {
    "security_id": "7e6c5b98-ce5c-4317-a0be-901071442361",
@@ -1597,7 +1694,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XTKS"
   },
   {
    "security_id": "e3230ff5-4091-4c8e-9ba3-34a863973cf0",
@@ -1611,7 +1709,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XTKS"
   },
   {
    "security_id": "4ba66cf7-d814-4444-a037-2892b38132b2",
@@ -1630,7 +1729,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XTKS"
   },
   {
    "security_id": "3137e1cf-71ca-433d-9181-927e1fdc5d1a",
@@ -1644,7 +1744,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XTKS"
   },
   {
    "security_id": "cb5de976-d627-4049-a3aa-40234f18ad3c",
@@ -1658,7 +1759,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "0c0022b8-50a4-4741-bee0-4c3f46f114eb",
@@ -1672,7 +1774,8 @@
    "reasons": [],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XNYS"
   },
   {
    "security_id": "3ba7c569-79ab-4646-8a11-e40529c5f000",
@@ -1691,7 +1794,8 @@
    ],
    "provider": "YAHOO_FINANCE",
    "provider_role": "CANONICAL_MARKET_PRICE_SOURCE",
-   "contract_version": "yahoo-market-data-v1"
+   "contract_version": "yahoo-market-data-v1",
+   "exchange": "XMAD"
   }
  ],
  "eligibility_6m": {
