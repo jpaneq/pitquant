@@ -116,6 +116,31 @@ def _sec_ingest(args: argparse.Namespace) -> int:
     return 0
 
 
+def _fundamentals_universe(args: argparse.Namespace) -> int:
+    """SEC fundamentals for the routine universe (needs PITQUANT_SEC_USER_AGENT in the environment; never stored)."""
+    from pitquant.data.archive import ArchiveStore
+    from pitquant.jobs.sec_universe import DEFAULT_TICKERS, ingest_fundamentals
+
+    settings = get_settings()
+    tickers = (
+        [t.strip().upper() for t in args.tickers.split(",")] if args.tickers else DEFAULT_TICKERS
+    )
+    factory = make_session_factory(make_engine(settings.database.url))
+    with factory() as session:
+        res = ingest_fundamentals(
+            session,
+            settings,
+            _sec_provider(settings),
+            ArchiveStore(Path(settings.archive.root)),
+            tickers,
+            progress=lambda t, r: print(
+                f"{t}: {r['status']} {r.get('link', '')} {r.get('error', '')}", flush=True
+            ),
+        )
+    print(json.dumps(res, indent=2, default=str))
+    return 0
+
+
 def _universe(args: argparse.Namespace) -> int:
     from pitquant.db.models import IndexEvent, IndexMembership
     from pitquant.security_master.service import SecurityMaster
@@ -845,6 +870,16 @@ def main(argv: list[str] | None = None) -> int:
     si.add_argument("ciks", nargs="+")
     si.add_argument("--register-missing", action="store_true")
     si.set_defaults(func=_sec_ingest)
+    fu = sub.add_parser(
+        "fundamentals-universe",
+        help="SEC fundamentals (EDGAR) for the routine universe; needs PITQUANT_SEC_USER_AGENT",
+    )
+    fu.add_argument(
+        "--tickers",
+        default=None,
+        help="comma-separated; default = 15 non-financial US large caps of the universe",
+    )
+    fu.set_defaults(func=_fundamentals_universe)
     rd = sub.add_parser("research-dry-run", help="walk-forward fold plan (no data, no training)")
     rd.add_argument("--start", default="2011-01-01")
     rd.add_argument("--end", default="2026-09-01")

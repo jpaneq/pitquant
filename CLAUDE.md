@@ -35,7 +35,7 @@ temporal, se rechaza.
   "FIXTURE"). Nunca presentarlos como históricos reales.
 - No dar una funcionalidad por terminada porque "ejecuta": correcta, testeada, tipada,
   documentada, reproducible, point-in-time.
-- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0045).
+- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0047).
 - Migraciones: `0001`…`0023` fijadas (`0023` rutina diaria) (`0022` posiciones simuladas) (`0021` fusiona la cabeza BTC `btc_v0_20261004_r1` con `0020`) (`0020` predicciones y Strategy Engine) (`0019` motor fijado por simulación, `event_schema_version` y observaciones históricas) (`0018` event store del Simulation Lab y contrafactual, `0017` ancho de event_type de sucesiones, `0016` Simulation Lab, `0015` tipos de sucesión) (`0014` lista SEC 13(f) y sucesión de securities) (`0013` grafo de anclas SEC SPY: `sp500_anchors`, `sp500_anchor_members`, `sp500_anchor_crosschecks`, `sp500_membership_segments`, `security_ticker_alias`) (`0011` perfiles descriptivos `security_profiles`) (`0010` anclas de índice SPY/IVV) (`0009` evidencia de membresía S&P 500) (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
   código↔ISIN, `0006` transiciones de ISIN, `0007` traza de corporate actions, `role` de
   security e `issuer_id` en filings SEC); **todo cambio de esquema = revisión nueva**.
@@ -246,3 +246,5 @@ Rutina diaria de compras simuladas (ADR-0042): `python -m pitquant.cli routine-r
 Cotizaciones gratuitas de la rutina (ADR-0043): `market/providers/yahoo.py` (Yahoo chart, sin clave, NO oficial, VENDOR, sólo para la simulación; RAW restaurado, sólo sesiones cerradas). Orden: EODHD con clave, si no Yahoo; sin mezclar fuentes por valor. La regla «no investigar precios/licencias de proveedores» sigue vigente salvo petición expresa del propietario (esta ADR lo fue).
 
 Backtest retrospectivo de la regla (ADR-0044): `python -m pitquant.cli backtest-run` (holdout intacto, sólo precio, point-in-time, sesgo de supervivencia avisado). Instalador de la programación: `Instalar_rutina_diaria.command` (no se ejecuta solo).
+
+Fundamentales SEC del universo (ADR-0046): `PITQUANT_SEC_USER_AGENT="Nombre correo" python -m pitquant.cli fundamentals-universe [--tickers A,B]` (el User-Agent nunca se guarda). Hoy: AAPL, MSFT, KO + JNJ, PG, AMZN, GOOGL, NVDA, META, V, LLY, HD, MRK, MA con fundamentales completos; WMT, CVX, COST parciales (TTM de ingresos sin normalizar); XOM insuficiente (CIK nuevo, 1 filing).

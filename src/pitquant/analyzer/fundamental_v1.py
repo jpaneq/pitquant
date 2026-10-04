@@ -197,7 +197,8 @@ def compute_fundamentals(
     interest = _flow(vis, "interest_expense")
     shares_now = F.shares_outstanding(vis)
     ni = ttm["net_income"]
-    out["latest_period"] = str(max((e for e in (_end(m) for m in ttm.values()) if e), default=None))
+    latest = max((e for e in (_end(m) for m in ttm.values()) if e), default=None)
+    out["latest_period"] = None if latest is None else str(latest)  # never the string "None"
     out["latest_filing_available_at"] = max(
         (m.available_at for m in ttm.values() if m.available_at), default=None
     )
@@ -334,7 +335,7 @@ def compute_fundamentals(
                     F.split_factor_between(
                         actions, now_end, date.fromisoformat(str(out["latest_period"]))
                     )
-                    if now_end
+                    if now_end and out.get("latest_period")
                     else 1.0
                 )
             )

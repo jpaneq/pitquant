@@ -27,39 +27,7 @@ from pitquant.config.settings import get_settings  # noqa: E402
 from pitquant.data.archive import ArchiveStore, archive_document  # noqa: E402
 from pitquant.db.models import Security, SecurityProfile  # noqa: E402
 from pitquant.db.session import make_engine, make_session_factory  # noqa: E402
-
-DIVISIONS = [
-    (1, 9, "Agriculture, Forestry & Fishing"),
-    (10, 14, "Mining"),
-    (15, 17, "Construction"),
-    (20, 39, "Manufacturing"),
-    (40, 49, "Transportation, Communications & Utilities"),
-    (50, 51, "Wholesale Trade"),
-    (52, 59, "Retail Trade"),
-    (60, 67, "Finance, Insurance & Real Estate"),
-    (70, 89, "Services"),
-    (91, 99, "Public Administration"),
-]
-
-
-def division(sic: str | None) -> str | None:
-    if not sic or not sic.isdigit():
-        return None
-    two = int(sic[:2]) if len(sic) >= 3 else int(sic)
-    return next((n for a, b, n in DIVISIONS if a <= two <= b), None)
-
-
-def profile_type(sic: str | None) -> str:
-    if not sic or not sic.isdigit():
-        return "STANDARD_CORPORATE"
-    n = int(sic)
-    if n in (6021, 6022, 6029, 6035, 6036, 6111, 6199) or (6700 <= n <= 6726 and n != 6798):
-        return "BANK" if n in (6021, 6022, 6029, 6035, 6036) else "OTHER_SPECIAL"
-    if 6311 <= n <= 6399 or n == 6411:
-        return "INSURER"
-    if n == 6798:
-        return "REIT"
-    return "STANDARD_CORPORATE"
+from pitquant.jobs.sec_universe import division, profile_type  # noqa: E402
 
 
 def main(argv: list[str]) -> int:
