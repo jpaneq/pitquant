@@ -9,6 +9,7 @@ import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
+from types import SimpleNamespace
 from typing import Any
 
 from sqlalchemy import func, select
@@ -87,7 +88,15 @@ class PublicProvider:
             retrieved_at=retrieved,
             parser_version="btc-provider-v0",
         )
-        return payload, archive
+        # Shared raw storage deduplicates identical bytes. Keep THIS fetch receipt separate
+        # from the first raw archive timestamp, especially when an A/B/A revision reverts.
+        receipt = SimpleNamespace(
+            archive_id=archive.archive_id,
+            sha256=archive.sha256,
+            source_identifier=archive.source_identifier,
+            retrieved_at=retrieved,
+        )
+        return payload, receipt
 
     def save(
         self, archive: Any, source: str, metric: str, at: datetime, payload: dict[str, Any]

@@ -208,3 +208,20 @@ def test_custom_research_windows_remain_pinned_on_read(btc):
     pinned = pin_config(btc, config)
     assert pin_config(btc).record_hash == pinned.record_hash
     assert readiness(btc, Cohort.HISTORICAL_OOS)["holdout"]["train_days"] == 730
+
+
+def test_identical_raw_response_preserves_new_fetch_receipt(session, tmp_path, monkeypatch):
+    import io
+    from pitquant.btc.providers import PublicProvider, SPOT
+    from pitquant.data.archive import ArchiveStore
+
+    provider = PublicProvider(session, ArchiveStore(tmp_path))
+    monkeypatch.setattr("urllib.request.urlopen", lambda *a, **k: io.BytesIO(b'{"value": 100}'))
+    monkeypatch.setattr("pitquant.btc.providers.utc_now", lambda: T0)
+    _, first = provider.get(SPOT, "/api/v3/klines", {"symbol": "BTCUSDT"})
+    monkeypatch.setattr("pitquant.btc.providers.utc_now", lambda: T0 + timedelta(minutes=2))
+    _, again = provider.get(SPOT, "/api/v3/klines", {"symbol": "BTCUSDT"})
+    assert first.archive_id == again.archive_id
+    assert first.sha256 == again.sha256
+    assert again.retrieved_at == T0 + timedelta(minutes=2)
+    assert first.retrieved_at == T0

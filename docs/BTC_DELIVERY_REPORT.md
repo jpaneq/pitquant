@@ -72,9 +72,9 @@ This delivers independent BTC contracts, auditable UI, archive and test harness.
 
 35. **Exact blockers:** NO_SUFFICIENT_HISTORICAL_PIT_SNAPSHOTS_BEFORE_FROZEN_HOLDOUT; current downloads lack historical publication/revision evidence; price/funding middle gaps; limited derivative retention;403 metrics optional, not mandatory core blockers.
 
-36. **Backend tests:** 666 passed,14 skipped,19 PostgreSQL tests deselected. Inherited optional ML/real-data skips; no BTC PIT skips.
+36. **Backend tests:** 667 passed,14 skipped,19 PostgreSQL tests deselected. Inherited optional ML/real-data skips; no BTC PIT skips.
 
-37. **PIT tests:** 301 passed,398 deselected; no skipped PIT tests.
+37. **PIT tests:** 302 passed,398 deselected; no skipped PIT tests.
 
 38. **Frontend:** 50 Vitest tests; strict TypeScript/build/lint. Existing lint warnings in WatchlistPage/SeriesChart retained.
 
