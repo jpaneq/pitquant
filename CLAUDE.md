@@ -35,8 +35,8 @@ temporal, se rechaza.
   "FIXTURE"). Nunca presentarlos como históricos reales.
 - No dar una funcionalidad por terminada porque "ejecuta": correcta, testeada, tipada,
   documentada, reproducible, point-in-time.
-- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0038).
-- Migraciones: `0001`…`0019` fijadas (`0019` motor fijado por simulación, `event_schema_version` y observaciones históricas) (`0018` event store del Simulation Lab y contrafactual, `0017` ancho de event_type de sucesiones, `0016` Simulation Lab, `0015` tipos de sucesión) (`0014` lista SEC 13(f) y sucesión de securities) (`0013` grafo de anclas SEC SPY: `sp500_anchors`, `sp500_anchor_members`, `sp500_anchor_crosschecks`, `sp500_membership_segments`, `security_ticker_alias`) (`0011` perfiles descriptivos `security_profiles`) (`0010` anclas de índice SPY/IVV) (`0009` evidencia de membresía S&P 500) (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
+- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0041).
+- Migraciones: `0001`…`0020` fijadas (`0020` predicciones y Strategy Engine) (`0019` motor fijado por simulación, `event_schema_version` y observaciones históricas) (`0018` event store del Simulation Lab y contrafactual, `0017` ancho de event_type de sucesiones, `0016` Simulation Lab, `0015` tipos de sucesión) (`0014` lista SEC 13(f) y sucesión de securities) (`0013` grafo de anclas SEC SPY: `sp500_anchors`, `sp500_anchor_members`, `sp500_anchor_crosschecks`, `sp500_membership_segments`, `security_ticker_alias`) (`0011` perfiles descriptivos `security_profiles`) (`0010` anclas de índice SPY/IVV) (`0009` evidencia de membresía S&P 500) (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
   código↔ISIN, `0006` transiciones de ISIN, `0007` traza de corporate actions, `role` de
   security e `issuer_id` en filings SEC); **todo cambio de esquema = revisión nueva**.
 - Identidad (ADR-0022): sólo evidencia oficial EXACTA desempata o ancla un código; subir
@@ -232,3 +232,7 @@ Event store append-only (`simulation_events`), `pitquant simulation-update` (ide
 
 ## Simulation Lab: motores fijados (ADR-0037)
 Cada simulación queda ligada a su `simulation_engine_version` (registry en `simulation/registry.py`; v1 congelado con test de digest). Sin migración silenciosa; versión no registrada ⇒ `ENGINE_VERSION_UNAVAILABLE`. Observaciones históricas PIT (`PERIODIC`) y `bars_to_entry`.
+
+## Señales y rutina diaria de acciones (ADR-0038/0039/0040)
+Contrato de predicción V1 (`prediction_snapshots`, NULL mientras `NOT_YET_VALIDATED`), Strategy Engine versionado (TRADE_PLAN_ONLY operativa; PREDICTION_ONLY/HYBRID deshabilitadas) y runs HISTORICAL (bloqueado por data gates)/FORWARD_PAPER/SYNTHETIC.
+Analyzer: `GET /analyzer/{security}/signals` (repetición retrospectiva en memoria, holdout omitido, capas R y F) y `python -m pitquant.cli strategy-daily-test [--refresh]` (docs/EQUITY_SIGNALS_AND_DAILY_TESTS.md). No hay modelo entrenado: sklearn no está instalado y `US_FUNDAMENTALS_READY=false`.

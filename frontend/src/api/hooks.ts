@@ -1,6 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { api } from './client'
 import type {
+  Signals,
   Analysis, ChartData, DataQuality, Filings, FundamentalHistory, Fundamentals, Prediction, PositionSize,
   SearchResponse, Summary, Technicals, TradePlan, Valuation,
 } from './types'
@@ -56,3 +57,6 @@ export const useDataQuality = (sec: string, enabled: boolean) =>
 
 export const usePositionSize = (sec: string, p: { capital: number; risk: number; entry: number; stop: number } | null) =>
   useQuery({ queryKey: qk.panel(sec, 'position-size', p), queryFn: ({ signal }) => api<PositionSize>(`/analyzer/${sec}/position-size?capital=${p!.capital}&risk_pct=${p!.risk}&entry=${p!.entry}&stop=${p!.stop}`, signal), enabled: p !== null })
+
+export const useSignals = (sec: string, years: number, enabled: boolean) =>
+  useQuery({ queryKey: ['signals', sec, years], queryFn: ({ signal }) => api<Signals>(`/analyzer/${sec}/signals?years=${years}`, signal), staleTime: 10 * MIN, enabled, retry: false })

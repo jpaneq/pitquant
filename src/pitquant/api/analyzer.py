@@ -9,7 +9,7 @@ dates inside the sealed holdout are refused (403). Nothing here computes finance
 from __future__ import annotations
 
 from collections.abc import Iterator
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -98,6 +98,64 @@ def make_analyzer_router(cfg: Settings) -> APIRouter:
     def summary(security: str, s: DB, as_of: str | None = None) -> dict[str, Any]:
         v, sid, at = svc_for(s, security, as_of)
         return v.summary(sid, at)
+
+    @r.get("/analyzer/{security}/signals")
+    def signals(
+        security: str,
+        s: DB,
+        years: int = 3,
+        step: int = 5,
+        horizon: int = 20,
+        profile: str = "BASE",
+    ) -> dict[str, Any]:
+        """Chart markers: RETROSPECTIVE rule-based entries/exits (in memory, nothing persisted, holdout skipped) and FORWARD paper trades (real simulations)."""
+        from pitquant.analyzer.market import load_market
+        from pitquant.analyzer.replay import cached_replay, forward_markers
+
+        if not (
+            0 <= years <= 40
+            and 1 <= step <= 60
+            and 5 <= horizon <= 120
+            and profile in ("AGGRESSIVE", "BASE", "CONSERVATIVE")
+        ):
+            raise HTTPException(
+                422,
+                "years 0-40 (0 = MAX), step 1-60, horizon 5-120, profile AGGRESSIVE|BASE|CONSERVATIVE",
+            )
+        sid = resolve(s, security)
+        now = utc_now()
+        md = load_market(s, sid, now)
+        if md.series.n_bars == 0 or md.last_session is None:
+            return {
+                "retrospective": {
+                    "status": "NO_DATA",
+                    "trades": [],
+                    "markers": [],
+                    "summary": None,
+                },
+                "forward": [],
+            }
+        end = md.last_session
+        start = md.bars.index[0] if years == 0 else end - timedelta(days=365 * years)
+        ho = cfg.validation.final_holdout
+        return {
+            "retrospective": cached_replay(
+                s,
+                cfg,
+                sid,
+                max(start, md.bars.index[0]),
+                end,
+                step_sessions=step,
+                horizon_sessions=horizon,
+                profile=profile,
+            ),
+            "forward": forward_markers(s, sid, now),
+            "holdout": {
+                "sealed": True,
+                "note": f"decisions and trades touching {ho.start}..{ho.end} are skipped",
+            },
+            "price_basis": "SPLIT_ADJUSTED_NOT_DIVIDEND_ADJUSTED (marker prices converted to chart units)",
+        }
 
     @r.get("/analyzer/{security}/quote")
     def quote(security: str, s: DB, as_of: str | None = None) -> dict[str, Any]:

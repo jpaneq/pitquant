@@ -351,29 +351,38 @@ def verify_snapshot(sim: Simulation) -> bool:
     return sim.snapshot_hash is None or sim.snapshot_hash == snapshot_hash(sim)
 
 
-def _bars_after(
-    session: Session, sim: Simulation, as_of: datetime
+def restated_bars(
+    md: Any, decision_date: date, as_of: datetime
 ) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
-    md = load_market(session, sim.security_id, as_of)
-    bars = md.bars.loc[
-        md.bars.index > sim.decision_at.date(), ["open", "high", "low", "close"]
-    ].copy()
+    """Completed bars after ``decision_date`` known in ``md``, with post-split prices restated into decision-date units (the units of the plan levels).
+    Shared by simulations and by the Analyzer's retrospective signal replay."""
+    bars = md.bars.loc[md.bars.index > decision_date, ["open", "high", "low", "close"]].copy()
     notes: list[dict[str, Any]] = []
     for a in md.actions:
         kind = str(getattr(a.kind, "value", a.kind))
-        ex = getattr(a, "ex_date", None)
+        ex = getattr(
+            a, "anchor_date", None
+        )  # ex-date, else the first split-adjusted day (Apple IR gives no ex-date)
         ratio = getattr(a, "ratio", None)
         if (
             kind in ("SPLIT", "REVERSE_SPLIT")
             and ex
             and ratio
-            and sim.decision_at.date() < ex <= as_of.date()
+            and decision_date < ex <= as_of.date()
         ):
             bars.loc[bars.index >= ex, ["open", "high", "low", "close"]] *= (
                 ratio  # restate post-split prices in T0 units
             )
             notes.append({"corporate_action": kind, "ex_date": str(ex), "ratio": ratio})
     return bars, notes
+
+
+def _bars_after(
+    session: Session, sim: Simulation, as_of: datetime
+) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
+    return restated_bars(
+        load_market(session, sim.security_id, as_of), sim.decision_at.date(), as_of
+    )
 
 
 def _manual_close(session: Session, sim: Simulation) -> tuple[date, float] | None:

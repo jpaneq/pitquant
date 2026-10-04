@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- PLANTILLA, no instalada. Edita las rutas y copia a ~/Library/LaunchAgents; carga con:
+     launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.pitquant.daily-equity-test.plist
+     Ejecuta una vez al día tras el cierre de EE. UU. (hora local; 23:30 Europa/Madrid = 17:30 NY). -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.pitquant.daily-equity-test</string>
+  <key>WorkingDirectory</key><string>/Users/jairo/Proyectos/pitquant</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PITQUANT_DATABASE_URL</key><string>sqlite+pysqlite:///data/pitquant.db</string>
+  </dict>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/jairo/Proyectos/pitquant/.venv/bin/python</string>
+    <string>-m</string><string>pitquant.cli</string>
+    <string>strategy-daily-test</string><string>--refresh</string><string>--json</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict><key>Hour</key><integer>23</integer><key>Minute</key><integer>30</integer></dict>
+  <key>StandardOutPath</key><string>/Users/jairo/Proyectos/pitquant/data/daily-equity-test.log</string>
+  <key>StandardErrorPath</key><string>/Users/jairo/Proyectos/pitquant/data/daily-equity-test.err</string>
+</dict>
+</plist>

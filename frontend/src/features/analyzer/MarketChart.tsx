@@ -1,7 +1,8 @@
-import { CandlestickSeries, ColorType, CrosshairMode, HistogramSeries, LineSeries, LineStyle, createChart, type IChartApi, type ISeriesApi, type MouseEventParams, type Time } from 'lightweight-charts'
+import { CandlestickSeries, createSeriesMarkers, ColorType, CrosshairMode, HistogramSeries, LineSeries, LineStyle, createChart, type IChartApi, type ISeriesApi, type MouseEventParams, type Time } from 'lightweight-charts'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useChart, useTechnicals, useTradePlan } from '../../api/hooks'
+import { useChart, useSignals, useTechnicals, useTradePlan } from '../../api/hooks'
 import { Badge, Button, Card, PanelError, Segmented, Skeleton } from '../../components/ui/primitives'
+import { SignalsPanel } from './SignalsPanel'
 import { fmtCompact, fmtNum, fmtPct, signClass } from '../../lib/format'
 
 const RANGES = ['1M', '3M', '6M', 'YTD', '1Y', '3Y', '5Y', 'MAX'] as const
@@ -14,17 +15,19 @@ const OVERLAYS = [
   ['ema50', 'EMA50', '#7fd1e8'],
 ] as const
 
+const YEARS: Record<string, number> = { '1M': 1, '3M': 1, '6M': 1, YTD: 1, '1Y': 1, '3Y': 3, '5Y': 5, MAX: 0 }
 const css = (v: string) => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#888'
 
 type Legend = { date: string; o?: number; h?: number; l?: number; c?: number; chg?: number; chgPct?: number; v?: number; vals: [string, number][] }
 
 export function MarketChart({ sec }: { sec: string }) {
   const [range, setRange] = useState<Range>('1Y')
-  const [on, setOn] = useState<Record<string, boolean>>({ sma50: true, sma200: true, sr: true, plan: false, rsi: false, macd: false, boll: false })
+  const [on, setOn] = useState<Record<string, boolean>>({ sma50: true, sma200: true, sr: true, plan: false, retro: false, fwd: true, rsi: false, macd: false, boll: false })
   const [profile, setProfile] = useState('BASE')
   const chart = useChart(sec, range)
   const tech = useTechnicals(sec)
   const plan = useTradePlan(sec)
+  const signals = useSignals(sec, YEARS[range] ?? 3, !!on.retro || !!on.fwd)
   const host = useRef<HTMLDivElement>(null)
   const [legend, setLegend] = useState<Legend | null>(null)
   const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'))
@@ -106,6 +109,26 @@ export function MarketChart({ sec }: { sec: string }) {
       candles.createPriceLine({ price: shownSetup.stop, color: down, lineWidth: 2, lineStyle: LineStyle.Solid, title: 'Stop' })
       for (const t of shownSetup.r_targets) candles.createPriceLine({ price: t.price, color: up, lineWidth: 1, lineStyle: LineStyle.Dotted, title: `${t.r_multiple}R` })
     }
+    if (signals.data && (on.retro || on.fwd)) {
+      const known = new Set(data.candles.map((k) => k.time))
+      const shape = (k: string) => (k === 'ENTRY' || k === 'PLAN' ? 'arrowUp' : k.startsWith('EXIT') ? 'arrowDown' : 'circle')
+      const colour = (k: string) => (k === 'EXIT_STOP' ? down : k === 'EXIT_TP' ? up : k === 'ENTRY' ? css('--accent') : muted)
+      const marks = [
+        ...(on.retro ? signals.data.retrospective.markers.map((m) => ({ ...m, forward: false })) : []),
+        ...(on.fwd ? signals.data.forward.map((m) => ({ ...m, forward: true })) : []),
+      ]
+        .filter((m) => known.has(m.time))
+        .sort((a, b) => a.time.localeCompare(b.time))
+        .map((m) => ({
+          time: m.time as Time,
+          position: (m.kind === 'ENTRY' || m.kind === 'PLAN' ? 'belowBar' : 'aboveBar') as 'belowBar' | 'aboveBar',
+          shape: (m.forward ? 'circle' : shape(m.kind)) as 'circle' | 'arrowUp' | 'arrowDown',
+          color: m.forward ? '#e0a64a' : colour(m.kind),
+          size: m.forward ? 1.6 : 1,
+          text: `${m.forward ? 'F' : 'R'}·${m.kind === 'PLAN' ? 'plan' : m.kind.replace('EXIT_', '').toLowerCase()}`,
+        }))
+      createSeriesMarkers(candles, marks)
+    }
     const prev = new Map<string, number>()
     data.candles.forEach((k, i, a) => i > 0 && prev.set(k.time, a[i - 1].close))
     const onMove = (p: MouseEventParams<Time>) => {
@@ -126,7 +149,7 @@ export function MarketChart({ sec }: { sec: string }) {
       c.unsubscribeCrosshairMove(onMove)
       c.remove()
     }
-  }, [data, on, zones, shownSetup, dark])
+  }, [data, on, zones, shownSetup, dark, signals.data])
 
   const last = data?.candles.at(-1)
   const first = data?.candles[0]
@@ -143,6 +166,8 @@ export function MarketChart({ sec }: { sec: string }) {
           <ToggleChip on={!!on.boll} onClick={() => toggle('boll')}>Bollinger 20,2</ToggleChip>
           <ToggleChip on={!!on.sr} onClick={() => toggle('sr')}>Support/Resistance</ToggleChip>
           <ToggleChip on={!!on.plan} onClick={() => toggle('plan')} disabled={!setups.length}>Trade Plan</ToggleChip>
+          <ToggleChip on={!!on.retro} onClick={() => toggle('retro')} title="Entradas y salidas que habría dado el plan de reglas en el pasado (retrospectivo, sin coste, no validado)">Señales algoritmo (R)</ToggleChip>
+          <ToggleChip on={!!on.fwd} onClick={() => toggle('fwd')} title="Tus pruebas paper reales">Mis pruebas (F)</ToggleChip>
           <ToggleChip on={!!on.rsi} onClick={() => toggle('rsi')}>RSI</ToggleChip>
           <ToggleChip on={!!on.macd} onClick={() => toggle('macd')}>MACD</ToggleChip>
           <ToggleChip on={false} onClick={() => undefined} disabled title="Prediction overlay requires a validated Champion model (none yet)">Prediction</ToggleChip>
@@ -172,6 +197,7 @@ export function MarketChart({ sec }: { sec: string }) {
         {data && data.candles.length === 0 ? <div className="p-6 text-sm text-muted">No price bars known for this security{data.status === 'NO_DATA' ? ' (no market-data source ingested)' : ''}.</div> : null}
         <div ref={host} role="img" aria-label={last && first ? `Price chart, ${data?.range}: last close ${fmtNum(last.close)}, ${fmtPct(last.close / first.close - 1, 1, true)} over the range` : 'Price chart'} className={data?.candles.length ? 'h-[460px] w-full' : 'h-0'} />
       </div>
+      {on.retro || on.fwd ? <SignalsPanel q={signals} retro={!!on.retro} /> : null}
       <div className="flex flex-wrap items-center gap-2 border-t border-border px-3 py-1.5 text-[10px] text-muted">
         <span>{data?.n_bars ?? 0} bars</span>
         {(data?.sources ?? []).map((s) => (

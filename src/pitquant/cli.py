@@ -7,6 +7,7 @@ import argparse
 import json
 import sys
 from datetime import date, datetime
+from pathlib import Path
 from typing import Any
 
 from pitquant.config.settings import Settings, get_settings
@@ -511,6 +512,29 @@ def _window(args: argparse.Namespace) -> int:
     return 0 if rep.status == "READY" else 1
 
 
+def _daily_test(args: argparse.Namespace) -> int:
+    """Daily forward paper routine over several stocks: optional price refresh, then ONE forward tick at the server clock (idempotent per day; never back-dated)."""
+    import subprocess
+
+    from pitquant.strategy.daily import daily_test
+
+    settings = get_settings()
+    if args.refresh:
+        # EOD refresh with the same script the Analyzer uses (idempotent; demo token = AAPL/MSFT only, a vendor key lifts that limit)
+        script = Path(__file__).resolve().parents[2] / "scripts" / "ingest_analyzer_demo_data.py"
+        subprocess.run([sys.executable, str(script)], check=True)
+    tickers = [t.strip().upper() for t in args.tickers.split(",")] if args.tickers else None
+    with make_session_factory(make_engine(settings.database.url))() as session:
+        out = daily_test(session, settings, tickers)
+        session.commit()
+    print(
+        json.dumps(out, indent=2, default=str)
+        if args.json
+        else f"{out['strategy']} · {len(out['universe'])} valores · decisiones nuevas {len(out['new_decisions'])} · {out['label']}"
+    )
+    return 0
+
+
 def _sim_update(args: argparse.Namespace) -> int:
     """Append-only event-log update of the active paper trades; idempotent (a second run without new bars appends 0 events)."""
     from datetime import UTC
@@ -780,6 +804,22 @@ def main(argv: list[str] | None = None) -> int:
     su.add_argument("--as-of", default=None, help="ISO instant with offset (default: now)")
     su.add_argument("--json", action="store_true")
     su.set_defaults(func=_sim_update)
+    dt = sub.add_parser(
+        "strategy-daily-test",
+        help="daily forward paper test of the Trade Plan rules over several stocks (no --as-of: server clock only)",
+    )
+    dt.add_argument(
+        "--tickers",
+        default=None,
+        help="comma-separated; default = every security with enough price history (benchmark excluded)",
+    )
+    dt.add_argument(
+        "--refresh",
+        action="store_true",
+        help="refresh EOD bars first (scripts/ingest_analyzer_demo_data.py)",
+    )
+    dt.add_argument("--json", action="store_true")
+    dt.set_defaults(func=_daily_test)
     sr = sub.add_parser(
         "simulation-replay",
         help="rebuild a paper trade from T0 + events and compare (no market data)",

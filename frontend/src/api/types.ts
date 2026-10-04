@@ -200,3 +200,12 @@ export type DataQuality = {
   benchmark: string | null
 }
 export type PositionSize = { status: string; reason?: string; shares?: number; notional?: number; risk_amount?: number; risk_per_share?: number; actual_risk?: number; notional_pct_of_capital?: number; capped_by_capital_no_leverage?: boolean }
+
+export type SignalMarker = { time: string; kind: string; origin: string; price: number | null; text: string; simulation_id?: string }
+export type SignalTrade = { decision_date: string; setup_type: string | null; state: string; entry_date: string | null; entry_price_chart?: number; exit_date: string | null; realized_return: number | null; realized_r: number | null; exits: { date: string; kind: string; reason: string; fraction: number; price_chart: number }[]; closed: boolean; stop: number; target_1: number | null }
+export type SignalSummary = { n_decisions: number; n_filled: number; n_closed: number; n_not_filled: number; holdout_skipped: number; no_plan: number; skipped_in_position: number; buy_and_hold_return_same_span: number | null; span: [string, string] | null; hit_rate?: number; mean_return?: number; median_return?: number; mean_r?: number | null; flags: string[] }
+export type Signals = {
+  retrospective: { status: string; label?: string; trades: SignalTrade[]; markers: SignalMarker[]; summary: SignalSummary | null; params?: Record<string, unknown> }
+  forward: SignalMarker[]
+  holdout?: { sealed: boolean; note: string }
+}
