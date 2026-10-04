@@ -64,10 +64,11 @@ class Metric:
         return Metric(None, reason, None, [], formula)
 
 
-def _months(s: date, e: date) -> int | None:
+def _months(s: date, e: date, tol: int = 12) -> int | None:
+    """Nominal months (3/6/9/12) of a period; ``tol`` days: 12 in V0 (frozen), 25 for 52/53-week."""
     d = (e - s).days + 1
     for m in (3, 6, 9, 12):
-        if abs(d - round(m * 30.4375)) <= 12:
+        if abs(d - round(m * 30.4375)) <= tol:
             return m
     return None
 
@@ -102,24 +103,27 @@ def _prov(f: Fact, role: str) -> dict[str, object]:
     }
 
 
-def _ttm_one(vis: Sequence[Fact], concept: str, unit: str = "USD") -> Metric | None:
+def _ttm_one(vis: Sequence[Fact], concept: str, unit: str = "USD", tol: int = 12) -> Metric | None:
     fs = [f for f in vis if f.concept == concept and f.unit == unit and f.period_start is not None]
     if not fs:
         return None
-    ends = sorted({f.period_end for f in fs if _months(f.period_start, f.period_end)}, reverse=True)  # type: ignore[arg-type]
+    ends = sorted(
+        {f.period_end for f in fs if f.period_start and _months(f.period_start, f.period_end, tol)},
+        reverse=True,
+    )
     for e in ends[:1]:  # only the freshest period end: an older TTM would be stale
         at_e = [
             f
             for f in fs
-            if f.period_end == e and f.period_start and _months(f.period_start, f.period_end)
+            if f.period_end == e and f.period_start and _months(f.period_start, f.period_end, tol)
         ]
-        fy = next((f for f in at_e if _months(f.period_start, f.period_end) == 12), None)  # type: ignore[arg-type]
+        fy = next((f for f in at_e if _months(f.period_start, f.period_end, tol) == 12), None)  # type: ignore[arg-type]
         if fy is not None:
             return Metric(
                 fy.value, None, fy.available_at, [_prov(fy, "FY")], f"TTM = FY ending {e}"
             )
-        cur = max(at_e, key=lambda f: _months(f.period_start, f.period_end) or 0)  # type: ignore[arg-type]
-        m = _months(cur.period_start, cur.period_end)  # type: ignore[arg-type]
+        cur = max(at_e, key=lambda f: _months(f.period_start, f.period_end, tol) or 0)  # type: ignore[arg-type]
+        m = _months(cur.period_start, cur.period_end, tol)  # type: ignore[arg-type]
         assert cur.period_start is not None and m is not None
         prev_fy_end = cur.period_start - timedelta(days=1)
         fy_prev = next(
@@ -127,7 +131,7 @@ def _ttm_one(vis: Sequence[Fact], concept: str, unit: str = "USD") -> Metric | N
                 f
                 for f in fs
                 if f.period_start
-                and _months(f.period_start, f.period_end) == 12
+                and _months(f.period_start, f.period_end, tol) == 12
                 and _near(f.period_end, prev_fy_end, 5)
             ),
             None,
@@ -137,7 +141,7 @@ def _ttm_one(vis: Sequence[Fact], concept: str, unit: str = "USD") -> Metric | N
                 f
                 for f in fs
                 if f.period_start
-                and _months(f.period_start, f.period_end) == m
+                and _months(f.period_start, f.period_end, tol) == m
                 and _near(f.period_end, _minus_year(e))
                 and _near(f.period_start, _minus_year(cur.period_start))
             ),
@@ -176,6 +180,8 @@ def resolve_flow_ttm(
     key: str,
     as_of_end: date | None = None,
     tags: tuple[str, ...] | None = None,
+    tol: int = 12,
+    prefer: tuple[str, ...] | None = None,
 ) -> Metric:
     """TTM of ``key`` through the versioned tag map. ``as_of_end``: compute the TTM that ENDS at
     that date (used for the prior-year TTM): facts of later periods are ignored."""
@@ -183,7 +189,7 @@ def resolve_flow_ttm(
     res: list[tuple[str, Metric]] = []
     cand = tags if tags is not None else TAGS[key]
     for tag in cand:
-        m = _ttm_one(pool, tag)
+        m = _ttm_one(pool, tag, tol=tol)
         if m is not None:
             res.append((tag, m))
     good = [(t, m) for t, m in res if m.value is not None]
@@ -199,6 +205,14 @@ def resolve_flow_ttm(
         a, b = top[0][1].value, top[1][1].value
         assert a is not None and b is not None
         if abs(a - b) > 0.01 * max(abs(a), abs(b), 1.0):
+            ranked = [x for p in (prefer or ()) for x in top if x[0] == p]
+            if (
+                ranked
+            ):  # explicit, versioned priority; the chosen tag and the discarded value are recorded
+                t, m = ranked[0]
+                others = ", ".join(f"{ot}={om.value}" for ot, om in top if ot != t)
+                m.formula = f"[{t}] (conflict resolved by priority over {others}) " + m.formula
+                return m
             return Metric.missing(
                 "unresolved_tag",
                 f"{key}: {top[0][0]}={a} vs {top[1][0]}={b} for the same period (fail closed)",

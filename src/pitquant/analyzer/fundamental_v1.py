@@ -20,8 +20,14 @@ from pitquant.features.v0 import fundamentals as F
 from pitquant.features.v0.engine import _debt as total_debt
 from pitquant.features.v0.engine import load_facts
 
-FUNDAMENTAL_ENGINE_VERSION = "fundamental-v1.0"
-TAG_MAP_VERSION_V1 = "sec-tags-2"  # sec-tags-1 + the keys below
+FUNDAMENTAL_ENGINE_VERSION = "fundamental-v1.1"  # v1.1 (ADR-0048): 25-day period tolerance (52/53-week retailers) and an explicit revenue-tag priority; never changes a value v1.0 could compute
+TAG_MAP_VERSION_V1 = "sec-tags-3"  # sec-tags-2 + revenue priority on conflicting tags (Revenues > RevenueFromContract… > SalesRevenueNet)
+PERIOD_TOL_DAYS = 25  # 12/24/36-week year-to-date periods of 52/53-week fiscal calendars
+REVENUE_PRIORITY = (
+    "Revenues",
+    "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "SalesRevenueNet",
+)
 EXTRA_TAGS: dict[str, tuple[str, ...]] = {
     "assets_current": ("AssetsCurrent",),
     "liabilities_current": ("LiabilitiesCurrent",),
@@ -44,7 +50,8 @@ def _d(m: F.Metric) -> dict[str, Any]:
 
 def _flow(vis: Sequence[F.Fact], key: str, end: date | None = None) -> F.Metric:
     tags = EXTRA_TAGS.get(key)
-    return F.resolve_flow_ttm(vis, key, end, tags) if tags else F.resolve_flow_ttm(vis, key, end)
+    prefer = REVENUE_PRIORITY if key == "revenue" else None
+    return F.resolve_flow_ttm(vis, key, end, tags, tol=PERIOD_TOL_DAYS, prefer=prefer)
 
 
 def _inst(vis: Sequence[F.Fact], key: str) -> F.Metric:
@@ -131,8 +138,12 @@ def compute_fundamentals(
     actions: Sequence[Any] = (),
     last_adj_price: float | None = None,
     last_raw_price: float | None = None,
+    facts: Sequence[F.Fact] | None = None,
 ) -> dict[str, Any]:
-    facts = load_facts(session, security_id, decision_at)
+    if (
+        facts is None
+    ):  # a caller sweeping many dates may pass the full fact list: ``visible`` still cuts at decision_at
+        facts = load_facts(session, security_id, decision_at)
     vis = F.visible(facts, decision_at)
     out: dict[str, Any] = {
         "as_of": decision_at.isoformat(),

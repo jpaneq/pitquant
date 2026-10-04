@@ -1974,6 +1974,9 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "daily_picks",
         "daily_evaluations",
         "daily_virtual_evaluations",
+        "research_feature_snapshots",
+        "research_targets",
+        "filing_analysis_snapshots",
     }
 )
 
@@ -1981,4 +1984,5 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
 from pitquant.btc import models as _btc_models  # noqa: E402, F401
 from pitquant.db import models_lab as _models_lab  # noqa: E402,F401  (prediction/strategy tables)
 from pitquant.db import models_positions as _models_positions  # noqa: E402,F401
+from pitquant.db import models_research as _models_research  # noqa: E402,F401
 from pitquant.db import models_routine as _models_routine  # noqa: E402,F401

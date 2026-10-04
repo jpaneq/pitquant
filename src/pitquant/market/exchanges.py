@@ -24,10 +24,14 @@ SUFFIX: dict[str, tuple[str, str, str]] = {
     "HK": ("XHKG", "HKD", "ASIA"),
     "AX": ("XASX", "AUD", "ASIA"),
     "TO": ("XTSE", "CAD", "NA"),
+    # index symbols (Yahoo ``^`` prefix): their own key, never read as an exchange suffix. PRICE indices, not total return (see benchmark contract, ADR-0048)
+    "^IBEX": ("XMAD", "EUR", "ES"),
 }
 
 
 def suffix_of(symbol: str) -> str:
+    if symbol.startswith("^"):
+        return symbol.upper()
     return symbol.rsplit(".", 1)[-1].upper() if "." in symbol else ""
 
 

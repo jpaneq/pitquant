@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **94**.
+Tablas: **97**.
 
 ## Procedencia y calidad
 
@@ -951,7 +951,7 @@ Tablas: **94**.
 | `detail` | JSON | no |  |
 | `created_at` | DATETIME | no |  |
 
-- CHECK `state IN ('IN_PROGRESS','TARGET_HIT','STOP_HIT','AMBIGUOUS_STOP','EXPIRED')`
+- CHECK `state IN ('IN_PROGRESS','TARGET_HIT','STOP_HIT','AMBIGUOUS_STOP','AMBIGUOUS_INTRABAR','EXPIRED')`
 - INDEX ix_daily_evaluations_position_id (position_id)
 - UNIQUE (position_id, week_key)
 
@@ -975,9 +975,103 @@ Tablas: **94**.
 | `detail` | JSON | no |  |
 | `created_at` | DATETIME | no |  |
 
-- CHECK `state IN ('IN_PROGRESS','TARGET_HIT','STOP_HIT','AMBIGUOUS_STOP','EXPIRED')`
+- CHECK `state IN ('IN_PROGRESS','TARGET_HIT','STOP_HIT','AMBIGUOUS_STOP','AMBIGUOUS_INTRABAR','EXPIRED')`
 - INDEX ix_daily_virtual_evaluations_pick_id (pick_id)
 - UNIQUE (pick_id, horizon_months, week_key)
+
+### `research_feature_snapshots` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `snapshot_id` | VARCHAR(36) | no | PK |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `decision_at` | DATETIME | no |  |
+| `decision_session` | DATE | no |  |
+| `exchange` | VARCHAR(8) | no |  |
+| `feature_set_version` | VARCHAR(30) | no |  |
+| `cohort_definition` | VARCHAR(60) | no |  |
+| `cohort_size` | INTEGER | no |  |
+| `features` | JSON | no |  |
+| `ranks` | JSON | no |  |
+| `meta` | JSON | no |  |
+| `feature_hash` | VARCHAR(64) | no |  |
+| `code_commit` | VARCHAR(40) | sí |  |
+| `created_at` | DATETIME | no |  |
+
+- INDEX ix_research_feature_snapshots_decision_at (decision_at)
+- INDEX ix_research_feature_snapshots_decision_session (decision_session)
+- INDEX ix_research_feature_snapshots_security_id (security_id)
+- UNIQUE (security_id, decision_at, feature_set_version)
+
+### `research_targets` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `target_id` | VARCHAR(36) | no | PK |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `decision_at` | DATETIME | no |  |
+| `horizon_months` | INTEGER | no |  |
+| `target_set_version` | VARCHAR(30) | no |  |
+| `benchmark_id` | VARCHAR(36) | sí | FK→`securities.security_id` |
+| `benchmark_ticker` | VARCHAR(20) | sí |  |
+| `benchmark_type` | VARCHAR(40) | sí |  |
+| `benchmark_source` | VARCHAR(60) | sí |  |
+| `entry_session` | DATE | sí |  |
+| `exit_session` | DATE | sí |  |
+| `label_available_at` | DATETIME | no |  |
+| `status` | VARCHAR(12) | no |  |
+| `reason` | VARCHAR(200) | sí |  |
+| `security_total_return` | FLOAT | sí |  |
+| `benchmark_total_return` | FLOAT | sí |  |
+| `excess_total_return` | FLOAT | sí |  |
+| `outperform` | BOOLEAN | sí |  |
+| `direction_up` | BOOLEAN | sí |  |
+| `max_drawdown` | FLOAT | sí |  |
+| `drawdown_10` | BOOLEAN | sí |  |
+| `drawdown_15` | BOOLEAN | sí |  |
+| `drawdown_20` | BOOLEAN | sí |  |
+| `details` | JSON | no |  |
+| `created_at` | DATETIME | no |  |
+
+- CHECK `status IN ('OK','UNAVAILABLE')`
+- INDEX ix_research_targets_decision_at (decision_at)
+- INDEX ix_research_targets_security_id (security_id)
+- UNIQUE (security_id, decision_at, horizon_months, target_set_version)
+
+### `filing_analysis_snapshots` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `analysis_id` | VARCHAR(36) | no | PK |
+| `accession_number` | VARCHAR(25) | no | FK→`sec_filings.accession_number` |
+| `security_id` | VARCHAR(36) | no | FK→`securities.security_id` |
+| `issuer_id` | VARCHAR(36) | sí | FK→`issuers.issuer_id` |
+| `form` | VARCHAR(20) | no |  |
+| `period_end` | DATE | sí |  |
+| `accepted_at` | DATETIME | no |  |
+| `filing_available_at` | DATETIME | no |  |
+| `document_hash` | VARCHAR(64) | no |  |
+| `analysis_schema_version` | VARCHAR(30) | no |  |
+| `prompt_version` | VARCHAR(30) | no |  |
+| `model_provider` | VARCHAR(40) | no |  |
+| `model_name` | VARCHAR(80) | no |  |
+| `model_version` | VARCHAR(80) | no |  |
+| `analysis` | JSON | no |  |
+| `analysis_hash` | VARCHAR(64) | no |  |
+| `status` | VARCHAR(10) | no |  |
+| `confidence` | FLOAT | sí |  |
+| `warnings` | JSON | no |  |
+| `analysis_available_at` | DATETIME | no |  |
+| `is_retrospective` | BOOLEAN | no |  |
+| `created_at` | DATETIME | no |  |
+
+- CHECK `analysis_available_at >= filing_available_at OR is_retrospective`
+- CHECK `status IN ('COMPLETE','PARTIAL','FAILED')`
+- INDEX ix_filing_analysis_snapshots_accession_number (accession_number)
+- INDEX ix_filing_analysis_snapshots_analysis_available_at (analysis_available_at)
+- INDEX ix_filing_analysis_snapshots_filing_available_at (filing_available_at)
+- INDEX ix_filing_analysis_snapshots_security_id (security_id)
+- UNIQUE (accession_number, analysis_schema_version, prompt_version, model_name, model_version, document_hash)
 
 ### `index_anchor_snapshots` 🔒
 

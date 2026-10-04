@@ -26,7 +26,7 @@ from pitquant.positions import routine as rt
 from pitquant.security_master.service import SecurityMaster
 
 BENCHMARKS = {
-    "BENCHMARK": ["SPY"]
+    "BENCHMARK": ["SPY", "URTH", "^IBEX"]
 }  # the designated benchmark proxy of the Analyzer (relative strength, beta): ingested, never picked by the routine
 YAHOO_SOURCE = "YAHOO_CHART:eod"
 
@@ -34,6 +34,8 @@ YAHOO_SOURCE = "YAHOO_CHART:eod"
 def split_symbol(entry: str, market: str) -> tuple[str, str]:
     """('SAN', 'SAN.MC') for the IBEX list; an explicit suffix wins."""
     entry = entry.upper().strip()
+    if entry.startswith("^"):  # index symbol: its own calendar key, no suffix is appended
+        return entry, entry
     if "." in entry:
         return entry.rsplit(".", 1)[0], entry
     return entry, entry + rt.VENDOR_SUFFIX[market]
