@@ -13,6 +13,7 @@ export const SECTIONS = [
   ['simulation', 'Simulation Lab'],
   ['diaria', 'Pruebas diarias'],
   ['rutina', 'Rutina diaria de compras simuladas'],
+  ['backtest', 'Backtest histórico: ¿acertaba la regla?'],
   ['bitcoin', 'Bitcoin'],
   ['research', 'Research Lab'],
   ['estado', 'Estado de datos y ajustes'],
@@ -115,6 +116,15 @@ export function HelpPage() {
         <P><b>Cada semana</b> se evalúa cada predicción abierta con las velas diarias posteriores a la entrada: objetivo cumplido, stop, o vencida al terminar el plazo (si ambos se tocan el mismo día se cuenta como stop). El informe en <b>texto plano</b> (menú Rutina diaria → Copiar informe) lista parámetros, actividad, datos no accesibles, resultados y puntos a revisar: pásamelo para reajustar lo que no se cumpla.</P>
         <P><b>No comprar también cuenta:</b> cada «no compra» se valora igual, como si se hubiera comprado con el mismo objetivo y stop: acierta si el objetivo no se habría cumplido; es una oportunidad perdida si sí. <b>Horario:</b> la ejecución programada solo analiza los mercados abiertos en ese momento (Madrid, Nueva York; Bitcoin siempre).</P>
         <P><b>De dónde salen los precios:</b> Bitcoin, de Binance (público). Las acciones, de Yahoo Finance (gratuito, sin clave, no oficial: puede fallar o cambiar y es solo para esta simulación), salvo AAPL y MSFT que ya tienen datos de otra fuente; si defines <code>PITQUANT_EODHD_API_KEY</code> se usará esa. <code>routine-run --refresh</code> da de alta y descarga todos los valores de la lista. No es tiempo real: el precio de decisión es el último cierre diario (STALE si falta alguna sesión).</P>
+
+        <H id="backtest">Backtest histórico: ¿acertaba la regla?</H>
+        <P>Para saber si el algoritmo acierta en <b>subida y bajada</b> no hace falta esperar meses: el backtest rehace el pasado. En cada fecha (una al mes desde 2012) la regla ve <b>solo lo que se sabía entonces</b> y emite una previsión por horizonte: <b>SUBE</b>, <b>BAJA</b> o <b>NEUTRAL</b>. Después se mira qué hizo el precio y se compara con la <b>tasa base</b> (cuántas veces sube un valor cualquiera en ese plazo): lo que importa es la <i>ventaja</i> sobre esa base. Se genera con <code>python -m pitquant.cli backtest-run</code> y aparece en la página Rutina diaria.</P>
+        <Ul>
+          <li><b>Holdout intacto:</b> el periodo oct-2022 → sep-2025 nunca se usa.</li>
+          <li><b>No busca valores exactos:</b> mira tendencias (¿subió o bajó?) y si se cumplió el objetivo o el stop.</li>
+          <li><b>Cuidado:</b> lista de empresas actuales (sesgo de supervivencia), fuente gratuita no oficial, ventanas solapadas (la muestra efectiva es menor que N) y sin costes. Con N pequeño no se muestran porcentajes.</li>
+        </Ul>
+        <P><b>Programar las pruebas:</b> doble clic en <code>Instalar_rutina_diaria.command</code> (lunes a viernes 09:30 y 16:00, hora de Madrid; cada ejecución analiza solo las bolsas abiertas). Para quitarla, el mismo archivo con el argumento <code>desinstalar</code>.</P>
 
         <H id="bitcoin">Bitcoin</H>
         <QuoteVsModelBar />

@@ -583,6 +583,33 @@ def _routine_run(args: argparse.Namespace) -> int:
     return 0
 
 
+def _backtest_run(args: argparse.Namespace) -> int:
+    """Retrospective replay of the routine's rule over the stored history (holdout untouched); plain-text report in data/reports/."""
+    from pitquant.positions.backtest import run_backtest
+
+    settings = get_settings()
+    with make_session_factory(make_engine(settings.database.url))() as session:
+        text, summary = run_backtest(
+            session,
+            settings,
+            start=date.fromisoformat(args.start),
+            step_sessions=args.step,
+            max_tickers=args.max_tickers,
+        )
+    out = Path(args.out or "data/reports") / f"backtest_rutina_{datetime.now(UTC).date()}.txt"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(text, encoding="utf-8")
+    print(
+        json.dumps(
+            {"report_file": str(out), "rows": summary["rows"], "skipped": summary["skipped"]},
+            indent=2,
+        )
+    )
+    if args.print_report:
+        print(text)
+    return 0
+
+
 def _sim_update(args: argparse.Namespace) -> int:
     """Append-only event-log update of the active paper trades; idempotent (a second run without new bars appends 0 events)."""
     from datetime import UTC
@@ -886,6 +913,21 @@ def main(argv: list[str] | None = None) -> int:
     )
     rr.add_argument("--out", default=None, help="directory for the report (default data/reports)")
     rr.set_defaults(func=_routine_run)
+    bt = sub.add_parser(
+        "backtest-run",
+        help="retrospective walk-forward replay of the routine's rule (holdout untouched) with a plain-text report",
+    )
+    bt.add_argument("--start", default="2012-01-02")
+    bt.add_argument(
+        "--step",
+        type=int,
+        default=21,
+        help="sessions between sampled decision dates (21 ≈ monthly)",
+    )
+    bt.add_argument("--max-tickers", type=int, default=None)
+    bt.add_argument("--print-report", action="store_true")
+    bt.add_argument("--out", default=None)
+    bt.set_defaults(func=_backtest_run)
     sr = sub.add_parser(
         "simulation-replay",
         help="rebuild a paper trade from T0 + events and compare (no market data)",

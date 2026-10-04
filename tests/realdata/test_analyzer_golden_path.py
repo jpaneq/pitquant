@@ -32,7 +32,9 @@ def client() -> TestClient:
     return TestClient(create_app(f, s))
 
 
-@pytest.mark.parametrize("t,elig", [("AAPL", "FULL"), ("MSFT", "FULL"), ("KO", "FUNDAMENTAL_ONLY")])
+# KO was FUNDAMENTAL_ONLY while no price source covered it; since the free Yahoo daily bars were ingested (ADR-0043) it has real prices, so FULL is the correct state.
+# The FUNDAMENTAL_ONLY path stays covered by the synthetic SYNO security (tests/integration/test_analyzer_api.py).
+@pytest.mark.parametrize("t,elig", [("AAPL", "FULL"), ("MSFT", "FULL"), ("KO", "FULL")])
 def test_golden_securities(client: TestClient, t: str, elig: str) -> None:
     d = client.get(f"/analyzer/{t}/summary").json()
     assert d["security"]["ticker"] == t and d["availability"]["analyzer_eligibility"] == elig
@@ -53,13 +55,18 @@ def test_golden_securities(client: TestClient, t: str, elig: str) -> None:
             and q["badge"] in ("EOD", "STALE")
             and q["source"]
         )
+        min_bars = (
+            3500 if t == "KO" else 5000
+        )  # KO comes from the Yahoo daily source since 2011 (canonical V1 start); AAPL/MSFT carry the 1995+ vendor history
         tech = client.get(f"/analyzer/{t}/technicals").json()
         assert (
-            tech["n_bars"] > 5000
+            tech["n_bars"] > min_bars
             and tech["indicators"]["sma200"] > 0
             and tech["relative_strength"]["benchmark"] in ("SPY", "VTI")
         )
-        assert client.get(f"/analyzer/{t}/chart", params={"range": "MAX"}).json()["n_bars"] > 5000
+        assert (
+            client.get(f"/analyzer/{t}/chart", params={"range": "MAX"}).json()["n_bars"] > min_bars
+        )
     else:
         assert (
             d["quote"]["status"] == "NO_DATA"

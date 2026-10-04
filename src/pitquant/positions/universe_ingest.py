@@ -24,6 +24,9 @@ from pitquant.market.providers.yahoo import YahooChartMarketDataProvider
 from pitquant.positions import routine as rt
 from pitquant.security_master.service import SecurityMaster
 
+BENCHMARKS = {
+    "BENCHMARK": ["SPY"]
+}  # the designated benchmark proxy of the Analyzer (relative strength, beta): ingested, never picked by the routine
 EXCHANGE_OF_SUFFIX = {"MC": ("XMAD", "EUR", "ES"), "US": ("XNYS", "USD", "US")}
 YAHOO_SOURCE = "YAHOO_CHART:eod"
 
@@ -100,7 +103,9 @@ def ingest_universe(
     else:
         prov, source = YahooChartMarketDataProvider(), "YAHOO"
     out: dict[str, str] = {}
-    for market, entries in (universe or rt.load_universe()).items():
+    for market, entries in (
+        {**(universe or rt.load_universe()), **(BENCHMARKS if universe is None else {})}
+    ).items():
         for entry in entries:
             base, vendor = split_symbol(entry, market)
             try:

@@ -34,6 +34,18 @@ def make_routine_router(cfg: Settings) -> APIRouter:
     def report(db: DB, days: int = 14) -> str:
         return build_report(db, cfg, days=max(1, min(days, 365)))
 
+    @r.get("/backtest-report", response_class=PlainTextResponse)
+    def backtest_report() -> str:
+        """Latest backtest report written by ``backtest-run`` (run from the command line)."""
+        from pathlib import Path
+
+        files = sorted(Path("data/reports").glob("backtest_rutina_*.txt"))
+        return (
+            files[-1].read_text(encoding="utf-8")
+            if files
+            else "Todavía no hay backtest: ejecuta  python -m pitquant.cli backtest-run\n"
+        )
+
     @r.get("/params")
     def params() -> dict[str, Any]:
         return {"version": PARAMS_VERSION, "params": PARAMS}

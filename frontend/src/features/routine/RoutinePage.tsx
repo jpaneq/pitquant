@@ -17,6 +17,7 @@ async function fetchText(path: string): Promise<string> {
 export function RoutinePage() {
   const client = useQueryClient()
   const report = useQuery({ queryKey: ['routine-report'], queryFn: () => fetchText('/routine/report?days=30') })
+  const backtest = useQuery({ queryKey: ['routine-backtest'], queryFn: () => fetchText('/routine/backtest-report') })
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState('')
   const [last, setLast] = useState<RunResult | null>(null)
@@ -58,6 +59,12 @@ export function RoutinePage() {
           {report.isPending ? <p className="text-xs text-muted">Generando informe…</p> : null}
           {report.isError ? <p role="alert" className="text-xs text-bad">No se pudo generar el informe.</p> : null}
           <pre aria-label="Informe de la rutina" className="max-h-[70vh] overflow-auto whitespace-pre rounded bg-surface-2 p-3 text-[11px] leading-snug">{report.data}</pre>
+        </CardBody>
+      </Card>
+      <Card>
+        <CardHeader title="Backtest histórico (último informe)" sub="¿Acertaba la regla en subida y bajada? Retrospectivo, sin mirar el futuro, holdout intacto · se genera con: python -m pitquant.cli backtest-run" />
+        <CardBody>
+          <pre aria-label="Informe de backtest" className="max-h-[70vh] overflow-auto whitespace-pre rounded bg-surface-2 p-3 text-[11px] leading-snug">{backtest.data}</pre>
         </CardBody>
       </Card>
     </section>
