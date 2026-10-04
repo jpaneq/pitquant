@@ -6,7 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -535,6 +535,35 @@ def _daily_test(args: argparse.Namespace) -> int:
     return 0
 
 
+def _routine_run(args: argparse.Namespace) -> int:
+    """Daily simulated-buy routine: optional EOD refresh, one analysis per market, weekly evaluation, plain-text report file."""
+    import subprocess
+
+    from pitquant.positions.routine import evaluate_positions, run_daily
+    from pitquant.positions.routine_report import build_report
+
+    settings = get_settings()
+    if args.refresh:
+        script = Path(__file__).resolve().parents[2] / "scripts" / "ingest_analyzer_demo_data.py"
+        subprocess.run([sys.executable, str(script)], check=True)
+    with make_session_factory(make_engine(settings.database.url))() as session:
+        ran = run_daily(session, settings) if not args.report_only else None
+        evaluated = evaluate_positions(session, settings) if not args.report_only else None
+        session.commit()
+        text = build_report(session, settings)
+    out = Path(args.out or "data/reports") / f"informe_rutina_{datetime.now(UTC).date()}.txt"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(text, encoding="utf-8")
+    print(
+        json.dumps(
+            {"run": ran, "evaluation": evaluated, "report_file": str(out)}, indent=2, default=str
+        )
+    )
+    if args.print_report:
+        print(text)
+    return 0
+
+
 def _sim_update(args: argparse.Namespace) -> int:
     """Append-only event-log update of the active paper trades; idempotent (a second run without new bars appends 0 events)."""
     from datetime import UTC
@@ -820,6 +849,19 @@ def main(argv: list[str] | None = None) -> int:
     )
     dt.add_argument("--json", action="store_true")
     dt.set_defaults(func=_daily_test)
+    rr = sub.add_parser(
+        "routine-run",
+        help="daily simulated-buy routine (IBEX/SP500/MSCI World/BTC), weekly evaluation and a plain-text report",
+    )
+    rr.add_argument("--refresh", action="store_true", help="refresh EOD bars first")
+    rr.add_argument(
+        "--report-only",
+        action="store_true",
+        help="do not analyse or evaluate: only rebuild the report",
+    )
+    rr.add_argument("--print-report", action="store_true")
+    rr.add_argument("--out", default=None, help="directory for the report (default data/reports)")
+    rr.set_defaults(func=_routine_run)
     sr = sub.add_parser(
         "simulation-replay",
         help="rebuild a paper trade from T0 + events and compare (no market data)",

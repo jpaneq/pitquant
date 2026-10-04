@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **91**.
+Tablas: **93**.
 
 ## Procedencia y calidad
 
@@ -908,6 +908,52 @@ Tablas: **91**.
 
 - CHECK `recommendation IN ('ADD','HOLD','SELL')`
 - INDEX ix_position_reviews_position_id (position_id)
+
+### `daily_picks` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `pick_id` | VARCHAR(36) | no | PK |
+| `run_date` | DATE | no |  |
+| `market` | VARCHAR(12) | no |  |
+| `ticker` | VARCHAR(20) | sí |  |
+| `security_id` | VARCHAR(64) | sí |  |
+| `status` | VARCHAR(10) | no |  |
+| `params_version` | VARCHAR(30) | no |  |
+| `params` | JSON | no |  |
+| `price` | FLOAT | sí |  |
+| `price_freshness` | VARCHAR(20) | sí |  |
+| `decisions` | JSON | no |  |
+| `unavailable` | JSON | no |  |
+| `created_at` | DATETIME | no |  |
+
+- CHECK `market IN ('IBEX','SP500','MSCI_WORLD','BTC')`
+- CHECK `status IN ('ANALYZED','NO_DATA')`
+- INDEX ix_daily_picks_run_date (run_date)
+- UNIQUE (run_date, market)
+
+### `daily_evaluations` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `evaluation_id` | VARCHAR(36) | no | PK |
+| `position_id` | VARCHAR(36) | no | FK→`paper_positions.position_id` |
+| `week_key` | VARCHAR(12) | no |  |
+| `evaluated_at` | DATETIME | no |  |
+| `state` | VARCHAR(16) | no |  |
+| `price` | FLOAT | no |  |
+| `return_pct` | FLOAT | no |  |
+| `target_progress` | FLOAT | sí |  |
+| `max_favorable` | FLOAT | sí |  |
+| `max_adverse` | FLOAT | sí |  |
+| `outcome_date` | DATE | sí |  |
+| `bars_used` | INTEGER | no |  |
+| `detail` | JSON | no |  |
+| `created_at` | DATETIME | no |  |
+
+- CHECK `state IN ('IN_PROGRESS','TARGET_HIT','STOP_HIT','AMBIGUOUS_STOP','EXPIRED')`
+- INDEX ix_daily_evaluations_position_id (position_id)
+- UNIQUE (position_id, week_key)
 
 ### `index_anchor_snapshots` 🔒
 

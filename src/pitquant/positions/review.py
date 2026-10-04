@@ -53,6 +53,9 @@ class Context:
     valuation_label: str | None = None  # Cheap | Fair | Expensive (equities only)
     fundamentals_label: str | None = None  # Strong | Moderate | Weak (equities only)
     support_lower: float | None = None  # nearest confirmed support zone below the price
+    vol_annual: float | None = (
+        None  # annualised realised volatility (63d equities / 90d BTC); used to size routine targets and stops
+    )
     extra: dict[str, Any] = field(default_factory=dict)
 
 

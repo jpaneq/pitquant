@@ -12,6 +12,7 @@ export const SECTIONS = [
   ['posiciones', 'Compras simuladas: ampliar, mantener o vender'],
   ['simulation', 'Simulation Lab'],
   ['diaria', 'Pruebas diarias'],
+  ['rutina', 'Rutina diaria de compras simuladas'],
   ['bitcoin', 'Bitcoin'],
   ['research', 'Research Lab'],
   ['estado', 'Estado de datos y ajustes'],
@@ -103,6 +104,16 @@ export function HelpPage() {
         <P>Una rutina lanza cada día el plan de reglas sobre varios valores y abre operaciones paper para los que lo cumplen. Se ejecuta desde el terminal:</P>
         <pre className="overflow-auto rounded bg-surface-2 p-3 text-xs">python -m pitquant.cli strategy-daily-test --refresh --json</pre>
         <P>Es idempotente: ejecutarla dos veces el mismo día no duplica. Los resultados salen con avisos como <i>INSUFFICIENT_SAMPLE</i> (muestra pequeña) y <i>COSTS_NOT_MODELED</i> (sin comisiones). Las estrategias basadas en predicción están deshabilitadas hasta que exista un modelo validado.</P>
+
+        <H id="rutina">Rutina diaria de compras simuladas</H>
+        <P>Cada día el programa analiza <b>una empresa del IBEX, una del S&amp;P 500, una del MSCI World y Bitcoin</b> (rotación automática entre las que tienen datos). Para cada horizonte —<b>1, 3, 6 y 12 meses</b>— decide con las reglas si abre una compra simulada y, si lo hace, fija:</P>
+        <Ul>
+          <li><b>Precio de entrada</b>: el precio del momento.</li>
+          <li><b>Precio objetivo</b>: entrada × (1 + 0,5 · volatilidad anual · √(meses/12)), con un mínimo del 2 %.</li>
+          <li><b>Stop</b>: el mayor entre 2 ATR y 0,35 · volatilidad · √(meses/12).</li>
+        </Ul>
+        <P><b>Cada semana</b> se evalúa cada predicción abierta con las velas diarias posteriores a la entrada: objetivo cumplido, stop, o vencida al terminar el plazo (si ambos se tocan el mismo día se cuenta como stop). El informe en <b>texto plano</b> (menú Rutina diaria → Copiar informe) lista parámetros, actividad, datos no accesibles, resultados y puntos a revisar: pásamelo para reajustar lo que no se cumpla.</P>
+        <P><b>Qué no se puede acceder hoy:</b> sin una fuente de precios no hay datos del IBEX ni del MSCI World; con el token de demostración solo hay precios de AAPL y MSFT. Esos mercados aparecen en el informe como «sin datos», nunca se inventan. Es dinero simulado y las reglas están sin validar.</P>
 
         <H id="bitcoin">Bitcoin</H>
         <QuoteVsModelBar />

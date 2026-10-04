@@ -65,7 +65,7 @@ def equity_context(
     ind, labels = tech.get("indicators", {}), (ana.get("labels") or {})
     ctx = engine.Context(
         price=float(quote["price"]), atr14=ind.get("atr14"), trend_state=(tech.get("trend") or {}).get("state"), close_vs_sma200=ind.get("close_vs_sma200"), close_vs_sma50=ind.get("close_vs_sma50"),
-        ret_6m=(tech.get("momentum") or {}).get("ret126"), rsi14=ind.get("rsi14"), valuation_label=(labels.get("valuation") or {}).get("label"), fundamentals_label=(labels.get("fundamentals") or {}).get("label"),
+        ret_6m=(tech.get("momentum") or {}).get("ret126"), rsi14=ind.get("rsi14"), vol_annual=(tech.get("risk") or {}).get("vol63"), valuation_label=(labels.get("valuation") or {}).get("label"), fundamentals_label=(labels.get("fundamentals") or {}).get("label"),
         support_lower=_nearest_support((tech.get("support_resistance") or {}).get("supports", []), float(quote["price"])),
     )  # fmt: skip
     return ctx, {
@@ -133,7 +133,7 @@ def btc_context(session: Session, now: datetime) -> tuple[engine.Context, dict[s
     price = float(q["price"])
     zones = (payload.get("support_resistance") or {}).get("supports", [])
     ctx = engine.Context(
-        price=price, atr14=vol.get("ATR14"), trend_state=state, close_vs_sma200=d200, close_vs_sma50=d50, ret_6m=None if r180 is None else math.expm1(r180), rsi14=None,
+        price=price, atr14=vol.get("ATR14"), trend_state=state, close_vs_sma200=d200, close_vs_sma50=d50, ret_6m=None if r180 is None else math.expm1(r180), rsi14=None, vol_annual=vol.get("realized_vol_90d"),
         support_lower=_nearest_support(zones, price),
     )  # fmt: skip
     return ctx, {
@@ -210,6 +210,7 @@ def context_for_asset(
 def open_position(
     session: Session, settings: Settings, *, asset_type: str, security_id: str | None, horizon_months: int, quantity: float | None = None, notional: float | None = None, price: float | None = None,
     target_return: float | None = None, stop_price: float | None = None, note: str = "", now: datetime | None = None,
+    price_source: str | None = None, stop_rule: str | None = None,
 ) -> PaperPosition:  # fmt: skip
     now = now or utc_now()
     if asset_type not in ("EQUITY", "BTC"):
@@ -223,7 +224,7 @@ def open_position(
         raise PositionError("a security is required for an equity position")
     ctx, meta = context_for_asset(session, settings, asset_type, sid, now)
     px, source, fresh = (
-        (float(price), "USER", None)
+        (float(price), price_source or "USER", meta.get("freshness") if price_source else None)
         if price is not None
         else (ctx.price, str(meta["price_source"]), meta.get("freshness"))
     )
@@ -245,7 +246,7 @@ def open_position(
     )
     row = PaperPosition(
         asset_type=asset_type, security_id=sid, horizon_months=horizon_months, target_return=target_return, stop_price=stop_price if stop_price is not None else default_stop,
-        stop_rule="USER" if stop_price is not None else ("ATR14_2X_AT_OPEN" if default_stop else "NONE"), note=note[:300], is_synthetic=fixture_mode() or meta.get("data_mode") == "SYNTHETIC_TEST_DATA", opened_at=now,
+        stop_rule=(stop_rule or "USER") if stop_price is not None else ("ATR14_2X_AT_OPEN" if default_stop else "NONE"), note=note[:300], is_synthetic=fixture_mode() or meta.get("data_mode") == "SYNTHETIC_TEST_DATA", opened_at=now,
     )  # fmt: skip
     session.add(row)
     session.flush()
@@ -273,6 +274,7 @@ def add_event(
     quantity: float | None = None,
     price: float | None = None,
     now: datetime | None = None,
+    price_source: str | None = None,
 ) -> PaperPositionEvent:
     now = now or utc_now()
     pos = session.get_one(PaperPosition, position_id)
@@ -282,6 +284,7 @@ def add_event(
     if kind not in ("ADD", "REDUCE", "CLOSE"):
         raise PositionError("event type must be ADD, REDUCE or CLOSE")
     px, source, fresh = _price(session, settings, pos.asset_type, pos.security_id, now, price)
+    source = price_source or source
     if kind == "CLOSE":
         qty = st["quantity"]
     else:

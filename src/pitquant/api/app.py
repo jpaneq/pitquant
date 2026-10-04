@@ -177,6 +177,9 @@ def create_app(factory: sessionmaker[Session], settings: Settings | None = None)
 
     app.include_router(make_simulation_router(cfg))
 
+    from pitquant.api.routine import make_routine_router
+
+    app.include_router(make_routine_router(cfg))
     from pitquant.api.positions import make_positions_router
 
     app.include_router(make_positions_router(cfg))
@@ -238,6 +241,7 @@ def _mount_frontend(app: FastAPI) -> None:
         "/status",
         "/settings",
         "/ayuda",
+        "/rutina",
         "/bitcoin",
         "/bitcoin/{page}",
     ):

@@ -58,6 +58,8 @@ GROUPS = {
         "paper_positions",
         "paper_position_events",
         "position_reviews",
+        "daily_picks",
+        "daily_evaluations",
         "index_anchor_snapshots",
         "index_current_anchors",
         "security_profiles",
