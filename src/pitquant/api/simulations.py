@@ -130,7 +130,11 @@ def make_simulation_router(cfg: Settings) -> APIRouter:
     def summary(db: DB) -> dict[str, Any]:
         s = sim.evidence_summary(db)
         sims = list(
-            db.scalars(select(Simulation.simulation_id).where(Simulation.asset_type == "EQUITY", Simulation.is_synthetic.is_(False)))
+            db.scalars(
+                select(Simulation.simulation_id).where(
+                    Simulation.asset_type == "EQUITY", Simulation.is_synthetic.is_(False)
+                )
+            )
         )
         groups = {
             "OPEN": 0,

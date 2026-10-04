@@ -1154,7 +1154,11 @@ class SimulationEvidenceSummary:
 
 def evidence_summary(session: Session, min_n: int = MIN_N_FOR_STATS) -> SimulationEvidenceSummary:
     sims = list(
-        session.scalars(select(Simulation.simulation_id).where(Simulation.asset_type == "EQUITY", Simulation.is_synthetic.is_(False)))
+        session.scalars(
+            select(Simulation.simulation_id).where(
+                Simulation.asset_type == "EQUITY", Simulation.is_synthetic.is_(False)
+            )
+        )
     )  # synthetic trades are never evidence
     latest = [o for o in (latest_outcome(session, s) for s in sims) if o is not None]
     by_state: dict[str, int] = {}
@@ -1264,7 +1268,13 @@ def insights(
     trades shows its N and the flag INSUFFICIENT_SAMPLE instead of statistics."""
     if by not in SEGMENTS:
         raise SimulationError(f"unknown segmentation {by!r}; use one of {SEGMENTS}")
-    sims = list(session.scalars(select(Simulation).where(Simulation.asset_type == "EQUITY", Simulation.is_synthetic.is_(False))))
+    sims = list(
+        session.scalars(
+            select(Simulation).where(
+                Simulation.asset_type == "EQUITY", Simulation.is_synthetic.is_(False)
+            )
+        )
+    )
     vols = sorted(
         v
         for v in (((x.technical_snapshot or {}).get("risk") or {}).get("vol63") for x in sims)
