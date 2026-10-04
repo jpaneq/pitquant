@@ -406,16 +406,31 @@ def strategy_test(
         result = update(session, sim.simulation_id, snap.decision_at + timedelta(days=horizon))
         outcome = latest_outcome(session, sim.simulation_id)
         assert outcome is not None
+        target = snap.decision_at + timedelta(days=horizon)
+        target_rows = [
+            r
+            for r in known_data(session, target, snap.cohort)
+            if r.metric == "spot" and r.exchange_timestamp == target
+        ]
+        if len(target_rows) != 1:
+            raise ValueError("EXACT_STRATEGY_BENCHMARK_TARGET_REQUIRED")
+        benchmark = target_rows[0].payload["close"] / snap.payload["price_features"]["price"] - 1
+        trade_return = outcome.realized_return
+        if outcome.is_closed and outcome.entry_date is None:
+            trade_return = 0.0  # cash-only period; no fictional trade fill
         trades.append(
             {
                 "snapshot_id": snap.snapshot_id,
                 "simulation_id": sim.simulation_id,
                 "status": result["state"],
-                "return": outcome.realized_return,
-                "excess_vs_buy_and_hold": outcome.excess_return_vs_benchmark,
+                "return": trade_return,
+                "excess_vs_buy_and_hold": None
+                if trade_return is None
+                else trade_return - benchmark,
                 "drawdown": outcome.max_drawdown,
                 "r": outcome.realized_r,
-                "benchmark_return": outcome.details.get("benchmark_return"),
+                "benchmark_return": benchmark,
+                "benchmark_window": "T0_TO_HORIZON_INCLUDING_CASH_AFTER_EARLY_EXIT",
                 "cash_return": 0,
             }
         )

@@ -198,7 +198,7 @@ def test_strategy_harness_reuses_event_store_and_separates_overlapping_trades(bt
     snap = freeze(btc, T0, Cohort.SYNTHETIC)
     result = strategy_test(btc, [snap], 7)
     assert result["returns"][0] == pytest.approx(0.06)
-    assert result["trades"][0]["excess_vs_buy_and_hold"] == pytest.approx(-0.02)
+    assert result["trades"][0]["excess_vs_buy_and_hold"] == pytest.approx(-0.04)
     assert result["evaluation_unit"] == "INDEPENDENT_OVERLAPPING_TRADES_NOT_PORTFOLIO"
     assert strategy_test(btc, [snap], 7) == result
 
