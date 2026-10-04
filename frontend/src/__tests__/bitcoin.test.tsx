@@ -4,6 +4,11 @@ import { MemoryRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BitcoinPage } from '../features/bitcoin/BitcoinPage'
 
+vi.mock('lightweight-charts', () => ({
+  ColorType: { Solid: 'solid' }, LineSeries: {},
+  createChart: () => ({ addSeries: () => ({ setData: vi.fn() }), remove: vi.fn() }),
+}))
+
 describe('Bitcoin audit workspace', () => {
   it('keeps prediction outputs absent and reveal disabled before freeze', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({

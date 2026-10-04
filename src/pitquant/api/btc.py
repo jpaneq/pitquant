@@ -80,6 +80,15 @@ def make_btc_router() -> APIRouter:
                 503, "BTC_LIVE_QUOTE_UNAVAILABLE", headers={"Retry-After": "5"}
             ) from exc
 
+    @router.get("/quote/history")
+    def quote_history() -> dict[str, Any]:
+        if os.environ.get("PITQUANT_E2E_FIXTURE") == "1":
+            return {"status": "DISABLED", "points": []}
+        try:
+            return live_quote.history()
+        except (OSError, ValueError, KeyError, TypeError, IndexError) as exc:
+            raise HTTPException(503, "BTC_INTRADAY_HISTORY_UNAVAILABLE") from exc
+
     @router.post("/experimental/forecast")
     def experimental_forecast(db: DB) -> dict[str, Any]:
         try:

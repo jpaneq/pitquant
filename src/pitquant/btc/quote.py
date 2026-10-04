@@ -7,6 +7,7 @@ import math
 import time
 import urllib.request
 from datetime import UTC, datetime
+from itertools import pairwise
 from threading import Lock
 from typing import Any
 
@@ -19,6 +20,8 @@ class LiveQuote:
         self._lock = Lock()
         self._cached: dict[str, Any] | None = None
         self._expires = 0.0
+        self._history: dict[str, Any] | None = None
+        self._history_expires = 0.0
 
     def get(self) -> dict[str, Any]:
         with self._lock:
@@ -56,3 +59,37 @@ class LiveQuote:
             }
             self._expires = time.monotonic() + 5
             return dict(self._cached)
+
+    def history(self) -> dict[str, Any]:
+        """Recent closed minute bars for display only; no database writes."""
+        with self._lock:
+            if self._history is not None and time.monotonic() < self._history_expires:
+                return dict(self._history)
+            request = urllib.request.Request(
+                SPOT + "/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=1000",
+                headers={"User-Agent": "PITQuant/BTC-V0"},
+            )
+            with urllib.request.urlopen(request, timeout=4) as response:
+                raw = json.loads(response.read())
+            now = utc_now()
+            points = []
+            for bar in raw:
+                closed_at = int(bar[6]) / 1000
+                price = float(bar[4])
+                if not math.isfinite(price) or price <= 0:
+                    raise ValueError("INVALID_BTC_INTRADAY_PRICE")
+                if closed_at <= now.timestamp():
+                    points.append({"time": int(bar[0]) // 1000 + 60, "value": price})
+            if not points or now.timestamp() - points[-1]["time"] > 180:
+                raise ValueError("STALE_BTC_INTRADAY_HISTORY")
+            if any(a["time"] >= b["time"] for a, b in pairwise(points)):
+                raise ValueError("INVALID_BTC_INTRADAY_ORDER")
+            self._history = {
+                "status": "AVAILABLE",
+                "interval": "1m",
+                "points": points,
+                "retrieved_at": now.isoformat(),
+                "usage": "DISPLAY_ONLY_NOT_PIT",
+            }
+            self._history_expires = time.monotonic() + 60
+            return dict(self._history)
