@@ -5,7 +5,7 @@ import { apiPost } from '../../api/client'
 import { Card, CardBody, CardHeader, InfoTip } from '../../components/ui/primitives'
 import { GLOSSARY } from '../../lib/glossary'
 
-type RunResult = { run: { run_date: string; markets: { market: string; status: string; ticker?: string; bought?: number[]; unavailable?: Record<string, string> }[] }; evaluation: { week: string; evaluations_written: number; closed: number } }
+type RunResult = { run: { run_date: string; markets: { market: string; status: string; ticker?: string; bought?: number[]; unavailable?: Record<string, string> }[] }; evaluation: { week: string; evaluations_written: number; closed: number; virtual_evaluations_written: number } }
 
 async function fetchText(path: string): Promise<string> {
   const res = await fetch(path, { headers: { Accept: 'text/plain' } })
@@ -24,7 +24,7 @@ export function RoutinePage() {
     setBusy(true)
     setMsg('')
     try {
-      setLast(await apiPost<RunResult>('/routine/run', {}))
+      setLast(await apiPost<RunResult>('/routine/run?force=true', {}))
       await client.invalidateQueries({ queryKey: ['routine-report'] })
       setMsg('Rutina ejecutada.')
     } catch (e) { setMsg(String((e as Error).message ?? e)) } finally { setBusy(false) }
@@ -48,7 +48,7 @@ export function RoutinePage() {
         <Card>
           <CardHeader title="Resultado de esta ejecución" sub={`${last.run.run_date} · semana ${last.evaluation.week}: ${last.evaluation.evaluations_written} evaluaciones, ${last.evaluation.closed} cerradas`} />
           <CardBody>
-            <ul className="space-y-1 text-xs">{last.run.markets.map((m) => <li key={m.market}><b>{m.market}</b>: {m.status === 'ANALYZED' ? `${m.ticker} · compras simuladas a ${m.bought?.length ? m.bought.join(', ') + ' meses' : 'ningún horizonte'}` : m.status === 'NO_DATA' ? `sin datos utilizables (${Object.keys(m.unavailable ?? {}).slice(0, 3).join(', ')}…)` : 'ya analizado hoy'}</li>)}</ul>
+            <ul className="space-y-1 text-xs">{last.run.markets.map((m) => <li key={m.market}><b>{m.market}</b>: {m.status === 'MARKET_CLOSED' ? 'bolsa cerrada ahora' : m.status === 'ANALYZED' ? `${m.ticker} · compras simuladas a ${m.bought?.length ? m.bought.join(', ') + ' meses' : 'ningún horizonte'}` : m.status === 'NO_DATA' ? `sin datos utilizables (${Object.keys(m.unavailable ?? {}).slice(0, 3).join(', ')}…)` : 'ya analizado hoy'}</li>)}</ul>
           </CardBody>
         </Card>
       ) : null}

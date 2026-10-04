@@ -113,7 +113,8 @@ export function HelpPage() {
           <li><b>Stop</b>: el mayor entre 2 ATR y 0,35 · volatilidad · √(meses/12).</li>
         </Ul>
         <P><b>Cada semana</b> se evalúa cada predicción abierta con las velas diarias posteriores a la entrada: objetivo cumplido, stop, o vencida al terminar el plazo (si ambos se tocan el mismo día se cuenta como stop). El informe en <b>texto plano</b> (menú Rutina diaria → Copiar informe) lista parámetros, actividad, datos no accesibles, resultados y puntos a revisar: pásamelo para reajustar lo que no se cumpla.</P>
-        <P><b>Qué no se puede acceder hoy:</b> sin una fuente de precios no hay datos del IBEX ni del MSCI World; con el token de demostración solo hay precios de AAPL y MSFT. Esos mercados aparecen en el informe como «sin datos», nunca se inventan. Es dinero simulado y las reglas están sin validar.</P>
+        <P><b>No comprar también cuenta:</b> cada «no compra» se valora igual, como si se hubiera comprado con el mismo objetivo y stop: acierta si el objetivo no se habría cumplido; es una oportunidad perdida si sí. <b>Horario:</b> la ejecución programada solo analiza los mercados abiertos en ese momento (Madrid, Nueva York; Bitcoin siempre).</P>
+        <P><b>Por qué hoy solo ves AAPL, MSFT y BTC:</b> no es el algoritmo, es el origen de los precios. Bitcoin tiene datos públicos gratuitos; para acciones hace falta una fuente de precios con clave. Con la clave en el entorno (<code>PITQUANT_EODHD_API_KEY</code>), <code>routine-run --refresh</code> da de alta e ingiere todos los valores de la lista; sin clave aparecen en el informe como «sin datos» y nunca se inventan. Con barras diarias el precio de decisión es el último cierre (marcado STALE si falta alguna sesión).</P>
 
         <H id="bitcoin">Bitcoin</H>
         <QuoteVsModelBar />

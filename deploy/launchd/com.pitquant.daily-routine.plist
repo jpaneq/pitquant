@@ -2,7 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!-- PLANTILLA, no instalada. Edita las rutas y copia a ~/Library/LaunchAgents; carga con:
      launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.pitquant.daily-routine.plist
-     Ejecuta una vez al día tras el cierre de EE. UU. (hora local; 23:30 Europa/Madrid = 17:30 NY). -->
+     Lunes a viernes a las 09:30 (bolsa de Madrid abierta) y a las 16:00 (Nueva York abierta), hora de Madrid: cada ejecución analiza SOLO los mercados abiertos en ese momento (BTC siempre). -->
 <plist version="1.0">
 <dict>
   <key>Label</key><string>com.pitquant.daily-routine</string>
@@ -18,7 +18,18 @@
     <string>routine-run</string><string>--refresh</string><string>--print-report</string>
   </array>
   <key>StartCalendarInterval</key>
-  <dict><key>Hour</key><integer>23</integer><key>Minute</key><integer>30</integer></dict>
+  <array>
+    <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>30</integer></dict>
+    <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>16</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>30</integer></dict>
+    <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>16</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>30</integer></dict>
+    <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>16</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>30</integer></dict>
+    <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>16</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>30</integer></dict>
+    <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>16</integer><key>Minute</key><integer>0</integer></dict>
+  </array>
   <key>StandardOutPath</key><string>/Users/jairo/Proyectos/pitquant/data/daily-routine.log</string>
   <key>StandardErrorPath</key><string>/Users/jairo/Proyectos/pitquant/data/daily-routine.err</string>
 </dict>

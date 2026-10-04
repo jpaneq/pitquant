@@ -9,7 +9,13 @@ from fastapi.responses import PlainTextResponse
 
 from pitquant.api.analyzer import DB
 from pitquant.config.settings import Settings
-from pitquant.positions.routine import PARAMS, PARAMS_VERSION, evaluate_positions, run_daily
+from pitquant.positions.routine import (
+    PARAMS,
+    PARAMS_VERSION,
+    evaluate_positions,
+    evaluate_virtual,
+    run_daily,
+)
 from pitquant.positions.routine_report import build_report
 
 
@@ -17,9 +23,10 @@ def make_routine_router(cfg: Settings) -> APIRouter:
     r = APIRouter(prefix="/routine", tags=["routine"])
 
     @r.post("/run")
-    def run(db: DB) -> dict[str, Any]:
-        ran = run_daily(db, cfg)
-        evaluated = evaluate_positions(db, cfg)
+    def run(db: DB, force: bool = False) -> dict[str, Any]:
+        """Only markets OPEN now are analysed unless force=true (manual button)."""
+        ran = run_daily(db, cfg, respect_hours=not force)
+        evaluated = {**evaluate_positions(db, cfg), **evaluate_virtual(db, cfg)}
         db.commit()
         return {"run": ran, "evaluation": evaluated, "params_version": PARAMS_VERSION}
 

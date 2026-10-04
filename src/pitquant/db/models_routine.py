@@ -1,4 +1,5 @@
 """Daily routine records: daily picks and weekly evaluations (ADR-0042). Append-only."""
+# ruff: noqa: E501
 
 from __future__ import annotations
 
@@ -66,6 +67,36 @@ class DailyEvaluation(Base):
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
     __table_args__ = (
         UniqueConstraint("position_id", "week_key", name="uq_daily_eval_position_week"),
+        CheckConstraint(
+            "state IN ('IN_PROGRESS','TARGET_HIT','STOP_HIT','AMBIGUOUS_STOP','EXPIRED')",
+            name="state_values",
+        ),
+    )
+
+
+class DailyVirtualEvaluation(Base):
+    """A decision NOT to buy is valued too: the same target/stop/horizon is evaluated as if the purchase had been made (counterfactual, never a trade)."""
+
+    __tablename__ = "daily_virtual_evaluations"
+    virtual_id: Mapped[str] = mapped_column(ID, primary_key=True, default=new_id)
+    pick_id: Mapped[str] = mapped_column(ForeignKey("daily_picks.pick_id"), index=True)
+    horizon_months: Mapped[int] = mapped_column(Integer)
+    week_key: Mapped[str] = mapped_column(String(12))
+    evaluated_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    state: Mapped[str] = mapped_column(String(16))
+    price: Mapped[float] = mapped_column(Float)
+    return_pct: Mapped[float] = mapped_column(Float)
+    target_progress: Mapped[float | None] = mapped_column(Float)
+    max_favorable: Mapped[float | None] = mapped_column(Float)
+    max_adverse: Mapped[float | None] = mapped_column(Float)
+    outcome_date: Mapped[date | None] = mapped_column(Date)
+    bars_used: Mapped[int] = mapped_column(Integer)
+    detail: Mapped[dict[str, Any]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utc_now)
+    __table_args__ = (
+        UniqueConstraint(
+            "pick_id", "horizon_months", "week_key", name="uq_daily_virtual_pick_h_week"
+        ),
         CheckConstraint(
             "state IN ('IN_PROGRESS','TARGET_HIT','STOP_HIT','AMBIGUOUS_STOP','EXPIRED')",
             name="state_values",

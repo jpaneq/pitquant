@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from pitquant.config.settings import Settings
 from pitquant.core.timeutils import utc_now
 from pitquant.db.models_positions import PaperPosition
-from pitquant.db.models_routine import DailyEvaluation, DailyPick
+from pitquant.db.models_routine import DailyEvaluation, DailyPick, DailyVirtualEvaluation
 from pitquant.positions import review as engine
 from pitquant.positions import routine as rt
 from pitquant.positions import service as ps
@@ -195,7 +195,53 @@ def build_report(
         w("  (sin predicciones cerradas)")
     w("")
 
-    w("8. PUNTOS A REVISAR (orientativos; no concluyentes con N pequeña)")
+    virt_final = list(
+        session.scalars(
+            select(DailyVirtualEvaluation).where(DailyVirtualEvaluation.week_key == "FINAL")
+        )
+    )
+    pick_market = {pk.pick_id: pk.market for pk in picks}
+    acc: dict[tuple[str, int], dict[str, int]] = defaultdict(
+        lambda: {"buy_n": 0, "buy_ok": 0, "no_n": 0, "no_ok": 0}
+    )
+    for cp, ce in closed:
+        cell = acc[(rt.parse_note(cp.note)["market"], cp.horizon_months)]
+        cell["buy_n"] += 1
+        cell["buy_ok"] += 1 if ce.state == "TARGET_HIT" else 0
+    for ve in virt_final:
+        cell = acc[(pick_market.get(ve.pick_id, "?"), ve.horizon_months)]
+        cell["no_n"] += 1
+        cell["no_ok"] += 0 if ve.state == "TARGET_HIT" else 1
+    w("8. ACIERTO DE TODAS LAS DECISIONES (comprar y NO comprar cuentan igual)")
+    w(LINE)
+    w(
+        "  Compra acertada = objetivo cumplido. No compra acertada = el objetivo NO se habría cumplido (stop o plazo vencido). No compra fallida = oportunidad perdida (se habría cumplido)."
+    )
+    w("  mercado      hor.   compras cerradas (acertadas)    no compras valoradas (acertadas)")
+    for (m, h), c in sorted(acc.items()):
+        bt = (
+            f"{c['buy_n']:>3} ({c['buy_ok'] / c['buy_n']:.0%})"
+            if c["buy_n"] >= MIN_N
+            else f"{c['buy_n']:>3} (N<10)"
+        )
+        nt = (
+            f"{c['no_n']:>3} ({c['no_ok'] / c['no_n']:.0%})"
+            if c["no_n"] >= MIN_N
+            else f"{c['no_n']:>3} (N<10)"
+        )
+        w(f"  {m:<12} {h:>3} m   {bt:<30}   {nt}")
+    if not acc:
+        w("  (todavía ninguna decisión cerrada)")
+    open_virtual = sum(
+        1
+        for pk in picks
+        for d in pk.decisions
+        if d["decision"] == "NO_ORDER" and d.get("hypothetical")
+    ) - len(virt_final)
+    w(f"  No compras aún en evaluación: {max(open_virtual, 0)}")
+    w("")
+
+    w("9. PUNTOS A REVISAR (orientativos; no concluyentes con N pequeña)")
     w(LINE)
     hints: list[str] = []
     for (m, h), rows in sorted(groups.items()):
@@ -217,6 +263,15 @@ def build_report(
         if t_rate > 0.8:
             hints.append(
                 f"{tag}: {t_rate:.0%} cumplen objetivo → el objetivo puede ser conservador: probar un target_k mayor."
+            )
+    for (m, h), c in sorted(acc.items()):
+        if c["no_n"] >= HINT_N and c["no_ok"] / c["no_n"] < 0.4:
+            hints.append(
+                f"{m} {h} m: {1 - c['no_ok'] / c['no_n']:.0%} de las NO compras eran oportunidades perdidas (N={c['no_n']}) → la regla de entrada puede ser demasiado estricta."
+            )
+        if c["buy_n"] >= HINT_N and c["buy_ok"] / c["buy_n"] < 0.35:
+            hints.append(
+                f"{m} {h} m: solo {c['buy_ok'] / c['buy_n']:.0%} de las compras cumplen objetivo (N={c['buy_n']}) → la regla de entrada puede ser demasiado laxa o el objetivo demasiado ambicioso."
             )
     for (m, h), (n_buy, n_skip) in sorted(sel.items()):
         if n_buy == 0 and n_skip >= 10:

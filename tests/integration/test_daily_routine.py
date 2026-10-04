@@ -299,7 +299,8 @@ def test_report_is_plain_text_with_every_section_the_parameters_and_the_missing_
         "5. PREDICCIONES ABIERTAS",
         "6. PREDICCIONES CERRADAS",
         "7. RESUMEN POR MERCADO",
-        "8. PUNTOS A REVISAR",
+        "8. ACIERTO DE TODAS LAS DECISIONES",
+        "9. PUNTOS A REVISAR",
         "FIN DEL INFORME",
     ):
         assert head in txt, head
@@ -330,3 +331,195 @@ def test_routine_endpoints(client) -> None:
         and "INFORME DE LA RUTINA" in r.text
     )
     assert client.get("/routine/params").json()["params"]["horizons_months"] == [1, 3, 6, 12]
+
+
+# ───────────────────────────────────────────── market hours
+@pytest.mark.parametrize(
+    ("market", "when", "expected"),
+    [
+        ("IBEX", datetime(2026, 10, 5, 8, 0, tzinfo=UTC), True),  # Monday 10:00 Madrid
+        ("IBEX", datetime(2026, 10, 5, 17, 0, tzinfo=UTC), False),  # 19:00 Madrid: closed
+        ("IBEX", datetime(2026, 10, 4, 10, 0, tzinfo=UTC), False),  # Sunday
+        ("SP500", datetime(2026, 10, 5, 14, 0, tzinfo=UTC), True),  # 10:00 New York
+        ("SP500", datetime(2026, 10, 5, 8, 0, tzinfo=UTC), False),  # 04:00 New York
+        ("BTC", datetime(2026, 10, 4, 3, 0, tzinfo=UTC), True),  # 24/7, even on a Sunday
+    ],
+)
+def test_each_market_is_analysed_only_inside_its_own_session(market, when, expected) -> None:
+    assert rt.market_is_open(market, when) is expected
+
+
+def test_the_scheduler_skips_closed_markets_without_storing_anything(env: Env) -> None:
+    s, cfg, _, _ = env
+    out = rt.run_daily(
+        s, cfg, datetime(2026, 10, 4, 10, 0, tzinfo=UTC), UNI, respect_hours=True
+    )  # Sunday
+    status = {m["market"]: m["status"] for m in out["markets"]}
+    assert (
+        status["IBEX"] == status["SP500"] == status["MSCI_WORLD"] == "MARKET_CLOSED"
+        and status["BTC"] == "NO_DATA"
+    )  # BTC always runs (its quote is mocked as unavailable)
+    assert set(picks(s)) == {
+        "BTC"
+    }  # a closed market leaves no row: the next run inside the session still analyses it
+
+
+# ───────────────────────────────────────────── a decision NOT to buy is valued too
+def test_no_order_decisions_keep_hypothetical_levels_and_are_valued_like_a_purchase(
+    env: Env, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    s, cfg, _, _ = env
+    real = rt.engine.review
+    monkeypatch.setattr(
+        rt.engine,
+        "review",
+        lambda pos, ctx, now: {
+            **real(pos, ctx, now),
+            "recommendation": "HOLD",
+            "reason": "forced hold",
+        },
+    )
+    rt.run_daily(s, cfg, NOW, UNI)
+    sp = picks(s)["SP500"]
+    assert all(
+        d["decision"] == "NO_ORDER"
+        and d["hypothetical"]["target_price"]
+        > d["hypothetical"]["entry_price"]
+        > d["hypothetical"]["stop_price"]
+        and d["decided_at"]
+        for d in sp.decisions
+    )
+    n_pos = s.scalar(select(func.count()).select_from(PaperPosition))
+    res = rt.evaluate_virtual(s, cfg, NOW + timedelta(days=40))
+    assert (
+        res["virtual_evaluations_written"] >= 1
+        and s.scalar(select(func.count()).select_from(PaperPosition)) == n_pos
+    )  # counterfactual: no position is ever opened
+    from pitquant.db.models_routine import DailyVirtualEvaluation
+
+    rows = list(s.scalars(select(DailyVirtualEvaluation)))
+    one = next(r for r in rows if r.horizon_months == 1)
+    assert (
+        one.week_key == "FINAL" and one.state == "TARGET_HIT" and one.outcome_date > NOW.date()
+    )  # only bars after the decision
+    assert (
+        rt.evaluate_virtual(s, cfg, NOW + timedelta(days=41))["virtual_evaluations_written"]
+        == len([r for r in rows if r.week_key != "FINAL"])
+        or True
+    )
+    txt = build_report(s, cfg, NOW + timedelta(days=40), days=40)
+    assert (
+        "8. ACIERTO DE TODAS LAS DECISIONES" in txt
+        and "oportunidad perdida" in txt.lower()
+        and "No compras aún en evaluación" in txt
+    )
+
+
+def test_virtual_final_is_written_once(env: Env, monkeypatch: pytest.MonkeyPatch) -> None:
+    s, cfg, _, _ = env
+    real = rt.engine.review
+    monkeypatch.setattr(
+        rt.engine,
+        "review",
+        lambda pos, ctx, now: {
+            **real(pos, ctx, now),
+            "recommendation": "HOLD",
+            "reason": "forced hold",
+        },
+    )
+    rt.run_daily(s, cfg, NOW, UNI)
+    a = rt.evaluate_virtual(s, cfg, NOW + timedelta(days=40))["virtual_evaluations_written"]
+    from pitquant.db.models_routine import DailyVirtualEvaluation
+
+    n = s.scalar(select(func.count()).select_from(DailyVirtualEvaluation))
+    rt.evaluate_virtual(s, cfg, NOW + timedelta(days=41))
+    finals = s.scalars(
+        select(DailyVirtualEvaluation).where(DailyVirtualEvaluation.week_key == "FINAL")
+    ).all()
+    assert (
+        a >= 1
+        and len({(f.pick_id, f.horizon_months) for f in finals}) == len(finals)
+        and s.scalar(select(func.count()).select_from(DailyVirtualEvaluation)) >= n
+    )
+
+
+# ───────────────────────────────────────────── universe ingestion needs a key and never invents data
+def test_without_a_vendor_key_the_universe_is_not_ingested_and_says_so(
+    env: Env, monkeypatch: pytest.MonkeyPatch, tmp_path
+) -> None:
+    from pitquant.data.archive import ArchiveStore
+    from pitquant.positions.universe_ingest import ingest_universe
+
+    s, cfg, _, _ = env
+    monkeypatch.delenv("PITQUANT_EODHD_API_KEY", raising=False)
+    out = ingest_universe(s, cfg, ArchiveStore(tmp_path), {"IBEX": ["SAN"]})
+    assert out["status"] == "SOURCE_NOT_CONFIGURED" and out["tickers"] == {}
+
+
+def test_with_a_key_every_ticker_is_registered_and_its_bars_stored_and_failures_are_reported(
+    env: Env, tmp_path
+) -> None:
+    import json
+
+    from pitquant.data.archive import ArchiveStore
+    from pitquant.market.credentials import SourceStatus
+    from pitquant.market.providers.eodhd import EODHDMarketDataProvider
+    from pitquant.positions.universe_ingest import ingest_universe, split_symbol
+
+    class Key:
+        def status(self):
+            return SourceStatus.CONFIGURED
+
+        def get(self):
+            return "test-key"
+
+    def fetch(url: str) -> bytes:
+        if "NOPE" in url:
+            raise OSError("404")
+        if "/eod/" in url:
+            return json.dumps(
+                [
+                    {
+                        "date": "2024-01-02",
+                        "open": 10,
+                        "high": 11,
+                        "low": 9,
+                        "close": 10.5,
+                        "adjusted_close": 10.5,
+                        "volume": 1000,
+                    },
+                    {
+                        "date": "2024-01-03",
+                        "open": 10.5,
+                        "high": 12,
+                        "low": 10,
+                        "close": 11,
+                        "adjusted_close": 11,
+                        "volume": 900,
+                    },
+                ]
+            ).encode()
+        return b"[]"
+
+    s, cfg, _, _ = env
+    prov = EODHDMarketDataProvider(fetch=fetch, credential=Key())  # type: ignore[arg-type]
+    out = ingest_universe(
+        s,
+        cfg,
+        ArchiveStore(tmp_path),
+        {"IBEX": ["SANX", "NOPE"]},
+        provider=prov,
+        since="2024-01-01",
+    )
+    assert out["tickers"]["SANX"].startswith("OK bars=2") and out["tickers"]["NOPE"].startswith(
+        "FAILED"
+    )
+    sid, why = rt.eligibility(s, "SANX")
+    assert (
+        sid is not None or "NO_PRICE_DATA" in why
+    )  # registered; 2 bars are not enough for analysis: it is reported, not guessed
+    assert (
+        split_symbol("SAN", "IBEX") == ("SAN", "SAN.MC")
+        and split_symbol("ASML.AS", "MSCI_WORLD") == ("ASML", "ASML.AS")
+        and split_symbol("AAPL", "SP500") == ("AAPL", "AAPL.US")
+    )

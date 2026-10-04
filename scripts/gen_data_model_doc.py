@@ -60,6 +60,7 @@ GROUPS = {
         "position_reviews",
         "daily_picks",
         "daily_evaluations",
+        "daily_virtual_evaluations",
         "index_anchor_snapshots",
         "index_current_anchors",
         "security_profiles",

@@ -1973,6 +1973,7 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "position_reviews",
         "daily_picks",
         "daily_evaluations",
+        "daily_virtual_evaluations",
     }
 )
 

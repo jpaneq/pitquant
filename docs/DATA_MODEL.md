@@ -4,7 +4,7 @@
 
 Convenciones: `*_at` = instante UTC timezone-aware; `*_date` = fecha de calendario; intervalos semiabiertos `[from, to)`; 🔒 = tabla append-only (guard ORM + trigger PostgreSQL).
 
-Tablas: **93**.
+Tablas: **94**.
 
 ## Procedencia y calidad
 
@@ -954,6 +954,30 @@ Tablas: **93**.
 - CHECK `state IN ('IN_PROGRESS','TARGET_HIT','STOP_HIT','AMBIGUOUS_STOP','EXPIRED')`
 - INDEX ix_daily_evaluations_position_id (position_id)
 - UNIQUE (position_id, week_key)
+
+### `daily_virtual_evaluations` 🔒
+
+| Columna | Tipo | Nulo | Clave |
+|---|---|---|---|
+| `virtual_id` | VARCHAR(36) | no | PK |
+| `pick_id` | VARCHAR(36) | no | FK→`daily_picks.pick_id` |
+| `horizon_months` | INTEGER | no |  |
+| `week_key` | VARCHAR(12) | no |  |
+| `evaluated_at` | DATETIME | no |  |
+| `state` | VARCHAR(16) | no |  |
+| `price` | FLOAT | no |  |
+| `return_pct` | FLOAT | no |  |
+| `target_progress` | FLOAT | sí |  |
+| `max_favorable` | FLOAT | sí |  |
+| `max_adverse` | FLOAT | sí |  |
+| `outcome_date` | DATE | sí |  |
+| `bars_used` | INTEGER | no |  |
+| `detail` | JSON | no |  |
+| `created_at` | DATETIME | no |  |
+
+- CHECK `state IN ('IN_PROGRESS','TARGET_HIT','STOP_HIT','AMBIGUOUS_STOP','EXPIRED')`
+- INDEX ix_daily_virtual_evaluations_pick_id (pick_id)
+- UNIQUE (pick_id, horizon_months, week_key)
 
 ### `index_anchor_snapshots` 🔒
 

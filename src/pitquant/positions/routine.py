@@ -28,7 +28,7 @@ from pitquant.core.timeutils import utc_now
 from pitquant.db.models import Price
 from pitquant.db.models import new_id as new_pick_id
 from pitquant.db.models_positions import PaperPosition
-from pitquant.db.models_routine import DailyEvaluation, DailyPick
+from pitquant.db.models_routine import DailyEvaluation, DailyPick, DailyVirtualEvaluation
 from pitquant.positions import review as engine
 from pitquant.positions import service as ps
 from pitquant.simulation.service import restated_bars
@@ -48,9 +48,49 @@ MARKET_ORDER = ("IBEX", "SP500", "MSCI_WORLD")
 DEFAULT_UNIVERSE: dict[str, list[str]] = {
     "IBEX": ["SAN", "BBVA", "ITX", "IBE", "TEF", "REP", "CABK", "AMS", "FER", "ELE", "ACS", "NTGY"],
     "SP500": ["AAPL", "MSFT", "KO", "JNJ", "JPM", "XOM", "PG", "AMZN", "GOOGL", "NVDA"],
-    "MSCI_WORLD": ["AAPL", "MSFT", "ASML", "NESN", "NOVN", "SAP", "SHEL", "TM", "ROG", "AZN"],
+    "MSCI_WORLD": [
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "AMZN",
+        "GOOGL",
+        "META",
+        "JPM",
+        "V",
+        "UNH",
+        "XOM",
+    ],  # US-listed names only until other exchange calendars are mapped
 }
 NOTE_PREFIX = f"routine:{PARAMS_VERSION}|"
+MARKET_EXCHANGE: dict[str, str | None] = {
+    "IBEX": "XMAD",
+    "SP500": "XNYS",
+    "MSCI_WORLD": "XNYS",
+    "BTC": None,
+}
+VENDOR_SUFFIX = {
+    "IBEX": ".MC",
+    "SP500": ".US",
+    "MSCI_WORLD": ".US",
+}  # EODHD exchange suffix when the list entry has none
+
+
+def market_is_open(market: str, now: datetime) -> bool:
+    """BTC trades 24/7; an equity market counts as open only inside today's session (open <= now < close)."""
+    code = MARKET_EXCHANGE.get(market)
+    if code is None:
+        return True
+    from pitquant.data.calendars.market_calendar import get_calendar
+
+    cal = get_calendar(code)
+    d = (
+        now.astimezone(cal.session_open(now.date()).tzinfo).date()
+        if cal.is_session(now.date())
+        else None
+    )
+    if d is None or not cal.is_session(d):
+        return False
+    return cal.session_open(d) <= now < cal.session_close(d)
 
 
 def load_universe() -> dict[str, list[str]]:
@@ -128,9 +168,14 @@ def _decide(
             "reason": rv["reason"],
             "decision": "NO_ORDER",
             "position_id": None,
+            "decided_at": now.isoformat(),
         }
+        lv = levels(ctx.price, ctx, h)
+        if (
+            lv is not None
+        ):  # a decision NOT to buy keeps the levels it WOULD have used, so it can be valued later
+            row["hypothetical"] = {"entry_price": ctx.price, **lv}
         if rv["recommendation"] == "ADD":
-            lv = levels(ctx.price, ctx, h)
             if lv is None:
                 row["reason"] = (
                     "Entrada justificada por las reglas pero sin volatilidad/ATR para fijar objetivo y stop: no se abre."
@@ -158,6 +203,7 @@ def run_daily(
     settings: Settings,
     now: datetime | None = None,
     universe: dict[str, list[str]] | None = None,
+    respect_hours: bool = False,
 ) -> dict[str, Any]:
     """One idempotent daily step: at most one analysis per (day, market). Returns what was decided."""
     now = now or utc_now()
@@ -170,6 +216,11 @@ def run_daily(
             select(DailyPick).where(DailyPick.run_date == today, DailyPick.market == market)
         ):
             done.append({"market": market, "status": "ALREADY_DONE_TODAY"})
+            continue
+        if respect_hours and not market_is_open(market, now):
+            done.append(
+                {"market": market, "status": "MARKET_CLOSED"}
+            )  # nothing is stored: the next run inside the session analyses it
             continue
         pick_id = new_pick_id()
         unavailable: dict[str, str] = {}
@@ -274,7 +325,7 @@ def parse_note(note: str) -> dict[str, str]:
 
 
 def bars_after_entry(
-    session: Session, settings: Settings, pos: PaperPosition, entry_at: datetime, now: datetime
+    session: Session, settings: Settings, pos: Any, entry_at: datetime, now: datetime
 ) -> pd.DataFrame:
     """Daily OHLC strictly AFTER the entry (units of the entry price)."""
     if pos.asset_type == "BTC":
@@ -406,3 +457,62 @@ def evaluate_positions(
             closed += 1
     session.flush()
     return {"week": wk, "evaluations_written": written, "closed": closed, "skipped": skipped}
+
+
+def evaluate_virtual(
+    session: Session, settings: Settings, now: datetime | None = None
+) -> dict[str, Any]:
+    """Value the decisions NOT to buy: the levels they would have used are played on the bars after the decision (counterfactual, no position is ever opened). A NO_ORDER was RIGHT if the
+    target would NOT have been reached first; it was a MISSED OPPORTUNITY if it would have."""
+    from types import SimpleNamespace
+
+    now = now or utc_now()
+    wk = week_key(now)
+    written = 0
+    for pick in session.scalars(select(DailyPick).where(DailyPick.status == "ANALYZED")):
+        ref = SimpleNamespace(
+            asset_type="BTC" if pick.market == "BTC" else "EQUITY", security_id=pick.security_id
+        )
+        for d in pick.decisions:
+            hyp = d.get("hypothetical")
+            if d["decision"] != "NO_ORDER" or not hyp:
+                continue
+            h = int(d["horizon_months"])
+            if session.scalar(
+                select(DailyVirtualEvaluation).where(
+                    DailyVirtualEvaluation.pick_id == pick.pick_id,
+                    DailyVirtualEvaluation.horizon_months == h,
+                    DailyVirtualEvaluation.week_key == "FINAL",
+                )
+            ):
+                continue
+            decided = datetime.fromisoformat(d["decided_at"])
+            horizon_end = (decided + relativedelta(months=h)).date()
+            o = outcome(
+                bars_after_entry(session, settings, ref, decided, now),
+                hyp["entry_price"],
+                hyp["target_price"],
+                hyp["stop_price"],
+                horizon_end,
+                now,
+            )
+            price = o["price"] if o["price"] is not None else hyp["entry_price"]
+            key = "FINAL" if o["state"] != "IN_PROGRESS" else wk
+            if session.scalar(
+                select(DailyVirtualEvaluation).where(
+                    DailyVirtualEvaluation.pick_id == pick.pick_id,
+                    DailyVirtualEvaluation.horizon_months == h,
+                    DailyVirtualEvaluation.week_key == key,
+                )
+            ):
+                continue
+            session.add(
+                DailyVirtualEvaluation(
+                    pick_id=pick.pick_id, horizon_months=h, week_key=key, evaluated_at=now, state=o["state"], price=price, return_pct=price / hyp["entry_price"] - 1,
+                    target_progress=(price - hyp["entry_price"]) / (hyp["target_price"] - hyp["entry_price"]), max_favorable=o["max_favorable"], max_adverse=o["max_adverse"], outcome_date=o["when"],
+                    bars_used=o["bars_used"], detail={**hyp, "horizon_end": str(horizon_end), "params_version": PARAMS_VERSION},
+                )
+            )  # fmt: skip
+            written += 1
+    session.flush()
+    return {"week": wk, "virtual_evaluations_written": written}

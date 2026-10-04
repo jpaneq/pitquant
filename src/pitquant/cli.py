@@ -539,16 +539,35 @@ def _routine_run(args: argparse.Namespace) -> int:
     """Daily simulated-buy routine: optional EOD refresh, one analysis per market, weekly evaluation, plain-text report file."""
     import subprocess
 
-    from pitquant.positions.routine import evaluate_positions, run_daily
+    from pitquant.positions.routine import evaluate_positions, evaluate_virtual, run_daily
     from pitquant.positions.routine_report import build_report
 
     settings = get_settings()
     if args.refresh:
-        script = Path(__file__).resolve().parents[2] / "scripts" / "ingest_analyzer_demo_data.py"
-        subprocess.run([sys.executable, str(script)], check=True)
+        from pitquant.data.archive import ArchiveStore
+        from pitquant.positions.universe_ingest import ingest_universe
+
+        with make_session_factory(make_engine(settings.database.url))() as ing:
+            res = ingest_universe(ing, settings, ArchiveStore(Path(settings.archive.root)))
+        print(json.dumps({"universe_ingest": res}, indent=2, default=str))
+        if (
+            res["status"] == "SOURCE_NOT_CONFIGURED"
+        ):  # no vendor key: keep the public demo data (AAPL/MSFT/VTI) fresh
+            script = (
+                Path(__file__).resolve().parents[2] / "scripts" / "ingest_analyzer_demo_data.py"
+            )
+            subprocess.run([sys.executable, str(script)], check=True)
     with make_session_factory(make_engine(settings.database.url))() as session:
-        ran = run_daily(session, settings) if not args.report_only else None
-        evaluated = evaluate_positions(session, settings) if not args.report_only else None
+        ran = (
+            run_daily(session, settings, respect_hours=not args.ignore_hours)
+            if not args.report_only
+            else None
+        )
+        evaluated = (
+            {**evaluate_positions(session, settings), **evaluate_virtual(session, settings)}
+            if not args.report_only
+            else None
+        )
         session.commit()
         text = build_report(session, settings)
     out = Path(args.out or "data/reports") / f"informe_rutina_{datetime.now(UTC).date()}.txt"
@@ -860,6 +879,11 @@ def main(argv: list[str] | None = None) -> int:
         help="do not analyse or evaluate: only rebuild the report",
     )
     rr.add_argument("--print-report", action="store_true")
+    rr.add_argument(
+        "--ignore-hours",
+        action="store_true",
+        help="analyse every market even if its exchange is closed (default: only markets open now)",
+    )
     rr.add_argument("--out", default=None, help="directory for the report (default data/reports)")
     rr.set_defaults(func=_routine_run)
     sr = sub.add_parser(
