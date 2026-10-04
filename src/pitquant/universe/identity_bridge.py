@@ -28,6 +28,7 @@ from pitquant.db.models import (
     SP500Anchor,
     SP500AnchorMember,
 )
+from pitquant.universe.document_aliases import document_name
 from pitquant.universe.sources.spy_sec_anchors import norm_name
 
 _CLASS_N30D = re.compile(r"\b(?:Class|Series)\s+([A-Z])\b", re.I)
@@ -157,14 +158,19 @@ def bridge_name_only(session: Session) -> list[Bridge]:
     """One result per name-only security (N-30D anchors). Resolved only when the quarter's 13F list gives exactly one compatible CUSIP
     in EVERY anchor quarter where the security appears (the same CUSIP each time)."""
     rows = session.execute(
-        select(SP500AnchorMember.security_id, SP500AnchorMember.issuer_name, SP500Anchor.as_of_date)
+        select(
+            SP500AnchorMember.security_id,
+            SP500AnchorMember.issuer_name,
+            SP500Anchor.as_of_date,
+            SP500Anchor.accession,
+        )
         .join(SP500Anchor, SP500Anchor.anchor_id == SP500AnchorMember.anchor_id)
         .where(SP500AnchorMember.identity_basis == "NAME_ONLY")
     ).all()
     by_sid: dict[str, list[tuple[str, date]]] = {}
-    for sid_, nm, d in rows:
+    for sid_, nm, d, accession in rows:
         if sid_:
-            by_sid.setdefault(sid_, []).append((nm, d))
+            by_sid.setdefault(sid_, []).append((document_name(nm, accession), d))
     out: list[Bridge] = []
     for sid, occ in sorted(by_sid.items()):
         picks: dict[str, Sec13FListEntry] = {}

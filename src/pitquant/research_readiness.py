@@ -145,15 +145,27 @@ def research_readiness(session: Session, settings: Settings) -> ResearchFlags:
         "sample coverage (>=98% active, >=95% former/delisted) not measured: "
         + ("no PITQUANT_TIINGO_API_KEY" if not key else "run scripts/tiingo_evaluate.py")
     ]
-    rf.flags["US_D05_RESEARCH_READY"] = bool(rf.flags["TIINGO_D05_CANDIDATE"]) and any(
-        r.prices_ready and r.corporate_actions_ready for r in cohorts.rows
-    )
-    rf.status["US_D05_RESEARCH_READY"] = "BLOCKED_BY_CREDENTIAL" if not key else "NOT_READY"
-    rf.flags["ES_D05_RESEARCH_READY"] = False
-    rf.status["ES_D05_RESEARCH_READY"] = "ES_D05_BLOCKED_BY_ENTITLEMENT"
-    rf.reasons["ES_D05_RESEARCH_READY"] = [
-        "BME/EODHD full history is a paid product: not contracted (owner decision pending)"
-    ]
+    from pitquant.market.canonical import audit_series
+
+    yahoo_rows = session.scalars(
+        select(Security)
+        .join(Price)
+        .join(DataSource)
+        .where(DataSource.name == "YAHOO_CHART:eod", Security.is_synthetic.is_(False))
+        .distinct()
+    ).all()
+    qa = [dict(audit_series(session, sec), exchange=sec.exchange) for sec in yahoo_rows]
+    rf.metrics["yahoo_d05"] = qa
+    for region, exchanges in (("US", {"XNYS"}), ("ES", {"XMAD"})):
+        relevant = [r for r in qa if r["exchange"] in exchanges]
+        flag = region + "_D05_RESEARCH_READY"
+        rf.flags[flag] = bool(relevant) and all(r["status"] == "READY" for r in relevant)
+        rf.status[flag] = "READY" if rf.flags[flag] else "BLOCKED"
+        rf.reasons[flag] = [
+            f"{r['security_id']}: {', '.join(r['reasons'])}"
+            for r in relevant
+            if r["status"] != "READY"
+        ] or ([] if relevant else ["MISSING_YAHOO_SERIES"])
 
     from pitquant.features.v0.engine import FEATURE_NAMES
 

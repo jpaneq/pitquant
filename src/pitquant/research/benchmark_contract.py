@@ -5,7 +5,7 @@
 * a price-return benchmark against a total-return security is ``PRICE_RETURN_ONLY`` => ``NOT_COMPARABLE_RETURN_BASIS``: the excess is NOT computed and the row is excluded from ML;
 * a benchmark in another currency needs PIT FX (``fx.FxTable``): the security series is converted to USD at every instant, never with today's rate; without FX => ``FX_MISMATCH`` (``FX_DATA_NOT_READY``);
 * an ETF is always ``ETF_PROXY``, never the official index. Quality ``READY`` is reserved for an official total-return index series; ``PROXY_ACCEPTABLE`` (ETF total return with dividends, comparable currency basis) is the
-  methodology-approved state for the first ML. Both sources here are Yahoo (VENDOR, EXPLORATORY): that is reported by the D05 gate, not hidden in the quality status.
+  methodology-approved state for the first ML. Both sources here are Yahoo (VENDOR, CANONICAL_PROVIDER_FOR_PITQUANT): that is reported by the D05 gate, not hidden in the quality status.
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ SPY = BenchmarkSpec(
     "ETF_PROXY",
     ReturnType.TOTAL_RETURN,
     "USD",
-    "YAHOO_CHART (VENDOR, EXPLORATORY)",
+    "YAHOO_CHART (CANONICAL_SOURCE, VENDOR)",
     ("NOT the official S&P 500 Total Return index",),
 )
 URTH = BenchmarkSpec(
@@ -53,7 +53,7 @@ URTH = BenchmarkSpec(
     "ETF_PROXY",
     ReturnType.TOTAL_RETURN,
     "USD",
-    "YAHOO_CHART (VENDOR, EXPLORATORY)",
+    "YAHOO_CHART (CANONICAL_SOURCE, VENDOR)",
     ("history starts 2012-01", "NOT the official MSCI World index"),
 )
 IBEX_PRICE = BenchmarkSpec(
@@ -63,7 +63,7 @@ IBEX_PRICE = BenchmarkSpec(
     "INDEX",
     ReturnType.PRICE_RETURN,
     "EUR",
-    "YAHOO_CHART (VENDOR, EXPLORATORY)",
+    "YAHOO_CHART (CANONICAL_SOURCE, VENDOR)",
     ("no ordinary dividends",),
 )
 IBEX_TR_REFERENCE = "IBEX 35 CON DIVIDENDOS (ISIN ES0SI0000047, EUR, Total Return): no auditable historical series available => MISSING"

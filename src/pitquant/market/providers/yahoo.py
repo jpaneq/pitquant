@@ -1,8 +1,7 @@
 # ruff: noqa: E501
 """YahooChartMarketDataProvider — FREE, keyless daily bars from Yahoo Finance's unofficial chart endpoint (ADR-0043).
 
-* UNOFFICIAL and without any SLA or licence for redistribution: personal/educational use for the daily simulation routine only. It is VENDOR tier and never a canonical source for research
-  (the golden rule stands); endpoint changes or rate limits can break it at any time, and every failure is reported, never hidden.
+* UNOFFICIAL and without any SLA or licence for redistribution: personal/educational use for the daily simulation routine only. It remains VENDOR tier and is the canonical market price provider chosen by PITQuant (yahoo-market-data-v1); endpoint changes or rate limits can break it at any time, and every failure is reported, never hidden.
 * Yahoo returns OHLC already SPLIT-ADJUSTED to today. Our series base is RAW OHLC, so prices are restored by multiplying by the product of the splits AFTER each bar (AAPL 2020-08-28:
   124.81 adjusted → 499.23 raw). Dividends are split-adjusted too: the actual payout is the amount times the later splits. Volume before a split is withheld (None): its adjustment is not verified.
 * Only COMPLETED sessions are stored: a bar whose session has not closed (or is dated in the future) is dropped, so an intraday print is never persisted as a final bar.
@@ -33,7 +32,7 @@ from pitquant.market.normalized import (
 from pitquant.market.validation import calendar_status
 
 PROVIDER = "YAHOO_CHART"
-PARSER_VERSION = "yahoo-chart-1"
+PARSER_VERSION = "yahoo-market-data-v1"
 API = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
 Fetch = Callable[[str], bytes]
 
@@ -91,11 +90,16 @@ class YahooChartMarketDataProvider:
                 f"Yahoo chart response for {symbol} unusable: {err or exc}"
             ) from exc
         meta = result["meta"]
+        timestamps = result.get("timestamp") or []
+        if timestamps != sorted(set(timestamps)):
+            raise DataQualityError("Yahoo duplicate or out-of-order timestamps")
         suffix = suffix_of(symbol)
         if suffix not in SUFFIX:
             raise DataQualityError(
                 f"Yahoo symbol {symbol!r}: exchange suffix {suffix!r} has no calendar mapping (supported: {sorted(k for k in SUFFIX if k)})"
             )
+        if meta.get("symbol") != symbol or not meta.get("currency"):
+            raise DataQualityError("Yahoo identity/currency metadata missing or mismatched")
         cal = get_calendar(SUFFIX[suffix][0])
         gmt = int(meta.get("gmtoffset", 0))
         currency = str(meta.get("currency") or SUFFIX[suffix][1])
@@ -151,6 +155,8 @@ class YahooChartMarketDataProvider:
             )
             if c is None or o is None or h is None or lo is None or c <= 0:
                 continue  # holiday / incomplete row
+            if not (0 < lo <= min(o, c) <= max(o, c) <= h):
+                raise DataQualityError(f"Yahoo {symbol} {d}: invalid OHLC")
             status = calendar_status(cal, d)
             if status != "ok":
                 out.warnings.append(f"YAHOO {symbol} {d}: {status} (bar not stored)")

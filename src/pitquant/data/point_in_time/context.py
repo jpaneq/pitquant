@@ -26,6 +26,7 @@ from pitquant.db.models import (
     CorporateAction,
     CorporateActionEvent,
     DataQualityIssue,
+    DataSource,
     Dividend,
     FundamentalFact,
     Price,
@@ -46,6 +47,8 @@ class PITContext:
     as_of: datetime
     ingested_before: datetime | None = None  # data_version pin (reproducibility)
     membership_build: dict[str, str] | None = None  # index_code -> pinned build_id
+
+    market_source: str | None = None  # optional research-only provider isolation
 
     def __post_init__(self) -> None:
         self.as_of = require_aware(self.as_of, "as_of")
@@ -82,6 +85,17 @@ class PITContext:
             )
             .where(
                 Price.security_id == security_id,
+                *(
+                    [
+                        Price.source_id.in_(
+                            select(DataSource.source_id).where(
+                                DataSource.name == self.market_source
+                            )
+                        )
+                    ]
+                    if self.market_source
+                    else []
+                ),
                 Price.bar_close_at <= self.as_of,
                 *([Price.ingested_at <= self.ingested_before] if self.ingested_before else []),
             )
@@ -101,6 +115,11 @@ class PITContext:
         rows = self.session.scalars(
             select(CorporateActionEvent).where(
                 CorporateActionEvent.security_id == security_id,
+                *(
+                    [CorporateActionEvent.provider.like("YAHOO_CHART:%")]
+                    if self.market_source == "YAHOO_CHART:eod"
+                    else []
+                ),
                 CorporateActionEvent.available_at <= self.as_of,
                 *(
                     [CorporateActionEvent.ingested_at <= self.ingested_before]

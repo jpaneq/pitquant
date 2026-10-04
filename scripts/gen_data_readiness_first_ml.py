@@ -19,13 +19,13 @@ from sqlalchemy import func, select
 from pitquant.config.settings import get_settings
 from pitquant.db.models import Price, Security
 from pitquant.db.session import make_engine, make_session_factory
+from pitquant.market.canonical import FEATURE_VERSION, TARGET_VERSION, audit_series
 from pitquant.positions import routine as rt
 from pitquant.research import benchmark_contract as BC
 from pitquant.research import dataset_v1 as DS
 from pitquant.research import first_ml as FM
 from pitquant.research import first_ml_contract as C
 from pitquant.research.membership_bridge import build_bridge
-from pitquant.research.targets_v2 import TARGET_SET_VERSION_V2
 from pitquant.research_readiness import research_readiness
 from pitquant.universe.sp500_anchor_graph import reconstruct
 
@@ -90,7 +90,7 @@ def main() -> None:
     snaps: list[dict[str, Any]] = []
     for sn in S.scalars(
         select(ResearchFeatureSnapshot).where(
-            ResearchFeatureSnapshot.feature_set_version == "research-features-v1"
+            ResearchFeatureSnapshot.feature_set_version == FEATURE_VERSION
         )
     ):
         keep = set(C.CORE_PRICE_FEATURES) | set(C.CORE_FUNDAMENTAL_FEATURES)
@@ -105,7 +105,7 @@ def main() -> None:
                 "features": {k: v["value"] for k, v in sn.features.items() if k in keep},
             }
         )
-    targets12 = {(t.security_id, t.decision_at): {"status": t.status, "reason": t.reason, "outperform": t.outperform, "details": t.details} for t in S.scalars(select(ResearchTarget).where(ResearchTarget.target_set_version == TARGET_SET_VERSION_V2, ResearchTarget.horizon_months == C.HORIZON_MONTHS))}  # fmt: skip
+    targets12 = {(t.security_id, t.decision_at): {"status": t.status, "reason": t.reason, "outperform": t.outperform, "details": t.details} for t in S.scalars(select(ResearchTarget).where(ResearchTarget.target_set_version == TARGET_VERSION, ResearchTarget.horizon_months == C.HORIZON_MONTHS))}  # fmt: skip
     # ---- context ---------------------------------------------------------------------------------------------------------------
     bridge, unresolved_bridge = build_bridge(S)
     cohorts = {
@@ -117,10 +117,12 @@ def main() -> None:
         "bridged": len(bridge),
         "unresolved": unresolved_bridge,
     }
-    present = {s.security_id for s in securities}
+    qa = [audit_series(S, s) for s in securities]
+    js["d05_quality"] = qa
+    present = {r["security_id"] for r in qa if r["status"] == "READY"}
     out: dict[str, Any] = {}
     for label, accepted in (
-        ("strict", bool(rf.flags["US_D05_RESEARCH_READY"])),
+        ("strict", True),
         ("preview_if_D05_accepted", True),
     ):
         ctx = FM.EligibilityContext(cohorts, bridge, identity_ok, accepted, present)
@@ -163,7 +165,7 @@ def main() -> None:
             reason = "BENCHMARK_SERIES (not a research security)"
         elif s.security_id not in snap_secs:
             reason = "PRICES: fewer than 30 bars" if dates[2] < 30 else "OTHER: no snapshots built"
-        audit.append({"security_id": s.security_id, "ticker_at_T": tk, "issuer_id": s.issuer_id, "market": s.exchange, "first_date": str(dates[0]), "last_date": str(dates[1]), "bars": dates[2], "identity_status": ("RESOLVED" if s.issuer_id else "NO_ISSUER_LINK") if s.exchange == "XNYS" else "NOT_ASSESSED_NON_US", "price_status": "EXPLORATORY_SOURCE (Yahoo, VENDOR)", "fundamental_status": max(st, key=lambda k: st[k]) if st else "NONE", "reason_not_usable": reason})  # fmt: skip
+        audit.append({"security_id": s.security_id, "ticker_at_T": tk, "issuer_id": s.issuer_id, "market": s.exchange, "first_date": str(dates[0]), "last_date": str(dates[1]), "bars": dates[2], "identity_status": ("RESOLVED" if s.issuer_id else "NO_ISSUER_LINK") if s.exchange == "XNYS" else "NOT_ASSESSED_NON_US", "price_status": "YAHOO_CANONICAL (per-series QA required)", "fundamental_status": max(st, key=lambda k: st[k]) if st else "NONE", "reason_not_usable": reason})  # fmt: skip
     in_cfg = {t for t in cfg_tickers}
     have = {a["ticker_at_T"] for a in audit}
     missing_cfg = sorted(t for t in in_cfg if t not in have)
@@ -239,21 +241,21 @@ def main() -> None:
             "see D02 graph metrics",
             None
             if rf.flags["US_SECURITY_IDENTITY_READY"]
-            else "weak_identity_members > 0 (PPoG Industries line without CUSIP)",
+            else "unresolved identity evidence; see D02 graph metrics",
         ),
         "D05_READY": FM.gate(
             "READY" if rf.flags["US_D05_RESEARCH_READY"] else "BLOCKED",
             "accepted prices + corporate actions + adjustment method + provenance",
-            "Yahoo chart (VENDOR, EXPLORATORY_SOURCE)",
+            "Yahoo Finance (CANONICAL_PROVIDER_FOR_PITQUANT, VENDOR)",
             None
             if rf.flags["US_D05_RESEARCH_READY"]
-            else "price source is exploratory (owner chose Yahoo): not accepted as canonical; D05 suite (>=98% active / >=95% delisted coverage) not run",
+            else "per-series quality checks remain blocked; see d05_quality and D05_YAHOO_QA.json",
         ),
         "BENCHMARK_RETURN_BASIS_READY": FM.gate(
             "PARTIAL",
             "comparable return + currency basis, accepted provenance",
             f"US rows comparable {us_ok}/{len(us_rows)}; non-US via USD conversion (PROXY)",
-            "return basis comparable (TR vs TR, USD) but the benchmark series is a Yahoo ETF proxy (not D05-accepted); Spain: IBEX Total Return MISSING, ^IBEX price-only",
+            "return basis comparable (TR vs TR, USD) but the benchmark series is a Yahoo ETF proxy with per-series D05 QA; Spain: IBEX Total Return MISSING, ^IBEX price-only",
         ),
         "RESEARCH_SECURITY_COVERAGE_READY": FM.gate(
             "BLOCKED",
@@ -291,7 +293,7 @@ def main() -> None:
     w = md.append
     w("# DATA READINESS FOR FIRST ML (generado desde la base)\n")
     w(
-        f"Generado {js['generated_at'][:19]}Z · experimento preparado `{C.EXPERIMENT_ID}` (NO ejecutado). Fuente de datos de mercado y FX: **Yahoo Finance** (decisión del propietario; VENDOR, `EXPLORATORY_SOURCE`). Ningún gate se ha bajado: `required_securities = {C.REQUIRED_SECURITIES}`.\n"
+        f"Generado {js['generated_at'][:19]}Z · experimento preparado `{C.EXPERIMENT_ID}` (NO ejecutado). Fuente de datos de mercado y FX: **Yahoo Finance** (decisión del propietario; VENDOR, `CANONICAL_PROVIDER_FOR_PITQUANT`). Ningún gate se ha bajado: `required_securities = {C.REQUIRED_SECURITIES}`.\n"
     )
     w("## Matriz de gates\n")
     w(
@@ -429,13 +431,13 @@ def main() -> None:
         "| US_SECURITY_IDENTITY_READY | 2 miembros con identidad débil (sin CUSIP/ISIN oficial); el puente investigación→ancla es DERIVADO (nombre exacto único) para 44 de 52 | CUSIP oficial por emisor (Schedule 13G, como AAPL/MSFT en ADR-0024) | extender `ingest_cusip_evidence.py` a los emisores de investigación |"
     )
     w(
-        "| D05_READY | fuente de precios = Yahoo (exploratoria, elegida por el propietario) | suite D05 (cobertura ≥98 % activos / ≥95 % excluidos), corporate actions oficiales, método de ajuste y proveniencia aceptados | aceptación explícita de una fuente o suite D05 sobre Yahoo; no se eleva automáticamente |"
+        "| D05_READY | Yahoo canónico; QA por serie pendiente | suite D05 (cobertura ≥98 % activos / ≥95 % excluidos), corporate actions oficiales, método de ajuste y proveniencia aceptados | validar cobertura, identidad, acciones y reproducibilidad de cada serie Yahoo |"
     )
     w(
         "| BENCHMARK_RETURN_BASIS_READY | base TR/USD comparable pero la serie es un ETF proxy de Yahoo; IBEX 35 Total Return (ES0SI0000047) sin serie histórica auditable | serie oficial IBEX TR; D05 | idem D05; España queda con URTH+FX sólo diagnóstico |"
     )
     w(
-        "| RESEARCH_SECURITY_COVERAGE_READY | 100 requeridos; ver tabla de cobertura | MSFT/AAPL (serie EODHD demo, QA, sin ticker/issuer: guarda de no mezclar fuentes), ENG (22 sesiones) | AAPL/MSFT con precios Yahoo en una security de precio vinculada al ancla; ENG no recuperable; 100 NO se baja (propuesta separada) |"
+        "| RESEARCH_SECURITY_COVERAGE_READY | 100 requeridos; ver tabla de cobertura | MSFT/AAPL (serie EODHD demo, QA, sin ticker/issuer: guarda de no mezclar fuentes), ENG (22 sesiones) | AAPL/MSFT/ENG reconstruidos con Yahoo; evaluar identidad y QA de cada serie; 100 NO se baja (propuesta separada) |"
     )
     w("")
     bc_md = [
@@ -445,7 +447,7 @@ def main() -> None:
         + "`. `future_excess_total_return = retorno total del valor − retorno del benchmark`, sólo si ambos están en la MISMA base de retorno y de divisa.\n",
         "## Reglas\n",
         "* Valor con retorno total frente a benchmark de precio (`PRICE_RETURN`) ⇒ `PRICE_RETURN_ONLY` / `NOT_COMPARABLE_RETURN_BASIS`: el exceso NO se calcula (NULL) y la fila queda fuera del ML.",
-        "* Divisa distinta: el valor se convierte a USD en cada instante con FX PIT (`fx_rates`, Yahoo, VENDOR/EXPLORATORY, disponible a las 00:00 UTC del día siguiente a la cotización; máx. 7 días de antigüedad). Sin FX ⇒ `FX_MISMATCH` / `FX_DATA_NOT_READY`. Nunca el tipo actual para el histórico.",
+        "* Divisa distinta: el valor se convierte a USD en cada instante con FX PIT (`fx_rates`, Yahoo, VENDOR/CANONICAL, disponible a las 00:00 UTC del día siguiente a la cotización; máx. 7 días de antigüedad). Sin FX ⇒ `FX_MISMATCH` / `FX_DATA_NOT_READY`. Nunca el tipo actual para el histórico.",
         "* ETF ⇒ siempre `ETF_PROXY`, nunca el índice oficial. `READY` se reserva a una serie oficial de retorno total; `PROXY_ACCEPTABLE` (ETF con dividendos y base comparable) es el estado aprobado por metodología para el primer ML. `APPROVED_FOR_ML = {READY, PROXY_ACCEPTABLE}`.",
         "* Benchmarks: XNYS→SPY; XMAD→IBEX 35 Total Return (ES0SI0000047) **MISSING**, `^IBEX` es sólo precio (`PRICE_RETURN_ONLY`), fallback URTH+FX diagnóstico; resto→URTH+FX (URTH empieza en 2012-01).",
         "* Campos guardados por fila (`research_targets.details.benchmark_contract`): benchmark_id, benchmark_security_id, benchmark_name, benchmark_type, benchmark_return_type, benchmark_currency, security_currency, return_currency_basis, currency_conversion_method, fx_source, fx_available_at, fx_rate_date, benchmark_start_price, benchmark_end_price, benchmark_total_return, benchmark_source, benchmark_version, benchmark_provenance, benchmark_quality_status, comparability, skipped_candidates.\n",

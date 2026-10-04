@@ -59,7 +59,7 @@ def _ticker(session: Session, sid: str) -> str | None:
     if t:
         return t
     sec = session.get(Security, sid)
-    if sec is None or sec.exchange != "XNYS" or sec.role != "ISSUER_ANCHOR":
+    if sec is None or sec.exchange != "XNYS":
         return None
     srcs = {
         n
@@ -70,7 +70,7 @@ def _ticker(session: Session, sid: str) -> str | None:
             .distinct()
         )
     }
-    if srcs != {"YAHOO_CHART:eod"}:
+    if "YAHOO_CHART:eod" not in srcs:
         return None
     return session.scalars(
         select(SecurityProfile.current_ticker)
@@ -94,9 +94,18 @@ def _profile_sic(session: Session, sec: Security) -> tuple[str | None, str | Non
 
 
 def _bundle(
-    session: Session, sid: str, ticker: str, exchange: str, now: datetime, *, is_index: bool = False
+    session: Session,
+    sid: str,
+    ticker: str,
+    exchange: str,
+    now: datetime,
+    *,
+    is_index: bool = False,
+    canonical_only: bool = False,
 ) -> tuple[FT.SeriesBundle, Any] | None:
-    md = load_market(session, sid, now, exchange)
+    md = load_market(
+        session, sid, now, exchange, market_source="YAHOO_CHART:eod" if canonical_only else None
+    )
     if md.bars.empty or len(md.bars) < 30:
         return None
     return FT.build_bundle(
@@ -145,8 +154,13 @@ def build_research_dataset(
     tickers: list[str] | None = None,
     now: datetime | None = None,
     write: bool = True,
+    canonical_only: bool = False,
 ) -> dict[str, Any]:
     now = now or datetime.now(UTC)
+    from pitquant.market.canonical import FEATURE_VERSION, SOURCE, TARGET_VERSION
+
+    feature_version = FEATURE_VERSION if canonical_only else FT.FEATURE_SET_VERSION
+    target_version = TARGET_VERSION + "-base" if canonical_only else TG.TARGET_SET_VERSION
     ho = get_settings().validation.final_holdout
     hold = (ho.start, ho.end)
     commit = _commit()
@@ -160,7 +174,15 @@ def build_research_dataset(
             bench[t] = None
             continue
         sec = session.get_one(Security, sid)
-        got = _bundle(session, sid, t, sec.exchange, now, is_index=t.startswith("^"))
+        got = _bundle(
+            session,
+            sid,
+            t,
+            sec.exchange,
+            now,
+            is_index=t.startswith("^"),
+            canonical_only=canonical_only,
+        )
         bench[t] = (got[0], FT.technical_panel(got[0])) if got else None
     members = [
         (s, tk)
@@ -170,7 +192,9 @@ def build_research_dataset(
     by_cohort: dict[tuple[str, date], list[dict[str, Any]]] = defaultdict(list)
     skipped: dict[str, str] = {}
     for sec, tk in members:
-        got = _bundle(session, sec.security_id, tk, sec.exchange, now)
+        got = _bundle(
+            session, sec.security_id, tk, sec.exchange, now, canonical_only=canonical_only
+        )
         if got is None:
             skipped[tk] = "NO_OR_TOO_FEW_BARS"
             continue
@@ -211,7 +235,7 @@ def build_research_dataset(
                     "meta": {
                         "ticker": tk, "currency": sec.currency, "country": sec.country, "region": REGION.get(sec.exchange), "sic": sic, "sic_description": sic_desc, "sector_group": FU.sic_group(sic),
                         "metadata_note": "CURRENT_PROFILE_NOT_PIT: stratification only, not a predictor", "return_type": b.return_type, "benchmark": contract.ticker, "benchmark_type": contract.benchmark_type,
-                        "regime": regime, "segment": "OOT" if d >= OOT_START else "DEV", "series_warnings": b.warnings, **fmeta,
+                        "market_provider_contract": "yahoo-market-data-v1" if canonical_only else None, "source_vintage_hash": content_hash(md.bars.to_json() + str(md.actions)), "price_sources": [SOURCE] if canonical_only else md.sources, "regime": regime, "segment": "OOT" if d >= OOT_START else "DEV", "series_warnings": b.warnings, **fmeta,
                     },
                 }
             )  # fmt: skip
@@ -222,13 +246,13 @@ def build_research_dataset(
             continue
         for r in rows:
             exists = session.scalar(
-                select(ResearchFeatureSnapshot.snapshot_id).where(ResearchFeatureSnapshot.security_id == r["security_id"], ResearchFeatureSnapshot.decision_at == r["decision_at"], ResearchFeatureSnapshot.feature_set_version == FT.FEATURE_SET_VERSION)
+                select(ResearchFeatureSnapshot.snapshot_id).where(ResearchFeatureSnapshot.security_id == r["security_id"], ResearchFeatureSnapshot.decision_at == r["decision_at"], ResearchFeatureSnapshot.feature_set_version == feature_version)
             )  # fmt: skip
             if exists:
                 continue
             session.add(
                 ResearchFeatureSnapshot(
-                    security_id=r["security_id"], decision_at=r["decision_at"], decision_session=r["decision_session"], exchange=r["exchange"], feature_set_version=FT.FEATURE_SET_VERSION, cohort_definition=COHORT_DEFINITION,
+                    security_id=r["security_id"], decision_at=r["decision_at"], decision_session=r["decision_session"], exchange=r["exchange"], feature_set_version=feature_version, cohort_definition=COHORT_DEFINITION,
                     cohort_size=len(rows), features=r["features"], ranks={"ranks": r["ranks"], "reasons": r["rank_reasons"]}, meta=r["meta"], feature_hash=content_hash(r["features"]), code_commit=commit,
                 )
             )  # fmt: skip
@@ -236,7 +260,7 @@ def build_research_dataset(
             for t in r["targets"]:
                 session.add(
                     ResearchTarget(
-                        security_id=r["security_id"], decision_at=r["decision_at"], horizon_months=t["horizon_months"], target_set_version=TG.TARGET_SET_VERSION, benchmark_id=None, benchmark_ticker=t.get("benchmark_ticker", r["meta"]["benchmark"]),
+                        security_id=r["security_id"], decision_at=r["decision_at"], horizon_months=t["horizon_months"], target_set_version=target_version, benchmark_id=None, benchmark_ticker=t.get("benchmark_ticker", r["meta"]["benchmark"]),
                         benchmark_type=t.get("benchmark_type", r["meta"]["benchmark_type"]), benchmark_source=t.get("benchmark_source"), entry_session=t.get("entry_session"), exit_session=t.get("exit_session"), label_available_at=t["label_available_at"],
                         status=t["status"], reason=t["reason"], security_total_return=t.get("security_total_return"), benchmark_total_return=t.get("benchmark_total_return"), excess_total_return=t.get("excess_total_return"),
                         outperform=t.get("outperform"), direction_up=t.get("direction_up"), max_drawdown=t.get("max_drawdown"), drawdown_10=t.get("drawdown_10"), drawdown_15=t.get("drawdown_15"), drawdown_20=t.get("drawdown_20"),
