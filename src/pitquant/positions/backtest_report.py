@@ -441,6 +441,13 @@ def render_full(
 
 def proposals(rows: list[dict[str, Any]], glob: dict[int, dict[str, Any]], ic: dict[int, dict[str, float | None]], variants: list[tuple[str, int, dict[str, Any], str]], spread: dict[int, tuple[float | None, float | None, int]], mono: dict[int, list[float]], used: dict[str, Any]) -> list[str]:  # fmt: skip
     out: list[str] = []
+    # 0. rules that never fire (a dead rule is a bug or a design flaw, not a weak signal)
+    for k in bt.RULE_IDS:
+        have = [r for r in rows if k in r["raws"]]
+        if have and all(r["raws"][k] == 0.0 for r in have):
+            out.append(
+                f"REGLA INACTIVA — {k}: aporta 0 en las {len(have)} observaciones donde se evalúa (nunca se activa). No es una señal débil: es un defecto de diseño. Rediseñarla (p. ej. comparar con el soporte vigente en la fecha de ENTRADA y no con el más cercano por debajo del precio actual, que por construcción nunca está roto) y volver a medirla."
+            )
     # 1. BAJA signal
     d_edges = [
         (h, g["down_rate"] - g["down_base"])
