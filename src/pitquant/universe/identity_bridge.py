@@ -36,6 +36,8 @@ _CLASS_13F = re.compile(r"\b(?:CL|CLASS|SER|SERIES)\s+([A-Z])\b")
 _NOT_COMMON = re.compile(r"\b(PFD|WT|WTS|RIGHT|RTS|UNIT|UNITS|NOTE|NOTES|DEBT|SUB|WHEN ISSUED)\b")
 
 
+NAME_FORMAT_VERSION = "sec13f-legal-name-format-v2"
+
 _ABBR = {
     "HLDGS": "HOLDINGS",
     "HLDG": "HOLDING",
@@ -65,7 +67,10 @@ def expand13f(name: str) -> str:
         words = words[:-1]
     if len(words) >= 2 and words[-1] == "IN" and words[-2] == "INTERACT":
         words[-1] = "INC"
-    return " ".join(_ABBR.get(w, w) for w in words)
+    expanded = " ".join(_ABBR.get(w, w) for w in words)
+    # Exact inverted-initial format printed by archived SEC 2017Q3/Q4 lists.
+    # This does not reorder arbitrary names, infer a class or accept similarity.
+    return {"BARD C R INC": "C R BARD INC"}.get(expanded, expanded)
 
 
 def quarter_of(d: date) -> str:
@@ -202,7 +207,7 @@ def bridge_name_only(session: Session) -> list[Bridge]:
                     session,
                     sid,
                     e,
-                    "N-30D name matched to the quarter's 13F list: exact normalised legal name + share class, unique",
+                    f"{NAME_FORMAT_VERSION}: N-30D name matched to the quarter's 13F list: exact normalised legal name + share class, unique",
                 )
             other = security_by_cusip_other(session, b.cusip or "", sid)
             if other:

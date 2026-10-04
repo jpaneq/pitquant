@@ -1,80 +1,6 @@
 [
  {
   "segment": "2017-09-30\u21922018-03-31",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "SECURITY_IDENTITY_ONLY",
-  "security": "PPoG Industries, Inc.",
-  "events": "none",
-  "window": [
-   "2017-10-02",
-   "2018-03-31"
-  ],
-  "cohorts_blocked": [
-   "2017-10-02",
-   "2017-11-01",
-   "2017-12-01",
-   "2018-01-02",
-   "2018-02-01",
-   "2018-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-10-02",
-   "2017-11-01",
-   "2017-12-01",
-   "2018-01-02",
-   "2018-02-01",
-   "2018-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": true,
-  "hints": [
-   "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ],
-  "security_id": "acac7cab-36e8-4829-ae50-239b39b19460",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2017-09-30\u21922018-03-31",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "PPG Industries, Inc.",
-  "events": "none",
-  "window": [
-   "2017-10-02",
-   "2018-03-31"
-  ],
-  "cohorts_blocked": [
-   "2017-10-02",
-   "2017-11-01",
-   "2017-12-01",
-   "2018-01-02",
-   "2018-02-01",
-   "2018-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-10-02",
-   "2017-11-01",
-   "2017-12-01",
-   "2018-01-02",
-   "2018-02-01",
-   "2018-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "b483e600-410b-4916-ad7f-cec18bc42ac0",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2017-09-30\u21922018-03-31",
   "difference_type": "DISCOVERY_CONFLICT",
   "category": "DISCOVERY_CONFLICT",
   "security": "Huntington Ingalls Industries, Inc.",
@@ -815,6 +741,21 @@
   "segment": "2019-09-30\u21922019-12-31",
   "difference_type": "ALIAS",
   "category": "SUCCESSOR_SECURITY",
+  "security": "Symantec Corp -> NortonLifeLock Inc",
+  "events": "anchor LEI / discovery pair",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "same issuer LEI YF6ZV0M6AU4FY94MK914 in both NPORT-P filings (identity transition, not membership)"
+  ],
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2019-09-30\u21922019-12-31",
+  "difference_type": "ALIAS",
+  "category": "SUCCESSOR_SECURITY",
   "security": "HCP Inc -> Healthpeak Properties Inc",
   "events": "anchor LEI / discovery pair",
   "window": null,
@@ -838,21 +779,6 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI 5KYC8KF17ROCY24M3H09 in both NPORT-P filings (identity transition, not membership)"
-  ],
-  "missing_evidence": ""
- },
- {
-  "segment": "2019-09-30\u21922019-12-31",
-  "difference_type": "ALIAS",
-  "category": "SUCCESSOR_SECURITY",
-  "security": "Symantec Corp -> NortonLifeLock Inc",
-  "events": "anchor LEI / discovery pair",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "same issuer LEI YF6ZV0M6AU4FY94MK914 in both NPORT-P filings (identity transition, not membership)"
   ],
   "missing_evidence": ""
  },
@@ -1172,21 +1098,6 @@
   "segment": "2021-06-30\u21922021-09-30",
   "difference_type": "ALIAS",
   "category": "SUCCESSOR_SECURITY",
-  "security": "L Brands Inc -> Bath & Body Works Inc",
-  "events": "anchor LEI / discovery pair",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "same issuer LEI GR3KVMWVCR54YWQNXU90 in both NPORT-P filings (identity transition, not membership)"
-  ],
-  "missing_evidence": ""
- },
- {
-  "segment": "2021-06-30\u21922021-09-30",
-  "difference_type": "ALIAS",
-  "category": "SUCCESSOR_SECURITY",
   "security": "General Electric Co -> General Electric Co",
   "events": "anchor LEI / discovery pair",
   "window": null,
@@ -1195,6 +1106,21 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI 3C7474T6CDKPR9K6YT90 in both NPORT-P filings (identity transition, not membership)"
+  ],
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2021-06-30\u21922021-09-30",
+  "difference_type": "ALIAS",
+  "category": "SUCCESSOR_SECURITY",
+  "security": "L Brands Inc -> Bath & Body Works Inc",
+  "events": "anchor LEI / discovery pair",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "same issuer LEI GR3KVMWVCR54YWQNXU90 in both NPORT-P filings (identity transition, not membership)"
   ],
   "missing_evidence": ""
  },

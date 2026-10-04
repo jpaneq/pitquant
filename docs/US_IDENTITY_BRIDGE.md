@@ -28,13 +28,12 @@
 
 ## N-30D identificadas sólo por nombre: 56
 
-- resueltas por la lista 13F (nombre legal normalizado exacto + clase, candidato único): **54** (7 enlazadas con una security que ya tenía CUSIP)
-- sin resolver: **2** (Counter({'UNRESOLVED_NONE': 2}))
+- resueltas por la lista 13F (nombre legal normalizado exacto + clase, candidato único): **55** (7 enlazadas con una security que ya tenía CUSIP)
+- sin resolver: **1** (Counter({'UNRESOLVED_NONE': 1}))
 
 | security | estado | candidatos |
 |---|---|---|
-| C.R. Bard, Inc. | UNRESOLVED_NONE |  |
-| PPoG Industries, Inc. | UNRESOLVED_NONE |  |
+| PPG Industries, Inc. | UNRESOLVED_NONE |  |
 
 ## Sucesiones y cambios de nombre verificados contra las listas 13F
 
@@ -67,3 +66,4 @@
 | Discovery, Inc. Class A | Warner Bros Discovery, Inc. | SHARE_CLASS_CHANGE | 2022-04-11 00:00:00+00:00 | 1.0 | True | D02_PRIMARY_CORPORATE_RELEASE+SEC_13F_LIST |
 | Discovery, Inc. Class C | Warner Bros Discovery, Inc. | SHARE_CLASS_CHANGE | 2022-04-11 00:00:00+00:00 | 1.0 | True | D02_PRIMARY_CORPORATE_RELEASE+SEC_13F_LIST |
 | Mylan NV | Viatris, Inc. | SECURITY_REPLACEMENT_SUCCESSOR | 2020-11-17 00:00:00+00:00 | 1.0 | True | D02_PRIMARY_CORPORATE_RELEASE+SEC_13F_LIST |
+| PPoG Industries, Inc. | PPG Industries, Inc. | SAME_SECURITY_IDENTITY_LINK | — | — | True | DOCUMENT_SPECIFIC_TYPO_ALIAS |

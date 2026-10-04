@@ -1,0 +1,40 @@
+{
+  "ppg": {
+    "source_document": "3ed70140-3670-47e5-a807-4d82a2fe4d4a",
+    "source_filing": "0001193125-17-355427",
+    "source_date": "2017-09-30",
+    "source_sha256": "45cc19b41167f64718da41ce5ea3f3871e32b6716e646ecd5255b4cd3941ad81",
+    "raw_name": "PPoG Industries, Inc.",
+    "resolved_name": "PPG Industries, Inc.",
+    "raw_security_id": "acac7cab-36e8-4829-ae50-239b39b19460",
+    "resolved_security_id": "b483e600-410b-4916-ad7f-cec18bc42ac0",
+    "resolved_issuer_id": "8e46d942-747d-44bd-8acb-99938e4f243d",
+    "resolution_type": "DOCUMENT_SPECIFIC_TYPO_ALIAS",
+    "evidence": "Human-approved exact N-30D typo; canonical PPG identity: NPORT CUSIP",
+    "resolution_version": "document-typo-alias-v2"
+  },
+  "AAPL": {
+    "security_id": "cd8b8a8f-e550-49ee-86af-4370b15d03ec",
+    "issuer_id": "e28c1501-db55-49d9-b244-f0e5a6d624a8",
+    "bars": 3961,
+    "inserted": 0,
+    "corporate_actions": 59,
+    "archive_hash": "237b7d05d64cfc285096444ed7754f57e89b987b00d0aa59ab258b5680e0e24d"
+  },
+  "MSFT": {
+    "security_id": "d224cb0b-ddae-45ed-8412-9092f17db14b",
+    "issuer_id": "64c69676-bf1d-44b3-806f-facc2483948b",
+    "bars": 3961,
+    "inserted": 0,
+    "corporate_actions": 63,
+    "archive_hash": "938520c3f93c9a018036619aaec8d5b56dc1b67c8220ea6b124b0cb007322c57"
+  },
+  "ENG": {
+    "security_id": "ce79cc0a-00dd-4bcb-a653-9909fe94aa72",
+    "issuer_id": "ee1e5d70-c2a7-450b-86d4-54ccaba62128",
+    "bars": 4029,
+    "inserted": 0,
+    "corporate_actions": 30,
+    "archive_hash": "f4fb8d3e4c919181c1e9bed1b056121d6f09b543e3e57c4a4ca93b676ca40a14"
+  }
+}

@@ -17,29 +17,29 @@ Holdout 2022-10-01 → 2025-09-30 sellado; ningún ancla posterior a 2022-09-30.
 | forward_validated_segments | 11 | 11 |
 | backward_validated_segments | 11 | 11 |
 | monthly_cohorts | 60 | 60 |
-| monthly_cohorts_reconstructible | 54 | 18 |
-| longest_continuous_period | 54 | 9 |
+| monthly_cohorts_reconstructible | 60 | 18 |
+| longest_continuous_period | 60 | 9 |
 | post_limit_events_used | 0 | 0 |
 | cohortes diarias canónicas / racha | 18 / 9 | |
 
 ## Ventana mínima (60): 2017-10-01 → 2022-09-30
 
-- monthly_cohorts 60 · membership_ready **54** · racha continua 54 · cohortes sin ancla 0 (no se ha extendido a 2014-2017)
+- monthly_cohorts 60 · membership_ready **60** · racha continua 60 · cohortes sin ancla 0 (no se ha extendido a 2014-2017)
 
 ## Ventana preferida (96): 2014-10-01 → 2022-09-30
 
-- monthly_cohorts 96 · membership_ready **54** · racha continua 54 · cohortes sin ancla 36 (no se ha extendido a 2014-2017)
+- monthly_cohorts 96 · membership_ready **60** · racha continua 60 · cohortes sin ancla 36 (no se ha extendido a 2014-2017)
 
 ## Cohortes (ventana mínima)
 
 | decision_at | estado | segmento | forward = backward | ambigüedad mensual | conflictos primarios |
 |---|---|---|---|---|---|
-| 2017-10-02 | BLOCKED | 2017-09-30→2018-03-31 | False | 2 | 0 |
-| 2017-11-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 2 | 0 |
-| 2017-12-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 2 | 0 |
-| 2018-01-02 | BLOCKED | 2017-09-30→2018-03-31 | False | 2 | 0 |
-| 2018-02-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 2 | 0 |
-| 2018-03-01 | BLOCKED | 2017-09-30→2018-03-31 | False | 2 | 0 |
+| 2017-10-02 | MEMBERSHIP_READY | 2017-09-30→2018-03-31 | True | 0 | 0 |
+| 2017-11-01 | MEMBERSHIP_READY | 2017-09-30→2018-03-31 | True | 0 | 0 |
+| 2017-12-01 | MEMBERSHIP_READY | 2017-09-30→2018-03-31 | True | 0 | 0 |
+| 2018-01-02 | MEMBERSHIP_READY | 2017-09-30→2018-03-31 | True | 0 | 0 |
+| 2018-02-01 | MEMBERSHIP_READY | 2017-09-30→2018-03-31 | True | 0 | 0 |
+| 2018-03-01 | MEMBERSHIP_READY | 2017-09-30→2018-03-31 | True | 0 | 0 |
 | 2018-04-02 | MEMBERSHIP_READY | 2018-03-31→2018-09-30 | True | 0 | 0 |
 | 2018-05-01 | MEMBERSHIP_READY | 2018-03-31→2018-09-30 | True | 0 | 0 |
 | 2018-06-01 | MEMBERSHIP_READY | 2018-03-31→2018-09-30 | True | 0 | 0 |
@@ -102,9 +102,9 @@ Antes (ficha global, ADR-0032): **95** gaps. Tras la reclasificación y las reso
 | categoría | n | bloquea membresía | bloquea identidad |
 |---|---|---|---|
 | PRIMARY_DELTA_UNEXPLAINED | 0 | 0 | 0 |
-| PRIMARY_EVENT_MISSING | 1 | 1 | 0 |
+| PRIMARY_EVENT_MISSING | 0 | 0 | 0 |
 | MONTHLY_DATE_AMBIGUITY | 0 | 0 | 0 |
-| SECURITY_IDENTITY_ONLY | 1 | 1 | 1 |
+| SECURITY_IDENTITY_ONLY | 0 | 0 | 0 |
 | TICKER_OR_NAME_CHANGE | 26 | 0 | 0 |
 | SUCCESSOR_SECURITY | 10 | 0 | 0 |
 | DISCOVERY_UNCORROBORATED | 20 | 0 | 0 |
@@ -112,5 +112,5 @@ Antes (ficha global, ADR-0032): **95** gaps. Tras la reclasificación y las reso
 | TRANSIENT_EVENT_POSSIBLE | 0 | 0 | 0 |
 | RESOLVED | 1 | 0 | 0 |
 
-Blockers de membresía reales: **2** · de identidad: **1** + 2 securities sin evidencia oficial de CUSIP/ISIN.
+Blockers de membresía reales: **0** · de identidad: **0** + 0 securities sin evidencia oficial de CUSIP/ISIN.
 

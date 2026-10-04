@@ -55,3 +55,13 @@ def test_yahoo_rejects_duplicate_chronology_and_impossible_ohlc(rows):
 def test_yahoo_requires_symbol_and_currency_metadata():
     with pytest.raises(DataQualityError, match="metadata"):
         YahooChartMarketDataProvider().normalize("S", "OTHER", body([row(27, 100)]), NOW)
+
+
+@pytest.mark.pit
+def test_sec_bard_initials_format_is_exact_and_class_preserving():
+    from pitquant.universe.identity_bridge import expand13f
+    from pitquant.universe.sources.spy_sec_anchors import norm_name
+
+    assert norm_name(expand13f("BARD C R INC")) == norm_name("C.R. Bard, Inc.")
+    assert expand13f("BARD C B INC") == "BARD C B INC"
+    assert expand13f("BARD C R INC CLASS B") == "BARD C R INC CLASS B"

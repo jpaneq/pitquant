@@ -12,8 +12,10 @@ Yahoo quote OHLC are split-adjusted. The parser reconstructs nominal historical 
 
 Market/session timestamp, semantic availability at session close, actual retrieval and archived vintage are distinct. Historical downloads made today do not establish historical provider publication or revision availability. The frozen project close convention is unchanged; future/incomplete sessions are excluded. FX retains availability from 00:00 UTC on the following day and its existing maximum-age guard.
 
-Research uses only Yahoo bars and Yahoo simple corporate actions through an explicit optional source filter; the live V0 path keeps its existing behavior. New append-only versions are `research-features-v1-yahoo-v1` and `research-targets-v2-yahoo-v1`. Prior snapshots and providers remain stored. A source-vintage hash, code commit and provider contract identify the new generation; no original snapshots are rewritten.
+Research uses only Yahoo bars and Yahoo simple corporate actions through an explicit optional source filter; the live V0 path keeps its existing behavior. New append-only versions are `research-features-v1-yahoo-v1` and `research-targets-v2-yahoo-v2`. Prior snapshots and providers remain stored. A source-vintage hash, code commit and provider contract identify the new generation; no original snapshots are rewritten.
 
 D05 checks identity/currency metadata, duplicate/order guards, OHLC, session chronology, missing sessions, beginning of coverage, corporate-action coverage and archived deterministic reconstruction. Naming the provider Yahoo never closes these checks. Active session coverage remains 98%; delisted 95%; unknown leading history remains blocked. Missing or unreproducible data stay blocked with explicit reasons.
 
 SPY and URTH remain ETF proxies. ^IBEX remains PRICE_RETURN_ONLY and cannot produce eligible excess total returns. Spain's existing URTH+PIT-FX proxy fallback is explicit. First ML remains US canonical-membership-only; no benchmark is selected using outcomes.
+
+La versión yahoo-v1 de objetivos se conserva archivada; yahoo-v2 corrige la etiqueta histórica de FX a CANONICAL_SOURCE sin actualizar resultados ni filas previas.

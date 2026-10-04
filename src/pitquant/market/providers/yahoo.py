@@ -1,7 +1,7 @@
 # ruff: noqa: E501
 """YahooChartMarketDataProvider — FREE, keyless daily bars from Yahoo Finance's unofficial chart endpoint (ADR-0043).
 
-* UNOFFICIAL and without any SLA or licence for redistribution: personal/educational use for the daily simulation routine only. It remains VENDOR tier and is the canonical market price provider chosen by PITQuant (yahoo-market-data-v1); endpoint changes or rate limits can break it at any time, and every failure is reported, never hidden.
+* UNOFFICIAL and without any SLA or licence for redistribution: used by the daily simulation routine and canonical research under ADR-0050. It remains VENDOR tier and is the canonical market price provider chosen by PITQuant (yahoo-market-data-v1); endpoint changes or rate limits can break it at any time, and every failure is reported, never hidden.
 * Yahoo returns OHLC already SPLIT-ADJUSTED to today. Our series base is RAW OHLC, so prices are restored by multiplying by the product of the splits AFTER each bar (AAPL 2020-08-28:
   124.81 adjusted → 499.23 raw). Dividends are split-adjusted too: the actual payout is the amount times the later splits. Volume before a split is withheld (None): its adjustment is not verified.
 * Only COMPLETED sessions are stored: a bar whose session has not closed (or is dated in the future) is dropped, so an intraday print is never persisted as a final bar.
