@@ -12,13 +12,16 @@ from sqlalchemy import select
 
 from pitquant.api.app import DB
 from pitquant.api.simulations import row
-from pitquant.btc.contracts import BTC_CAUSES, Cohort
+from pitquant.btc.contracts import BTC_CAUSES, Cohort, target_time
+from pitquant.btc.evaluation import analysis, evaluate_due
 from pitquant.btc.experimental import forecast, latest_models
 from pitquant.btc.features import feature_payload
+from pitquant.btc.market import chart_bars, live_market
 from pitquant.btc.models import BTCFeatureSnapshot, BTCPredictionSnapshot, BTCResearchRecord
 from pitquant.btc.quote import LiveQuote
 from pitquant.btc.research import freeze, guard_holdout, historical_test, readiness, reveal
 from pitquant.btc.simulation import create, postmortem, prediction_tracking, trade_plan, update
+from pitquant.core.timeutils import utc_now
 from pitquant.db.models import (
     ResearchHypothesis,
     Simulation,
@@ -38,6 +41,7 @@ class Simulate(BaseModel):
     snapshot_id: str
     notional: float = 1000
     horizon_days: int = 30
+    use_live_reference: bool = False
 
 
 class Update(BaseModel):
@@ -65,6 +69,15 @@ class HistoricalTest(BaseModel):
     strategy_version: str = "btc-plan-v0"
 
 
+def _market(db: Any) -> dict[str, Any]:
+    if os.environ.get("PITQUANT_E2E_FIXTURE") == "1":
+        from pitquant.btc.fixtures import synthetic_binance_fetch
+
+        now = utc_now()
+        return live_market(db, synthetic_binance_fetch(now), now, data_mode="SYNTHETIC_TEST_DATA")
+    return live_market(db)
+
+
 def make_btc_router() -> APIRouter:
     router = APIRouter(prefix="/btc", tags=["bitcoin"])
     live_quote = LiveQuote()
@@ -80,6 +93,18 @@ def make_btc_router() -> APIRouter:
                 503, "BTC_LIVE_QUOTE_UNAVAILABLE", headers={"Retry-After": "5"}
             ) from exc
 
+    @router.get("/market/live")
+    def market_live(db: DB) -> dict[str, Any]:
+        """LIVE display and last closed MODEL bar, strictly separate."""
+        return _market(db)
+
+    @router.get("/market/bars")
+    def market_bars(db: DB, range: str = "1Y") -> dict[str, Any]:
+        try:
+            return chart_bars(db, range, utc_now())
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+
     @router.get("/quote/history")
     def quote_history(symbol: str = "BTCUSDT", range: str = "LIVE") -> dict[str, Any]:
         if os.environ.get("PITQUANT_E2E_FIXTURE") == "1":
@@ -88,6 +113,17 @@ def make_btc_router() -> APIRouter:
             return live_quote.history(symbol, range)
         except (OSError, ValueError, KeyError, TypeError, IndexError) as exc:
             raise HTTPException(503, "BTC_INTRADAY_HISTORY_UNAVAILABLE") from exc
+
+    @router.get("/evaluation")
+    def evaluation(db: DB, cohort: Cohort = Cohort.FORWARD_PAPER) -> dict[str, Any]:
+        """Follow-up of frozen predictions: pending (with maturity date), evaluated, and per-horizon skill against history."""  # noqa: E501
+        return analysis(db, utc_now(), cohort)
+
+    @router.post("/evaluation/run")
+    def evaluation_run(db: DB, cohort: Cohort = Cohort.FORWARD_PAPER) -> dict[str, Any]:
+        result = evaluate_due(db, utc_now(), cohort)
+        db.commit()
+        return result
 
     @router.post("/experimental/forecast")
     def experimental_forecast(db: DB) -> dict[str, Any]:
@@ -168,6 +204,18 @@ def make_btc_router() -> APIRouter:
             result = reveal(db, prediction_id, body.as_of)
             db.commit()
         except ValueError as exc:
+            if str(exc) == "LABEL_NOT_MATURE":
+                pred = db.get(BTCPredictionSnapshot, prediction_id)
+                snap = db.get(BTCFeatureSnapshot, pred.snapshot_id) if pred else None
+                matures = target_time(snap.decision_at, pred.horizon) if pred and snap else None
+                raise HTTPException(
+                    409,
+                    {
+                        "code": "LABEL_NOT_MATURE",
+                        "matures_at": matures.isoformat() if matures else None,
+                        "message": f"La predicción aún no ha madurado: se podrá evaluar el {matures:%Y-%m-%d %H:%M} UTC. El seguimiento automático la comprobará entonces.",  # noqa: E501
+                    },
+                ) from exc
             raise HTTPException(409, str(exc)) from exc
         return row(result)
 
@@ -228,7 +276,20 @@ def make_btc_router() -> APIRouter:
         if snap is None:
             raise HTTPException(404, "snapshot not found")
         try:
-            sim = create(db, snap, notional=body.notional, days=body.horizon_days)
+            reference = None
+            if body.use_live_reference:
+                m = _market(db)
+                # server-side only: the client never supplies the reference price
+                reference = {
+                    "price": m["quote"]["price"],
+                    "retrieved_at": m["quote"]["retrieved_at"],
+                    "source": m["quote"]["source"],
+                    "freshness": m["quote"]["status"],
+                    "usage": "VISUAL_T0_REFERENCE_ONLY",
+                }
+            sim = create(
+                db, snap, notional=body.notional, days=body.horizon_days, market_reference=reference
+            )
             db.commit()
         except ValueError as exc:
             raise HTTPException(409, str(exc)) from exc

@@ -1,9 +1,12 @@
 """Explicit SYNTHETIC BTC fixtures; only invoked by test/demo code, never the real archiver."""
+# ruff: noqa: E501
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Any
 
 from sqlalchemy.orm import Session
 
@@ -52,3 +55,42 @@ def load_synthetic_btc(session: Session, store_root: Path) -> None:
             )
         )
     session.flush()
+
+
+def synthetic_binance_fetch(now: datetime) -> Callable[[str, str, dict[str, Any]], Any]:
+    """Binance-shaped responses for E2E/dev ONLY (PITQUANT_E2E_FIXTURE=1). Prices are SYNTHETIC TEST DATA, not market data."""
+    day = int(now.replace(hour=0, minute=0, second=0, microsecond=0).timestamp() * 1000)
+    d = 86_400_000
+    now_ms = int(now.timestamp() * 1000)
+
+    def kline(start: int, o: float, h: float, low: float, c: float) -> list[Any]:
+        return [
+            start,
+            str(o),
+            str(h),
+            str(low),
+            str(c),
+            "300.0",
+            start + d - 1,
+            "0",
+            4321,
+            "0",
+            "0",
+            "0",
+        ]
+
+    def fetch(base: str, path: str, params: dict[str, Any]) -> Any:
+        if path.endswith("/ticker/price"):
+            return {"symbol": "BTCUSDT", "price": "11111.11"}
+        if path.endswith("/ticker/24hr"):
+            return {
+                "symbol": "BTCUSDT", "priceChange": "111.00", "priceChangePercent": "1.01", "highPrice": "11500.00", "lowPrice": "10900.00",
+                "volume": "222.5", "quoteVolume": "2470000.0", "openTime": now_ms - d, "closeTime": now_ms,
+            }  # fmt: skip
+        return [
+            kline(day - 2 * d, 100, 105, 99, 101),
+            kline(day - d, 101, 108, 100, 107),
+            kline(day, 107, 109, 106, 108),
+        ]
+
+    return fetch

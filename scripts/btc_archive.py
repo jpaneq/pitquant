@@ -26,11 +26,26 @@ def main() -> int:
     parser.add_argument("--discover", action="store_true")
     parser.add_argument("--activate", action="store_true")
     parser.add_argument("--readiness-only", action="store_true")
+    parser.add_argument(
+        "--evaluate-only",
+        action="store_true",
+        help="refresh the archive, then check matured predictions and print the analysis",
+    )
     args = parser.parse_args()
     cfg = get_settings()
     with make_session_factory(make_engine(cfg.database.url))() as session:
         if args.readiness_only:
             report = baseline_experiment(session)
+            session.commit()
+        elif args.evaluate_only:
+            from pitquant.btc.evaluation import analysis, evaluate_due
+            from pitquant.core.timeutils import utc_now
+
+            collect(session, ArchiveStore(ROOT / cfg.archive.root))  # fetch the target bars first
+            report = {
+                "run": evaluate_due(session, utc_now()),
+                "analysis": analysis(session, utc_now()),
+            }
             session.commit()
         else:
             report = collect(session, ArchiveStore(ROOT / cfg.archive.root), discover=args.discover)

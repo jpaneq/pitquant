@@ -120,8 +120,12 @@ def forward_cycle(session: Session) -> dict[str, Any]:
     for sim in session.scalars(select(Simulation).where(Simulation.asset_type == "BTC")):
         if (sim.source_provenance or {}).get("cohort") == Cohort.FORWARD_PAPER:
             updated.append(update(session, sim.simulation_id, now))
+    from pitquant.btc.evaluation import evaluate_due
+
+    evaluation = evaluate_due(session, now)
     session.commit()
     return {
+        "evaluation": evaluation,
         "snapshot_id": frozen.snapshot_id if frozen else None,
         "experimental_snapshot_id": experimental_id,
         "simulations": updated,

@@ -34,3 +34,27 @@ test('Historical Time Machine freezes before reveal and preserves the original h
   await page.setViewportSize({ width: 1440, height: 2000 })
   await page.screenshot({ path: 'artifacts/btc-time-machine.png', fullPage: true })
 })
+
+test('BTC current quote and MODEL BAR are separate; fixture is labelled SYNTHETIC TEST DATA', async ({ page }) => {
+  await page.goto('/bitcoin')
+  const header = page.getByLabel('BTC live market')
+  await expect(header.getByText('SYNTHETIC TEST DATA', { exact: false })).toBeVisible()
+  await expect(header.getByLabel('BTC price')).toHaveText('$11,111.11')
+  await expect(header.getByLabel('Quote freshness')).toHaveText(/LIVE|RECENT/)
+  await expect(header.getByText('24H ROLLING', { exact: false })).toBeVisible()
+  const bar = page.getByLabel('Model bar')
+  await expect(bar.getByText('MODEL BAR — 1D UTC')).toBeVisible()
+  await expect(bar.getByText('Predictions use closed daily bars, not the live quote.')).toBeVisible()
+  await expect(bar.getByText('$11,111.11')).toHaveCount(0) // the live quote never appears inside the model bar
+  await expect(page.getByText('Current daily candle INCOMPLETE')).toBeVisible()
+  await page.setViewportSize({ width: 1440, height: 1800 })
+  await page.screenshot({ path: 'artifacts/btc-live-market.png', fullPage: true })
+})
+
+test('Immature forward predictions show their maturity date, not an error', async ({ page }) => {
+  await page.goto('/bitcoin/predictions')
+  await expect(page.getByRole('heading', { name: 'Seguimiento de predicciones' })).toBeVisible()
+  await page.getByRole('button', { name: 'Comprobar predicciones maduras ahora' }).click()
+  await expect(page.getByText('LABEL_NOT_MATURE')).toHaveCount(0)
+  await expect(page.getByRole('alert')).toHaveCount(0)
+})

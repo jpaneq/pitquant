@@ -133,6 +133,7 @@ def create(
     commission_bps: float = 0,
     slippage_bps: float = 0,
     funding_cost: float = 0,
+    market_reference: dict[str, Any] | None = None,
 ) -> Simulation:
     if notional <= 0 or days <= 0 or min(commission_bps, slippage_bps, funding_cost) < 0:
         raise ValueError("positive notional/days and nonnegative costs required")
@@ -181,7 +182,11 @@ def create(
         support_resistance_snapshot={"support": p["support"], "resistance": p["resistance"]},
         trade_plan_snapshot=p,
         market_regime_snapshot=snapshot.payload["regime"],
-        data_quality={"cohort": snapshot.cohort, "availability": snapshot.payload["availability"]},
+        data_quality={
+            "cohort": snapshot.cohort,
+            "availability": snapshot.payload["availability"],
+            **({"market_reference_quote": market_reference} if market_reference else {}),
+        },
         funding_snapshot=snapshot.payload["derivatives_features"],
         open_interest_snapshot=snapshot.payload["derivatives_features"],
         basis_snapshot=snapshot.payload["derivatives_features"],
