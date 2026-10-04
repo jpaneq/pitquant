@@ -238,10 +238,12 @@ def new_version(
 
 
 # ───────────────────────────────────────────── presets (experimental parameters, never truth)
-def preset_trade_plan_only(strategy_id: str = "TRADE_PLAN_ONLY_V0") -> StrategySpec:
+def preset_trade_plan_only(
+    strategy_id: str = "TRADE_PLAN_ONLY_V0", min_rr1: float = 1.0
+) -> StrategySpec:
     return StrategySpec(
         strategy_id, "TRADE_PLAN_ONLY", "Trade Plan only (entry zone, stop, targets, invalidation)", None, {"requires_prediction": False},
-        [rule("plan_available", "trade_plan_available", "==", True, kind="GATE"), rule("quality_gate", "data_quality_ok", "==", True, kind="GATE"), rule("risk_gate_rr1", "trade_plan_risk_reward_1", ">=", 1.0, kind="GATE")],
+        [rule("plan_available", "trade_plan_available", "==", True, kind="GATE"), rule("quality_gate", "data_quality_ok", "==", True, kind="GATE"), rule("risk_gate_rr1", "trade_plan_risk_reward_1", ">=", min_rr1, kind="GATE")],
         [], {"max_holding_sessions": 20}, {"profile": "BASE"},
     )  # fmt: skip
 

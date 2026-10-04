@@ -252,10 +252,16 @@ def build_inputs(
     plan = None
     if spec.family != "BUY_AND_HOLD":
         try:
-            plan = sim._pitquant_plan(
-                svc.trade_plan(security_id, decision_at),
-                str(spec.trade_plan_rules.get("profile", "BASE")),
-            )
+            tplan = svc.trade_plan(security_id, decision_at)
+            plan = sim._pitquant_plan(tplan, str(spec.trade_plan_rules.get("profile", "BASE")))
+            if (
+                plan is not None
+            ):  # the PIT instant the plan was generated at travels with the decision
+                plan = {
+                    **plan,
+                    "plan_as_of": tplan.get("as_of"),
+                    "plan_engine_version": tplan.get("engine_version"),
+                }
         except Exception:
             plan = None
     dq = svc.data_quality(security_id, decision_at)
@@ -397,6 +403,14 @@ def process_decision(
         return None
     allow_synth = run.run_kind == "SYNTHETIC"
     positions = _positions(session, run, security_id)
+    bh_held = spec.family == "BUY_AND_HOLD" and any(
+        dec == "ENTER"
+        for (dec,) in session.execute(
+            select(StrategyDecision.decision).where(
+                StrategyDecision.run_id == run.run_id, StrategyDecision.security_id == security_id
+            )
+        )
+    )  # buy and hold is analytic: it holds no paper trade, only the first ENTER
     # a position the simulation engine already closed (stop / target / invalidation / horizon): record it ONCE as an EXIT decision with its reason
     for _entry_dec, sm in positions:
         sim.update_simulation(session, settings, sm.simulation_id, decision_at)
@@ -467,7 +481,7 @@ def process_decision(
     res = evaluate_strategy(
         spec,
         inputs,
-        in_position=bool(open_pos),
+        in_position=bool(open_pos) or bh_held,
         allow_synthetic=allow_synth,
         positions_open=_all_positions_open(session, run),
     )
