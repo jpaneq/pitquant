@@ -444,16 +444,92 @@ def test_virtual_final_is_written_once(env: Env, monkeypatch: pytest.MonkeyPatch
 
 
 # ───────────────────────────────────────────── universe ingestion needs a key and never invents data
-def test_without_a_vendor_key_the_universe_is_not_ingested_and_says_so(
+def test_without_a_vendor_key_the_free_yahoo_source_is_used_and_labelled(
     env: Env, monkeypatch: pytest.MonkeyPatch, tmp_path
 ) -> None:
+    import json
+
     from pitquant.data.archive import ArchiveStore
-    from pitquant.positions.universe_ingest import ingest_universe
+    from pitquant.positions import universe_ingest as ui
 
     s, cfg, _, _ = env
     monkeypatch.delenv("PITQUANT_EODHD_API_KEY", raising=False)
-    out = ingest_universe(s, cfg, ArchiveStore(tmp_path), {"IBEX": ["SAN"]})
-    assert out["status"] == "SOURCE_NOT_CONFIGURED" and out["tickers"] == {}
+
+    def fetch(url: str) -> bytes:
+        ts = [int(datetime(2024, 1, d, 14, 30, tzinfo=UTC).timestamp()) for d in (2, 3)]
+        q = {
+            "open": [10, 11],
+            "high": [11, 12],
+            "low": [9, 10],
+            "close": [10.5, 11.5],
+            "volume": [100, 200],
+        }
+        return json.dumps(
+            {
+                "chart": {
+                    "result": [
+                        {
+                            "meta": {"currency": "USD", "gmtoffset": -18000},
+                            "timestamp": ts,
+                            "indicators": {"quote": [q], "adjclose": [{"adjclose": [10.5, 11.5]}]},
+                            "events": {},
+                        }
+                    ],
+                    "error": None,
+                }
+            }
+        ).encode()
+
+    prov = ui.YahooChartMarketDataProvider(fetch=fetch)
+    out = ui.ingest_universe(
+        s, cfg, ArchiveStore(tmp_path), {"SP500": ["YHOO"]}, provider=prov, since="2024-01-01"
+    )
+    assert out["source"] == "YAHOO" and out["tickers"]["YHOO"].startswith("OK bars=2")
+    sid = ui.find_security(s, "YHOO")
+    assert sid is not None and ui._sources_of(s, sid) == {"YAHOO_CHART:eod"}
+    again = ui.ingest_universe(
+        s, cfg, ArchiveStore(tmp_path), {"SP500": ["YHOO"]}, provider=prov, since="2024-01-01"
+    )
+    assert (
+        again["tickers"]["YHOO"].startswith("OK") and "inserted=0" in again["tickers"]["YHOO"]
+    )  # incremental and idempotent
+
+
+def test_a_security_with_bars_from_another_source_is_not_mixed_with_yahoo(
+    env: Env, tmp_path
+) -> None:
+    from pitquant.data.archive import ArchiveStore
+    from pitquant.positions import universe_ingest as ui
+
+    s, cfg, _, _ = env
+    out = ui.ingest_universe(
+        s,
+        cfg,
+        ArchiveStore(tmp_path),
+        {"SP500": ["SYNF"]},
+        provider=ui.YahooChartMarketDataProvider(fetch=lambda u: b"{}"),
+        since="2024-01-01",
+    )
+    assert out["tickers"]["SYNF"].startswith("SKIPPED: already has bars from")
+
+
+def test_only_the_current_security_of_a_reused_ticker_is_picked(env: Env) -> None:
+    from datetime import date as d
+
+    from pitquant.positions import universe_ingest as ui
+    from pitquant.security_master.service import SecurityMaster
+
+    s, _, _, _ = env
+    sm = SecurityMaster(s)
+    old = sm.register(
+        name="OLD OWNER", exchange="XMAD", currency="EUR", listing_start=d(1990, 1, 1)
+    )
+    sm.add_ticker(old.security_id, "REUSED", "XMAD", d(1990, 1, 1), d(2005, 1, 1))
+    new = sm.register(
+        name="NEW OWNER", exchange="XMAD", currency="EUR", listing_start=d(2006, 1, 1)
+    )
+    sm.add_ticker(new.security_id, "REUSED", "XMAD", d(2006, 1, 1))
+    assert ui.find_security(s, "REUSED") == new.security_id
 
 
 def test_with_a_key_every_ticker_is_registered_and_its_bars_stored_and_failures_are_reported(

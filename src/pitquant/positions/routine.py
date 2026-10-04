@@ -102,16 +102,21 @@ def load_universe() -> dict[str, list[str]]:
 
 
 def eligibility(session: Session, ticker: str) -> tuple[str | None, str]:
-    """(security_id, reason). A ticker is usable only if it resolves to ONE security with enough real price bars."""
-    try:
-        sid = resolve_universe(session, [ticker])[0]
-    except StrategyError:
-        return None, "NOT_RESOLVED: the ticker is not in the security master"
+    """(security_id, reason). A ticker is usable only if it maps to its CURRENT security and that security has enough real price bars."""
+    from pitquant.positions.universe_ingest import find_security
+
+    base = ticker.upper().rsplit(".", 1)[0] if "." in ticker else ticker.upper()
+    sid = find_security(session, base)
+    if sid is None:
+        try:
+            sid = resolve_universe(session, [base])[0]
+        except StrategyError:
+            return None, "NOT_RESOLVED: the ticker is not in the security master"
     n = session.scalar(select(func.count()).select_from(Price).where(Price.security_id == sid)) or 0
     if n < PARAMS["min_bars_for_data"]:
         return (
             None,
-            f"NO_PRICE_DATA: {n} bars (needs {PARAMS['min_bars_for_data']}); no price source ingested for it",
+            f"NO_PRICE_DATA: {n} bars (needs {PARAMS['min_bars_for_data']}); run routine-run --refresh to download them",
         )
     return sid, "OK"
 
