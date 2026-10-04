@@ -12,6 +12,7 @@ from statistics import mean
 from typing import Any
 
 from pitquant.positions import backtest as bt
+from pitquant.positions import backtest_p0 as bp0
 from pitquant.positions import review as engine
 from pitquant.positions import routine as rt
 
@@ -65,7 +66,15 @@ def write_detail(rows: list[dict[str, Any]], out_dir: Any, now: datetime) -> Pat
     for r in sorted(rows, key=lambda x: (x["ticker"], x["date"], x["horizon"])):
         res = f"ret {r['ret_h']:+.1%} peor {r['max_adverse']:+.1%} mejor {r['max_favorable']:+.1%}"
         if r["state"]:
-            res += f" | {r['state']} (objetivo {r['target_pct']:+.1%} stop {-r['stop_pct']:+.1%})"
+            res += f" | {r['state']} (objetivo {r['target_pct']:+.1%} stop {-r['stop_pct']:+.1%}) R {r['r_pess']:+.2f}/{r['r_opt']:+.2f} MAE_R {r['mae_r']:+.2f} MFE_R {r['mfe_r']:+.2f} en {r['bars_to_exit']} barras"
+        sup = r["sup"]
+        res += f" | soporte_v1 {sup['state']}" + (
+            f" (zona {sup['zone_low']:.2f}-{sup['zone_high']:.2f}, {sup['dist_atr']:+.1f} ATR)"
+            if sup["state"] != "UNAVAILABLE" and sup.get("dist_atr") is not None
+            else ""
+        )
+        if r.get("regime"):
+            res += f" | mercado {r['regime']}"
         line = f"{r['ticker']:<8}|{r['date']}|{r['horizon']:>2}m|{r['price']:>10.2f}|{r['call']:<7}({r['score']:+.1f})|{r['why']}|{res}"
         if "call_f" in r:
             line += f" || CON FUNDAMENTALES: {r['call_f']}({r['score_f']:+.1f}) {r['labels_f']} {r['why_f']}"
@@ -115,6 +124,18 @@ def render_full(
         )
     w("")
 
+    df = bp0.frame(rows, reg)
+    w(
+        "P0. PLAN DE MEJORA — BASELINE_V0 frente a V13 (soporte corregido), V14 (BAJA como RISK_ALERT) y V15 (BAJA_CONFIRMADA)"
+    )
+    w(LINE)
+    w(
+        "  Constantes: universo, fechas, umbrales, objetivo, stop y pesos (solo cambia la semántica de soporte/BAJA). Holdout intacto. Una hipótesis cada vez; no se promueve ninguna variante."
+    )
+    p0_lines, p0_results = bp0.render_p0(df)
+    for line in p0_lines:
+        w(line)
+    w("")
     w("1. MÉTODO Y LÍMITES")
     w(LINE)
     w(
@@ -228,7 +249,7 @@ def render_full(
         )
     w("")
 
-    w("5. APORTE DE LOS FUNDAMENTALES (solo valores con datos SEC; muestra muy pequeña)")
+    w("5. APORTE DE LOS FUNDAMENTALES (solo valores con datos SEC; muestra pequeña)")
     w(LINE)
     frows = [r for r in rows if "call_f" in r]
     if not frows:
@@ -422,7 +443,9 @@ def render_full(
         "11. PROPUESTAS DE MEJORA (generadas de los números de arriba; para volver a ejecutar el análisis con ellas)"
     )
     w(LINE)
-    for i, p in enumerate(proposals(rows, glob, ic_all, variant_rows, spread, mono, used), 1):
+    for i, p in enumerate(
+        proposals(rows, glob, ic_all, variant_rows, spread, mono, used, p0_results), 1
+    ):
         w(f"  {i}. {p}")
     w("")
     w("12. PARÁMETROS EN USO")
@@ -439,8 +462,14 @@ def render_full(
     return "\n".join(L) + "\n"
 
 
-def proposals(rows: list[dict[str, Any]], glob: dict[int, dict[str, Any]], ic: dict[int, dict[str, float | None]], variants: list[tuple[str, int, dict[str, Any], str]], spread: dict[int, tuple[float | None, float | None, int]], mono: dict[int, list[float]], used: dict[str, Any]) -> list[str]:  # fmt: skip
+def proposals(rows: list[dict[str, Any]], glob: dict[int, dict[str, Any]], ic: dict[int, dict[str, float | None]], variants: list[tuple[str, int, dict[str, Any], str]], spread: dict[int, tuple[float | None, float | None, int]], mono: dict[int, list[float]], used: dict[str, Any], p0: dict[str, str] | None = None) -> list[str]:  # fmt: skip
     out: list[str] = []
+    if p0:
+        out.append(
+            "RESULTADO DEL PLAN P0 (sección P0): "
+            + "; ".join(f"{bp0.NAMES[v]} → {r}" for v, r in p0.items())
+            + ". Ninguna variante se promueve sin IMPROVES robusto; si sale INCONCLUSIVE, el siguiente paso es el análisis de features continuas (RUN 3) y el modelo regularizado, no afinar umbrales."
+        )
     # 0. rules that never fire (a dead rule is a bug or a design flaw, not a weak signal)
     for k in bt.RULE_IDS:
         have = [r for r in rows if k in r["raws"]]

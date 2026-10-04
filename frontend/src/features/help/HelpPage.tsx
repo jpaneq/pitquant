@@ -14,6 +14,7 @@ export const SECTIONS = [
   ['diaria', 'Pruebas diarias'],
   ['rutina', 'Rutina diaria de compras simuladas'],
   ['backtest', 'Backtest histórico: ¿acertaba la regla?'],
+  ['fundamentales', 'Fundamentales: cómo los interpreta el programa'],
   ['bitcoin', 'Bitcoin'],
   ['research', 'Research Lab'],
   ['estado', 'Estado de datos y ajustes'],
@@ -125,6 +126,16 @@ export function HelpPage() {
           <li><b>Cuidado:</b> lista de empresas actuales (sesgo de supervivencia), fuente gratuita no oficial, ventanas solapadas (la muestra efectiva es menor que N) y sin costes. Con N pequeño no se muestran porcentajes.</li>
         </Ul>
         <P><b>Programar las pruebas:</b> doble clic en <code>Instalar_rutina_diaria.command</code> (lunes a viernes 09:30 y 16:00, hora de Madrid; cada ejecución analiza solo las bolsas abiertas). Para quitarla, el mismo archivo con el argumento <code>desinstalar</code>.</P>
+
+        <H id="fundamentales">Fundamentales: cómo los interpreta el programa</H>
+        <P><b>De dónde salen:</b> de los informes oficiales que las empresas presentan a la SEC (10-K y 10-Q). Cada dato lleva la fecha en que se hizo público: el programa solo usa lo que ya se sabía en cada momento. Si falta un dato se deja vacío y se explica por qué; nunca se rellena con un cero.</P>
+        <Ul>
+          <li><b>Fundamentales (Strong / Moderate / Weak):</b> cinco comprobaciones: margen operativo &gt;10 %, margen de caja libre &gt;5 %, ROA &gt;5 %, caja operativa/beneficio ≥0,8 y margen neto &gt;0. Con 4 o más = Strong; con 2 o 3 = Moderate; menos = Weak.</li>
+          <li><b>Crecimiento:</b> cinco medidas con crecimiento &gt;5 % (ingresos, beneficio operativo, caja libre, a un año y a tres años).</li>
+          <li><b>Valoración (Cheap / Fair / Expensive):</b> dónde está el PER, el precio/ventas y la rentabilidad por caja libre frente a la <i>propia historia de 5 años</i> de la empresa (no frente a sus rivales): ≤30 % barato, ≥70 % caro.</li>
+          <li><b>Insufficient:</b> si hay menos del 60 % de los datos, no se etiqueta.</li>
+        </Ul>
+        <P><b>Cómo los usa el algoritmo:</b> solo «valoración» y «fundamentales» puntúan (+1 / 0 / −1) y su peso depende del plazo: casi nada a 1-3 meses (0,25) y mucho a más de 9 meses (1,5). Son umbrales fijos y sin validar, iguales para todos los sectores; bancos y aseguradoras no están soportados todavía. Detalle completo en <code>docs/FUNDAMENTALES_COMO_SE_INTERPRETAN.md</code>.</P>
 
         <H id="bitcoin">Bitcoin</H>
         <QuoteVsModelBar />

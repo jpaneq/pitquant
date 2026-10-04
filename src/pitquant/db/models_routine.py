@@ -24,7 +24,14 @@ from pitquant.db.models import ID, new_id
 
 MARKETS = ("IBEX", "SP500", "MSCI_WORLD", "BTC")
 PICK_STATUSES = ("ANALYZED", "NO_DATA")
-EVAL_STATES = ("IN_PROGRESS", "TARGET_HIT", "STOP_HIT", "AMBIGUOUS_STOP", "EXPIRED")
+EVAL_STATES = (
+    "IN_PROGRESS",
+    "TARGET_HIT",
+    "STOP_HIT",
+    "AMBIGUOUS_STOP",
+    "AMBIGUOUS_INTRABAR",
+    "EXPIRED",
+)
 
 
 class DailyPick(Base):
@@ -68,7 +75,7 @@ class DailyEvaluation(Base):
     __table_args__ = (
         UniqueConstraint("position_id", "week_key", name="uq_daily_eval_position_week"),
         CheckConstraint(
-            "state IN ('IN_PROGRESS','TARGET_HIT','STOP_HIT','AMBIGUOUS_STOP','EXPIRED')",
+            "state IN ('IN_PROGRESS','TARGET_HIT','STOP_HIT','AMBIGUOUS_STOP','AMBIGUOUS_INTRABAR','EXPIRED')",
             name="state_values",
         ),
     )
@@ -98,7 +105,7 @@ class DailyVirtualEvaluation(Base):
             "pick_id", "horizon_months", "week_key", name="uq_daily_virtual_pick_h_week"
         ),
         CheckConstraint(
-            "state IN ('IN_PROGRESS','TARGET_HIT','STOP_HIT','AMBIGUOUS_STOP','EXPIRED')",
+            "state IN ('IN_PROGRESS','TARGET_HIT','STOP_HIT','AMBIGUOUS_STOP','AMBIGUOUS_INTRABAR','EXPIRED')",
             name="state_values",
         ),
     )

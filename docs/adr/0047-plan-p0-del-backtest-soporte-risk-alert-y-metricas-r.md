@@ -1,0 +1,13 @@
+# ADR-0047 — Plan P0 del backtest: soporte v1, RISK_ALERT, BAJA_CONFIRMADA, AMBIGUOUS_INTRABAR, métricas R y offsets no solapados
+
+Estado: aceptada (2026-10-05). Migración `0025` (la restricción de estado de las evaluaciones admite `AMBIGUOUS_INTRABAR`). Implementa el plan de mejora del propietario (P0).
+
+## Decisión
+1. **support_rule_v1** (backtest): la zona de soporte se detecta con barras hasta T-1 y se CONGELA; en T está «rota» solo si `close_T < zona_low`; sin zona = `UNAVAILABLE` (la regla se omite, no cuenta como «mantenida»). Se guardan `support_distance_atr`, toques, edad. Motivo: el soporte V0 nunca se activaba (0 de 60.982) porque se comparaba con el soporte más cercano por DEBAJO del precio actual.
+2. **Variantes versionadas** re-puntuadas offline sobre las mismas observaciones (universo, fechas, umbrales, objetivo, stop y pesos constantes): `BASELINE_V0`, `V13_SUPPORT_FIX`, `V14_SUPPORT_FIX_RISK_ALERT` (la antigua BAJA se juzga por riesgo de caída, no como previsión) y `V15_SUPPORT_FIX_BAJA_CONFIRMADA` (cierre < SMA200 Y momentum 6 m < 0 Y soporte roto). Control: V0 re-puntuada desde las reglas guardadas reproduce la llamada original. La regla VIVA (revisión de posiciones y rutina) no cambia hasta que una variante sea IMPROVES.
+3. **AMBIGUOUS_INTRABAR** sustituye a `AMBIGUOUS_STOP`: objetivo y stop en la misma barra diaria ⇒ se guardan los dos órdenes (pesimista stop primero, optimista objetivo primero) y R pesimista/optimista; el informe da el nº y % de ambiguos. Solo se resolverá con datos intradía auténticos y PIT.
+4. **Métricas de trading:** R realizado (1R = entrada − stop), esperanza (media de R), mediana, profit factor, MAE_R, MFE_R, barras hasta la salida, % ambiguos, objetivo; en el backtest para TODAS las filas con niveles. También se guardan las features continuas (distancias a medias, pendientes, momentos, RSI, ATR, volatilidades, beta…) para la fase de modelos.
+5. **Robustez no solapada:** para cada horizonte H, H offsets mensuales (una decisión por valor y mes, ventanas separadas ≥ H meses); se reporta ventaja, IC y top-bottom por offset (mediana, mín, máx, positivos/total).
+6. **Veredicto** por dimensión (IC, top20-bottom20, ventaja de SUBE, esperanza en R, robustez no solapada, estabilidad temporal, estabilidad por región): IMPROVES / DEGRADES / INCONCLUSIVE (tolerancias y regla del 60 % de horizontes); **mejorar una sola dimensión = INCONCLUSIVE**. Global: IMPROVES si ≥3 mejoran y ninguna empeora; DEGRADES si ≥2 empeoran.
+7. **Régimen de mercado** (SPY sobre su media de 200) solo como DIAGNÓSTICO en el informe, no como filtro.
+8. Holdout 2022-10-01→2025-09-30 intacto; sin cambios de parámetros (target_k, stop_k, stop_atr_mult, pesos, umbrales).

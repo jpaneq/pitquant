@@ -29,7 +29,7 @@ from pitquant.positions import review as engine
 from pitquant.positions import routine as rt
 from pitquant.simulation.service import restated_bars
 
-BACKTEST_VERSION = "routine-backtest-2"
+BACKTEST_VERSION = "routine-backtest-3"
 SENSITIVITY_K = (0.3, 0.5, 0.7, 1.0)
 MIN_N = 10
 CALL = {"ADD": "UP", "SELL": "DOWN", "HOLD": "NEUTRAL"}
@@ -82,9 +82,47 @@ def _why(rv: dict[str, Any]) -> str:
     return " ".join(parts) if parts else "sin reglas con datos"
 
 
+FEATURE_KEYS = {
+    "indicators": ("close_vs_sma20", "close_vs_sma50", "close_vs_sma200", "sma50_vs_sma200", "sma200_slope_20", "ema20_slope_10", "rsi14", "atr14", "atr14_pct", "macd_hist", "adx14", "bollinger_position"),
+    "momentum": ("ret21", "ret63", "ret126", "ret252", "mom_12_1", "distance_52w_high"),
+    "risk": ("vol20", "vol63", "vol252", "beta252", "max_drawdown252"),
+}  # fmt: skip
+
+
+def continuous_features(tech: dict[str, Any]) -> dict[str, float | None]:
+    """The continuous features behind the discrete rules, stored raw (plan P0: nothing is lost to discretisation). ``None`` = not available, never 0."""
+    out: dict[str, float | None] = {}
+    for grp, keys in FEATURE_KEYS.items():
+        d = tech.get(grp) or {}
+        for k in keys:
+            v = d.get(k)
+            out[k] = float(v) if isinstance(v, (int, float)) else None
+    return out
+
+
+def frozen_support(tech_prev: dict[str, Any], prev_close: float) -> dict[str, Any] | None:
+    """support_rule_v1: the support zone detected with ONLY bars up to T-1 (nearest zone below the T-1 close), frozen before T is seen. ``None`` = no zone (UNAVAILABLE)."""
+    zones = (
+        (tech_prev.get("support_resistance") or {}).get("supports", [])
+        if tech_prev.get("status") == "OK"
+        else []
+    )
+    below = [z for z in zones if z.get("upper") is not None and z["upper"] < prev_close]
+    if not below:
+        return None
+    z = max(below, key=lambda x: x["upper"])
+    return {
+        "low": float(z["lower"]),
+        "high": float(z["upper"]),
+        "touches": z.get("touches"),
+        "last_touch": z.get("last_touch"),
+        "formed_at": z.get("first_touch"),
+    }
+
+
 def backtest_security(
     session: Session, settings: Settings, sid: str, ticker: str, market: str, start: date, end: date, *, step_sessions: int = 21, now: datetime | None = None, exchange: str | None = None,
-    with_fundamentals: bool = False, fund_stride: int = 3,
+    with_fundamentals: bool = False, fund_stride: int = 3, regime: dict[date, str] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:  # fmt: skip
     now = now or utc_now()
     ho = settings.validation.final_holdout
@@ -95,23 +133,38 @@ def backtest_security(
     if md.series.n_bars == 0:
         return [], skipped
     idx = list(md.bars.index)
+    pos_of = {d: i for i, d in enumerate(idx)}
     last_bar = idx[-1]
     closes = md.bars["close"].astype(float)
     fund = with_fundamentals and has_fundamentals(svc, sid, now)
     rows: list[dict[str, Any]] = []
     zero = datetime.min.time()
     for n_date, d in enumerate([x for x in idx if start <= x <= end][::step_sessions]):
-        if d < cal.first_session or d > cal.last_session:
+        if d < cal.first_session or d > cal.last_session or pos_of[d] == 0:
             continue
         if ho.start <= d <= ho.end:
             skipped["holdout"] += 1
             continue
         price = float(closes.loc[d])
         at = cal.session_close(d)
+        tech = svc.technicals(sid, at)
         ctx = context_at(svc, sid, at, price)
         if ctx is None:
             skipped["no_context"] += 1
             continue
+        prev_d = idx[pos_of[d] - 1]
+        prev_zone = (
+            frozen_support(
+                svc.technicals(sid, cal.session_close(prev_d)), float(closes.loc[prev_d])
+            )
+            if prev_d >= cal.first_session
+            else None
+        )
+        sup: dict[str, Any] = {"state": "UNAVAILABLE", "reason": "NOT_ENOUGH_HISTORY_OR_NO_ZONE"}
+        if prev_zone is not None:
+            atr = ctx.atr14
+            sup = {"state": "BROKEN" if price < prev_zone["low"] else "HELD", "zone_low": prev_zone["low"], "zone_high": prev_zone["high"], "touches": prev_zone["touches"], "last_touch": prev_zone["last_touch"], "formed_at": prev_zone["formed_at"], "dist_atr": (price - prev_zone["low"]) / atr if atr else None, "dist_pct": price / prev_zone["low"] - 1.0}  # fmt: skip
+        feat = continuous_features(tech)
         ctx_f = (
             context_at(svc, sid, at, price, with_labels=True)
             if fund and n_date % fund_stride == 0
@@ -135,6 +188,7 @@ def backtest_security(
             row: dict[str, Any] = {
                 "ticker": ticker, "market": market, "date": d, "horizon": h, "price": price, "call": CALL[rv["recommendation"]], "score": rv["score"], "raws": {r["id"]: r["raw"] for r in rv["rules"]}, "why": _why(rv),
                 "reason": rv["reason"], "ret_h": float(win["close"].iloc[-1]) / price - 1.0, "max_adverse": float(win["low"].min()) / price - 1.0, "max_favorable": float(win["high"].max()) / price - 1.0, "state": None,
+                "feat": feat, "sup": sup, "regime": (regime or {}).get(d),
             }  # fmt: skip
             if ctx_f is not None:
                 rf = engine.review(engine.Position(price, 1.0, stamp, h), ctx_f, stamp)
@@ -148,26 +202,23 @@ def backtest_security(
                     },
                 }
             lv = rt.levels(price, ctx, h)
-            if rv["recommendation"] == "ADD" and lv is not None:
+            if lv is not None:
                 end_stamp = datetime.combine(h_end, zero, tzinfo=now.tzinfo)
                 o = rt.outcome(bars, price, lv["target_price"], lv["stop_price"], h_end, end_stamp)
-                row |= {
-                    "state": o["state"],
-                    "target_pct": lv["target_pct"],
-                    "stop_pct": lv["stop_pct"],
-                    "outcome_date": o["when"],
-                }
-                row["sensitivity"] = {
-                    k: rt.outcome(
-                        bars,
-                        price,
-                        price * (1 + max(rt.PARAMS["target_floor"], k * lv["sigma_horizon"])),
-                        lv["stop_price"],
-                        h_end,
-                        end_stamp,
-                    )["state"]
-                    for k in SENSITIVITY_K
-                }
+                rd = rt.r_detail(o, price, lv["stop_price"])
+                row |= {"state": o["state"], "target_pct": lv["target_pct"], "stop_pct": lv["stop_pct"], "outcome_date": o["when"], "bars_to_exit": o["bars_used"], "r_pess": rd["r_pessimistic"], "r_opt": rd["r_optimistic"], "mae_r": rd["mae_r"], "mfe_r": rd["mfe_r"], "ambiguous": rd["ambiguous"]}  # fmt: skip
+                if rv["recommendation"] == "ADD":
+                    row["sensitivity"] = {
+                        k: rt.outcome(
+                            bars,
+                            price,
+                            price * (1 + max(rt.PARAMS["target_floor"], k * lv["sigma_horizon"])),
+                            lv["stop_price"],
+                            h_end,
+                            end_stamp,
+                        )["state"]
+                        for k in SENSITIVITY_K
+                    }
             rows.append(row)
     clear_cache()  # per-date engine caches hold full market frames
     return rows, skipped
@@ -273,6 +324,20 @@ def spearman(xs: list[float], ys: list[float]) -> float | None:
     return float(df["x"].rank().corr(df["y"].rank()))
 
 
+def benchmark_regime(session: Session, now: datetime) -> dict[date, str]:
+    """Diagnostic regime from the SPY proxy: BULL if its close is above its 200-day average (known at that date), else BEAR. Used only to REPORT; never as an entry filter."""
+    sid, _ = rt.eligibility(session, "SPY")
+    if sid is None:
+        return {}
+    close = load_market(session, sid, now).bars["close"].astype(float)
+    sma = close.rolling(200).mean()
+    return {
+        d: ("BULL" if c > m else "BEAR")
+        for d, c, m in zip(close.index, close, sma, strict=True)
+        if m == m
+    }
+
+
 def run_backtest(
     session: Session, settings: Settings, universe: dict[str, list[str]] | None = None, *, start: date = date(2012, 1, 2), step_sessions: int = 21, now: datetime | None = None, max_tickers: int | None = None,
     with_fundamentals: bool = True, out_dir: Any = None, progress: Any = None,
@@ -286,6 +351,7 @@ def run_backtest(
     skipped = {"holdout": 0, "no_context": 0, "immature": 0}
     coverage: dict[str, dict[str, Any]] = {}
     seen: set[str] = set()
+    regime = benchmark_regime(session, now)
     for market, tickers in uni.items():
         for t in tickers:
             base = t.upper().rsplit(".", 1)[0] if "." in t else t.upper()
@@ -317,6 +383,7 @@ def run_backtest(
                 now=now,
                 exchange=rt.entry_exchange(t, market),
                 with_fundamentals=with_fundamentals,
+                regime=regime,
             )
             rows += rs
             for k, v in sk.items():

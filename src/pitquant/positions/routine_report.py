@@ -164,7 +164,7 @@ def build_report(
     names = {
         "TARGET_HIT": "OBJETIVO CUMPLIDO",
         "STOP_HIT": "STOP",
-        "AMBIGUOUS_STOP": "STOP (ambigua)",
+        "AMBIGUOUS_INTRABAR": "AMBIGUA (intradía)",
         "EXPIRED": "VENCIDA",
     }
     for p, e in sorted(closed, key=lambda x: x[1].evaluated_at):
@@ -185,7 +185,7 @@ def build_report(
     for (m, h), rows in sorted(groups.items()):
         rows_n = len(rows)
         cnt = {k: sum(1 for _, e in rows if e.state == k) for k in names}
-        stops = cnt["STOP_HIT"] + cnt["AMBIGUOUS_STOP"]
+        stops = cnt["STOP_HIT"] + cnt["AMBIGUOUS_INTRABAR"]
         rate = f"{cnt['TARGET_HIT'] / rows_n:>7.0%}" if rows_n >= MIN_N else "  (N<10)"
         gaps = [(e.outcome_date - p.opened_at.date()).days for p, e in rows if e.outcome_date]
         w(
@@ -249,7 +249,7 @@ def build_report(
         if rows_n < HINT_N:
             continue
         t_rate = sum(1 for _, e in rows if e.state == "TARGET_HIT") / rows_n
-        s_rate = sum(1 for _, e in rows if e.state in ("STOP_HIT", "AMBIGUOUS_STOP")) / rows_n
+        s_rate = sum(1 for _, e in rows if e.state in ("STOP_HIT", "AMBIGUOUS_INTRABAR")) / rows_n
         x_rate = sum(1 for _, e in rows if e.state == "EXPIRED") / rows_n
         tag = f"{m} {h} m (N={rows_n}{', N<10: muy poco fiable' if rows_n < MIN_N else ''})"
         if t_rate < 0.35 and x_rate >= 0.4:

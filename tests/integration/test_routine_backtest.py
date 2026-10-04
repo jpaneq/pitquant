@@ -46,7 +46,7 @@ def test_every_row_is_a_forecast_with_its_outcome_after_the_decision(env: Env) -
     )  # the outcome is read from bars AFTER the decision only
     ups = [x for x in rows if x["call"] == "UP" and x["state"]]
     assert all(
-        x["state"] in ("TARGET_HIT", "STOP_HIT", "AMBIGUOUS_STOP", "EXPIRED")
+        x["state"] in ("TARGET_HIT", "STOP_HIT", "AMBIGUOUS_INTRABAR", "EXPIRED")
         and set(x["sensitivity"]) == set(bt.SENSITIVITY_K)
         for x in ups
     )
@@ -236,3 +236,234 @@ def test_proposals_are_generated_from_the_numbers_and_say_what_to_retest(env: En
         and "SUPERVIVENCIA" in section.upper()
         and "ESPERANZA" in section.upper()
     )
+
+
+# ───────────────────────────────────────────── plan P0: support_rule_v1, V13/V14/V15, R metrics, non-overlap, verdicts
+def test_support_rule_v1_freezes_the_zone_with_bars_up_to_t_minus_1() -> None:
+    tech_prev = {"status": "OK", "support_resistance": {"supports": [
+        {"lower": 90.0, "upper": 92.0, "touches": 3, "last_touch": "2020-01-02", "first_touch": "2019-06-03"},
+        {"lower": 95.0, "upper": 97.0, "touches": 2, "last_touch": "2020-02-03", "first_touch": "2019-12-02"},
+        {"lower": 101.0, "upper": 103.0, "touches": 1, "last_touch": "2020-03-02", "first_touch": "2020-03-02"},  # above the T-1 close: not a support
+    ]}}  # fmt: skip
+    z = bt.frozen_support(tech_prev, 100.0)
+    assert z is not None and (z["low"], z["high"], z["touches"]) == (
+        95.0,
+        97.0,
+        2,
+    )  # the nearest zone BELOW the T-1 close, frozen before T is seen
+    assert (
+        bt.frozen_support({"status": "OK", "support_resistance": {"supports": []}}, 100.0) is None
+    )  # no zone → UNAVAILABLE, never "not broken"
+    assert bt.frozen_support({"status": "NO_DATA"}, 100.0) is None
+
+
+def test_outcome_reports_both_readings_of_an_ambiguous_bar() -> None:
+    import pandas as pd
+
+    bars = pd.DataFrame(
+        [(100, 112, 89, 100)], index=[date(2026, 1, 5)], columns=["open", "high", "low", "close"]
+    )
+    o = rt.outcome(bars, 100.0, 110.0, 90.0, date(2026, 1, 10), datetime(2026, 1, 10, tzinfo=UTC))
+    assert (
+        o["state"] == "AMBIGUOUS_INTRABAR"
+        and o["ambiguous"] is True
+        and o["fill"] == 90.0
+        and o["fill_optimistic"] == 110.0
+    )
+    rd = rt.r_detail(o, 100.0, 90.0)
+    assert (
+        rd["r_pessimistic"] == pytest.approx(-1.0)
+        and rd["r_optimistic"] == pytest.approx(1.0)
+        and rd["ambiguous"] is True
+        and rd["mae_r"] == pytest.approx(-1.1)
+        and rd["mfe_r"] == pytest.approx(1.2)
+    )
+    clean = rt.outcome(
+        pd.DataFrame(
+            [(100, 111, 99, 110)],
+            index=[date(2026, 1, 5)],
+            columns=["open", "high", "low", "close"],
+        ),
+        100.0,
+        110.0,
+        90.0,
+        date(2026, 1, 10),
+        datetime(2026, 1, 10, tzinfo=UTC),
+    )
+    assert (
+        clean["state"] == "TARGET_HIT"
+        and clean["ambiguous"] is False
+        and clean["fill_optimistic"] == clean["fill"]
+    )
+
+
+def p0_rows(env: Env):
+    s, cfg, sf, _ = env
+    rows, _ = bt.backtest_security(
+        s, cfg, sf, "SYNF", "SP500", date(2015, 1, 2), date(2016, 12, 30), now=NOW, step_sessions=10
+    )
+    return rows
+
+
+def test_rows_keep_the_continuous_features_the_support_state_and_the_r_metrics(env: Env) -> None:
+    rows = p0_rows(env)
+    r = rows[-1]
+    assert {"close_vs_sma200", "ret126", "rsi14", "atr14", "vol63", "mom_12_1"} <= set(
+        r["feat"]
+    ) and r["sup"]["state"] in ("BROKEN", "HELD", "UNAVAILABLE")
+    with_levels = [x for x in rows if x["state"]]
+    assert with_levels and all(
+        set(x) >= {"r_pess", "r_opt", "mae_r", "mfe_r", "bars_to_exit"}
+        and x["r_pess"] <= x["r_opt"] + 1e-9
+        for x in with_levels
+    )  # pessimistic R never above optimistic R
+    if r["sup"]["state"] != "UNAVAILABLE":
+        assert r["sup"]["zone_low"] < r["price"] + 1e9 and "dist_atr" in r["sup"]
+
+
+def test_v0_re_scored_from_the_stored_rules_reproduces_the_live_calls(env: Env) -> None:
+    from pitquant.positions import backtest_p0 as p0
+
+    df = p0.frame(p0_rows(env), {"SYNF": "EE. UU."})
+    assert (
+        df["call0"] == df["call_v0_re"]
+    ).mean() == 1.0  # the offline variants are scored with the live rule's own arithmetic
+    # support_rule_v1 only ever LOWERS a score, so V13 can only remove SUBE calls, never add them
+    assert ((df["call13"] == "UP") <= (df["call0"] == "UP")).all()
+    assert df.loc[df["sup_state"] == "UNAVAILABLE", "score13"].equals(
+        df.loc[df["sup_state"] == "UNAVAILABLE", "score13"]
+    )
+
+
+def test_baja_confirmada_needs_all_three_conditions() -> None:
+    import pandas as pd
+
+    from pitquant.positions import backtest_p0 as p0
+
+    base = dict(ticker="T", region="EE. UU.", date=pd.Timestamp("2015-06-01"), h=3, price=100.0, ret=-0.1, mae=-0.2, mfe=0.0, call0="NEUTRAL", score0=0.0, state=None, r_pess=None, r_opt=None, mae_r=None, mfe_r=None,
+                bars_exit=None, amb=None, regime=None, sup_dist_atr=None, cs50=-0.05, atr14=2.0, rsi=40.0, raw_trend=-1.0, raw_long_trend=-1.0, raw_momentum=-1.0)  # fmt: skip
+    rows = [
+        {**base, "sup_state": "BROKEN", "cs200": -0.05, "ret6": -0.1},  # all three
+        {**base, "sup_state": "HELD", "cs200": -0.05, "ret6": -0.1},  # support not broken
+        {**base, "sup_state": "BROKEN", "cs200": 0.05, "ret6": -0.1},  # above the 200-day average
+        {**base, "sup_state": "BROKEN", "cs200": -0.05, "ret6": 0.1},  # positive momentum
+        {
+            **base,
+            "sup_state": "UNAVAILABLE",
+            "cs200": -0.05,
+            "ret6": -0.1,
+        },  # no zone: not confirmed
+    ]
+    out = p0.add_variants(pd.DataFrame(rows).assign(m=1))
+    assert list(out["call15"]) == ["DOWN", "NEUTRAL", "NEUTRAL", "NEUTRAL", "NEUTRAL"]
+
+
+def test_trading_metrics_expectancy_profit_factor_and_ambiguity() -> None:
+    import pandas as pd
+
+    from pitquant.positions import backtest_p0 as p0
+
+    n = 12
+    df = pd.DataFrame({"h": [3] * n, "call13": ["UP"] * n, "r_pess": [1.0] * 6 + [-1.0] * 3 + [-0.5] * 3, "r_opt": [1.0] * 6 + [-1.0] * 2 + [1.0] + [-0.5] * 3, "mae_r": [-0.5] * n, "mfe_r": [1.0] * n,
+                       "amb": [False] * 8 + [True] + [False] * 3, "state": ["TARGET_HIT"] * 6 + ["STOP_HIT"] * 6, "bars_exit": [10] * n})  # fmt: skip
+    t = p0.trading(df, 3, "V13")
+    assert (
+        t["n"] == 12
+        and t["mean_r"] == pytest.approx((6 - 3 - 1.5) / 12)
+        and t["pf"] == pytest.approx(6 / 4.5)
+        and t["pf_opt"] == pytest.approx(7 / 3.5)
+        and t["amb"] == pytest.approx(1 / 12)
+        and t["target"] == 0.5
+    )
+    assert (
+        p0.trading(df.head(5), 3, "V13")["n"] == 5
+        and p0.trading(df.head(5), 3, "V13")["mean_r"] != p0.trading(df.head(5), 3, "V13")["mean_r"]
+    )  # NaN: no figure from fewer than 10
+
+
+def test_non_overlapping_offsets_are_h_monthly_phases_with_one_decision_per_ticker_and_month() -> (
+    None
+):
+    import pandas as pd
+
+    from pitquant.positions import backtest_p0 as p0
+
+    rows = []
+    for m in range(0, 36):
+        for t in range(20):
+            rows.append(
+                {
+                    "ticker": f"T{t}",
+                    "m": m,
+                    "h": 6,
+                    "ret": 0.05 if (t + m) % 3 else -0.02,
+                    "call13": "UP" if t % 2 == 0 else "NEUTRAL",
+                    "score13": float(t % 5),
+                    "date": pd.Timestamp("2015-01-01") + pd.DateOffset(months=m),
+                }
+            )
+    no = p0.nonoverlap(pd.DataFrame(rows), 6, "V13")
+    assert no["n_off"] == 6 and len(no["edges"]) == 6 and all(-1 <= e <= 1 for e in no["edges"])
+    dup = pd.DataFrame(rows + rows)  # a repeated month for the same ticker must not double count
+    assert len(p0.nonoverlap(dup, 6, "V13")["edges"]) == 6
+
+
+def test_a_single_improving_dimension_is_inconclusive_and_three_without_degradation_improve() -> (
+    None
+):
+    from pitquant.positions import backtest_p0 as p0
+
+    base = {k: (0.0, [0.0, 0.0, 0.0]) for k in p0.EPS}
+
+    def with_(**kw):
+        d = dict(base)
+        for k, v in kw.items():
+            d[k] = (v, [v, v, v])
+        return d
+
+    one = p0.verdict(base, with_(edge=0.05))
+    assert one["edge"] == "IMPROVES" and p0.overall(one) == "INCONCLUSIVE"
+    three = p0.verdict(base, with_(edge=0.05, ic=0.05, r=0.2))
+    assert p0.overall(three) == "IMPROVES"
+    mixed = p0.verdict(base, with_(edge=0.05, ic=0.05, r=0.2, tb=-0.05))
+    assert mixed["tb"] == "DEGRADES" and p0.overall(mixed) == "INCONCLUSIVE"
+    worse = p0.verdict(base, with_(ic=-0.05, tb=-0.05))
+    assert p0.overall(worse) == "DEGRADES"
+    tiny = p0.verdict(base, with_(edge=0.001))
+    assert tiny["edge"] == "INCONCLUSIVE"  # inside the tolerance
+    nan = p0.verdict(base, with_(edge=float("nan")))
+    assert nan["edge"] == "INCONCLUSIVE"
+
+
+def test_the_full_report_contains_the_p0_comparison_and_the_requested_metrics(
+    env: Env, tmp_path
+) -> None:
+    s, cfg, _, _ = env
+    text, _ = bt.run_backtest(
+        s,
+        cfg,
+        {"SP500": ["SYNF"]},
+        start=date(2015, 1, 2),
+        step_sessions=10,
+        now=NOW,
+        out_dir=tmp_path,
+    )
+    for needle in (
+        "P0. PLAN DE MEJORA",
+        "V13_SUPPORT_FIX",
+        "V14_SUPPORT_FIX_RISK_ALERT",
+        "V15_SUPPORT_FIX_BAJA_CONFIRMADA",
+        "RESULTADO GLOBAL",
+        "Robustez: ventaja de SUBE en offsets mensuales NO solapados",
+        "RISK_ALERT",
+        "meanR",
+        "PF(p/o)",
+        "MAE_R",
+        "ambig.",
+        "VEREDICTO por dimensión",
+        "Soporte v1",
+        "RESULTADO DEL PLAN P0",
+    ):
+        assert needle in text, needle
+    detail = next(tmp_path.glob("backtest_decisiones_*.txt")).read_text()
+    assert "soporte_v1" in detail and "MAE_R" in detail

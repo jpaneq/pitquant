@@ -163,7 +163,7 @@ def test_a_justified_entry_opens_one_position_per_horizon_with_entry_target_and_
     [
         ([(10, 100, 112, 99, 111)], "TARGET_HIT", 110.0),
         ([(10, 100, 101, 89, 90)], "STOP_HIT", 90.0),
-        ([(10, 100, 112, 89, 100)], "AMBIGUOUS_STOP", 90.0),
+        ([(10, 100, 112, 89, 100)], "AMBIGUOUS_INTRABAR", 90.0),
         (
             [(10, 85, 86, 80, 82)],
             "STOP_HIT",

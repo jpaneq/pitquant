@@ -41,7 +41,7 @@ PARAMS: dict[str, Any] = {
     "horizons_months": [1, 3, 6, 12, 24], "notional_per_position": 10_000.0, "entry_requires": "review recommendation == ADD (same rule engine as the position review, horizon-weighted)",
     "target_k": 0.5, "target_floor": 0.02, "stop_k": 0.35, "stop_atr_mult": 2.0, "min_bars_for_data": 250,
     "target_rule": "target = entry · (1 + max(target_floor, target_k · σ_annual · sqrt(h/12)))", "stop_rule": "stop = entry − max(stop_atr_mult · ATR14, stop_k · σ_annual · sqrt(h/12) · entry)",
-    "evaluation": "weekly (ISO week) and at the end: first touch of target or stop on daily bars AFTER the entry; both in one bar = AMBIGUOUS_STOP (counted as a stop); horizon end = EXPIRED",
+    "evaluation": "weekly (ISO week) and at the end: first touch of target or stop on daily bars AFTER the entry; both in one bar = AMBIGUOUS_INTRABAR (closed at the pessimistic stop-first price, the optimistic target-first R is reported too); horizon end = EXPIRED",
 }  # fmt: skip
 HORIZONS = tuple(PARAMS["horizons_months"])
 MARKET_ORDER = ("IBEX", "SP500", "MSCI_WORLD")
@@ -456,28 +456,36 @@ def bars_after_entry(
 def outcome(
     bars: pd.DataFrame, entry: float, target: float, stop: float, horizon_end: date, now: datetime
 ) -> dict[str, Any]:
+    """First touch of target / stop on the daily bars up to ``horizon_end`` (vectorised: the backtest calls this tens of thousands of times)."""
+    win = bars[bars.index <= horizon_end] if len(bars) else bars
     state, fill, when, used = "IN_PROGRESS", None, None, 0
-    max_fav, max_adv, last_close = None, None, None
-    for d, row in bars.iterrows():
-        if d > horizon_end:
-            break
-        used += 1
-        last_close = float(row["close"])
-        max_fav = max(max_fav if max_fav is not None else -1e9, float(row["high"]) / entry - 1)
-        max_adv = min(max_adv if max_adv is not None else 1e9, float(row["low"]) / entry - 1)
-        hit_t, hit_s = float(row["high"]) >= target, float(row["low"]) <= stop
-        if hit_t and hit_s:
-            state, fill, when = "AMBIGUOUS_STOP", min(stop, float(row["open"])), d
-        elif hit_s:
-            state, fill, when = (
-                "STOP_HIT",
-                min(stop, float(row["open"])),
-                d,
-            )  # a gap below the stop fills at the open
-        elif hit_t:
-            state, fill, when = "TARGET_HIT", target, d
-        if when is not None:
-            break
+    fill_opt: float | None = None
+    max_fav: float | None = None
+    max_adv: float | None = None
+    last_close: float | None = None
+    if len(win):
+        hi, lo = win["high"].to_numpy(float), win["low"].to_numpy(float)
+        op, cl = win["open"].to_numpy(float), win["close"].to_numpy(float)
+        hit_t, hit_s = hi >= target, lo <= stop
+        any_hit = hit_t | hit_s
+        stop_at = int(any_hit.argmax()) if any_hit.any() else None
+        end_i = (stop_at + 1) if stop_at is not None else len(win)
+        used = end_i
+        last_close = float(cl[end_i - 1])
+        max_fav = float(hi[:end_i].max() / entry - 1)
+        max_adv = float(lo[:end_i].min() / entry - 1)
+        if stop_at is not None:
+            when = win.index[stop_at]
+            if hit_t[stop_at] and hit_s[stop_at]:
+                # target AND stop inside one daily bar: the order is unknowable. ``fill`` is the PESSIMISTIC reading (stop first), ``fill_optimistic`` the target-first one: both are reported
+                state, fill, fill_opt = "AMBIGUOUS_INTRABAR", min(stop, float(op[stop_at])), target
+            elif hit_s[stop_at]:
+                state, fill = (
+                    "STOP_HIT",
+                    min(stop, float(op[stop_at])),
+                )  # a gap below the stop fills at the open
+            else:
+                state, fill = "TARGET_HIT", target
     if state == "IN_PROGRESS" and now.date() >= horizon_end and last_close is not None:
         state, fill, when = "EXPIRED", last_close, horizon_end
     price = fill if fill is not None else last_close
@@ -489,6 +497,22 @@ def outcome(
         "price": price,
         "max_favorable": max_fav,
         "max_adverse": max_adv,
+        "fill_optimistic": fill_opt if fill_opt is not None else fill,
+        "ambiguous": state == "AMBIGUOUS_INTRABAR",
+    }
+
+
+def r_detail(o: dict[str, Any], entry: float, stop: float) -> dict[str, Any]:
+    """R multiples of an outcome: 1R = entry − stop. ``r_pessimistic`` uses the stop-first reading of an ambiguous bar, ``r_optimistic`` the target-first one (equal when not ambiguous)."""
+    risk = entry - stop
+    price = o["price"] if o["price"] is not None else entry
+    opt = o["fill_optimistic"] if o["fill_optimistic"] is not None else price
+    return {
+        "r_pessimistic": (price - entry) / risk,
+        "r_optimistic": (opt - entry) / risk,
+        "ambiguous": bool(o["ambiguous"]),
+        "mae_r": None if o["max_adverse"] is None else o["max_adverse"] * entry / risk,
+        "mfe_r": None if o["max_favorable"] is None else o["max_favorable"] * entry / risk,
     }
 
 
@@ -532,7 +556,7 @@ def evaluate_positions(
         session.add(
             DailyEvaluation(
                 position_id=pos.position_id, week_key=key, evaluated_at=now, state=o["state"], price=price, return_pct=price / entry - 1, target_progress=(price - entry) / (target - entry), max_favorable=o["max_favorable"],
-                max_adverse=o["max_adverse"], outcome_date=o["when"], bars_used=o["bars_used"], detail={"entry": entry, "target": target, "stop": stop, "horizon_end": str(horizon_end), "params_version": PARAMS_VERSION},
+                max_adverse=o["max_adverse"], outcome_date=o["when"], bars_used=o["bars_used"], detail={"entry": entry, "target": target, "stop": stop, "horizon_end": str(horizon_end), "params_version": PARAMS_VERSION, **r_detail(o, entry, stop)},
             )
         )  # fmt: skip
         written += 1
@@ -602,7 +626,7 @@ def evaluate_virtual(
                 DailyVirtualEvaluation(
                     pick_id=pick.pick_id, horizon_months=h, week_key=key, evaluated_at=now, state=o["state"], price=price, return_pct=price / hyp["entry_price"] - 1,
                     target_progress=(price - hyp["entry_price"]) / (hyp["target_price"] - hyp["entry_price"]), max_favorable=o["max_favorable"], max_adverse=o["max_adverse"], outcome_date=o["when"],
-                    bars_used=o["bars_used"], detail={**hyp, "horizon_end": str(horizon_end), "params_version": PARAMS_VERSION},
+                    bars_used=o["bars_used"], detail={**hyp, "horizon_end": str(horizon_end), "params_version": PARAMS_VERSION, **r_detail(o, hyp["entry_price"], hyp["stop_price"])},
                 )
             )  # fmt: skip
             written += 1
