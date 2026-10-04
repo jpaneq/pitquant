@@ -1,0 +1,36 @@
+import { expect, test } from '@playwright/test'
+
+test('BTC synthetic: freeze, fractional paper trade, forward bars, post-mortem', async ({ page }) => {
+  await page.goto('/bitcoin')
+  await page.getByLabel('Evidence set').selectOption('SYNTHETIC')
+  await page.getByLabel('BTC as of', { exact: true }).fill('2026-10-04')
+  await expect(page.getByText('SYNTHETIC BTC FIXTURE', { exact: false })).toBeVisible()
+  await page.getByRole('button', { name: 'Freeze prediction', exact: true }).click()
+  await expect(page.getByText('NOT_YET_VALIDATED', { exact: true }).first()).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Simulate BTC trade' })).toBeEnabled()
+  await page.screenshot({ path: 'artifacts/btc-analyzer.png', fullPage: true })
+  await page.getByRole('button', { name: 'Simulate BTC trade' }).click()
+  await expect(page.getByRole('button', { name: 'Advance synthetic BTC bars' })).toBeEnabled()
+  await page.getByRole('button', { name: 'Advance synthetic BTC bars' }).click()
+  await expect(page.getByRole('button', { name: 'Save explicit post-mortem' })).toBeVisible()
+  await page.getByRole('button', { name: 'Save explicit post-mortem' }).click()
+  await expect(page.getByText('Post-mortems: 1', { exact: false })).toBeVisible()
+  await page.setViewportSize({ width: 1440, height: 2400 })
+  await page.screenshot({ path: 'artifacts/btc-simulation.png', fullPage: true })
+})
+
+test('Historical Time Machine freezes before reveal and preserves the original hash', async ({ page }) => {
+  await page.goto('/bitcoin/research')
+  await page.getByLabel('Evidence set').selectOption('SYNTHETIC')
+  await page.getByLabel('BTC as of', { exact: true }).fill('2026-10-04')
+  // A previous test may have left a frozen snapshot: choose a distinct date for this blind run.
+  await page.getByLabel('BTC as of', { exact: true }).fill('2026-10-03')
+  await expect(page.getByRole('button', { name: 'Reveal Outcome', exact: true })).toBeDisabled()
+  await page.getByRole('button', { name: 'Freeze prediction', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Reveal Outcome', exact: true })).toBeEnabled()
+  await page.getByRole('button', { name: 'Reveal Outcome', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'Prediction vs Reality' })).toBeVisible()
+  await expect(page.getByText('Original feature hash:', { exact: false })).toBeVisible()
+  await page.setViewportSize({ width: 1440, height: 2000 })
+  await page.screenshot({ path: 'artifacts/btc-time-machine.png', fullPage: true })
+})

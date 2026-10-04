@@ -177,6 +177,10 @@ def create_app(factory: sessionmaker[Session], settings: Settings | None = None)
 
     app.include_router(make_simulation_router(cfg))
 
+    from pitquant.api.btc import make_btc_router
+
+    app.include_router(make_btc_router())
+
     @app.middleware("http")
     async def _timing(request: Request, call_next):  # type: ignore[no-untyped-def]
         import logging
@@ -223,7 +227,16 @@ def _mount_frontend(app: FastAPI) -> None:
     def index() -> FileResponse:
         return FileResponse(dist / "index.html")
 
-    for path in ("/", "/analyzer/{ident}", "/watchlist", "/research", "/status", "/settings"):
+    for path in (
+        "/",
+        "/analyzer/{ident}",
+        "/watchlist",
+        "/research",
+        "/status",
+        "/settings",
+        "/bitcoin",
+        "/bitcoin/{page}",
+    ):
         app.add_api_route(path, index, methods=["GET"], include_in_schema=False)
 
     # Simulation Lab SPA routes share their paths with the JSON API (/simulations, ...):

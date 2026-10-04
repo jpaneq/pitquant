@@ -1954,5 +1954,12 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "research_hypotheses",
         "simulation_events",
         "simulation_counterfactuals",
+        "btc_data",
+        "btc_feature_snapshots",
+        "btc_prediction_snapshots",
+        "btc_research_records",
     }
 )
+
+# Register the independent BTC vertical without changing equity tables.
+from pitquant.btc import models as _btc_models  # noqa: E402, F401

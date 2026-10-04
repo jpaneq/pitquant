@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
+import { BitcoinPage } from './features/bitcoin/BitcoinPage'
 import { AppShell } from './components/AppShell'
 import { AnalyzerHome } from './features/analyzer/AnalyzerHome'
 import { AnalyzerPage } from './features/analyzer/AnalyzerPage'
@@ -15,6 +16,8 @@ export function App() {
       <Route element={<AppShell />}>
         <Route index element={<AnalyzerHome />} />
         <Route path="analyzer/:id" element={<AnalyzerPage />} />
+        <Route path="bitcoin" element={<BitcoinPage />} />
+        <Route path="bitcoin/:page" element={<BitcoinPage />} />
         <Route path="watchlist" element={<WatchlistPage />} />
         <Route path="research" element={<ResearchPage />} />
         <Route path="simulations" element={<SimulationsPage />} />

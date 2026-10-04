@@ -1,0 +1,266 @@
+"""Bitcoin Analyzer/Labs HTTP API; all writes stay in BTC or existing Simulation Lab tables."""
+
+from __future__ import annotations
+
+from dataclasses import asdict
+from typing import Any
+
+from fastapi import APIRouter, HTTPException
+from pydantic import AwareDatetime, BaseModel
+from sqlalchemy import select
+
+from pitquant.api.app import DB
+from pitquant.api.simulations import row
+from pitquant.btc.contracts import BTC_CAUSES, Cohort
+from pitquant.btc.features import feature_payload
+from pitquant.btc.models import BTCFeatureSnapshot, BTCPredictionSnapshot, BTCResearchRecord
+from pitquant.btc.research import freeze, guard_holdout, historical_test, readiness, reveal
+from pitquant.btc.simulation import create, postmortem, trade_plan, update
+from pitquant.db.models import (
+    ResearchHypothesis,
+    Simulation,
+    SimulationOutcome,
+    SimulationPostMortem,
+)
+from pitquant.simulation.service import replay_simulation
+
+
+class AsOf(BaseModel):
+    decision_at: AwareDatetime
+    cohort: Cohort = Cohort.FORWARD_PAPER
+    knowledge_at: AwareDatetime | None = None
+
+
+class Simulate(BaseModel):
+    snapshot_id: str
+    notional: float = 1000
+    horizon_days: int = 30
+
+
+class Update(BaseModel):
+    as_of: AwareDatetime
+
+
+class Postmortem(BaseModel):
+    primary_cause: str
+    classified_by: str
+    notes: str = ""
+
+
+class Hypothesis(BaseModel):
+    statement: str
+    created_by: str
+    evidence: dict[str, Any]
+
+
+class HistoricalTest(BaseModel):
+    start: AwareDatetime
+    end: AwareDatetime
+    horizon: int
+    feature_version: str = "btc-core-v0"
+    model_version: str = "btc-core-baseline-v0"
+    strategy_version: str = "btc-plan-v0"
+
+
+def make_btc_router() -> APIRouter:
+    router = APIRouter(prefix="/btc", tags=["bitcoin"])
+
+    @router.get("/status")
+    def status(db: DB, cohort: Cohort = Cohort.FORWARD_PAPER) -> dict[str, Any]:
+        collection = db.scalars(
+            select(BTCResearchRecord)
+            .where(BTCResearchRecord.kind == "COLLECTION")
+            .order_by(BTCResearchRecord.created_at.desc())
+        ).first()
+        result = readiness(db, cohort)
+        db.commit()
+        return {
+            "asset_type": "BTC",
+            "frequency": "1D UTC",
+            "decision_close": "00:00 UTC",
+            "prediction_status": "NOT_YET_VALIDATED",
+            "auto_trade": "NO_AUTO_PREDICTION_TRADE",
+            "data": collection.payload if collection else None,
+            "readiness": result,
+            "strategies": {
+                "TRADE_PLAN_ONLY": "NOT_YET_BACKTEST_VALIDATED",
+                "BUY_AND_HOLD": "BENCHMARK",
+                "PREDICTION_ONLY": "DISABLED",
+                "HYBRID": "DISABLED",
+            },
+            "bitcoin_core": "NOT_CONFIGURED",
+            "macro": "OPTIONAL_UNAVAILABLE",
+        }
+
+    @router.get("/analyzer")
+    def analyzer(
+        db: DB, decision_at: AwareDatetime, cohort: Cohort = Cohort.FORWARD_PAPER
+    ) -> dict[str, Any]:
+        try:
+            guard_holdout(db, decision_at, cohort)
+            payload = feature_payload(db, decision_at, cohort)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+        return payload
+
+    @router.post("/freeze")
+    def freeze_prediction(body: AsOf, db: DB) -> dict[str, Any]:
+        try:
+            snap = freeze(db, body.decision_at, body.cohort, body.knowledge_at)
+            db.commit()
+        except ValueError as exc:
+            raise HTTPException(409, str(exc)) from exc
+        return snapshot_view(db, snap)
+
+    @router.get("/snapshots")
+    def snapshots(db: DB, cohort: Cohort = Cohort.FORWARD_PAPER) -> list[dict[str, Any]]:
+        rows = db.scalars(
+            select(BTCFeatureSnapshot)
+            .where(BTCFeatureSnapshot.cohort == cohort)
+            .order_by(BTCFeatureSnapshot.decision_at.desc())
+            .limit(100)
+        )
+        return [snapshot_view(db, snap) for snap in rows]
+
+    @router.post("/predictions/{prediction_id}/reveal")
+    def reveal_outcome(prediction_id: str, body: Update, db: DB) -> dict[str, Any]:
+        try:
+            result = reveal(db, prediction_id, body.as_of)
+            db.commit()
+        except ValueError as exc:
+            raise HTTPException(409, str(exc)) from exc
+        return row(result)
+
+    @router.post("/historical-tests")
+    def run_historical_test(body: HistoricalTest, db: DB) -> dict[str, Any]:
+        try:
+            result = historical_test(
+                db,
+                body.start,
+                body.end,
+                body.horizon,
+                body.feature_version,
+                body.model_version,
+                body.strategy_version,
+            )
+            db.commit()
+        except ValueError as exc:
+            raise HTTPException(409, str(exc)) from exc
+        return result
+
+    @router.get("/research")
+    def research(db: DB, cohort: Cohort = Cohort.FORWARD_PAPER) -> dict[str, Any]:
+        records = list(
+            db.scalars(
+                select(BTCResearchRecord)
+                .where(
+                    BTCResearchRecord.cohort == cohort, BTCResearchRecord.kind != "CATALOG_SNAPSHOT"
+                )
+                .order_by(BTCResearchRecord.created_at.desc())
+                .limit(100)
+            )
+        )
+        return {
+            "cohort": cohort,
+            "records": [row(r) for r in records],
+            "calibration": [],
+            "warning": "NO_VALIDATED_MODEL_PREDICTIONS",
+            "causes": BTC_CAUSES,
+        }
+
+    @router.post("/hypotheses")
+    def hypothesis(body: Hypothesis, db: DB) -> dict[str, Any]:
+        if not body.statement.strip() or not body.created_by.strip():
+            raise HTTPException(422, "statement and created_by required")
+        h = ResearchHypothesis(
+            statement=body.statement,
+            created_by=body.created_by,
+            evidence={"asset_type": "BTC", **body.evidence},
+            source="BTC_RESEARCH",
+        )
+        db.add(h)
+        db.commit()
+        return row(h)
+
+    @router.post("/simulations")
+    def simulate(body: Simulate, db: DB) -> dict[str, Any]:
+        snap = db.get(BTCFeatureSnapshot, body.snapshot_id)
+        if snap is None:
+            raise HTTPException(404, "snapshot not found")
+        try:
+            sim = create(db, snap, notional=body.notional, days=body.horizon_days)
+            db.commit()
+        except ValueError as exc:
+            raise HTTPException(409, str(exc)) from exc
+        return row(sim)
+
+    @router.get("/simulations")
+    def simulations(db: DB, cohort: Cohort = Cohort.FORWARD_PAPER) -> list[dict[str, Any]]:
+        return [
+            row(s)
+            for s in db.scalars(select(Simulation).where(Simulation.asset_type == "BTC"))
+            if (s.source_provenance or {}).get("cohort") == cohort
+        ]
+
+    @router.post("/simulations/{simulation_id}/update")
+    def update_sim(simulation_id: str, body: Update, db: DB) -> dict[str, Any]:
+        try:
+            result = update(db, simulation_id, body.as_of)
+            db.commit()
+        except ValueError as exc:
+            raise HTTPException(409, str(exc)) from exc
+        return result
+
+    @router.get("/simulations/{simulation_id}")
+    def simulation_detail(simulation_id: str, db: DB) -> dict[str, Any]:
+        sim = db.get(Simulation, simulation_id)
+        if not sim or sim.asset_type != "BTC":
+            raise HTTPException(404, "BTC simulation not found")
+        return {
+            "simulation": row(sim),
+            "replay": asdict(replay_simulation(db, simulation_id)),
+            "outcomes": [
+                row(o)
+                for o in db.scalars(
+                    select(SimulationOutcome).where(
+                        SimulationOutcome.simulation_id == simulation_id
+                    )
+                )
+            ],
+            "postmortems": [
+                row(p)
+                for p in db.scalars(
+                    select(SimulationPostMortem).where(
+                        SimulationPostMortem.simulation_id == simulation_id
+                    )
+                )
+            ],
+        }
+
+    @router.post("/simulations/{simulation_id}/postmortem")
+    def classify(simulation_id: str, body: Postmortem, db: DB) -> dict[str, Any]:
+        try:
+            result = postmortem(
+                db, simulation_id, body.primary_cause, body.classified_by, body.notes
+            )
+            db.commit()
+        except ValueError as exc:
+            raise HTTPException(409, str(exc)) from exc
+        return row(result)
+
+    return router
+
+
+def snapshot_view(db: Any, snapshot: BTCFeatureSnapshot) -> dict[str, Any]:
+    return {
+        **row(snapshot),
+        "trade_plan": trade_plan(snapshot),
+        "predictions": [
+            row(p)
+            for p in db.scalars(
+                select(BTCPredictionSnapshot).where(
+                    BTCPredictionSnapshot.snapshot_id == snapshot.snapshot_id
+                )
+            )
+        ],
+    }

@@ -7,6 +7,7 @@ import { ErrorBoundary } from './ErrorBoundary'
 
 const NAV = [
   { to: '/', label: 'Analyzer', end: true },
+  { to: '/bitcoin', label: 'Bitcoin' },
   { to: '/watchlist', label: 'Watchlist' },
   { to: '/research', label: 'Research Lab' },
   { to: '/simulations', label: 'Simulations' },
