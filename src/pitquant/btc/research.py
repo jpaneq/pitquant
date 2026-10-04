@@ -242,10 +242,10 @@ def calibration(predictions: list[dict[str, float]]) -> list[dict[str, Any]]:
     return result
 
 
-def baseline_fit(
-    x_train: np.ndarray, log_returns: np.ndarray, up: np.ndarray, x_validation: np.ndarray
-) -> dict[str, Any]:
-    """Training-only imputation/scaling; never fits on validation. Separate models per horizon."""
+def baseline_models(
+    x_train: np.ndarray, log_returns: np.ndarray, up: np.ndarray
+) -> tuple[Any, Any]:
+    """Fit the shared experimental baseline pipelines on training rows only."""
     from sklearn.impute import SimpleImputer
     from sklearn.linear_model import ElasticNet, LogisticRegression
     from sklearn.pipeline import make_pipeline
@@ -265,6 +265,14 @@ def baseline_fit(
         raise ValueError("training classification needs both outcomes")
     reg.fit(x_train, log_returns)
     cls.fit(x_train, up)
+    return reg, cls
+
+
+def baseline_fit(
+    x_train: np.ndarray, log_returns: np.ndarray, up: np.ndarray, x_validation: np.ndarray
+) -> dict[str, Any]:
+    """Training-only transforms; separate models per horizon."""
+    reg, cls = baseline_models(x_train, log_returns, up)
     return {
         "expected_log_return": reg.predict(x_validation).tolist(),
         "p_up": cls.predict_proba(x_validation)[:, 1].tolist(),

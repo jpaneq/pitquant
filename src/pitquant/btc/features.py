@@ -39,12 +39,17 @@ DERIVATIVES = (
 
 
 def known_data(
-    session: Session, at: datetime, cohort: str, knowledge_at: datetime | None = None
+    session: Session,
+    at: datetime,
+    cohort: str,
+    knowledge_at: datetime | None = None,
+    *,
+    allow_delayed_knowledge: bool = False,
 ) -> list[BTCDatum]:
     require_aware(at)
     cutoff = knowledge_at or at
     require_aware(cutoff)
-    if not at <= cutoff <= at + timedelta(minutes=15):
+    if cutoff < at or (not allow_delayed_knowledge and cutoff > at + timedelta(minutes=15)):
         raise ValueError("knowledge cutoff must be within 15 minutes after the UTC decision close")
     rows = session.scalars(
         select(BTCDatum)
@@ -62,10 +67,17 @@ def known_data(
 
 
 def feature_payload(
-    session: Session, at: datetime, cohort: str, knowledge_at: datetime | None = None
+    session: Session,
+    at: datetime,
+    cohort: str,
+    knowledge_at: datetime | None = None,
+    *,
+    allow_delayed_knowledge: bool = False,
 ) -> dict[str, Any]:
     decision_time(at)
-    rows = known_data(session, at, cohort, knowledge_at)
+    rows = known_data(
+        session, at, cohort, knowledge_at, allow_delayed_knowledge=allow_delayed_knowledge
+    )
     spot = [r for r in rows if r.metric == "spot"]
     frame = pd.DataFrame([r.payload for r in spot], index=[r.exchange_timestamp for r in spot])
     result: dict[str, Any] = {

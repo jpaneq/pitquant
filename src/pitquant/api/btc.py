@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import asdict
 from typing import Any
 
@@ -12,10 +13,12 @@ from sqlalchemy import select
 from pitquant.api.app import DB
 from pitquant.api.simulations import row
 from pitquant.btc.contracts import BTC_CAUSES, Cohort
+from pitquant.btc.experimental import forecast, latest_models
 from pitquant.btc.features import feature_payload
 from pitquant.btc.models import BTCFeatureSnapshot, BTCPredictionSnapshot, BTCResearchRecord
+from pitquant.btc.quote import LiveQuote
 from pitquant.btc.research import freeze, guard_holdout, historical_test, readiness, reveal
-from pitquant.btc.simulation import create, postmortem, trade_plan, update
+from pitquant.btc.simulation import create, postmortem, prediction_tracking, trade_plan, update
 from pitquant.db.models import (
     ResearchHypothesis,
     Simulation,
@@ -64,6 +67,34 @@ class HistoricalTest(BaseModel):
 
 def make_btc_router() -> APIRouter:
     router = APIRouter(prefix="/btc", tags=["bitcoin"])
+    live_quote = LiveQuote()
+
+    @router.get("/quote")
+    def quote() -> dict[str, Any]:
+        if os.environ.get("PITQUANT_E2E_FIXTURE") == "1":
+            return {"status": "DISABLED", "reason": "SYNTHETIC_FIXTURE_NO_EXTERNAL_DATA"}
+        try:
+            return live_quote.get()
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            raise HTTPException(
+                503, "BTC_LIVE_QUOTE_UNAVAILABLE", headers={"Retry-After": "5"}
+            ) from exc
+
+    @router.post("/experimental/forecast")
+    def experimental_forecast(db: DB) -> dict[str, Any]:
+        try:
+            snap = forecast(db)
+            db.commit()
+            return snapshot_view(db, snap)
+        except ValueError as exc:
+            raise HTTPException(409, str(exc)) from exc
+
+    @router.get("/experimental/history")
+    def experimental_history(db: DB, horizon: int = 30) -> dict[str, Any]:
+        model = latest_models(db).get(horizon)
+        if model is None:
+            return {"status": "BLOCKED_BY_DATA", "predictions": []}
+        return {k: v for k, v in model.payload.items() if k not in ("reg", "cls", "features")}
 
     @router.get("/status")
     def status(db: DB, cohort: Cohort = Cohort.FORWARD_PAPER) -> dict[str, Any]:
@@ -218,6 +249,7 @@ def make_btc_router() -> APIRouter:
             raise HTTPException(404, "BTC simulation not found")
         return {
             "simulation": row(sim),
+            "prediction_tracking": prediction_tracking(db, sim),
             "replay": asdict(replay_simulation(db, simulation_id)),
             "outcomes": [
                 row(o)

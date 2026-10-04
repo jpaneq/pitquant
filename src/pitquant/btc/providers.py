@@ -131,10 +131,16 @@ class PublicProvider:
         )
         self.session.flush()
 
-    def spot(self, *, earliest: bool = False) -> FetchResult:
+    def spot(
+        self, *, earliest: bool = False, start_ms: int | None = None, end_ms: int | None = None
+    ) -> FetchResult:
         params: dict[str, Any] = {"symbol": "BTCUSDT", "interval": "1d", "limit": 1000}
         if earliest:
             params["startTime"] = 0
+        if start_ms is not None:
+            params["startTime"] = start_ms
+        if end_ms is not None:
+            params["endTime"] = end_ms
         rows, archive = self.get(SPOT, "/api/v3/klines", params)
         closed = [r for r in rows if timestamp(r[6]) < archive.retrieved_at]
         for r in closed:

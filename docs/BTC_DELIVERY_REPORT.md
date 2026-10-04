@@ -137,3 +137,5 @@ This delivers independent BTC contracts, auditable UI, archive and test harness.
 Real evidence lives in data/btc.db and data/archive in this worktree, not Git. Heartbeat btc-archivo-forward-horario is ACTIVE hourly at minute10. Keep app/computer running and worktree on disk. The immutable initial holdout is2025-10-01–2026-09-30. Backfill fetched today is not PIT at historical dates.
 
 CI repair: one run failed an existing Analyzer E2E because its regex matched two visible disclaimer elements. The assertion now selects the exact disclaimer; no equity product logic changed.
+
+Follow-up: the user subsequently requested live quotes, actual experimental forecasts and forecast-to-operation tracking. See [BTC_EXPERIMENTAL_PREDICTOR.md](BTC_EXPERIMENTAL_PREDICTOR.md). Its retrospective market-data experiment is distinct from the original blocked historical PIT baseline; the initial report above describes the initial delivery.

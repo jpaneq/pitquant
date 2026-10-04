@@ -110,6 +110,12 @@ def forward_cycle(session: Session) -> dict[str, Any]:
     # Operational cutoff includes provider latency, never candles after the canonical close.
     if now <= midnight + timedelta(minutes=15):
         frozen = freeze(session, decision_time(midnight), Cohort.FORWARD_PAPER, now)
+    experimental_id = None
+    if now <= midnight + timedelta(minutes=15):
+        from pitquant.btc.experimental import forecast, latest_models
+
+        if latest_models(session):
+            experimental_id = forecast(session).snapshot_id
     updated = []
     for sim in session.scalars(select(Simulation).where(Simulation.asset_type == "BTC")):
         if (sim.source_provenance or {}).get("cohort") == Cohort.FORWARD_PAPER:
@@ -117,6 +123,7 @@ def forward_cycle(session: Session) -> dict[str, Any]:
     session.commit()
     return {
         "snapshot_id": frozen.snapshot_id if frozen else None,
+        "experimental_snapshot_id": experimental_id,
         "simulations": updated,
         "prediction_trade": "NO_AUTO_PREDICTION_TRADE",
     }

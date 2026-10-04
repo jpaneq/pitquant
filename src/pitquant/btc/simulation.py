@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from pitquant.btc.contracts import BTC_CAUSES, ENGINE_VERSION, Cohort
 from pitquant.btc.features import known_data
-from pitquant.btc.models import BTCFeatureSnapshot
+from pitquant.btc.models import BTCFeatureSnapshot, BTCPredictionSnapshot, BTCResearchRecord
 from pitquant.core.timeutils import utc_now
 from pitquant.db.models import (
     Security,
@@ -136,6 +136,14 @@ def create(
 ) -> Simulation:
     if notional <= 0 or days <= 0 or min(commission_bps, slippage_bps, funding_cost) < 0:
         raise ValueError("positive notional/days and nonnegative costs required")
+    prediction = session.scalar(
+        select(BTCPredictionSnapshot).where(
+            BTCPredictionSnapshot.snapshot_id == snapshot.snapshot_id,
+            BTCPredictionSnapshot.horizon == days,
+        )
+    )
+    if prediction is None:
+        raise ValueError("FROZEN_HORIZON_PREDICTION_REQUIRED")
     p = trade_plan(snapshot)
     if p["status"] == "BLOCKED_BY_DATA":
         raise ValueError(p["reason"])
@@ -161,10 +169,10 @@ def create(
         created_at=utc_now(),
         analyzer_version="btc-analyzer-v0",
         feature_version=snapshot.feature_version,
-        model_version=None,
+        model_version=prediction.payload.get("model_version"),
         model_id=None,
         rules_version=snapshot.strategy_version,
-        prediction_status="NOT_YET_VALIDATED",
+        prediction_status=prediction.payload["status"],
         simulation_engine_version=ENGINE_VERSION,
         price_snapshot=snapshot.payload["price_features"],
         fundamental_snapshot={},
@@ -196,13 +204,22 @@ def create(
         expiration_at=snapshot.decision_at + timedelta(days=days),
         source_provenance={
             "btc_snapshot_id": snapshot.snapshot_id,
+            "prediction_at_creation": {
+                "prediction_id": prediction.prediction_id,
+                "prediction_hash": prediction.prediction_hash,
+                "horizon_days": prediction.horizon,
+                "decision_at": snapshot.decision_at.isoformat(),
+                "target_at": (snapshot.decision_at + timedelta(days=days)).isoformat(),
+                "payload": prediction.payload,
+                "plan": p,
+            },
             "execution_not_before": execution_start.isoformat(),
             "cohort": snapshot.cohort,
             "snapshot_hash": snapshot.snapshot_hash,
             "versions": {
                 "data_version": snapshot.data_version,
                 "feature_version": snapshot.feature_version,
-                "model_version": None,
+                "model_version": prediction.payload.get("model_version"),
                 "strategy_version": snapshot.strategy_version,
                 "simulation_engine_version": ENGINE_VERSION,
                 "commit_sha": snapshot.commit_sha,
@@ -345,6 +362,23 @@ def update(session: Session, simulation_id: str, as_of: datetime) -> dict[str, A
                 )
             )
     session.flush()
+    pinned_prediction = (sim.source_provenance or {}).get("prediction_at_creation")
+    if pinned_prediction and as_of >= datetime.fromisoformat(pinned_prediction["target_at"]):
+        from pitquant.btc.research import reveal
+
+        already = session.scalar(
+            select(BTCResearchRecord.record_id).where(
+                BTCResearchRecord.kind == "REVEAL_OUTCOME",
+                BTCResearchRecord.prediction_id == pinned_prediction["prediction_id"],
+            )
+        )
+        if already is None:
+            try:
+                reveal(session, pinned_prediction["prediction_id"], as_of)
+            except ValueError as exc:
+                if str(exc) != "EXACT_TARGET_PRICE_REQUIRED":
+                    raise
+                # A missing target keeps the assessment pending; never invent an outcome.
     return {
         "state": outcome.state,
         "is_closed": outcome.is_closed,
@@ -443,4 +477,57 @@ def strategy_test(
         "evaluation_unit": "INDEPENDENT_OVERLAPPING_TRADES_NOT_PORTFOLIO",
         "cost_warning": "COSTS_NOT_MODELED",
         "superiority": "NOT_CLAIMED",
+    }
+
+
+def prediction_tracking(session: Session, sim: Simulation) -> dict[str, Any]:
+    pinned = (sim.source_provenance or {}).get("prediction_at_creation")
+    if not pinned:
+        return {"status": "LEGACY_NO_PREDICTION_LINK"}
+    actual = session.scalars(
+        select(BTCResearchRecord)
+        .where(
+            BTCResearchRecord.prediction_id == pinned["prediction_id"],
+            BTCResearchRecord.kind == "REVEAL_OUTCOME",
+        )
+        .order_by(BTCResearchRecord.created_at)
+    ).first()
+    outcome = latest_outcome(session, sim.simulation_id)
+    plan_status = "PENDING"
+    if outcome:
+        if outcome.state == "AMBIGUOUS_INTRABAR":
+            plan_status = "INDETERMINATE"
+        elif outcome.state == "TP2":
+            plan_status = "TARGETS_MET"
+        elif outcome.state in ("TP1", "PARTIAL_TP"):
+            plan_status = "PARTIALLY_MET"
+        elif outcome.is_closed:
+            plan_status = "CLOSED_WITHOUT_ALL_TARGETS"
+    predicted = pinned["payload"].get("expected_return")
+    validated = pinned["payload"].get("status") in ("VALIDATED", "EXPERIMENTAL_NOT_VALIDATED")
+    return {
+        "status": "ASSESSED"
+        if actual and validated
+        else "NO_VALIDATED_PREDICTION"
+        if not validated
+        else "WAITING_OUTCOME",
+        "frozen": pinned,
+        "actual": actual.payload.get("actual") if actual else None,
+        "expected": predicted,
+        "error": predicted - actual.payload["actual"] if actual and predicted is not None else None,
+        "outcome_status": "MATURED" if actual else "WAITING_HORIZON_OR_DATA",
+        "plan_status": plan_status,
+        "tp1_met": bool(
+            outcome
+            and (outcome.details.get("tp1_hit") or 1 in outcome.details.get("targets_touched", []))
+        ),
+        "tp2_met": bool(
+            outcome
+            and (outcome.details.get("tp2_hit") or 2 in outcome.details.get("targets_touched", []))
+        ),
+        "outcome_record_id": actual.record_id if actual else None,
+        "forecast_correct": ((pinned["payload"]["p_up"] >= 0.5) == bool(actual.payload["UP_H"]))
+        if actual and validated and pinned["payload"].get("p_up") is not None
+        else None,
+        "validation_status": pinned["payload"].get("status"),
     }
