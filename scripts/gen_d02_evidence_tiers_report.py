@@ -100,8 +100,12 @@ def main() -> None:
             if m["strict_status"] != "MEMBERSHIP_READY" and m["status"] == "READY"
         ],
         "required_securities": readiness["coverage"]["required"],
+        "legacy_global_required_securities": readiness["coverage"]["required"],
+        "coverage_contract": "FIRST_ML_COVERAGE_V1",
+        "coverage_audit_file": "FIRST_ML_COVERAGE_AUDIT.json",
         "models_trained": False,
-        "stop_reason": "Three LABEL_SAFE folds certified; statistical coverage remains unapproved."
+        "stop_reason": "Three LABEL_SAFE folds certified; coverage status: "
+        + readiness["gates"]["RESEARCH_SECURITY_COVERAGE_READY"]["status"]
         if readiness["fold_readiness"]["label_safe_folds"] >= 3
         else "Required temporal folds remain blocked; no training.",
     }
@@ -113,7 +117,7 @@ def main() -> None:
     )
     md = [
         "# D02: evidence tiers y exclusiones temporales\n",
-        f"{readiness['d02']['required_months_ready']}/{len(monthly)} meses requeridos válidos; {readiness['d02']['calendar_folds']} CALENDAR_FOLD y {readiness['d02']['label_safe_folds']} LABEL_SAFE_FOLD. ML_ELIGIBLE_FOLD sigue NOT_YET_EVALUATED. Ningún modelo entrenado.\n",
+        f"{readiness['d02']['required_months_ready']}/{len(monthly)} meses requeridos válidos; {readiness['d02']['calendar_folds']} CALENDAR_FOLD y {readiness['d02']['label_safe_folds']} LABEL_SAFE_FOLD. ML_ELIGIBLE_FOLD se evalúa con FIRST_ML_COVERAGE_V1; ver FIRST_ML_COVERAGE.md. Ningún modelo entrenado.\n",
         "La validez se refiere a todas las filas incluidas. La completitud se informa por separado: las securities UNVERIFIED/CONFLICTED se excluyen por fecha. La reconstrucción estricta anterior conserva sus 49 fichas y no se transforma en universo diario canónico.\n",
         "Under Armour Class C: ADD 2016-04-08 CORROBORATED_HISTORICAL, nunca OFFICIAL_DIRECT. Dos orígenes: Clenow/Trading Evolved pre-2019 y Wikipedia (snapshot 2021 archivado por Analyzing Alpha); SEC/OCC prueban la identidad/clase. Las actualizaciones FJA posteriores a 2019 comparten Wikipedia y no cuentan como otra corroboración independiente. No se sigue buscando S&P para UA.\n",
         "## Fichas críticas\n",
@@ -136,7 +140,7 @@ def main() -> None:
     md += [
         "\n## Sesgo de selección\n",
         f"{len(excluded)} security-periods excluidos; {len(evidence_excluded)} por evidencia insuficiente/conflictiva. {bias['rows_lost']} filas perdidas, {bias['rows_lost_evidence']} por evidencia. Securities: {', '.join(bias['tickers_affected'])}. Sectores descriptivos: {bias['sectors_affected']}.\n",
-        "El catálogo sigue siendo un subconjunto configurado, con limitación de supervivencia. No se miraron retornos, drawdowns, scores ni performance para seleccionar. La suficiencia y el ESS quedan para el coverage gate.\n",
+        "El catálogo sigue siendo un subconjunto configurado, con limitación de supervivencia. No se miraron retornos, drawdowns, scores ni performance para seleccionar. La cobertura estructural se evalúa con FIRST_ML_COVERAGE_V1 (FIRST_ML_COVERAGE.md); ESS = NOT_FORMALLY_ESTIMATED.\n",
         "## Folds\n",
     ]
     for fold in readiness["fold_readiness"]["folds"]:

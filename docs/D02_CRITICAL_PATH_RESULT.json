@@ -2,7 +2,7 @@
   "after": {
     "blocked_months": 44,
     "calendar_folds": 3,
-    "coverage_gate_evaluated": false,
+    "coverage_gate_evaluated": true,
     "coverage_pct": 68.8,
     "feasible_folds": 4,
     "label_safe_folds": 3,
@@ -3006,6 +3006,8 @@
       ]
     }
   ],
+  "coverage_audit_file": "FIRST_ML_COVERAGE_AUDIT.json",
+  "coverage_contract": "FIRST_ML_COVERAGE_V1",
   "evidence_tier_counts": {
     "CONFLICTED": 1,
     "CORROBORATED_HISTORICAL": 1,
@@ -3013,9 +3015,10 @@
     "UNVERIFIED": 47
   },
   "fold_readiness": {
-    "as_of": "2026-10-05T20:15:38.324311+00:00",
+    "as_of": "2026-10-05T20:55:20.828791+00:00",
     "calendar_folds": 3,
-    "coverage_evaluated": false,
+    "coverage_contract": "FIRST_ML_COVERAGE_V1",
+    "coverage_evaluated": true,
     "folds": [
       {
         "TEST": {
@@ -3459,7 +3462,9 @@
         "blocking_reasons": [],
         "calendar_valid": true,
         "complete_test_window": true,
-        "coverage_evaluated": false,
+        "coverage_audit_file": "FIRST_ML_COVERAGE_AUDIT.json",
+        "coverage_contract": "FIRST_ML_COVERAGE_V1",
+        "coverage_evaluated": true,
         "dates": {
           "embargo_end": "2018-09",
           "embargo_months": 1,
@@ -3499,8 +3504,8 @@
         "label_safe": true,
         "minimum_rows_per_fold": null,
         "missing_history_months": [],
-        "ml_eligible": null,
-        "ml_eligible_status": "NOT_YET_EVALUATED_BLOCKED_BY_COVERAGE",
+        "ml_eligible": false,
+        "ml_eligible_status": "BLOCKED",
         "months": {
           "missing_membership_history": 0,
           "test_label_ready": 12,
@@ -3508,7 +3513,7 @@
           "train_calendar": 37,
           "train_label_ready": 37
         },
-        "row_minimum_status": "UNSPECIFIED_CONTRACT",
+        "row_minimum_status": "STRUCTURAL_ISSUER_MONTH_COVERAGE",
         "securities": {
           "TEST": 48,
           "TRAIN": 48
@@ -4057,7 +4062,9 @@
         "blocking_reasons": [],
         "calendar_valid": true,
         "complete_test_window": true,
-        "coverage_evaluated": false,
+        "coverage_audit_file": "FIRST_ML_COVERAGE_AUDIT.json",
+        "coverage_contract": "FIRST_ML_COVERAGE_V1",
+        "coverage_evaluated": true,
         "dates": {
           "embargo_end": "2019-09",
           "embargo_months": 1,
@@ -4097,8 +4104,8 @@
         "label_safe": true,
         "minimum_rows_per_fold": null,
         "missing_history_months": [],
-        "ml_eligible": null,
-        "ml_eligible_status": "NOT_YET_EVALUATED_BLOCKED_BY_COVERAGE",
+        "ml_eligible": false,
+        "ml_eligible_status": "BLOCKED",
         "months": {
           "missing_membership_history": 0,
           "test_label_ready": 12,
@@ -4106,7 +4113,7 @@
           "train_calendar": 49,
           "train_label_ready": 48
         },
-        "row_minimum_status": "UNSPECIFIED_CONTRACT",
+        "row_minimum_status": "STRUCTURAL_ISSUER_MONTH_COVERAGE",
         "securities": {
           "TEST": 49,
           "TRAIN": 48
@@ -4751,7 +4758,9 @@
         "blocking_reasons": [],
         "calendar_valid": true,
         "complete_test_window": true,
-        "coverage_evaluated": false,
+        "coverage_audit_file": "FIRST_ML_COVERAGE_AUDIT.json",
+        "coverage_contract": "FIRST_ML_COVERAGE_V1",
+        "coverage_evaluated": true,
         "dates": {
           "embargo_end": "2020-09",
           "embargo_months": 1,
@@ -4791,8 +4800,8 @@
         "label_safe": true,
         "minimum_rows_per_fold": null,
         "missing_history_months": [],
-        "ml_eligible": null,
-        "ml_eligible_status": "NOT_YET_EVALUATED_BLOCKED_BY_COVERAGE",
+        "ml_eligible": false,
+        "ml_eligible_status": "BLOCKED",
         "months": {
           "missing_membership_history": 0,
           "test_label_ready": 12,
@@ -4800,7 +4809,7 @@
           "train_calendar": 61,
           "train_label_ready": 60
         },
-        "row_minimum_status": "UNSPECIFIED_CONTRACT",
+        "row_minimum_status": "STRUCTURAL_ISSUER_MONTH_COVERAGE",
         "securities": {
           "TEST": 50,
           "TRAIN": 48
@@ -4812,7 +4821,7 @@
       }
     ],
     "label_safe_folds": 3,
-    "ml_eligible_folds": null,
+    "ml_eligible_folds": 0,
     "required_history": {
       "benchmark_calendar": "XNYS",
       "benchmark_exit_session": "2022-08-31",
@@ -4832,7 +4841,7 @@
       "target_start": "2021-09-01T13:30:00+00:00"
     },
     "row_evidence_file": "FIRST_ML_FOLD_AUDIT.json",
-    "row_minimum_status": "UNSPECIFIED_CONTRACT",
+    "row_minimum_status": "STRUCTURAL_ISSUER_MONTH_COVERAGE",
     "test_label_safe_folds": 3,
     "version": "first-ml-fold-readiness-v2"
   },
@@ -4913,9 +4922,15 @@
     },
     "FIRST_ML_BASELINE_READY": {
       "actual": "false",
-      "blocking_reason": "required gates not READY: US_SECURITY_IDENTITY_READY, RESEARCH_SECURITY_COVERAGE_READY, RESEARCH_DATA_READY",
+      "blocking_reason": "required gates not READY: RESEARCH_SECURITY_COVERAGE_READY, RESEARCH_DATA_READY",
       "required": "all required gates READY",
       "status": "BLOCKED"
+    },
+    "FIRST_ML_IDENTITY_VALIDITY_READY": {
+      "actual": true,
+      "blocking_reason": null,
+      "required": "Every included row has verified issuer/security/membership identity",
+      "status": "READY"
     },
     "HOLDOUT_SEALED": {
       "actual": "0 snapshots inside the holdout",
@@ -4930,9 +4945,12 @@
       "status": "BLOCKED"
     },
     "RESEARCH_SECURITY_COVERAGE_READY": {
-      "actual": "50 usable (strict); 50 if D05 were accepted; 100 with snapshots",
-      "blocking_reason": "fewer than 100 securities satisfy all PIT eligibility conditions; see the per-security audit",
-      "required": ">= 100 usable securities",
+      "actual": {
+        "passing_folds": 0,
+        "required_folds": 3
+      },
+      "blocking_reason": "See FIRST_ML_COVERAGE_AUDIT.json: exact family/month deficits or class degeneracy",
+      "required": "FIRST_ML_COVERAGE_V1",
       "status": "BLOCKED"
     },
     "US_FUNDAMENTALS_READY": {
@@ -4949,6 +4967,7 @@
     }
   },
   "initial_head": "01eb216ccbffac248ccc270f88ef05498e797b63",
+  "legacy_global_required_securities": 100,
   "membership_completeness": {
     "configured_security_periods": 4675,
     "evidence_sectors_affected": {
@@ -13337,7 +13356,7 @@
   "required_months": 85,
   "required_months_blocked": 0,
   "required_securities": 100,
-  "stop_reason": "Three LABEL_SAFE folds certified; statistical coverage remains unapproved.",
+  "stop_reason": "Three LABEL_SAFE folds certified; coverage status: BLOCKED",
   "strict_unresolved_cards_preserved": 49,
   "under_armour": {
     "additional_sp_search_stopped": true,

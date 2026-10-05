@@ -152,7 +152,7 @@ def first_ml_eligibility(
     f = snap["features"]
     if any(f.get(n) is None for n in C.CORE_PRICE_FEATURES):
         reasons.append("INSUFFICIENT_HISTORY")
-    if family == "FUNDAMENTALS":
+    if family in ("FUNDAMENTALS", "COMBINED"):
         status = (snap.get("meta") or {}).get("fundamental_status")
         if status == "UNSUPPORTED_SECTOR":
             reasons.append("UNSUPPORTED_SECTOR")
@@ -186,8 +186,8 @@ def first_ml_baseline_ready(gates: dict[str, dict[str, Any]], required: tuple[st
 
 
 REQUIRED_GATES = (
-    "D02_MONTHLY_RESEARCH_READY",
-    "US_SECURITY_IDENTITY_READY",
+    "D02_MEMBERSHIP_VALIDITY",
+    "FIRST_ML_IDENTITY_VALIDITY_READY",
     "D05_READY",
     "BENCHMARK_RETURN_BASIS_READY",
     "RESEARCH_SECURITY_COVERAGE_READY",

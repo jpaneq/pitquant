@@ -1,6 +1,6 @@
 # D02: evidence tiers y exclusiones temporales
 
-85/85 meses requeridos válidos; 3 CALENDAR_FOLD y 3 LABEL_SAFE_FOLD. ML_ELIGIBLE_FOLD sigue NOT_YET_EVALUATED. Ningún modelo entrenado.
+85/85 meses requeridos válidos; 3 CALENDAR_FOLD y 3 LABEL_SAFE_FOLD. ML_ELIGIBLE_FOLD se evalúa con FIRST_ML_COVERAGE_V1; ver FIRST_ML_COVERAGE.md. Ningún modelo entrenado.
 
 La validez se refiere a todas las filas incluidas. La completitud se informa por separado: las securities UNVERIFIED/CONFLICTED se excluyen por fecha. La reconstrucción estricta anterior conserva sus 49 fichas y no se transforma en universo diario canónico.
 
@@ -154,7 +154,7 @@ Under Armour Class C: ADD 2016-04-08 CORROBORATED_HISTORICAL, nunca OFFICIAL_DIR
 
 581 security-periods excluidos; 455 por evidencia insuficiente/conflictiva. 581 filas perdidas, 455 por evidencia. Securities: AVGO, GE, GOOGL, LIN, META, RTX, TSLA, XOM. Sectores descriptivos: {'Manufacturing': 411, 'Services': 170}.
 
-El catálogo sigue siendo un subconjunto configurado, con limitación de supervivencia. No se miraron retornos, drawdowns, scores ni performance para seleccionar. La suficiencia y el ESS quedan para el coverage gate.
+El catálogo sigue siendo un subconjunto configurado, con limitación de supervivencia. No se miraron retornos, drawdowns, scores ni performance para seleccionar. La cobertura estructural se evalúa con FIRST_ML_COVERAGE_V1 (FIRST_ML_COVERAGE.md); ESS = NOT_FORMALLY_ESTIMATED.
 
 ## Folds
 

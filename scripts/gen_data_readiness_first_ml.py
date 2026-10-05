@@ -1,5 +1,5 @@
 # ruff: noqa: E501
-"""DATA READINESS FOR FIRST ML: generates docs/DATA_READINESS_FIRST_ML.md (+ .json) and the US-only fold audit FROM THE DATABASE. Archives an append-only research membership selection ledger; preserves snapshots and targets; trains nothing; statistical gates unchanged.
+"""DATA READINESS FOR FIRST ML: generates docs/DATA_READINESS_FIRST_ML.md (+ .json) and the US-only fold audit FROM THE DATABASE. Archives an append-only research membership selection ledger; preserves snapshots and targets; trains nothing; US fold-level coverage versioned separately from legacy global counts.
 
 PITQUANT_DATABASE_URL=sqlite:///data/pitquant.db python scripts/gen_data_readiness_first_ml.py
 """
@@ -26,6 +26,8 @@ from pitquant.positions import routine as rt
 from pitquant.research import dataset_v1 as DS
 from pitquant.research import first_ml as FM
 from pitquant.research import first_ml_contract as C
+from pitquant.research.coverage_v1 import VERSION as COVERAGE_VERSION
+from pitquant.research.coverage_v1 import audit_coverage, persist_coverage
 from pitquant.research.fold_readiness import audit_folds, latest_label_safe_history
 from pitquant.research.membership_bridge import build_bridge
 from pitquant.research.membership_evidence import VERSION as MEMBERSHIP_VERSION
@@ -297,10 +299,11 @@ def main() -> None:
     snaps: list[dict[str, Any]] = []
     for sn in S.scalars(
         select(ResearchFeatureSnapshot).where(
-            ResearchFeatureSnapshot.feature_set_version == FEATURE_VERSION
+            ResearchFeatureSnapshot.feature_set_version == FEATURE_VERSION,
+            ResearchFeatureSnapshot.decision_session < C.HOLDOUT[0],
         )
     ):
-        keep = set(C.CORE_PRICE_FEATURES) | set(C.CORE_FUNDAMENTAL_FEATURES)
+        keep = set(C.PRICE_FAMILY + C.FUNDAMENTAL_FAMILY + C.RISK_FAMILY)
         snaps.append(
             {
                 "security_id": sn.security_id,
@@ -542,6 +545,100 @@ def main() -> None:
     fold_audit["required_history"] = history_requirement
     for f, dates in zip(fold_audit["folds"], js["folds"], strict=True):
         f["dates"] = dates
+    coverage_audit = audit_coverage(fold_audit, projection, snaps, targets12)
+    coverage_audit["feature_set_version"] = FEATURE_VERSION
+    coverage_audit["target_set_version"] = TARGET_VERSION
+    coverage_audit["archive"] = persist_coverage(
+        S, ArchiveStore(ROOT / "data/archive"), coverage_audit
+    )
+    S.commit()
+    fold_audit["coverage_evaluated"] = True
+    fold_audit["row_minimum_status"] = "STRUCTURAL_ISSUER_MONTH_COVERAGE"
+    fold_audit["coverage_contract"] = COVERAGE_VERSION
+    fold_audit["ml_eligible_folds"] = sum(f["passes"] for f in coverage_audit["folds"])
+    for f, coverage_fold in zip(fold_audit["folds"], coverage_audit["folds"], strict=True):
+        f["coverage_evaluated"] = True
+        f["coverage_contract"] = COVERAGE_VERSION
+        f["ml_eligible"] = coverage_fold["passes"]
+        f["ml_eligible_status"] = "READY" if coverage_fold["passes"] else "BLOCKED"
+        f["row_minimum_status"] = "STRUCTURAL_ISSUER_MONTH_COVERAGE"
+        f["coverage_audit_file"] = "FIRST_ML_COVERAGE_AUDIT.json"
+    js["first_ml_coverage"] = coverage_audit
+    (ROOT / "docs/FIRST_ML_COVERAGE_AUDIT.json").write_text(
+        json.dumps(coverage_audit, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    coverage_md = [
+        "# First ML US coverage — FIRST_ML_COVERAGE_V1\n",
+        "Generado desde filas DEV; sin entrenamiento ni rendimiento. Cohorte común TRAIN y TEST para M0–M4; native por familia solo diagnóstico. El 100 global no decide este experimento.\n",
+        "PRICE: >=40 issuers y >=80% de membresía válida configurada. FUNDAMENTALS/COMBINED: >=30 issuers y >=70% de PRICE. TRAIN >=90% meses; TEST 12/12. Ambos targets deben existir en TRAIN y TEST.\n",
+        f"Resultado: {'READY' if coverage_audit['ready'] else 'BLOCKED'}. Effective sample size: NOT_FORMALLY_ESTIMATED.\n",
+    ]
+    for f in coverage_audit["folds"]:
+        coverage_md.append(f"## Fold {f['index'] + 1}\n")
+        coverage_md.append(
+            table(
+                [
+                    [
+                        fam,
+                        role,
+                        v["rows"],
+                        v["unique_issuers"],
+                        v["minimum_monthly_issuers"],
+                        v["passing_months"],
+                        v["required_passing_months"],
+                        v["passes"],
+                    ]
+                    for fam, partitions in f["families"].items()
+                    for role, v in partitions.items()
+                ],
+                [
+                    "Family",
+                    "Partition",
+                    "Rows",
+                    "Issuers",
+                    "Min monthly issuers",
+                    "Passing months",
+                    "Required",
+                    "Pass",
+                ],
+            )
+        )
+        for failure in f["failures"]:
+            coverage_md.append(
+                f"{failure['family']} {failure['partition']}: reparar al menos {failure['minimum_months_to_repair']} meses; tolerancia {failure['allowed_failed_months']}.\n"
+            )
+            coverage_md.append(
+                table(
+                    [
+                        [
+                            m["month"],
+                            m["issuers"],
+                            m["required_issuers"],
+                            m["coverage_pct"],
+                            m["required_coverage_pct"],
+                            m["minimum_additional_eligible_issuers"],
+                        ]
+                        for m in failure["failing_months"]
+                    ],
+                    [
+                        "Month",
+                        "Issuers",
+                        "Minimum",
+                        "Coverage %",
+                        "Required %",
+                        "Minimum additional issuers",
+                    ],
+                )
+            )
+        for role, cohort in f["PRIMARY_COMMON_COHORT"].items():
+            coverage_md.append(
+                f"COMMON {role}: {cohort['rows']} rows, {cohort['unique_issuers']} issuers; labels {cohort['labels']}; frozen keys SHA256 {cohort['cohort_sha256']}.\n"
+            )
+    coverage_md.append("\n## Limitaciones\n\n" + "\n".join(coverage_audit["limitations"]))
+    coverage_md.append(
+        f"\nExclusiones: {coverage_audit['excluded_security_periods']}; distribución completa y concentración en FIRST_ML_COVERAGE_AUDIT.json. No se compararon retornos futuros de filas excluidas.\n"
+    )
+    (ROOT / "docs/FIRST_ML_COVERAGE.md").write_text("\n".join(coverage_md), encoding="utf-8")
     js["fold_readiness"] = {
         **fold_audit,
         "row_evidence_file": "FIRST_ML_FOLD_AUDIT.json",
@@ -559,7 +656,7 @@ def main() -> None:
     d02["calendar_folds"] = len(plan.folds)
     d02["label_safe_folds"] = fold_audit["label_safe_folds"]
     d02["test_label_safe_folds"] = fold_audit["test_label_safe_folds"]
-    d02["coverage_gate_evaluated"] = False
+    d02["coverage_gate_evaluated"] = True
     d02_ready = (
         d02["required_months_ready"] == history_requirement["minimum_contiguous_ready_months"]
         and len(plan.folds) >= C.MIN_FOLDS
@@ -610,11 +707,19 @@ def main() -> None:
             if us_rows and us_ok == len(us_rows)
             else "US return-basis comparability incomplete; Spain: IBEX Total Return not verified, ^IBEX price-only",
         ),
+        "FIRST_ML_IDENTITY_VALIDITY_READY": FM.gate(
+            "READY" if coverage_audit["identity_valid"] else "BLOCKED",
+            "Every included row has verified issuer/security/membership identity",
+            coverage_audit["identity_valid"],
+            None if coverage_audit["identity_valid"] else "included identity errors",
+        ),
         "RESEARCH_SECURITY_COVERAGE_READY": FM.gate(
-            "READY" if js["coverage"]["usable_strict"] >= C.REQUIRED_SECURITIES else "BLOCKED",
-            f">= {C.REQUIRED_SECURITIES} usable securities",
-            f"{js['coverage']['usable_strict']} usable (strict); {js['coverage']['usable_preview']} if D05 were accepted; {js['coverage']['with_snapshots']} with snapshots",
-            "fewer than 100 securities satisfy all PIT eligibility conditions; see the per-security audit",
+            "READY" if coverage_audit["ready"] else "BLOCKED",
+            COVERAGE_VERSION,
+            {"passing_folds": fold_audit["ml_eligible_folds"], "required_folds": C.MIN_FOLDS},
+            None
+            if coverage_audit["ready"]
+            else "See FIRST_ML_COVERAGE_AUDIT.json: exact family/month deficits or class degeneracy",
         ),
         "US_FUNDAMENTALS_READY": FM.gate(
             "READY" if fund_ready else "BLOCKED",
@@ -629,7 +734,7 @@ def main() -> None:
             None if bad_holdout == 0 else "holdout rows present",
         ),
     }
-    gates["RESEARCH_DATA_READY"] = FM.gate("READY" if all(gates[g]["status"] == "READY" for g in ("D02_MONTHLY_RESEARCH_READY", "US_SECURITY_IDENTITY_READY", "D05_READY", "BENCHMARK_RETURN_BASIS_READY", "RESEARCH_SECURITY_COVERAGE_READY", "US_FUNDAMENTALS_READY")) else "BLOCKED", "all data gates READY", "derived", "at least one data gate is not READY")  # fmt: skip
+    gates["RESEARCH_DATA_READY"] = FM.gate("READY" if all(gates[g]["status"] == "READY" for g in ("D02_MEMBERSHIP_VALIDITY", "FIRST_ML_IDENTITY_VALIDITY_READY", "D05_READY", "BENCHMARK_RETURN_BASIS_READY", "RESEARCH_SECURITY_COVERAGE_READY", "US_FUNDAMENTALS_READY", "HOLDOUT_SEALED")) else "BLOCKED", "all data gates READY", "derived", "at least one data gate is not READY")  # fmt: skip
     ml = FM.first_ml_baseline_ready(gates, FM.REQUIRED_GATES)
     gates["FIRST_ML_BASELINE_READY"] = FM.gate(
         "READY" if ml else "BLOCKED",
@@ -646,7 +751,7 @@ def main() -> None:
     w = md.append
     w("# DATA READINESS FOR FIRST ML (generado desde la base)\n")
     w(
-        f"Generado {js['generated_at'][:19]}Z · experimento preparado `{C.EXPERIMENT_ID}` (NO ejecutado). Fuente de datos de mercado y FX: **Yahoo Finance** (decisión del propietario; VENDOR, `CANONICAL_PROVIDER_FOR_PITQUANT`). Contrato estadístico sin modificar: `required_securities = {C.REQUIRED_SECURITIES}`.\n"
+        f"Generado {js['generated_at'][:19]}Z · experimento preparado `{C.EXPERIMENT_ID}` (NO ejecutado). Fuente de datos de mercado y FX: **Yahoo Finance** (decisión del propietario; VENDOR, `CANONICAL_PROVIDER_FOR_PITQUANT`). Contrato US: `{COVERAGE_VERSION}`. El `required_securities = {C.REQUIRED_SECURITIES}` global se conserva solo como diagnóstico legacy y no decide First US ML.\n"
     )
     w("## Matriz de gates\n")
     w(
@@ -741,7 +846,7 @@ def main() -> None:
     )
     w("## D02 mensual\n")
     w(
-        "CALENDAR_FOLD = structural dates; LABEL_SAFE_FOLD = valid included membership history with explicit security-period exclusions and TRAIN labels available at fit, plus twelve valid TEST outcome months; ML_ELIGIBLE_FOLD adds statistical coverage, NOT_YET_EVALUATED. Sample minimum remains UNSPECIFIED_CONTRACT and does not decide label safety. TRAIN cutoff = first TEST decision; TEST cutoff = audit time. See ADR-0055 V2 and ADR-0056.\n"
+        "CALENDAR_FOLD = structural dates; LABEL_SAFE_FOLD = valid included membership history with explicit security-period exclusions and TRAIN labels available at fit, plus twelve valid TEST outcome months; ML_ELIGIBLE_FOLD adds FIRST_ML_COVERAGE_V1 structural issuer/month coverage, common cohorts and non-degenerate labels. See FIRST_ML_COVERAGE.md. Label safety is unchanged. TRAIN cutoff = first TEST decision; TEST cutoff = audit time. See ADR-0055 V2 and ADR-0056.\n"
     )
     w(
         table(
@@ -811,7 +916,11 @@ def main() -> None:
             ],
         )
     )
-    w("## Cobertura de securities frente al requisito de 100\n")
+    w("## Cobertura US por fold y familia\n")
+    w(
+        "Contrato FIRST_ML_COVERAGE_V1: PRICE >=40 emisores y >=80% de membresía válida; FUNDAMENTALS/COMBINED >=30 y >=70% de PRICE. TRAIN >=90% meses; TEST 12/12. Cohorte común TRAIN y TEST para M0–M4. Ver [FIRST_ML_COVERAGE.md](FIRST_ML_COVERAGE.md) y FIRST_ML_COVERAGE_AUDIT.json: déficits exactos, labels DEV, concentración, dependencia y hashes.\n"
+    )
+    w("## Diagnóstico legacy global de securities (100; no gate de First US ML)\n")
     w(
         table(
             [[k, v] for k, v in js["coverage"].items() if not isinstance(v, dict)],

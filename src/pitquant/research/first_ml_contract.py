@@ -22,7 +22,9 @@ EMBARGO_MONTHS = 1
 MIN_FOLDS = 3
 HOLDOUT = (date(2022, 10, 1), date(2025, 9, 30))
 OOT_START = date(2025, 10, 1)
-REQUIRED_SECURITIES = 100  # NOT changed in this phase (see docs/adr/0049: separate proposal)
+REQUIRED_SECURITIES = (
+    100  # Legacy global RUN 3 diagnostic only; First US ML uses FIRST_ML_COVERAGE_V1 (ADR-0057).
+)
 REQUIRED_FUNDAMENTAL_SECURITIES = 30
 REQUIRED_FUNDAMENTAL_MONTHS = 36
 CORE_PRICE_FEATURES = ("ret_12m", "momentum_12_1", "realized_vol_126", "distance_sma200")
