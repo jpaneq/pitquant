@@ -10,6 +10,7 @@ import { SimulationsPage } from './features/simulations/SimulationsPage'
 import { SettingsPage, StatusPage } from './features/status/StatusPages'
 import { HelpPage } from './features/help/HelpPage'
 import { RoutinePage } from './features/routine/RoutinePage'
+import { OperacionesPage } from './features/trades/OperacionesPage'
 import { WatchlistPage } from './features/watchlist/WatchlistPage'
 
 export function App() {
@@ -26,6 +27,7 @@ export function App() {
         <Route path="simulations/insights" element={<InsightsPage />} />
         <Route path="simulations/:id" element={<SimulationDetail />} />
         <Route path="rutina" element={<RoutinePage />} />
+        <Route path="operaciones" element={<OperacionesPage />} />
         <Route path="ayuda" element={<HelpPage />} />
         <Route path="status" element={<StatusPage />} />
         <Route path="settings" element={<SettingsPage />} />

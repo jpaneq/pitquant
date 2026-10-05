@@ -12,6 +12,7 @@ const NAV = [
   { to: '/watchlist', label: 'Watchlist' },
   { to: '/research', label: 'Research Lab' },
   { to: '/simulations', label: 'Simulations' },
+  { to: '/operaciones', label: 'Operaciones (gráfico)' },
   { to: '/rutina', label: 'Rutina diaria' },
   { to: '/ayuda', label: 'Ayuda' },
   { to: '/status', label: 'Data Status' },

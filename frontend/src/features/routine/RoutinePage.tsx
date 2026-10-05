@@ -41,6 +41,7 @@ export function RoutinePage() {
       </header>
       <div className="flex flex-wrap items-center gap-3">
         <button disabled={busy} onClick={run} className="rounded bg-accent px-3 py-2 text-sm font-medium text-white disabled:opacity-40">Ejecutar rutina de hoy</button>
+        <Link to="/operaciones" className="rounded border border-accent px-3 py-2 text-sm text-accent">Ver en gráfico (entrada, salida, tendencia)</Link>
         <button disabled={!report.data} onClick={copy} className="rounded border border-border px-3 py-2 text-sm">Copiar informe</button>
         {report.data ? <a download="informe_rutina.txt" href={`data:text/plain;charset=utf-8,${encodeURIComponent(report.data)}`} className="rounded border border-border px-3 py-2 text-sm">Descargar .txt</a> : null}
         {msg ? <span role="status" className="text-xs text-warn">{msg}</span> : null}
