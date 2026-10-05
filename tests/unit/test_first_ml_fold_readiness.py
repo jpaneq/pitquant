@@ -31,12 +31,12 @@ def observation(d):
     return decision, target
 
 
-def test_calendar_is_not_trainable_and_missing_minimum_is_not_invented():
+def test_calendar_is_not_label_safe_and_missing_minimum_is_not_invented():
     dates = [date(2015, 9, 1) + relativedelta(months=i) for i in range(85)]
     plan = C.walk_forward_folds(dates)
     audit = audit_folds(plan, [], {}, ctx(), as_of=AS_OF)
     assert audit["calendar_folds"] == 3
-    assert audit["trainable_folds"] == 0
+    assert audit["label_safe_folds"] == 0
     assert audit["row_minimum_status"] == "UNSPECIFIED_CONTRACT"
     assert all(f["minimum_rows_per_fold"] is None for f in audit["folds"])
     assert C.REQUIRED_SECURITIES == 100
@@ -123,7 +123,7 @@ def test_training_availability_purge_embargo_and_test_exclusions():
     assert audited["TEST"]["eligible_rows"] == 1
     assert audited["TEST"]["holdout_touching_rows_excluded"] == 1
     assert not audited["complete_test_window"]
-    assert not audited["trainable_fold"]
+    assert not audited["label_safe"]
 
 
 def test_malformed_fold_cannot_bypass_purge_embargo():

@@ -1,15 +1,15 @@
 # DATA READINESS FOR FIRST ML (generado desde la base)
 
-Generado 2026-10-05T16:27:18Z · experimento preparado `FIRST_EQUITY_ML_12M_V0` (NO ejecutado). Fuente de datos de mercado y FX: **Yahoo Finance** (decisión del propietario; VENDOR, `CANONICAL_PROVIDER_FOR_PITQUANT`). Ningún gate se ha bajado: `required_securities = 100`.
+Generado 2026-10-05T17:10:58Z · experimento preparado `FIRST_EQUITY_ML_12M_V0` (NO ejecutado). Fuente de datos de mercado y FX: **Yahoo Finance** (decisión del propietario; VENDOR, `CANONICAL_PROVIDER_FOR_PITQUANT`). Ningún gate se ha bajado: `required_securities = 100`.
 
 ## Matriz de gates
 
 | Gate | Required | Actual | Status | Blocking reason |
 |---|---|---|---|---|
-| D02_MONTHLY_RESEARCH_READY | >= 85 consecutive READY months; >= 3 calendar and certified trainable folds | 72/141 months READY, longest run 72, calendar folds 1, trainable folds 0 | BLOCKED | 1 calendar folds; 0 certified trainable; need 3; per-fold minimum UNSPECIFIED_CONTRACT |
+| D02_MONTHLY_RESEARCH_READY | 85 READY months positioned 2014-09..2021-09; >= 3 LABEL_SAFE folds; statistical coverage separate | 72/141 READY; required history 60/85; target calendar folds 3, label-safe 0 | BLOCKED | 25 required membership months blocked; 0 LABEL_SAFE folds; need 3. Coverage not evaluated and does not decide D02. |
 | US_SECURITY_IDENTITY_READY | 0 weak identity members, 0 unresolved lines | 40 weak identity securities; 0 unresolved anchor lines | PARTIAL | unresolved identity evidence; see D02 graph metrics |
 | D05_READY | accepted prices + corporate actions + adjustment method + provenance | Yahoo Finance (CANONICAL_PROVIDER_FOR_PITQUANT, VENDOR) | READY | — |
-| BENCHMARK_RETURN_BASIS_READY | first ML US scope: comparable return + currency basis, accepted provenance | US rows comparable 7055/7055; non-US via USD conversion (PROXY) | READY | — |
+| BENCHMARK_RETURN_BASIS_READY | first ML US scope: comparable return + currency basis, accepted provenance | US rows comparable 7000/7000; non-US via USD conversion (PROXY) | READY | — |
 | RESEARCH_SECURITY_COVERAGE_READY | >= 100 usable securities | 51 usable (strict); 51 if D05 were accepted; 100 with snapshots | BLOCKED | fewer than 100 securities satisfy all PIT eligibility conditions; see the per-security audit |
 | US_FUNDAMENTALS_READY | >= 30 securities with >= 36 usable PIT months | 40 securities | READY | — |
 | HOLDOUT_SEALED | 0 research rows inside 2022-10-01..2025-09-30 | 0 snapshots inside the holdout | READY | — |
@@ -24,17 +24,23 @@ La matriz corresponde al primer ML. Los `flags` del JSON describen el Research L
 
 | fold | train start | train end | test start | test end | train months | purge | embargo |
 |---|---|---|---|---|---|---|---|
-| 0 | 2016-10 | 2019-10 | 2020-11 | 2021-10 | 37 | 12 | 1 |
+| 0 | 2014-09 | 2017-09 | 2018-10 | 2019-09 | 37 | 12 | 1 |
+| 1 | 2014-09 | 2018-09 | 2019-10 | 2020-09 | 49 | 12 | 1 |
+| 2 | 2014-09 | 2019-09 | 2020-10 | 2021-09 | 61 | 12 | 1 |
 
 ## D02 mensual
 
-Calendar folds are structural dates, not certified trainable folds. Per-fold row minimum: **UNSPECIFIED_CONTRACT**; no threshold borrowed from legacy RUN 3. TRAIN availability cutoff is the first TEST decision; TEST availability cutoff is audit time. Targets crossing holdout/OOT are excluded without reading sealed prices.
+CALENDAR_FOLD = structural dates; LABEL_SAFE_FOLD = complete required membership history and TRAIN labels available at fit, plus twelve valid TEST outcome months; ML_ELIGIBLE_FOLD adds statistical coverage, NOT_YET_EVALUATED. Sample minimum remains UNSPECIFIED_CONTRACT and does not decide label safety. TRAIN cutoff = first TEST decision; TEST cutoff = audit time. See ADR-0055 V2.
 
-| fold | calendar TEST rows | mature targets | benchmark ready | price ready | eligible | holdout excluded | trainable |
-|---|---|---|---|---|---|---|---|
-| 0 | 660 | 605 | 605 | 605 | 559 | 55 | False |
+| fold | calendar TEST rows | mature targets | benchmark ready | price ready | eligible | holdout excluded | TEST label safe | full fold label safe |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 660 | 660 | 660 | 660 | 599 | 0 | True | False |
+| 1 | 660 | 660 | 660 | 660 | 600 | 0 | True | False |
+| 2 | 660 | 660 | 660 | 660 | 609 | 0 | True | False |
 
 Every TRAIN/TEST row's target_start, target_end, actual_exit_session, target_mature_at, availability cutoff and exclusion reasons are recorded in `FIRST_ML_FOLD_AUDIT.json`.
+
+Derived requirement: 2014-09..2021-09, 85 continuous READY months. Last admissible decision 2021-09-01T13:30:00+00:00; target end 2022-09-01T13:30:00+00:00; expected earliest maturity 2022-08-31T21:00:00+00:00. No outcomes read for this derivation.
 
 | métrica | valor |
 |---|---|
@@ -51,11 +57,17 @@ Every TRAIN/TEST row's target_start, target_end, actual_exit_session, target_mat
 | reason_if_no_folds | — |
 | required_continuous_months | 85 |
 | weak_identity_securities | 40 |
-| calendar_folds | 1 |
-| trainable_folds | 0 |
-| fold_row_minimum_status | UNSPECIFIED_CONTRACT |
+| required_history_start | 2014-09 |
+| required_history_end | 2021-09 |
+| required_months_ready | 60 |
+| required_months_blocked | 25 |
+| longest_relevant_run | 60 |
+| calendar_folds | 3 |
+| label_safe_folds | 0 |
+| test_label_safe_folds | 3 |
+| coverage_gate_evaluated | False |
 
-Walk-forward factible (train_min 36, purge 12, embargo 1, test 12): 1 folds
+Walk-forward factible (train_min 36, purge 12, embargo 1, test 12): 3 folds
 
 | month | expected_universe | resolved_members | unresolved_members | identity_resolved | membership_evidence | status | blocking_reason |
 |---|---|---|---|---|---|---|---|
@@ -440,10 +452,10 @@ Walk-forward factible (train_min 36, purge 12, embargo 1, test 12): 1 folds
 | c24e70f1 | VTI |  | XNYS | None | None | UNRESOLVED_SECURITY_LINK | YAHOO_CANONICAL (per-series QA required) | NONE | BENCHMARK_SERIES (not a research security) |
 | 27615e6f | JNJ | ad4de1d1 | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
 | b8dddadd | JPM | 361c0e7e | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | UNSUPPORTED_SECTOR | — |
-| 67cab159 | XOM | d225df5a | XNYS | 2011-01-03 | 2026-10-02 | UNRESOLVED_SECURITY_LINK | YAHOO_CANONICAL (per-series QA required) | INSUFFICIENT_HISTORY | HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
+| 67cab159 | XOM | d225df5a | XNYS | 2011-01-03 | 2026-10-02 | UNRESOLVED_SECURITY_LINK | YAHOO_CANONICAL (per-series QA required) | INSUFFICIENT_HISTORY | BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
 | 140de420 | PG | 658db81b | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
 | 3e44c4d0 | AMZN | 2936853c | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
-| 6e75fc3b | GOOGL | e1d78079 | XNYS | 2011-01-03 | 2026-10-02 | UNRESOLVED_SECURITY_LINK | YAHOO_CANONICAL (per-series QA required) | OK | HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
+| 6e75fc3b | GOOGL | e1d78079 | XNYS | 2011-01-03 | 2026-10-02 | UNRESOLVED_SECURITY_LINK | YAHOO_CANONICAL (per-series QA required) | OK | BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
 | 6e6e9ba4 | NVDA | 61c3be3f | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
 | b13f6397 | META | 22876d90 | XNYS | 2012-05-18 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
 | dccdb7a3 | V | b66cccb6 | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
@@ -474,7 +486,7 @@ Walk-forward factible (train_min 36, purge 12, embargo 1, test 12): 1 folds
 | 485fa49d | WFC | e7f3242f | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | UNSUPPORTED_SECTOR | — |
 | 257b7380 | CAT | bbacfef6 | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
 | 4b7851e2 | IBM | e07fdae0 | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
-| 9a8fc57b | GE | 3abd4af0 | XNYS | 2011-01-03 | 2026-10-02 | UNRESOLVED_SECURITY_LINK | YAHOO_CANONICAL (per-series QA required) | OK | HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
+| 9a8fc57b | GE | 3abd4af0 | XNYS | 2011-01-03 | 2026-10-02 | UNRESOLVED_SECURITY_LINK | YAHOO_CANONICAL (per-series QA required) | OK | BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
 | 555f0c85 | QCOM | ea8c8ed1 | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
 | 0d560a31 | TXN | f8fc0393 | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
 | 64352eea | AMGN | d8da7795 | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
@@ -487,7 +499,7 @@ Walk-forward factible (train_min 36, purge 12, embargo 1, test 12): 1 folds
 | fbca5260 | LOW | 4bebe7e1 | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
 | aed9f0f2 | SPGI | 9d3bc125 | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
 | 5ca6f391 | NEE | 04afd841 | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
-| ee89281c | RTX | 53b6d813 | XNYS | 2011-01-03 | 2026-10-02 | UNRESOLVED_SECURITY_LINK | YAHOO_CANONICAL (per-series QA required) | OK | HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
+| ee89281c | RTX | 53b6d813 | XNYS | 2011-01-03 | 2026-10-02 | UNRESOLVED_SECURITY_LINK | YAHOO_CANONICAL (per-series QA required) | OK | BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
 | b36ce627 | LMT | afd7ffb3 | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
 | 16d3f78c | UPS | 69a34f0b | XNYS | 2011-01-03 | 2026-10-02 | RESOLVED | YAHOO_CANONICAL (per-series QA required) | OK | — |
 | beffff95 | ASML |  | XAMS | 2011-01-03 | 2026-10-02 | NOT_ASSESSED_NON_US | YAHOO_CANONICAL (per-series QA required) | NOT_REGISTERED | BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
@@ -515,7 +527,7 @@ Walk-forward factible (train_min 36, purge 12, embargo 1, test 12): 1 folds
 | 82414aa2 | CSL |  | XASX | 2011-01-04 | 2026-10-05 | NOT_ASSESSED_NON_US | YAHOO_CANONICAL (per-series QA required) | NOT_REGISTERED | BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
 | 2e35be8c | RY |  | XTSE | 2011-01-04 | 2026-10-02 | NOT_ASSESSED_NON_US | YAHOO_CANONICAL (per-series QA required) | NOT_REGISTERED | BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
 | 6227956b | TD |  | XTSE | 2011-01-04 | 2026-10-02 | NOT_ASSESSED_NON_US | YAHOO_CANONICAL (per-series QA required) | NOT_REGISTERED | BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
-| 576169af | SHOP |  | XTSE | 2015-05-21 | 2026-10-02 | NOT_ASSESSED_NON_US | YAHOO_CANONICAL (per-series QA required) | NOT_REGISTERED | HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
+| 576169af | SHOP |  | XTSE | 2015-05-21 | 2026-10-02 | NOT_ASSESSED_NON_US | YAHOO_CANONICAL (per-series QA required) | NOT_REGISTERED | BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
 | fe9d3e5c | ENB |  | XTSE | 2011-01-04 | 2026-10-02 | NOT_ASSESSED_NON_US | YAHOO_CANONICAL (per-series QA required) | NOT_REGISTERED | BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
 | 5cec853a | 7203 |  | XTKS | 2011-01-04 | 2026-10-05 | NOT_ASSESSED_NON_US | YAHOO_CANONICAL (per-series QA required) | NOT_REGISTERED | BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
 | 7e6c5b98 | 6758 |  | XTKS | 2011-01-04 | 2026-10-05 | NOT_ASSESSED_NON_US | YAHOO_CANONICAL (per-series QA required) | NOT_REGISTERED | BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL |
@@ -695,24 +707,13 @@ Walk-forward factible (train_min 36, purge 12, embargo 1, test 12): 1 folds
 
 | market | region | security_ccy | benchmark | bench_ccy | return_type | currency_basis | quality | comparables/filas | bloqueo |
 |---|---|---|---|---|---|---|---|---|---|
-| XAMS | EU | EUR | URTH_ETF_PROXY_V1 | USD | TOTAL_RETURN | USD | PROXY_ACCEPTABLE | 117/153 | — |
-| XASX | ASIA | AUD | URTH_ETF_PROXY_V1 | USD | TOTAL_RETURN | USD | PROXY_ACCEPTABLE | 351/459 | — |
-| XCSE | EU | DKK | URTH_ETF_PROXY_V1 | USD | TOTAL_RETURN | USD | PROXY_ACCEPTABLE | 117/153 | — |
-| XETR | EU | EUR | URTH_ETF_PROXY_V1 | USD | TOTAL_RETURN | USD | PROXY_ACCEPTABLE | 351/459 | — |
-| XLON | EU | GBP | URTH_ETF_PROXY_V1 | USD | TOTAL_RETURN | USD | PROXY_ACCEPTABLE | 702/918 | — |
-| XMAD | ES | EUR | URTH_ETF_PROXY_V1 | USD | TOTAL_RETURN | USD | PROXY_ACCEPTABLE | 1521/1989 | — |
-| XMIL | EU | EUR | URTH_ETF_PROXY_V1 | USD | TOTAL_RETURN | USD | PROXY_ACCEPTABLE | 234/306 | — |
-| XNYS | US | USD | SPY_ETF_PROXY_V1 | USD | TOTAL_RETURN | USD | PROXY_ACCEPTABLE | 7055/8375 | — |
-| XPAR | EU | EUR | URTH_ETF_PROXY_V1 | USD | TOTAL_RETURN | USD | PROXY_ACCEPTABLE | 585/765 | — |
-| XSWX | EU | CHF | URTH_ETF_PROXY_V1 | USD | TOTAL_RETURN | USD | PROXY_ACCEPTABLE | 234/306 | — |
-| XTKS | ASIA | JPY | URTH_ETF_PROXY_V1 | USD | TOTAL_RETURN | USD | PROXY_ACCEPTABLE | 585/765 | — |
-| XTSE | NA | CAD | URTH_ETF_PROXY_V1 | USD | TOTAL_RETURN | USD | PROXY_ACCEPTABLE | 428/560 | — |
+| XNYS | US | USD | SPY_ETF_PROXY_V1 | USD | TOTAL_RETURN | USD | PROXY_ACCEPTABLE | 7000/7000 | — |
 
 ## Blockers restantes y mínima acción correcta
 
 | gate | estado | actual | bloqueo técnico |
 |---|---|---|---|
-| D02_MONTHLY_RESEARCH_READY | BLOCKED | 72/141 months READY, longest run 72, calendar folds 1, trainable folds 0 | 1 calendar folds; 0 certified trainable; need 3; per-fold minimum UNSPECIFIED_CONTRACT |
+| D02_MONTHLY_RESEARCH_READY | BLOCKED | 72/141 READY; required history 60/85; target calendar folds 3, label-safe 0 | 25 required membership months blocked; 0 LABEL_SAFE folds; need 3. Coverage not evaluated and does not decide D02. |
 | US_SECURITY_IDENTITY_READY | PARTIAL | 40 weak identity securities; 0 unresolved anchor lines | unresolved identity evidence; see D02 graph metrics |
 | RESEARCH_SECURITY_COVERAGE_READY | BLOCKED | 51 usable (strict); 51 if D05 were accepted; 100 with snapshots | fewer than 100 securities satisfy all PIT eligibility conditions; see the per-security audit |
 | RESEARCH_DATA_READY | BLOCKED | derived | at least one data gate is not READY |

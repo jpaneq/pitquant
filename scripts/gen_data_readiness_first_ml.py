@@ -1,5 +1,5 @@
 # ruff: noqa: E501
-"""DATA READINESS FOR FIRST ML: generates docs/DATA_READINESS_FIRST_ML.md and docs/BENCHMARK_RETURN_CONTRACT.md (+ .json) FROM THE DATABASE. Read-only; trains nothing; lowers no gate.
+"""DATA READINESS FOR FIRST ML: generates docs/DATA_READINESS_FIRST_ML.md (+ .json) and the US-only fold audit FROM THE DATABASE. Read-only; trains nothing; lowers no gate.
 
 PITQUANT_DATABASE_URL=sqlite:///data/pitquant.db python scripts/gen_data_readiness_first_ml.py
 """
@@ -14,18 +14,17 @@ from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 
 from pitquant.config.settings import get_settings
 from pitquant.db.models import DataSource, Price, Security
 from pitquant.db.session import make_engine, make_session_factory
 from pitquant.market.canonical import FEATURE_VERSION, TARGET_VERSION, audit_series
 from pitquant.positions import routine as rt
-from pitquant.research import benchmark_contract as BC
 from pitquant.research import dataset_v1 as DS
 from pitquant.research import first_ml as FM
 from pitquant.research import first_ml_contract as C
-from pitquant.research.fold_readiness import audit_folds
+from pitquant.research.fold_readiness import audit_folds, latest_label_safe_history
 from pitquant.research.membership_bridge import build_bridge
 from pitquant.research_readiness import research_readiness
 from pitquant.universe.sp500_anchor_graph import reconstruct
@@ -76,7 +75,9 @@ def main() -> None:
                        "identity_resolved": membership_ready and not weak_members, "weak_identity_members": weak_members, "membership_ready": membership_ready, "membership_evidence": (f"segment {c.segment}; forward==backward" if c.sets_equal else (f"segment {c.segment}" if c.segment else None)), "status": "READY" if ready else ("PARTIAL" if membership_ready else ("BLOCKED" if c.status == "BLOCKED" else "NO_ANCHOR")),
                        "blocking_reason": None if ready else ("WEAK_IDENTITY: " + ", ".join(weak_members) if weak_members else ("; ".join(c.reasons) or c.status))})  # fmt: skip
     ready_dates = [m["date"] for m in months if m["status"] == "READY"]
-    plan = C.walk_forward_folds(ready_dates)
+    available_plan = C.walk_forward_folds(ready_dates)
+    plan, history_requirement = latest_label_safe_history()
+    js["required_history"] = history_requirement
     indices = sorted({C.month_index(d) for d in ready_dates})
     runs: list[list[int]] = []
     for idx in indices:
@@ -86,7 +87,7 @@ def main() -> None:
             runs.append([idx])
     longest_usable_run = max((len(r) for r in runs), default=0)
     d02 = {"total_months": len(months), "ready_months": len(ready_dates), "membership_ready_months": rep.ready, "partial_months": sum(m["status"] == "PARTIAL" for m in months), "blocked_months": sum(1 for m in months if m["status"] == "BLOCKED"), "no_anchor_months": sum(1 for m in months if m["status"] == "NO_ANCHOR"),
-           "coverage_pct": round(100 * len(ready_dates) / max(len(months), 1), 1), "longest_run": longest_usable_run, "longest_membership_run": rep.longest_run, "feasible_folds": len(plan.folds), "reason_if_no_folds": plan.reason_if_none}  # fmt: skip
+           "coverage_pct": round(100 * len(ready_dates) / max(len(months), 1), 1), "longest_run": longest_usable_run, "longest_membership_run": rep.longest_run, "feasible_folds": len(available_plan.folds), "reason_if_no_folds": available_plan.reason_if_none}  # fmt: skip
     d02["required_continuous_months"] = (
         C.TRAIN_MIN_MONTHS
         + C.HORIZON_MONTHS
@@ -95,6 +96,22 @@ def main() -> None:
         + (C.MIN_FOLDS - 1) * C.STEP_MONTHS
     )
     d02["weak_identity_securities"] = len(weak)
+    required_months = [
+        m
+        for m in months
+        if history_requirement["minimum_ready_history_start"]
+        <= m["month"]
+        <= history_requirement["last_required_dev_month"]
+    ]
+    d02["required_history_start"] = history_requirement["minimum_ready_history_start"]
+    d02["required_history_end"] = history_requirement["last_required_dev_month"]
+    d02["required_months_ready"] = sum(m["status"] == "READY" for m in required_months)
+    d02["required_months_blocked"] = sum(m["status"] != "READY" for m in required_months)
+    streak = relevant_run = 0
+    for m in required_months:
+        streak = streak + 1 if m["status"] == "READY" else 0
+        relevant_run = max(relevant_run, streak)
+    d02["longest_relevant_run"] = relevant_run
 
     def month_label(idx: int) -> str:
         return f"{(idx - 1) // 12:04d}-{(idx - 1) % 12 + 1:02d}"
@@ -147,6 +164,7 @@ def main() -> None:
         snaps.append(
             {
                 "security_id": sn.security_id,
+                "issuer_id": S.get_one(Security, sn.security_id).issuer_id,
                 "decision_at": sn.decision_at,
                 "decision_session": sn.decision_session,
                 "exchange": sn.exchange,
@@ -155,7 +173,10 @@ def main() -> None:
                 "features": {k: v["value"] for k, v in sn.features.items() if k in keep},
             }
         )
-    targets12 = {(t.security_id, t.decision_at): {"status": t.status, "reason": t.reason, "outperform": t.outperform, "details": t.details, "entry_session": t.entry_session, "exit_session": t.exit_session, "label_available_at": t.label_available_at, "total_return": t.security_total_return, "benchmark_total_return": t.benchmark_total_return} for t in S.scalars(select(ResearchTarget).where(ResearchTarget.target_set_version == TARGET_VERSION, ResearchTarget.horizon_months == C.HORIZON_MONTHS))}  # fmt: skip
+    safe_h12_cutoff = datetime.fromisoformat(
+        history_requirement["next_month_rejected"] + "-01T00:00:00+00:00"
+    )
+    targets12 = {(t.security_id, t.decision_at): {"status": t.status, "reason": t.reason, "outperform": t.outperform, "details": t.details, "entry_session": t.entry_session, "exit_session": t.exit_session, "label_available_at": t.label_available_at, "total_return": t.security_total_return, "benchmark_total_return": t.benchmark_total_return} for t in S.scalars(select(ResearchTarget).join(Security, Security.security_id == ResearchTarget.security_id).where(Security.exchange == "XNYS", ResearchTarget.target_set_version == TARGET_VERSION, ResearchTarget.horizon_months == C.HORIZON_MONTHS, ResearchTarget.decision_at < safe_h12_cutoff, or_(ResearchTarget.exit_session.is_(None), ResearchTarget.exit_session < C.HOLDOUT[0])))}  # fmt: skip
     # ---- context ---------------------------------------------------------------------------------------------------------------
     bridge, unresolved_bridge = build_bridge(S)
     cohorts = {
@@ -208,6 +229,9 @@ def main() -> None:
                     {s["security_id"] for s, r in zip(snaps, res, strict=True) if r["eligible"]}
                 ),
             }
+    safe_h6_cutoff = datetime.fromisoformat(
+        latest_label_safe_history(horizon=6)[1]["next_month_rejected"] + "-01T00:00:00+00:00"
+    )
     targets6 = {
         (t.security_id, t.decision_at): {
             "status": t.status,
@@ -216,9 +240,17 @@ def main() -> None:
             "details": t.details,
         }
         for t in S.scalars(
-            select(ResearchTarget).where(
+            select(ResearchTarget)
+            .join(Security, Security.security_id == ResearchTarget.security_id)
+            .where(
+                Security.exchange == "XNYS",
+                or_(
+                    ResearchTarget.exit_session.is_(None),
+                    ResearchTarget.exit_session < C.HOLDOUT[0],
+                ),
                 ResearchTarget.target_set_version == TARGET_VERSION,
                 ResearchTarget.horizon_months == 6,
+                ResearchTarget.decision_at < safe_h6_cutoff,
             )
         )
     }
@@ -358,6 +390,9 @@ def main() -> None:
         FM.EligibilityContext(cohorts, bridge, identity_ok, True, present),
         as_of=datetime.now(UTC),
     )
+    fold_audit["required_history"] = history_requirement
+    for f, dates in zip(fold_audit["folds"], js["folds"], strict=True):
+        f["dates"] = dates
     js["fold_readiness"] = {
         **fold_audit,
         "row_evidence_file": "FIRST_ML_FOLD_AUDIT.json",
@@ -373,24 +408,23 @@ def main() -> None:
         ],
     }
     d02["calendar_folds"] = len(plan.folds)
-    d02["trainable_folds"] = fold_audit["trainable_folds"]
-    d02["fold_row_minimum_status"] = fold_audit["row_minimum_status"]
+    d02["label_safe_folds"] = fold_audit["label_safe_folds"]
+    d02["test_label_safe_folds"] = fold_audit["test_label_safe_folds"]
+    d02["coverage_gate_evaluated"] = False
     d02_ready = (
-        bool(rf.flags["D02_MONTHLY_RESEARCH_READY"])
-        and longest_usable_run >= d02["required_continuous_months"]
+        d02["required_months_ready"] == history_requirement["minimum_contiguous_ready_months"]
         and len(plan.folds) >= C.MIN_FOLDS
-        and fold_audit["trainable_folds"] >= C.MIN_FOLDS
+        and fold_audit["label_safe_folds"] >= C.MIN_FOLDS
     )
     gates = {
         "D02_MONTHLY_RESEARCH_READY": FM.gate(
             "READY" if d02_ready else "BLOCKED",
-            f">= {d02['required_continuous_months']} consecutive READY months; >= {C.MIN_FOLDS} calendar and certified trainable folds",
-            f"{d02['ready_months']}/{d02['total_months']} months READY, longest run {d02['longest_run']}, calendar folds {len(plan.folds)}, trainable folds {fold_audit['trainable_folds']}",
+            f"{history_requirement['minimum_contiguous_ready_months']} READY months positioned {d02['required_history_start']}..{d02['required_history_end']}; >= {C.MIN_FOLDS} LABEL_SAFE folds; statistical coverage separate",
+            f"{d02['ready_months']}/{d02['total_months']} READY; required history {d02['required_months_ready']}/{history_requirement['minimum_contiguous_ready_months']}; target calendar folds {len(plan.folds)}, label-safe {fold_audit['label_safe_folds']}",
             None
             if d02_ready
             else (
-                plan.reason_if_none
-                or f"{len(plan.folds)} calendar folds; {fold_audit['trainable_folds']} certified trainable; need {C.MIN_FOLDS}; per-fold minimum UNSPECIFIED_CONTRACT"
+                f"{d02['required_months_blocked']} required membership months blocked; {fold_audit['label_safe_folds']} LABEL_SAFE folds; need {C.MIN_FOLDS}. Coverage not evaluated and does not decide D02."
             ),
         ),
         "US_SECURITY_IDENTITY_READY": FM.gate(
@@ -506,7 +540,7 @@ def main() -> None:
     )
     w("## D02 mensual\n")
     w(
-        "Calendar folds are structural dates, not certified trainable folds. Per-fold row minimum: **UNSPECIFIED_CONTRACT**; no threshold borrowed from legacy RUN 3. TRAIN availability cutoff is the first TEST decision; TEST availability cutoff is audit time. Targets crossing holdout/OOT are excluded without reading sealed prices.\n"
+        "CALENDAR_FOLD = structural dates; LABEL_SAFE_FOLD = complete required membership history and TRAIN labels available at fit, plus twelve valid TEST outcome months; ML_ELIGIBLE_FOLD adds statistical coverage, NOT_YET_EVALUATED. Sample minimum remains UNSPECIFIED_CONTRACT and does not decide label safety. TRAIN cutoff = first TEST decision; TEST cutoff = audit time. See ADR-0055 V2.\n"
     )
     w(
         table(
@@ -519,7 +553,8 @@ def main() -> None:
                     f["TEST"]["price_ready_rows"],
                     f["TEST"]["eligible_rows"],
                     f["TEST"]["holdout_touching_rows_excluded"],
-                    f["trainable_fold"],
+                    f["test_label_safe"],
+                    f["label_safe"],
                 ]
                 for f in fold_audit["folds"]
             ],
@@ -531,12 +566,16 @@ def main() -> None:
                 "price ready",
                 "eligible",
                 "holdout excluded",
-                "trainable",
+                "TEST label safe",
+                "full fold label safe",
             ],
         )
     )
     w(
         "Every TRAIN/TEST row's target_start, target_end, actual_exit_session, target_mature_at, availability cutoff and exclusion reasons are recorded in `FIRST_ML_FOLD_AUDIT.json`.\n"
+    )
+    w(
+        f"Derived requirement: {history_requirement['minimum_ready_history_start']}..{history_requirement['last_required_dev_month']}, {history_requirement['minimum_contiguous_ready_months']} continuous READY months. Last admissible decision {history_requirement['last_decision_at']}; target end {history_requirement['target_end']}; expected earliest maturity {history_requirement['earliest_target_mature_at']}. No outcomes read for this derivation.\n"
     )
     w(table([[k, v] for k, v in d02.items()], ["métrica", "valor"]))
     w(
@@ -688,44 +727,7 @@ def main() -> None:
     w(
         "PPoG→PPG está aprobado y aplicado como alias documental. La extensión SEC se ha ejecutado con contacto runtime; discrepancias documentales permanecen bloqueadas.\n"
     )
-    bc_md = [
-        "# Contrato de retorno de benchmark (ADR-0049, generado)\n",
-        "Versión `"
-        + BC.BENCHMARK_CONTRACT_VERSION
-        + "`. `future_excess_total_return = retorno total del valor − retorno del benchmark`, sólo si ambos están en la MISMA base de retorno y de divisa.\n",
-        "## Reglas\n",
-        "* Valor con retorno total frente a benchmark de precio (`PRICE_RETURN`) ⇒ `PRICE_RETURN_ONLY` / `NOT_COMPARABLE_RETURN_BASIS`: el exceso NO se calcula (NULL) y la fila queda fuera del ML.",
-        "* Divisa distinta: el valor se convierte a USD en cada instante con FX PIT (`fx_rates`, Yahoo, VENDOR/CANONICAL, disponible a las 00:00 UTC del día siguiente a la cotización; máx. 7 días de antigüedad). Sin FX ⇒ `FX_MISMATCH` / `FX_DATA_NOT_READY`. Nunca el tipo actual para el histórico.",
-        "* ETF ⇒ siempre `ETF_PROXY`, nunca el índice oficial. `READY` se reserva a una serie oficial de retorno total; `PROXY_ACCEPTABLE` (ETF con dividendos y base comparable) es el estado aprobado por metodología para el primer ML. `APPROVED_FOR_ML = {READY, PROXY_ACCEPTABLE}`.",
-        "* Benchmarks: XNYS→SPY; XMAD→IBEX 35 Total Return (ES0SI0000047) **MISSING**, `^IBEX` es sólo precio (`PRICE_RETURN_ONLY`), fallback URTH+FX diagnóstico; resto→URTH+FX (URTH empieza en 2012-01).",
-        "* Campos guardados por fila (`research_targets.details.benchmark_contract`): benchmark_id, benchmark_security_id, benchmark_name, benchmark_type, benchmark_return_type, benchmark_currency, security_currency, return_currency_basis, currency_conversion_method, fx_source, fx_available_at, fx_rate_date, benchmark_start_price, benchmark_end_price, benchmark_total_return, benchmark_source, benchmark_version, benchmark_provenance, benchmark_quality_status, comparability, skipped_candidates.\n",
-        "## Estado por mercado (horizonte 12M, filas con objetivo calculable o no)\n",
-        table(
-            brows,
-            [
-                "market",
-                "region",
-                "security_ccy",
-                "benchmark",
-                "bench_ccy",
-                "return_type",
-                "currency_basis",
-                "quality",
-                "comparables/filas",
-                "bloqueo",
-            ],
-        ),
-        "## Resumen\n",
-        table(
-            [[k, v] for k, v in sorted(js["comparability"].items(), key=lambda kv: str(kv[0]))],
-            ["comparabilidad (filas OK)", "n"],
-        ),
-        table(
-            [[k, v] for k, v in sorted(js["currency_methods"].items(), key=lambda kv: str(kv[0]))],
-            ["método de conversión (filas OK)", "n"],
-        ),
-    ]
-    Path(ROOT / "docs/BENCHMARK_RETURN_CONTRACT.md").write_text("\n".join(bc_md), encoding="utf-8")
+    # Keep the historical global benchmark artifact unchanged; V2 reports US-only evidence.
     Path(ROOT / "docs/DATA_READINESS_FIRST_ML.md").write_text("\n".join(md), encoding="utf-8")
     Path(ROOT / "docs/FIRST_ML_FOLD_AUDIT.json").write_text(
         json.dumps(fold_audit, indent=2, sort_keys=True) + "\n", encoding="utf-8"

@@ -33,5 +33,51 @@
       "site:prnewswire.com \"Under Armour\" \"class C\" \"S&P\""
     ],
     "result": "Retrieved and hash-archived OCC notice 38727 and SEC preliminary proxy. Neither directly proves index inclusion; combined with annual filing still insufficient. Candidate not rejected and not confirmed; gap remains blocked."
+  },
+  "label_safe_v2_search": {
+    "status": "OFFICIAL_INDEX_DATE_UNVERIFIED",
+    "checked_at": "2026-10-05T17:03:53.263743+00:00",
+    "candidate_date": "2016-04-08",
+    "candidate_status": "UNCONFIRMED_NOT_REJECTED",
+    "temporal_range": "2016-03-16..2016-04-15",
+    "publisher_sites": [
+      "https://www.spglobal.com/spdji/",
+      "https://press.spglobal.com/",
+      "https://us.spindices.com/",
+      "https://www.prnewswire.com/news/s%26p-dow-jones-indices/"
+    ],
+    "queries": [
+      "site:spglobal.com/spdji \"Under Armour\" \"2016\" \"Class C\"",
+      "site:press.spglobal.com \"Under Armour\" \"April\" \"2016\"",
+      "site:us.spindices.com \"Under Armour\" \"2016\"",
+      "site:prnewswire.com \"S&P Dow Jones Indices\" \"UA.C\""
+    ],
+    "historical_archive_attempts": [
+      {
+        "url": "https://web.archive.org/cdx/search/cdx?url=us.spindices.com/documents/indexnews/*&from=20160401&to=20160415&output=json&filter=statuscode:200&collapse=urlkey",
+        "http_status": null,
+        "result": "TimeoutError; no document absence inferred",
+        "source_url": "https://web.archive.org/cdx/search/cdx?url=us.spindices.com/documents/indexnews/*&from=20160401&to=20160415&output=json&filter=statuscode:200&collapse=urlkey"
+      },
+      {
+        "url": "https://web.archive.org/cdx/search/cdx?url=www.spdji.com/documents/indexnews/*&from=20160316&to=20160415&output=json&filter=statuscode:200&collapse=urlkey",
+        "http_status": 200,
+        "result": "Archived CDX inventory for the specified query; no index-effective document obtained. An empty inventory does not prove no notice exists elsewhere.",
+        "bytes": 3,
+        "publisher": "Internet Archive",
+        "document_id": "CDX-spdji-indexnews-20160316-20160415",
+        "archive_id": "ba98f4e1-966d-48fd-ac52-6c58caa65ce6",
+        "retrieved_at": "2026-10-05T17:05:10.142907+00:00",
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "raw_document": "data/archive/37/51/37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "evidence_type": "DISCOVERY_ARCHIVE_INVENTORY",
+        "effective_date": null,
+        "resolver_version": "d02-label-safe-v2",
+        "source_url": "https://web.archive.org/cdx/search/cdx?url=www.spdji.com/documents/indexnews/*&from=20160316&to=20160415&output=json&filter=statuscode:200&collapse=urlkey"
+      }
+    ],
+    "official_membership_proof_found": false,
+    "minimum_proof": "Official S&P notice/history/file directly stating Under Armour Class C inclusion and effective date; SEC/OCC corporate evidence is insufficient.",
+    "next_required_month": "2016-09"
   }
 }

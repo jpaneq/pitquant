@@ -1,146 +1,166 @@
-# D02 critical path to first ML
+# D02 — label-safe critical path V2
 
-**Not achieved.** Usable READY months: 60 → 72; longest usable run: 60 → 72/85; calendar folds: 0 → 1/3. Membership-only ready months: 72. No training.
+**BLOCKED.** 25 required months remain unresolved; first blocker **2016-09**. Global READY remains 72/141 (72-month run), but only 60/85 of the correctly positioned history is READY. No model trained.
 
-Scope: 2015-09 through 2017-09, processed newest first. Shared segment proofs closed six-month blocks; the chronology stops at the still-blocked 2016-09 decision. Original baseline rows and all 93 original cards are preserved unchanged in `D02_CRITICAL_PATH_FIRST_ML.json`; current comparison and exact source provenance are in `D02_CRITICAL_PATH_RESULT.json`. Raw anchors remain unchanged.
+## Reproducible temporal derivation
 
-## Latest iteration after Claude
-
-Initial HEAD `1b0cc6a` preserves Claude's interface changes. This iteration is limited to the thirteen missing months **2015-09..2016-09**, verified by 85−72=13. READY remains 72/141, streak 2016-10..2022-09; no new membership cards closed (36 remain: 28 events, 7 identities, 1 conflict). The first required month is **2016-09**, blocked by Under Armour Class C. Do not proceed to earlier months until its index evidence closes.
-
-The official OCC notice 38727, hosted by MIAX, distinguishes CUSIPs 904311107/904311206, distribution April 7, regular-way/ex-distribution April 8, and when-issued trading March 23. SEC's preliminary proxy explicitly leaves index inclusion to S&P's discretion; the completed annual report proves share/ticker facts. Their combination does not establish the index date. April 8 is **UNCONFIRMED_NOT_REJECTED**. The current contract allows alternative official index notices; it does not require literally a press release. The official/dated/direct-membership/archive/hash/contract matrix and raw evidence metadata are in `D02_UNDER_ARMOUR_EVIDENCE_MATRIX.json`. No membership rule is relaxed.
-
-| Measure | Count |
+| Parameter | Derived value |
 |---|---|
-| Original critical cards | 93 |
-| Original cards closed | 57 |
-| Current inside-critical membership cards | 36 |
-| Outside-critical membership cards (inventoried, not cleanup target) | 131 |
-| Current global weak identities | 40 |
+| last_admissible_decision_month | 2021-09 |
+| last_decision_at | 2021-09-01T13:30:00+00:00 |
+| target_start | 2021-09-01T13:30:00+00:00 |
+| target_end | 2022-09-01T13:30:00+00:00 |
+| security_exit_session | 2022-08-31 |
+| benchmark_exit_session | 2022-08-31 |
+| earliest_target_mature_at | 2022-08-31T21:00:00+00:00 |
+| next_month_rejected | 2021-10 |
+| minimum_ready_history_start | 2014-09 |
+| last_required_dev_month | 2021-09 |
+| minimum_contiguous_ready_months | 85 |
+| horizon_months | 12 |
+| holdout_start | 2022-10-01 |
+| security_calendar | XNYS |
+| benchmark_calendar | XNYS |
+| semantics | Nominal decision_at + H12 date < holdout start; security and SPY exit at their last closed session at that instant. No outcome data read. |
 
-## Current monthly table, descending
+The latest monthly XNYS open whose nominal H12 endpoint precedes holdout is derived by walking market months backwards. Both the security and SPY use the previous closed XNYS session at the target instant; maturity uses the existing one-hour lag. Nominal horizon, not merely the earlier exit close, is the frozen sealing rule. No prices or outcomes in holdout/OOT are inspected.
 
-| Month | Status | Cards | Events | Identity cards | Ambiguities | Conflicts | Weak instruments | Minimum action |
-|---|---|---|---|---|---|---|---|---|
-| 2017-09 | READY | 0 | 0 | 0 | 0 | 0 | 0 | None |
-| 2017-08 | READY | 0 | 0 | 0 | 0 | 0 | 0 | None |
-| 2017-07 | READY | 0 | 0 | 0 | 0 | 0 | 0 | None |
-| 2017-06 | READY | 0 | 0 | 0 | 0 | 0 | 0 | None |
-| 2017-05 | READY | 0 | 0 | 0 | 0 | 0 | 0 | None |
-| 2017-04 | READY | 0 | 0 | 0 | 0 | 0 | 0 | None |
-| 2017-03 | READY | 0 | 0 | 0 | 0 | 0 | 0 | None |
-| 2017-02 | READY | 0 | 0 | 0 | 0 | 0 | 0 | None |
-| 2017-01 | READY | 0 | 0 | 0 | 0 | 0 | 0 | None |
-| 2016-12 | READY | 0 | 0 | 0 | 0 | 0 | 0 | None |
-| 2016-11 | READY | 0 | 0 | 0 | 0 | 0 | 0 | None |
-| 2016-10 | READY | 0 | 0 | 0 | 0 | 0 | 0 | None |
-| 2016-09 | BLOCKED | 1 | 1 | 0 | 0 | 0 | not fully reconstructible | Close the listed official-event cards and replay; identity set cannot yet be fully certified |
-| 2016-08 | BLOCKED | 1 | 1 | 0 | 0 | 0 | not fully reconstructible | Close the listed official-event cards and replay; identity set cannot yet be fully certified |
-| 2016-07 | BLOCKED | 1 | 1 | 0 | 0 | 0 | not fully reconstructible | Close the listed official-event cards and replay; identity set cannot yet be fully certified |
-| 2016-06 | BLOCKED | 1 | 1 | 0 | 0 | 0 | not fully reconstructible | Close the listed official-event cards and replay; identity set cannot yet be fully certified |
-| 2016-05 | BLOCKED | 1 | 1 | 0 | 0 | 0 | not fully reconstructible | Close the listed official-event cards and replay; identity set cannot yet be fully certified |
-| 2016-04 | BLOCKED | 1 | 1 | 0 | 0 | 0 | not fully reconstructible | Close the listed official-event cards and replay; identity set cannot yet be fully certified |
-| 2016-03 | BLOCKED | 12 | 10 | 1 | 0 | 1 | not fully reconstructible | Close the listed official-event cards and replay; identity set cannot yet be fully certified |
-| 2016-02 | BLOCKED | 12 | 10 | 1 | 0 | 1 | not fully reconstructible | Close the listed official-event cards and replay; identity set cannot yet be fully certified |
-| 2016-01 | BLOCKED | 11 | 10 | 1 | 0 | 0 | not fully reconstructible | Close the listed official-event cards and replay; identity set cannot yet be fully certified |
-| 2015-12 | BLOCKED | 11 | 10 | 1 | 0 | 0 | not fully reconstructible | Close the listed official-event cards and replay; identity set cannot yet be fully certified |
-| 2015-11 | BLOCKED | 11 | 10 | 1 | 0 | 0 | not fully reconstructible | Close the listed official-event cards and replay; identity set cannot yet be fully certified |
-| 2015-10 | BLOCKED | 11 | 10 | 1 | 0 | 0 | not fully reconstructible | Close the listed official-event cards and replay; identity set cannot yet be fully certified |
-| 2015-09 | BLOCKED | 23 | 17 | 6 | 0 | 0 | not fully reconstructible | Close the listed official-event cards and replay; identity set cannot yet be fully certified |
+The frozen inclusive calendar requires 36+12+1+12+2×12=85 continuous decision months, positioned **2014-09..2021-09**. The first fold retains 37 calendar TRAIN months, as in the existing contract. The missing extension is **2014-09..2016-09: 25 months**. The 2016-10..2021-09 portion contributes 60 usable months; the extra READY months through 2022-09 do not make H12 TEST labels admissible. Membership is required at decisions; outcome prices extend to 2022-09 without requiring later decision cohorts.
 
-A blocked month has no fully certified member set: its weak-instrument count is unknown, not zero. Identity cards are distinct from weak identities within a reconstructed member set. Card totals count instrument legs, not independent corporate transactions.
+## Three latest target calendar folds
 
-## Reviewed closures
-
-One Broadcom Ltd card changed from contradiction to missing addition and remains blocked; its changed gap ID is not counted as resolved.
-
-Dated SEC transactions distinguish Dominion, Tesoro, CSC/DXC, Dow/DowDuPont, GGP, L-3, FMC/TechnipFMC, Alcoa/Arconic, DaVita, McGraw/S&P Global, XL and Tyco/JCI. Ratios are specific to the predecessor: CSC and Dow 1:1, FMC 1:1, XL 1:1, L-3 1:1, Tyco 0.955:1; RTN, DuPont and old Johnson Controls are separate legs. Sources, header CIK/accession checks, classes, CUSIPs/ISINs, legal/trading dates, precision and hashes are in `D02_CRITICAL_IDENTITY_RESOLUTIONS.json`.
-
-Parser fixes retain Nemours' final s, resolve exact same-release full names, accept 'at the open', and admit an index-less pair only if the exact S&P 500 summary table confirms both legs. A pretraded N-30D pair is adjusted only when the same official next-session pair supports both sides. Two document-specific BR artifacts preserve explicit class A. Closed SEC issuer abbreviations resolve only exact names and compatible explicit classes in every anchor quarter; a mismatch remains blocked. No issuer, ticker or spelling similarity merges securities.
-
-**Time precision:** L-3 and Alcoa filings state local times without a timezone. The stored UTC values are monthly reconstruction boundaries, not verified legal UTC instants; reviewed precision notes supersede the initial ET wording retained in immutable local link notes. Neither uncertain instant can change the first NYSE monthly decision here. Intraday use would require explicit timezone evidence. Alcoa's reverse split and spin-off remain separate from the name/identifier event; no research return remapping was performed.
-
-Monthly assessment: **TIME_PRECISION_NOT_MATERIAL_FOR_MONTHLY_MEMBERSHIP**. L-3's local 2016-12-31 23:58 precedes the NYSE monthly decision 2017-01-03 14:30Z under civil offsets UTC−12..UTC+14; Alcoa's local 2016-10-31 23:59 precedes 2016-11-01 13:30Z even at UTC−12. These are uncertainty bounds compared with verified exchange opens, not assigned legal UTC timestamps.
-
-## Remaining critical cards
-
-| Gap ID | Segment | Instrument | Category | Official proof required |
+| Fold | TRAIN | Purge/excluded decisions | Embargo | TEST |
 |---|---|---|---|---|
-| e165e78849d521c286b0 | 2015-03-31→2015-09-30 | Laboratory Corp. of America Holdings | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| f0cc5692bd0bce476a62 | 2015-03-31→2015-09-30 | Health Care REIT, Inc. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| dc22bb93050a9aa7d1c5 | 2015-03-31→2015-09-30 | News Corp. (Class B) | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| b90d1b8e5ed9be70322c | 2015-03-31→2015-09-30 | Alphabet, Inc. (Class C) | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 9975561bbd86d605d534 | 2015-03-31→2015-09-30 | WestRock Co. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 260b8ac8b650438679b6 | 2015-03-31→2015-09-30 | Alphabet, Inc. (Class A) | SECURITY_IDENTITY_ONLY | Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
-| 44fdf340690c77c3a25f | 2015-03-31→2015-09-30 | MeadWestvaco Corp. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| f5d21137d6351abe81d2 | 2015-03-31→2015-09-30 | Actavis PLC | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 775ad4ebdb8a3e9f1e46 | 2015-03-31→2015-09-30 | Kraft Heinz Co. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 55ff93bd6e220947454a | 2015-03-31→2015-09-30 | Google, Inc. (Class C) | SECURITY_IDENTITY_ONLY | Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
-| efea0e5c230ed42b0a57 | 2015-03-31→2015-09-30 | Twenty-First Century Fox, Inc. (Class B) | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| bc21d9429ac9a7d88d1e | 2015-03-31→2015-09-30 | WEC Energy Group, Inc. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 4014d7c5461a5cdfc7ed | 2015-03-31→2015-09-30 | Allergan PLC | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 773157b6ab379b614ad3 | 2015-03-31→2015-09-30 | Kraft Foods Group, Inc. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 9e84a8070786d6765738 | 2015-03-31→2015-09-30 | Gannett Co., Inc. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 4a733a71a16cc4b19b5b | 2015-03-31→2015-09-30 | Welltower, Inc. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| cce5f52831d09f95a80b | 2015-03-31→2015-09-30 | Noble Corp. PLC | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 6288ce30ff6ca090c074 | 2015-03-31→2015-09-30 | TEGNA, Inc. | SECURITY_IDENTITY_ONLY | Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
-| 3dfc145a83e78bbe08ef | 2015-03-31→2015-09-30 | Comcast Corp. (Special Class A) | SECURITY_IDENTITY_ONLY | Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
-| 32f800082db059fb0795 | 2015-03-31→2015-09-30 | Laboratory Corp. of AmericaHoldings | SECURITY_IDENTITY_ONLY | Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
-| a5179c57e07bc68517bf | 2015-03-31→2015-09-30 | PayPal Holdings, Inc. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| da1151e425832bcbe2eb | 2015-03-31→2015-09-30 | Wisconsin Energy Corp. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 35cf8ce953c75ab6b4e6 | 2015-03-31→2015-09-30 | Google, Inc. (Class A) | SECURITY_IDENTITY_ONLY | Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
-| 863202f5c4256d4f50b9 | 2015-09-30→2016-03-31 | Willis Towers Watson PLC | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 12a490a52ac07a0c6868 | 2015-09-30→2016-03-31 | Avago Technologies, Ltd. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 6188a99eed2cc5eaefbb | 2015-09-30→2016-03-31 | HP, Inc. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 7594a7ce86e97edf85ef | 2015-09-30→2016-03-31 | US Bancorp | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 7cccaeafbc8bf8a9315d | 2015-09-30→2016-03-31 | Roper Technologies, Inc. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 9369adca69da6c677b1a | 2015-09-30→2016-03-31 | Roper Industries, Inc. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 6b0e257649daf7ee6719 | 2015-09-30→2016-03-31 | Hewlett-Packard Co. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 0c498944897e0669457c | 2015-09-30→2016-03-31 | Broadcom, Ltd. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 48e76ec550ab6d971b4d | 2015-09-30→2016-03-31 | Chubb Corp. | PRIMARY_DELTA_UNEXPLAINED | Audit the linked primary release and both anchor rows; resolve contradictory event legs, transient positions or legal predecessor/successor with official evidence. |
-| 948c6451731ed389c0c0 | 2015-09-30→2016-03-31 | U.S. Bancorp | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| c227fe2ba3c93644647f | 2015-09-30→2016-03-31 | Comcast Corp. (Special Class A) | SECURITY_IDENTITY_ONLY | Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
-| 9c97d251e2be894e1c76 | 2015-09-30→2016-03-31 | ACE, Ltd. | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
-| 6c5a95f6a607858fc601 | 2016-03-31→2016-09-30 | Under Armour, Inc. Class C | PRIMARY_EVENT_MISSING | Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
+| 1 | 2014-09..2017-09 | 2017-10..2018-09 | 2018-09..2018-09 | 2018-10..2019-09 |
+| 2 | 2014-09..2018-09 | 2018-10..2019-09 | 2019-09..2019-09 | 2019-10..2020-09 |
+| 3 | 2014-09..2019-09 | 2019-10..2020-09 | 2020-09..2020-09 | 2020-10..2021-09 |
 
-## Honest stopping condition and minimum next action
+These are three structurally valid **target** calendars, not three ready historical datasets. The prior READY-run generator still yields one calendar (TEST 2020-11..2021-10), which is not label-safe; shifting only that single run does not fill the missing TRAIN history.
 
-The newest remaining segment 2016-03→09 is blocked by Under Armour Class C. The SEC annual filing proves distribution April 7 and initial UA.C listing April 8, but not the index-effective date. Targeted searches of official S&P press/indexnews sources retrieved no sufficient dated Class C inclusion notice. Secondary dates remain discovery only, and issuer evidence cannot substitute for S&P membership. `D02_CRITICAL_SOURCE_ATTEMPTS.json` records the attempts and insufficient official document with its hash. Obtain that notice and replay this segment before moving to 2015-09→2016-03 and the September 2015 decision. Do not infer absence of an official document from search misses.
+## Calendar vs labels vs coverage
 
-## Exact current calendar folds
+CALENDAR_FOLD validates dates. LABEL_SAFE_FOLD certifies a complete required membership/identity history, at least the contracted 36 TRAIN decision months with labels available at fit, and all twelve TEST months with valid H12 outcomes. Individual absent rows are reported; no per-security or per-issuer sample-size threshold is used. ML_ELIGIBLE_FOLD adds the future statistical coverage contract and stays NOT_YET_EVALUATED_BLOCKED_BY_COVERAGE. `required_securities=100` is unchanged and cannot decide label safety. ADR-0055 V2 supersedes its earlier conflation with trainability.
 
-| Fold | Train | N train | Excluded decisions | Embargo | Test |
-|---|---|---|---|---|---|
-| 0 | 2016-10..2019-10 | 37 | 2019-11..2020-10 | 2020-10..2020-10 | 2020-11..2021-10 |
+| Fold | Calendar valid | TEST label safe | Full fold label safe | TRAIN eligible | TEST eligible | Securities | Issuers | Blocking reasons |
+|---|---|---|---|---|---|---|---|---|
+| 1 | True | True | False | 588 | 599 | 50 | 50 | REQUIRED_MEMBERSHIP_HISTORY_NOT_READY, TRAIN_LABEL_MONTHS_INCOMPLETE_AT_FIT |
+| 2 | True | True | False | 1127 | 600 | 50 | 50 | REQUIRED_MEMBERSHIP_HISTORY_NOT_READY, TRAIN_LABEL_MONTHS_INCOMPLETE_AT_FIT |
+| 3 | True | True | False | 1725 | 609 | 51 | 51 | REQUIRED_MEMBERSHIP_HISTORY_NOT_READY, TRAIN_LABEL_MONTHS_INCOMPLETE_AT_FIT |
 
-Frozen inequality: train decision + H12 + embargo1 <= test start. Inclusive endpoints yield 37 training decision months in the first fold and 12 excluded decision months; the embargo lies within that excluded span. This documents the existing contract without changing it. Calendar feasibility alone does not certify mature 12M labels; holdout/OOT remain sealed and no labels/features are rebuilt.
+TEST outcomes already span all twelve months in each intended fold. Full-fold certification is blocked by the missing earlier membership history and insufficient verified TRAIN months. Source values remain immutable; no labels/features were built. Every decision window, availability cutoff, actual exit, maturity and exclusion is in `FIRST_ML_FOLD_AUDIT.json`.
 
-## Trainable-fold audit
+## Required monthly path (newest first)
 
-No folds were previously certified. The unchanged initial dataset now audits to **0 certified trainable folds**, with per-fold minimum **UNSPECIFIED_CONTRACT** (not an invented zero-row threshold).
+| Month | Required by fold | Status | Cards | Events | Identities | Ambiguities | Conflicts | Minimum resolution |
+|---|---|---|---|---|---|---|---|---|
+| 2021-09 | F3:TEST | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2021-08 | F3:TEST | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2021-07 | F3:TEST | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2021-06 | F3:TEST | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2021-05 | F3:TEST | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2021-04 | F3:TEST | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2021-03 | F3:TEST | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2021-02 | F3:TEST | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2021-01 | F3:TEST | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2020-12 | F3:TEST | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2020-11 | F3:TEST | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2020-10 | F3:TEST | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2020-09 | F2:TEST, F3:PURGE/EMBARGO_CONTINUITY | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2020-08 | F2:TEST, F3:PURGE/EMBARGO_CONTINUITY | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2020-07 | F2:TEST, F3:PURGE/EMBARGO_CONTINUITY | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2020-06 | F2:TEST, F3:PURGE/EMBARGO_CONTINUITY | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2020-05 | F2:TEST, F3:PURGE/EMBARGO_CONTINUITY | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2020-04 | F2:TEST, F3:PURGE/EMBARGO_CONTINUITY | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2020-03 | F2:TEST, F3:PURGE/EMBARGO_CONTINUITY | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2020-02 | F2:TEST, F3:PURGE/EMBARGO_CONTINUITY | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2020-01 | F2:TEST, F3:PURGE/EMBARGO_CONTINUITY | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2019-12 | F2:TEST, F3:PURGE/EMBARGO_CONTINUITY | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2019-11 | F2:TEST, F3:PURGE/EMBARGO_CONTINUITY | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2019-10 | F2:TEST, F3:PURGE/EMBARGO_CONTINUITY | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2019-09 | F1:TEST, F2:PURGE/EMBARGO_CONTINUITY, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2019-08 | F1:TEST, F2:PURGE/EMBARGO_CONTINUITY, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2019-07 | F1:TEST, F2:PURGE/EMBARGO_CONTINUITY, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2019-06 | F1:TEST, F2:PURGE/EMBARGO_CONTINUITY, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2019-05 | F1:TEST, F2:PURGE/EMBARGO_CONTINUITY, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2019-04 | F1:TEST, F2:PURGE/EMBARGO_CONTINUITY, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2019-03 | F1:TEST, F2:PURGE/EMBARGO_CONTINUITY, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2019-02 | F1:TEST, F2:PURGE/EMBARGO_CONTINUITY, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2019-01 | F1:TEST, F2:PURGE/EMBARGO_CONTINUITY, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2018-12 | F1:TEST, F2:PURGE/EMBARGO_CONTINUITY, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2018-11 | F1:TEST, F2:PURGE/EMBARGO_CONTINUITY, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2018-10 | F1:TEST, F2:PURGE/EMBARGO_CONTINUITY, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2018-09 | F1:PURGE/EMBARGO_CONTINUITY, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2018-08 | F1:PURGE/EMBARGO_CONTINUITY, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2018-07 | F1:PURGE/EMBARGO_CONTINUITY, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2018-06 | F1:PURGE/EMBARGO_CONTINUITY, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2018-05 | F1:PURGE/EMBARGO_CONTINUITY, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2018-04 | F1:PURGE/EMBARGO_CONTINUITY, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2018-03 | F1:PURGE/EMBARGO_CONTINUITY, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2018-02 | F1:PURGE/EMBARGO_CONTINUITY, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2018-01 | F1:PURGE/EMBARGO_CONTINUITY, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2017-12 | F1:PURGE/EMBARGO_CONTINUITY, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2017-11 | F1:PURGE/EMBARGO_CONTINUITY, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2017-10 | F1:PURGE/EMBARGO_CONTINUITY, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2017-09 | F1:TRAIN, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2017-08 | F1:TRAIN, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2017-07 | F1:TRAIN, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2017-06 | F1:TRAIN, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2017-05 | F1:TRAIN, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2017-04 | F1:TRAIN, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2017-03 | F1:TRAIN, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2017-02 | F1:TRAIN, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2017-01 | F1:TRAIN, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2016-12 | F1:TRAIN, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2016-11 | F1:TRAIN, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2016-10 | F1:TRAIN, F2:TRAIN, F3:TRAIN | READY | 0 | 0 | 0 | 0 | 0 | NONE |
+| 2016-09 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 1 | 1 | 0 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
+| 2016-08 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 1 | 1 | 0 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
+| 2016-07 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 1 | 1 | 0 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
+| 2016-06 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 1 | 1 | 0 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
+| 2016-05 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 1 | 1 | 0 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
+| 2016-04 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 1 | 1 | 0 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself. |
+| 2016-03 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 12 | 10 | 1 | 0 | 1 | Audit the linked primary release and both anchor rows; resolve contradictory event legs, transient positions or legal predecessor/successor with official evidence.; Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2016-02 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 12 | 10 | 1 | 0 | 1 | Audit the linked primary release and both anchor rows; resolve contradictory event legs, transient positions or legal predecessor/successor with official evidence.; Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2016-01 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 11 | 10 | 1 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2015-12 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 11 | 10 | 1 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2015-11 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 11 | 10 | 1 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2015-10 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 11 | 10 | 1 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2015-09 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 23 | 17 | 6 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2015-08 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 23 | 17 | 6 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2015-07 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 23 | 17 | 6 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2015-06 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 23 | 17 | 6 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2015-05 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 23 | 17 | 6 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2015-04 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 23 | 17 | 6 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2015-03 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 13 | 11 | 2 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2015-02 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 13 | 11 | 2 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2015-01 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 13 | 11 | 2 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2014-12 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 13 | 11 | 2 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2014-11 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 13 | 11 | 2 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2014-10 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 13 | 11 | 2 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
+| 2014-09 | F1:TRAIN, F2:TRAIN, F3:TRAIN | BLOCKED | 13 | 11 | 2 | 0 | 0 | Dated official S&P index notice/history/file proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.; Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient. |
 
-| Fold | Calendar TEST rows | Mature | Benchmark | Price | Eligible PRICE | Eligible FUNDAMENTALS | Holdout excluded |
-|---|---|---|---|---|---|---|---|
-| 0 | 660 | 605 | 605 | 605 | 559 | 456 | 55 |
+Distinct in-path cards: **49**, categories {'PRIMARY_EVENT_MISSING': 39, 'SECURITY_IDENTITY_ONLY': 9, 'PRIMARY_DELTA_UNEXPLAINED': 1}. Full gap IDs, official anchor references and resolution requirements remain in the result JSON and `D02_EXTENDED_AUDIT.json`; 118 cards are outside this path and are not clean-up targets.
 
-Every TRAIN/TEST decision's nominal window, actual exit, target maturity, availability cutoff and exclusion reasons are in `FIRST_ML_FOLD_AUDIT.json`. October 2021 nominal targets reach holdout, even if an upstream row claimed OK. TRAIN maturity is checked at the first TEST decision, not today's audit time. A label cannot satisfy purge/embargo merely because it exists today.
+## Under Armour and chronological stop
 
-Closing 2015-09..2016-09 would produce three **calendar** folds, but the last TEST 2021-10..2022-09 has H12 endpoints in holdout throughout. Thus 85 months alone cannot meet the requested three trainable folds. This task does not move boundaries, shorten TEST or expand to older history. No coverage gate changed and no model trained. See ADR-0055.
+**OFFICIAL_INDEX_DATE_UNVERIFIED.** Distribution 2016-04-07 and regular-way listing 2016-04-08 are proved; index inclusion is not. Class A and C, their CUSIPs and recycled ticker histories remain separate. Official S&P announcements, archived pages, constituent notices/history and index files are acceptable formats. Searches, historical archive URLs, temporal range and failure status are in `D02_CRITICAL_SOURCE_ATTEMPTS.json`; SEC/OCC alternative evidence and hashes are in the evidence matrix. The minimum missing proof is an official dated index record directly establishing Class C inclusion and its effective date. No secondary date is promoted. Stop before resolving earlier months until this newest required blocker closes.
 
-## Gate matrix
+## Claude trace and unchanged scope
 
-| Gate | Status | Evidence |
+`CLAUDE_HEAD_TRACE.md/.json` audits both intervening commits and all eighteen paths: no D02/fold/target/holdout/readiness contract changed. Existing interface additions are retained. L-3/Alcoa remain TIME_PRECISION_NOT_MATERIAL_FOR_MONTHLY_MEMBERSHIP with unknown legal timezone; XOM/RTX/GOOGL/GE and Broadcom are inventoried only when they block this path. No BTC, global markets, features, models, champion/master or coverage-threshold changes.
+
+## Gates
+
+| Gate | Status | Actual |
 |---|---|---|
-| D02_MONTHLY_RESEARCH_READY | BLOCKED | 72/141 months READY, longest run 72, calendar folds 1, trainable folds 0 |
+| D02_MONTHLY_RESEARCH_READY | BLOCKED | 72/141 READY; required history 60/85; target calendar folds 3, label-safe 0 |
 | US_SECURITY_IDENTITY_READY | PARTIAL | 40 weak identity securities; 0 unresolved anchor lines |
 | D05_READY | READY | Yahoo Finance (CANONICAL_PROVIDER_FOR_PITQUANT, VENDOR) |
-| BENCHMARK_RETURN_BASIS_READY | READY | US rows comparable 7055/7055; non-US via USD conversion (PROXY) |
+| BENCHMARK_RETURN_BASIS_READY | READY | US rows comparable 7000/7000; non-US via USD conversion (PROXY) |
 | RESEARCH_SECURITY_COVERAGE_READY | BLOCKED | 51 usable (strict); 51 if D05 were accepted; 100 with snapshots |
 | US_FUNDAMENTALS_READY | READY | 40 securities |
 | HOLDOUT_SEALED | READY | 0 snapshots inside the holdout |
 | RESEARCH_DATA_READY | BLOCKED | derived |
 | FIRST_ML_BASELINE_READY | BLOCKED | false |
 
-Required securities=100 unchanged. The user has approved the *later methodological design* of a statistical coverage gate; no 100→51 reduction or substitute threshold is applied. XOM/RTX/GOOGL/GE research-series bindings remain PARTIAL, with their separate issues unchanged; see `FIRST_ML_SECURITY_IDENTITY.json`. Full source originals stay in the content-addressed archive; all new proof checks use pre-holdout historical sources.
-
-Reproduce from repository root with the explicit project DB: `apply_d02_critical_identity.py` (runtime SEC contact), `apply_d02_document_breaks.py`, `apply_d02_critical_weak_identity.py`, `ingest_sp500_evidence.py --offline`, `build_sp500_anchor_graph.py`, `gen_d02_extended_audit.py`, `gen_data_readiness_first_ml.py`, `gen_d02_critical_provenance.py`, `gen_d02_critical_report.py`. No BTC, champion/master, model training or deployment is involved.
+Reproduce offline with the explicit project DB: `scripts/gen_data_readiness_first_ml.py`, then `scripts/gen_d02_label_safe_report.py` (legacy `gen_d02_critical_report.py` delegates here). Original pre-V2 reports and source provenance are retained in the baseline file; original 93 cards are not rewritten.

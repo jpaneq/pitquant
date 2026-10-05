@@ -29,7 +29,13 @@
         "contract_adjustment": "2016-04-08",
         "when_issued_listing": "2016-03-23"
       },
-      "reason": "Corporate action/issuer expectation does not prove index inclusion; S&P retains discretion."
+      "reason": "Corporate action/issuer expectation does not prove index inclusion; S&P retains discretion.",
+      "source_url": "https://www.miaxglobal.com/sites/default/files/alert-files/UA_Distribution__38727.pdf",
+      "raw_document": "data/archive/ec/55/ec55c93987a0631f0052d11d926f474b241dabb4ce38cf7d561464e2f70cb5bf",
+      "effective_date": null,
+      "publisher": "The Options Clearing Corporation; hosted by MIAX",
+      "document_id": "38727",
+      "accession": null
     },
     {
       "source": "SEC preliminary proxy 0001193125-15-223346",
@@ -50,7 +56,13 @@
       "resolver_version": "d02-ua-alternative-evidence-v1",
       "dates_proved": {},
       "reason": "Corporate action/issuer expectation does not prove index inclusion; S&P retains discretion.",
-      "temporal_relation": "Prospective 2015 expectation; not contemporaneous proof of the 2016 index event"
+      "temporal_relation": "Prospective 2015 expectation; not contemporaneous proof of the 2016 index event",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1336917/000119312515223346/d931136dpre14a.htm",
+      "raw_document": "data/archive/d0/9c/d09c63fb3e5d0e09ba8f33d85ace7415432363da310f4459679ef951422b79ac",
+      "effective_date": null,
+      "publisher": "SEC EDGAR / Under Armour",
+      "document_id": "0001193125-15-223346",
+      "accession": "0001193125-15-223346"
     },
     {
       "source": "SEC 2016 10-K",
@@ -77,9 +89,16 @@
         "regular_way_listing": "2016-04-08",
         "class_A_UAA_class_C_UA": "2016-12-07"
       },
-      "reason": "Issuer annual report documents completed share distribution and ticker history, not S&P inclusion."
+      "reason": "Issuer annual report documents completed share distribution and ticker history, not S&P inclusion.",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1336917/000133691717000017/ua-20161231x10k.htm",
+      "raw_document": "data/archive/73/2b/732bfdfa2214e277fba5bc60b81ed2d80f06e18a512dd49d55a09242e2bc539e",
+      "effective_date": null,
+      "publisher": "SEC EDGAR / Under Armour",
+      "document_id": "0001336917-17-000017",
+      "accession": "0001336917-17-000017"
     }
   ],
   "first_blocked_month": "2016-09",
-  "minimum_evidence": "Dated official S&P DJI notice/history stating addition of Under Armour Class C and its effective date; archive raw bytes and replay 2016-03 to 2016-09 before earlier critical months."
+  "minimum_evidence": "Dated official S&P DJI notice/history stating addition of Under Armour Class C and its effective date; archive raw bytes and replay 2016-03 to 2016-09 before earlier critical months.",
+  "membership_status": "OFFICIAL_INDEX_DATE_UNVERIFIED"
 }

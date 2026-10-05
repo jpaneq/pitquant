@@ -1,19 +1,69 @@
 {
- "generated_at": "2026-10-05T16:27:18.018589+00:00",
+ "generated_at": "2026-10-05T17:10:58.846283+00:00",
  "experiment": "FIRST_EQUITY_ML_12M_V0",
+ "required_history": {
+  "last_admissible_decision_month": "2021-09",
+  "last_decision_at": "2021-09-01T13:30:00+00:00",
+  "target_start": "2021-09-01T13:30:00+00:00",
+  "target_end": "2022-09-01T13:30:00+00:00",
+  "security_exit_session": "2022-08-31",
+  "benchmark_exit_session": "2022-08-31",
+  "earliest_target_mature_at": "2022-08-31T21:00:00+00:00",
+  "next_month_rejected": "2021-10",
+  "minimum_ready_history_start": "2014-09",
+  "last_required_dev_month": "2021-09",
+  "minimum_contiguous_ready_months": 85,
+  "horizon_months": 12,
+  "holdout_start": "2022-10-01",
+  "security_calendar": "XNYS",
+  "benchmark_calendar": "XNYS",
+  "semantics": "Nominal decision_at + H12 date < holdout start; security and SPY exit at their last closed session at that instant. No outcome data read."
+ },
  "folds": [
   {
    "index": 0,
-   "train_start": "2016-10",
-   "train_end": "2019-10",
-   "test_start": "2020-11",
-   "test_end": "2021-10",
+   "train_start": "2014-09",
+   "train_end": "2017-09",
+   "test_start": "2018-10",
+   "test_end": "2019-09",
    "train_months": 37,
    "test_months": 12,
-   "excluded_decision_start": "2019-11",
-   "excluded_decision_end": "2020-10",
-   "embargo_start": "2020-10",
-   "embargo_end": "2020-10",
+   "excluded_decision_start": "2017-10",
+   "excluded_decision_end": "2018-09",
+   "embargo_start": "2018-09",
+   "embargo_end": "2018-09",
+   "separation_rule": "train_decision + H12 + embargo1 <= test_start; embargo lies inside the 12 excluded decision months under the frozen inclusive-boundary contract",
+   "purged_months": 12,
+   "embargo_months": 1
+  },
+  {
+   "index": 1,
+   "train_start": "2014-09",
+   "train_end": "2018-09",
+   "test_start": "2019-10",
+   "test_end": "2020-09",
+   "train_months": 49,
+   "test_months": 12,
+   "excluded_decision_start": "2018-10",
+   "excluded_decision_end": "2019-09",
+   "embargo_start": "2019-09",
+   "embargo_end": "2019-09",
+   "separation_rule": "train_decision + H12 + embargo1 <= test_start; embargo lies inside the 12 excluded decision months under the frozen inclusive-boundary contract",
+   "purged_months": 12,
+   "embargo_months": 1
+  },
+  {
+   "index": 2,
+   "train_start": "2014-09",
+   "train_end": "2019-09",
+   "test_start": "2020-10",
+   "test_end": "2021-09",
+   "train_months": 61,
+   "test_months": 12,
+   "excluded_decision_start": "2019-10",
+   "excluded_decision_end": "2020-09",
+   "embargo_start": "2020-09",
+   "embargo_end": "2020-09",
    "separation_rule": "train_decision + H12 + embargo1 <= test_start; embargo lies inside the 12 excluded decision months under the frozen inclusive-boundary contract",
    "purged_months": 12,
    "embargo_months": 1
@@ -33,9 +83,15 @@
   "reason_if_no_folds": null,
   "required_continuous_months": 85,
   "weak_identity_securities": 40,
-  "calendar_folds": 1,
-  "trainable_folds": 0,
-  "fold_row_minimum_status": "UNSPECIFIED_CONTRACT"
+  "required_history_start": "2014-09",
+  "required_history_end": "2021-09",
+  "required_months_ready": 60,
+  "required_months_blocked": 25,
+  "longest_relevant_run": 60,
+  "calendar_folds": 3,
+  "label_safe_folds": 0,
+  "test_label_safe_folds": 3,
+  "coverage_gate_evaluated": false
  },
  "monthly_cohorts": [
   {
@@ -4384,7 +4440,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "d224cb0b-ddae-45ed-8412-9092f17db14b",
@@ -4405,7 +4462,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "cd8b8a8f-e550-49ee-86af-4370b15d03ec",
@@ -4426,10 +4484,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 23,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "4d1aedb4-ec20-414e-afe0-8eb25b30f2b7",
@@ -4449,10 +4507,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 23,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "c078ea25-d448-4d52-a2b2-5a2d0cb3d217",
@@ -4472,10 +4530,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 23,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "35c77f24-cbff-4c1d-9cb5-c557c7da1cf1",
@@ -4495,10 +4553,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 23,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "95b1b253-adfa-40af-ae16-c6750a623ef4",
@@ -4518,10 +4576,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 23,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "aa330b59-3cec-4632-a8d6-9ed04f699b11",
@@ -4542,10 +4600,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 23,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "04499b95-d824-49c6-a1fa-88cff78bc518",
@@ -4565,10 +4623,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 23,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "9eb07b86-e33c-40db-8ff4-f51e1bf8b706",
@@ -4588,10 +4646,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 23,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "10fc3d3d-6a55-4a3a-989c-ddb469994b35",
@@ -4611,10 +4669,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 23,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "ce79cc0a-00dd-4bcb-a653-9909fe94aa72",
@@ -4635,10 +4693,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 23,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "52322e74-840f-4739-9cd0-c426cca5c823",
@@ -4658,10 +4716,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 23,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "61f8190e-0ec4-4022-85e3-1477a135ba36",
@@ -4682,10 +4740,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 23,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "23206ded-0008-4a35-92f6-0f33936cb542",
@@ -4706,10 +4764,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 23,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "2c882a14-a9a9-4183-a2c9-4939a8f33c46",
@@ -4730,7 +4788,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "1fecea5c-9f09-40ff-a8a4-e1e51bef0561",
@@ -4766,7 +4825,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "27615e6f-b800-434e-b9a3-422147c4969e",
@@ -4787,7 +4847,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "b8dddadd-caa6-4267-8fe2-930f65df2165",
@@ -4809,7 +4870,8 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "67cab159-5fbf-468b-949e-4bde3dc3186d",
@@ -4822,7 +4884,7 @@
    "identity_status": "UNRESOLVED_SECURITY_LINK",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "INSUFFICIENT_HISTORY",
-   "reason_not_usable": "HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 60,
@@ -4830,7 +4892,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "140de420-7625-4e18-ab48-50eae5e7f194",
@@ -4851,7 +4914,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "3e44c4d0-ca47-4f7f-856e-6133b8a31396",
@@ -4873,7 +4937,8 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "6e75fc3b-8959-4b17-ac9e-68875886e196",
@@ -4886,7 +4951,7 @@
    "identity_status": "UNRESOLVED_SECURITY_LINK",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "OK",
-   "reason_not_usable": "HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 60,
@@ -4894,7 +4959,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "6e6e9ba4-3c10-4c07-8191-d91dbd1a76df",
@@ -4915,7 +4981,8 @@
     "UNIVERSE_NOT_CANONICAL": 65,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "b13f6397-47f7-4148-b9ea-57e4777f6b56",
@@ -4936,7 +5003,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "dccdb7a3-b30e-48bc-abb5-9d7ed1345cc7",
@@ -4957,7 +5025,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "7eba0f34-8e24-4be7-9aad-6662740f79e6",
@@ -4978,7 +5047,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "85875435-f01b-4178-8a4f-90237fbd6234",
@@ -4999,7 +5069,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "60e8375b-2fb0-4d6e-9a7a-9852511e8dd9",
@@ -5021,7 +5092,8 @@
     "INSUFFICIENT_HISTORY": 12,
     "NOT_INDEX_MEMBER_AT_T": 51,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "a39a3cf8-34e5-407b-a0d4-20026fc85075",
@@ -5042,7 +5114,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "7f98b411-3c33-4f09-aaa9-2ce760842986",
@@ -5063,7 +5136,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "56b48939-013b-4350-8d49-9a8f7ec60aa6",
@@ -5084,7 +5158,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "f32474b2-1203-49f9-8080-0cedcab7ae42",
@@ -5105,7 +5180,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "1dc79d7e-491c-4bf8-83cb-4d9618166cb4",
@@ -5126,7 +5202,8 @@
     "UNIVERSE_NOT_CANONICAL": 57,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "b8194184-f6f1-430d-a660-09fdb02a99b7",
@@ -5147,7 +5224,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "8f5dd8bc-8c99-4207-a977-78c3d7fffade",
@@ -5168,7 +5246,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "71598032-06a2-465e-9319-c018070cd262",
@@ -5189,7 +5268,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "eb3c38c1-ae4f-4d81-b0b8-cde7ec5477f3",
@@ -5210,7 +5290,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "66217c41-2afe-4844-8e01-62a48d35de64",
@@ -5231,7 +5312,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "18bcc934-b210-4df4-ac05-f84be5a2e71b",
@@ -5252,7 +5334,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "631cae7f-54f2-49b4-95d0-e52289542bc0",
@@ -5273,7 +5356,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "52e8fe35-36f1-4f88-98fa-b71d3e6d4163",
@@ -5294,7 +5378,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "9abd13cb-99c9-48f9-aab8-1ce7457597a1",
@@ -5315,7 +5400,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "a358721b-9df7-45f4-853a-6020ac67aae4",
@@ -5336,7 +5422,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "6eb3dc49-805e-43fc-b7ec-2c653be07918",
@@ -5357,7 +5444,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "e8c5c52f-1f79-47e2-a26b-ce5d6fb863b3",
@@ -5378,7 +5466,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "50b87e9d-e150-4c0a-8175-63669fde388e",
@@ -5399,7 +5488,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "eaf31854-974e-4617-8bac-035515650cb2",
@@ -5421,7 +5511,8 @@
     "INSUFFICIENT_HISTORY": 12,
     "NOT_INDEX_MEMBER_AT_T": 25,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "f0efb37f-fdb1-4d50-88a4-cea02cd00394",
@@ -5442,7 +5533,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "1efeccbc-b79d-4fb6-bb41-992c297ebc79",
@@ -5463,7 +5555,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "485fa49d-8c1e-46d9-88c0-fc7cb011450d",
@@ -5484,7 +5577,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "257b7380-fe81-4d0d-a8be-89d7ad9d4fe3",
@@ -5505,7 +5599,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "4b7851e2-0e90-4d4b-98c6-7c7f74074975",
@@ -5527,7 +5622,8 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "9a8fc57b-326c-41d9-a2f2-7cad78e26b56",
@@ -5540,7 +5636,7 @@
    "identity_status": "UNRESOLVED_SECURITY_LINK",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "OK",
-   "reason_not_usable": "HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 60,
@@ -5548,7 +5644,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "555f0c85-179f-45b3-847a-721096ae9fa6",
@@ -5569,7 +5666,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "0d560a31-4327-4817-923d-c62e67e1eaec",
@@ -5590,7 +5688,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "64352eea-7be5-4d74-b53a-fa6059cc0a36",
@@ -5611,7 +5710,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "1ea23764-dd3e-474d-8fbe-71ad843f3319",
@@ -5632,7 +5732,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "c2642c7d-42d7-4a95-930e-68b06f4de270",
@@ -5653,7 +5754,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "f597e07d-bc74-433f-8603-f69f911a5de4",
@@ -5674,7 +5776,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "2d773a5d-5b49-475a-a13b-dbc16a5677fd",
@@ -5695,7 +5798,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "9983b4aa-f723-460b-a55b-004781fa3dc1",
@@ -5716,7 +5820,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "93b9ac92-3ffc-49f8-860f-343c462b34da",
@@ -5737,7 +5842,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "fbca5260-70eb-4013-82d6-726fb10c66be",
@@ -5758,7 +5864,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "aed9f0f2-ac9b-4e28-8bd6-b53887173425",
@@ -5779,7 +5886,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "5ca6f391-c023-44ab-b30f-fab6b7f04f08",
@@ -5801,7 +5909,8 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "ee89281c-258c-450d-b0ec-7c7d4f059117",
@@ -5814,7 +5923,7 @@
    "identity_status": "UNRESOLVED_SECURITY_LINK",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "OK",
-   "reason_not_usable": "HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 60,
@@ -5822,7 +5931,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "b36ce627-d777-4f43-945b-7e0fa46999b8",
@@ -5843,7 +5953,8 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
+    "BENCHMARK_NOT_READY": 25,
+    "TARGET_IMMATURE": 25,
     "OOT": 13
    },
    "security_id": "16d3f78c-49e0-4bac-a87b-91b6ccb5895a",
@@ -5864,10 +5975,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 22,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "beffff95-8f21-4e6f-8c9e-2be79eb2a078",
@@ -5888,10 +5999,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 11,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "28c786a4-8a01-4308-a693-34e718f47fcf",
@@ -5912,10 +6023,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 11,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "c48e7d66-6442-48b6-be91-2fd87e133bd5",
@@ -5935,10 +6046,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 44,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "48a569ee-db62-482f-873e-2e0d210df1f7",
@@ -5958,10 +6069,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 44,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "5bc7a3d3-604b-4b25-ac25-4f0948bcb4a1",
@@ -5981,10 +6092,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 44,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "238704f0-c6a4-46f1-9cad-8132967877ba",
@@ -6004,10 +6115,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 34,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "afb82f95-8dd4-4a81-8da6-0e17e5cbedb2",
@@ -6027,10 +6138,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 34,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "42cd8596-707f-418c-821e-c5bbccd37591",
@@ -6051,10 +6162,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 34,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "6544caf0-bb46-42ee-9cd6-1ca23b18b79a",
@@ -6074,10 +6185,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 34,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "cae3f007-08aa-4964-a9cb-96b9fb1afd3b",
@@ -6097,10 +6208,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 34,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "5186a8c6-a8ae-4514-84a6-3294cbe717d0",
@@ -6121,10 +6232,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 24,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "d6164473-38d1-4038-b38b-b5c72e9a0d58",
@@ -6145,10 +6256,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 24,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "4b803cf8-236f-410b-9bbc-55eeb3f3cdf9",
@@ -6169,10 +6280,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 30,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "1d23d05c-6f8c-4508-b976-d68f63caf002",
@@ -6193,10 +6304,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 24,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "359f0e99-e4c8-449e-8710-f73164490e33",
@@ -6217,10 +6328,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 29,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "b0ffe77c-5d34-474c-bf6a-28848a415b59",
@@ -6241,10 +6352,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 24,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "fecf17d4-4242-41a3-9339-438e31dad4fc",
@@ -6264,10 +6375,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 31,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "928c725f-e66f-4339-b161-42fefea28004",
@@ -6287,10 +6398,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 11,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "7c4b1b9d-0ae1-454c-ac9f-4ce4713251c0",
@@ -6310,10 +6421,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 11,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "17fedeb6-c825-4f2e-abfa-c20adfefba84",
@@ -6334,10 +6445,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 21,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "d3376494-5ab4-45d0-8b32-1921a58a8156",
@@ -6358,10 +6469,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 21,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "06c32c6f-7a3e-4f4f-8fd7-831ad8515d02",
@@ -6382,10 +6493,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 21,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "82414aa2-72d3-4ada-9bd8-d44e7f7e9d0b",
@@ -6405,10 +6516,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "2e35be8c-e0d9-44bb-b8a4-672ee8a6ff8d",
@@ -6428,10 +6539,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "6227956b-1a66-4f9d-bb67-9e15b319c37e",
@@ -6451,9 +6562,10 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 101,
     "SECURITY_IDENTITY_NOT_READY": 101,
+    "BENCHMARK_NOT_READY": 101,
+    "TARGET_IMMATURE": 101,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "576169af-dd24-4e7c-bc66-408b6726a583",
@@ -6466,17 +6578,17 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "fe9d3e5c-4eee-48b3-b7d5-1bc4eb9aac4c",
@@ -6497,10 +6609,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "5cec853a-f69f-40b4-ab05-7c6e99b82f52",
@@ -6521,10 +6633,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "7e6c5b98-ce5c-4317-a0be-901071442361",
@@ -6545,10 +6657,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "e3230ff5-4091-4c8e-9ba3-34a863973cf0",
@@ -6569,10 +6681,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "4ba66cf7-d814-4444-a037-2892b38132b2",
@@ -6593,10 +6705,10 @@
     "UNIVERSE_NOT_CANONICAL": 153,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "PRICE_DATA_NOT_READY": 153,
-    "BENCHMARK_NOT_READY": 12,
+    "BENCHMARK_NOT_READY": 153,
+    "TARGET_IMMATURE": 153,
     "INSUFFICIENT_HISTORY": 12,
     "HOLDOUT": 12,
-    "TARGET_IMMATURE": 24,
     "OOT": 13
    },
    "security_id": "3137e1cf-71ca-433d-9181-927e1fdc5d1a",
@@ -32648,36 +32760,6 @@
  },
  "benchmark_table": [
   [
-   "XMAD",
-   "ES",
-   "EUR",
-   "URTH_ETF_PROXY_V1",
-   "USD",
-   "TOTAL_RETURN",
-   "USD",
-   "PROXY_ACCEPTABLE",
-   {
-    "rows": 1989,
-    "comparable": 1521,
-    "immature": 312
-   }
-  ],
-  [
-   "XASX",
-   "ASIA",
-   "AUD",
-   "URTH_ETF_PROXY_V1",
-   "USD",
-   "TOTAL_RETURN",
-   "USD",
-   "PROXY_ACCEPTABLE",
-   {
-    "rows": 459,
-    "comparable": 351,
-    "immature": 72
-   }
-  ],
-  [
    "XNYS",
    "US",
    "USD",
@@ -32687,169 +32769,1244 @@
    "USD",
    "PROXY_ACCEPTABLE",
    {
-    "rows": 8375,
-    "comparable": 7055,
-    "immature": 1320
-   }
-  ],
-  [
-   "XMIL",
-   "EU",
-   "EUR",
-   "URTH_ETF_PROXY_V1",
-   "USD",
-   "TOTAL_RETURN",
-   "USD",
-   "PROXY_ACCEPTABLE",
-   {
-    "rows": 306,
-    "comparable": 234,
-    "immature": 48
-   }
-  ],
-  [
-   "XLON",
-   "EU",
-   "GBP",
-   "URTH_ETF_PROXY_V1",
-   "USD",
-   "TOTAL_RETURN",
-   "USD",
-   "PROXY_ACCEPTABLE",
-   {
-    "rows": 918,
-    "comparable": 702,
-    "immature": 144
-   }
-  ],
-  [
-   "XETR",
-   "EU",
-   "EUR",
-   "URTH_ETF_PROXY_V1",
-   "USD",
-   "TOTAL_RETURN",
-   "USD",
-   "PROXY_ACCEPTABLE",
-   {
-    "rows": 459,
-    "comparable": 351,
-    "immature": 72
-   }
-  ],
-  [
-   "XSWX",
-   "EU",
-   "CHF",
-   "URTH_ETF_PROXY_V1",
-   "USD",
-   "TOTAL_RETURN",
-   "USD",
-   "PROXY_ACCEPTABLE",
-   {
-    "rows": 306,
-    "comparable": 234,
-    "immature": 48
-   }
-  ],
-  [
-   "XTSE",
-   "NA",
-   "CAD",
-   "URTH_ETF_PROXY_V1",
-   "USD",
-   "TOTAL_RETURN",
-   "USD",
-   "PROXY_ACCEPTABLE",
-   {
-    "rows": 560,
-    "comparable": 428,
-    "immature": 96
-   }
-  ],
-  [
-   "XTKS",
-   "ASIA",
-   "JPY",
-   "URTH_ETF_PROXY_V1",
-   "USD",
-   "TOTAL_RETURN",
-   "USD",
-   "PROXY_ACCEPTABLE",
-   {
-    "rows": 765,
-    "comparable": 585,
-    "immature": 120
-   }
-  ],
-  [
-   "XPAR",
-   "EU",
-   "EUR",
-   "URTH_ETF_PROXY_V1",
-   "USD",
-   "TOTAL_RETURN",
-   "USD",
-   "PROXY_ACCEPTABLE",
-   {
-    "rows": 765,
-    "comparable": 585,
-    "immature": 120
-   }
-  ],
-  [
-   "XCSE",
-   "EU",
-   "DKK",
-   "URTH_ETF_PROXY_V1",
-   "USD",
-   "TOTAL_RETURN",
-   "USD",
-   "PROXY_ACCEPTABLE",
-   {
-    "rows": 153,
-    "comparable": 117,
-    "immature": 24
-   }
-  ],
-  [
-   "XAMS",
-   "EU",
-   "EUR",
-   "URTH_ETF_PROXY_V1",
-   "USD",
-   "TOTAL_RETURN",
-   "USD",
-   "PROXY_ACCEPTABLE",
-   {
-    "rows": 153,
-    "comparable": 117,
-    "immature": 24
+    "rows": 7000,
+    "comparable": 7000,
+    "immature": 0
    }
   ]
  ],
  "comparability": {
-  "BENCHMARK_UNAVAILABLE_IN_WINDOW": 528,
-  "COMPARABLE": 12280
+  "COMPARABLE": 7000
  },
  "currency_methods": {
-  "SECURITY_TOTAL_RETURN_CONVERTED_TO_USD_AT_PIT_FX": 5753,
-  "NONE_SAME_CURRENCY": 7055
+  "NONE_SAME_CURRENCY": 7000
  },
  "fold_readiness": {
-  "version": "first-ml-fold-readiness-v1",
-  "as_of": "2026-10-05T16:27:28.554466+00:00",
-  "calendar_folds": 1,
-  "trainable_folds": 0,
+  "version": "first-ml-fold-readiness-v2",
+  "as_of": "2026-10-05T17:11:08.445139+00:00",
+  "calendar_folds": 3,
+  "label_safe_folds": 0,
+  "test_label_safe_folds": 3,
+  "coverage_evaluated": false,
+  "ml_eligible_folds": null,
   "row_minimum_status": "UNSPECIFIED_CONTRACT",
   "folds": [
    {
     "index": 0,
-    "calendar_fold": true,
-    "trainable_fold": false,
+    "calendar_valid": true,
+    "label_safe": false,
+    "test_label_safe": true,
+    "train_label_safe": false,
+    "train_label_months": 12,
+    "months": {
+     "train_calendar": 37,
+     "train_label_ready": 12,
+     "test_required": 12,
+     "test_label_ready": 12,
+     "missing_membership_history": 25
+    },
+    "securities": {
+     "TRAIN": 49,
+     "TEST": 50
+    },
+    "issuers": {
+     "TRAIN": 49,
+     "TEST": 50
+    },
+    "coverage_evaluated": false,
+    "ml_eligible": null,
+    "ml_eligible_status": "NOT_YET_EVALUATED_BLOCKED_BY_COVERAGE",
+    "status": "BLOCKED",
+    "blocking_reasons": [
+     "REQUIRED_MEMBERSHIP_HISTORY_NOT_READY",
+     "TRAIN_LABEL_MONTHS_INCOMPLETE_AT_FIT"
+    ],
+    "missing_history_months": [
+     "2014-09",
+     "2014-10",
+     "2014-11",
+     "2014-12",
+     "2015-01",
+     "2015-02",
+     "2015-03",
+     "2015-04",
+     "2015-05",
+     "2015-06",
+     "2015-07",
+     "2015-08",
+     "2015-09",
+     "2015-10",
+     "2015-11",
+     "2015-12",
+     "2016-01",
+     "2016-02",
+     "2016-03",
+     "2016-04",
+     "2016-05",
+     "2016-06",
+     "2016-07",
+     "2016-08",
+     "2016-09"
+    ],
     "row_minimum_status": "UNSPECIFIED_CONTRACT",
     "minimum_rows_per_fold": null,
     "eligible_test_months": [
+     "2018-10",
+     "2018-11",
+     "2018-12",
+     "2019-01",
+     "2019-02",
+     "2019-03",
+     "2019-04",
+     "2019-05",
+     "2019-06",
+     "2019-07",
+     "2019-08",
+     "2019-09"
+    ],
+    "complete_test_window": true,
+    "fit_at": "2018-10-01T13:30:00+00:00",
+    "TRAIN": {
+     "calendar_rows": 2035,
+     "mature_target_rows": 2035,
+     "benchmark_ready_rows": 2035,
+     "price_ready_rows": 2035,
+     "benchmark_exclusions": 0,
+     "price_exclusions": 0,
+     "maturity_exclusions": 0,
+     "eligible_rows": 588,
+     "eligible_securities": 49,
+     "eligible_issuers": 49,
+     "eligible_rows_without_issuer_id": 0,
+     "fundamentals_eligible_rows": 384,
+     "holdout_touching_rows_excluded": 0,
+     "oot_touching_rows_excluded": 0,
+     "excluded_by": {
+      "UNIVERSE_NOT_CANONICAL": 1375,
+      "SECURITY_IDENTITY_NOT_READY": 148,
+      "NOT_INDEX_MEMBER_AT_T": 24
+     },
+     "rows_by_month": [
+      {
+       "month": "2014-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2014-10",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2014-11",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2014-12",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-01",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-02",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-03",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-04",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-05",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-06",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-07",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-08",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-10",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-11",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-12",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-01",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-02",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-03",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-04",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-05",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-06",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-07",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-08",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-10",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2016-11",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2016-12",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-01",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-02",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-03",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-04",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-05",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-06",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-07",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-08",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      }
+     ]
+    },
+    "TEST": {
+     "calendar_rows": 660,
+     "mature_target_rows": 660,
+     "benchmark_ready_rows": 660,
+     "price_ready_rows": 660,
+     "benchmark_exclusions": 0,
+     "price_exclusions": 0,
+     "maturity_exclusions": 0,
+     "eligible_rows": 599,
+     "eligible_securities": 50,
+     "eligible_issuers": 50,
+     "eligible_rows_without_issuer_id": 0,
+     "fundamentals_eligible_rows": 421,
+     "holdout_touching_rows_excluded": 0,
+     "oot_touching_rows_excluded": 0,
+     "excluded_by": {
+      "SECURITY_IDENTITY_NOT_READY": 48,
+      "NOT_INDEX_MEMBER_AT_T": 13
+     },
+     "rows_by_month": [
+      {
+       "month": "2018-10",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-11",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2018-12",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-01",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-02",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-03",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-04",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-05",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-06",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-07",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-08",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      }
+     ]
+    },
+    "dates": {
+     "index": 0,
+     "train_start": "2014-09",
+     "train_end": "2017-09",
+     "test_start": "2018-10",
+     "test_end": "2019-09",
+     "train_months": 37,
+     "test_months": 12,
+     "excluded_decision_start": "2017-10",
+     "excluded_decision_end": "2018-09",
+     "embargo_start": "2018-09",
+     "embargo_end": "2018-09",
+     "separation_rule": "train_decision + H12 + embargo1 <= test_start; embargo lies inside the 12 excluded decision months under the frozen inclusive-boundary contract",
+     "purged_months": 12,
+     "embargo_months": 1
+    }
+   },
+   {
+    "index": 1,
+    "calendar_valid": true,
+    "label_safe": false,
+    "test_label_safe": true,
+    "train_label_safe": false,
+    "train_label_months": 23,
+    "months": {
+     "train_calendar": 49,
+     "train_label_ready": 23,
+     "test_required": 12,
+     "test_label_ready": 12,
+     "missing_membership_history": 25
+    },
+    "securities": {
+     "TRAIN": 49,
+     "TEST": 50
+    },
+    "issuers": {
+     "TRAIN": 49,
+     "TEST": 50
+    },
+    "coverage_evaluated": false,
+    "ml_eligible": null,
+    "ml_eligible_status": "NOT_YET_EVALUATED_BLOCKED_BY_COVERAGE",
+    "status": "BLOCKED",
+    "blocking_reasons": [
+     "REQUIRED_MEMBERSHIP_HISTORY_NOT_READY",
+     "TRAIN_LABEL_MONTHS_INCOMPLETE_AT_FIT"
+    ],
+    "missing_history_months": [
+     "2014-09",
+     "2014-10",
+     "2014-11",
+     "2014-12",
+     "2015-01",
+     "2015-02",
+     "2015-03",
+     "2015-04",
+     "2015-05",
+     "2015-06",
+     "2015-07",
+     "2015-08",
+     "2015-09",
+     "2015-10",
+     "2015-11",
+     "2015-12",
+     "2016-01",
+     "2016-02",
+     "2016-03",
+     "2016-04",
+     "2016-05",
+     "2016-06",
+     "2016-07",
+     "2016-08",
+     "2016-09"
+    ],
+    "row_minimum_status": "UNSPECIFIED_CONTRACT",
+    "minimum_rows_per_fold": null,
+    "eligible_test_months": [
+     "2019-10",
+     "2019-11",
+     "2019-12",
+     "2020-01",
+     "2020-02",
+     "2020-03",
+     "2020-04",
+     "2020-05",
+     "2020-06",
+     "2020-07",
+     "2020-08",
+     "2020-09"
+    ],
+    "complete_test_window": true,
+    "fit_at": "2019-10-01T13:30:00+00:00",
+    "TRAIN": {
+     "calendar_rows": 2695,
+     "mature_target_rows": 2695,
+     "benchmark_ready_rows": 2695,
+     "price_ready_rows": 2695,
+     "benchmark_exclusions": 0,
+     "price_exclusions": 0,
+     "maturity_exclusions": 0,
+     "eligible_rows": 1127,
+     "eligible_securities": 49,
+     "eligible_issuers": 49,
+     "eligible_rows_without_issuer_id": 0,
+     "fundamentals_eligible_rows": 746,
+     "holdout_touching_rows_excluded": 0,
+     "oot_touching_rows_excluded": 0,
+     "excluded_by": {
+      "UNIVERSE_NOT_CANONICAL": 1375,
+      "SECURITY_IDENTITY_NOT_READY": 196,
+      "NOT_INDEX_MEMBER_AT_T": 48,
+      "PURGE_EMBARGO_VIOLATION": 55
+     },
+     "rows_by_month": [
+      {
+       "month": "2014-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2014-10",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2014-11",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2014-12",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-01",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-02",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-03",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-04",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-05",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-06",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-07",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-08",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-10",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-11",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-12",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-01",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-02",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-03",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-04",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-05",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-06",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-07",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-08",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-10",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2016-11",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2016-12",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-01",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-02",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-03",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-04",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-05",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-06",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-07",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-08",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-10",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-11",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-12",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-01",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-02",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-03",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-04",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-05",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-06",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-07",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-08",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      }
+     ]
+    },
+    "TEST": {
+     "calendar_rows": 660,
+     "mature_target_rows": 660,
+     "benchmark_ready_rows": 660,
+     "price_ready_rows": 660,
+     "benchmark_exclusions": 0,
+     "price_exclusions": 0,
+     "maturity_exclusions": 0,
+     "eligible_rows": 600,
+     "eligible_securities": 50,
+     "eligible_issuers": 50,
+     "eligible_rows_without_issuer_id": 0,
+     "fundamentals_eligible_rows": 472,
+     "holdout_touching_rows_excluded": 0,
+     "oot_touching_rows_excluded": 0,
+     "excluded_by": {
+      "SECURITY_IDENTITY_NOT_READY": 48,
+      "NOT_INDEX_MEMBER_AT_T": 12
+     },
+     "rows_by_month": [
+      {
+       "month": "2019-10",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-11",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-12",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2020-01",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2020-02",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2020-03",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2020-04",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2020-05",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2020-06",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2020-07",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2020-08",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2020-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      }
+     ]
+    },
+    "dates": {
+     "index": 1,
+     "train_start": "2014-09",
+     "train_end": "2018-09",
+     "test_start": "2019-10",
+     "test_end": "2020-09",
+     "train_months": 49,
+     "test_months": 12,
+     "excluded_decision_start": "2018-10",
+     "excluded_decision_end": "2019-09",
+     "embargo_start": "2019-09",
+     "embargo_end": "2019-09",
+     "separation_rule": "train_decision + H12 + embargo1 <= test_start; embargo lies inside the 12 excluded decision months under the frozen inclusive-boundary contract",
+     "purged_months": 12,
+     "embargo_months": 1
+    }
+   },
+   {
+    "index": 2,
+    "calendar_valid": true,
+    "label_safe": false,
+    "test_label_safe": true,
+    "train_label_safe": false,
+    "train_label_months": 35,
+    "months": {
+     "train_calendar": 61,
+     "train_label_ready": 35,
+     "test_required": 12,
+     "test_label_ready": 12,
+     "missing_membership_history": 25
+    },
+    "securities": {
+     "TRAIN": 50,
+     "TEST": 51
+    },
+    "issuers": {
+     "TRAIN": 50,
+     "TEST": 51
+    },
+    "coverage_evaluated": false,
+    "ml_eligible": null,
+    "ml_eligible_status": "NOT_YET_EVALUATED_BLOCKED_BY_COVERAGE",
+    "status": "BLOCKED",
+    "blocking_reasons": [
+     "REQUIRED_MEMBERSHIP_HISTORY_NOT_READY",
+     "TRAIN_LABEL_MONTHS_INCOMPLETE_AT_FIT"
+    ],
+    "missing_history_months": [
+     "2014-09",
+     "2014-10",
+     "2014-11",
+     "2014-12",
+     "2015-01",
+     "2015-02",
+     "2015-03",
+     "2015-04",
+     "2015-05",
+     "2015-06",
+     "2015-07",
+     "2015-08",
+     "2015-09",
+     "2015-10",
+     "2015-11",
+     "2015-12",
+     "2016-01",
+     "2016-02",
+     "2016-03",
+     "2016-04",
+     "2016-05",
+     "2016-06",
+     "2016-07",
+     "2016-08",
+     "2016-09"
+    ],
+    "row_minimum_status": "UNSPECIFIED_CONTRACT",
+    "minimum_rows_per_fold": null,
+    "eligible_test_months": [
+     "2020-10",
      "2020-11",
      "2020-12",
      "2021-01",
@@ -32862,52 +34019,682 @@
      "2021-08",
      "2021-09"
     ],
-    "complete_test_window": false,
-    "fit_at": "2020-11-02T14:30:00+00:00",
+    "complete_test_window": true,
+    "fit_at": "2020-10-01T13:30:00+00:00",
     "TRAIN": {
-     "calendar_rows": 2035,
-     "mature_target_rows": 2035,
-     "benchmark_ready_rows": 2035,
-     "price_ready_rows": 2035,
-     "eligible_rows": 1825,
-     "fundamentals_eligible_rows": 1235,
+     "calendar_rows": 3355,
+     "mature_target_rows": 3355,
+     "benchmark_ready_rows": 3355,
+     "price_ready_rows": 3355,
+     "benchmark_exclusions": 0,
+     "price_exclusions": 0,
+     "maturity_exclusions": 0,
+     "eligible_rows": 1725,
+     "eligible_securities": 50,
+     "eligible_issuers": 50,
+     "eligible_rows_without_issuer_id": 0,
+     "fundamentals_eligible_rows": 1165,
      "holdout_touching_rows_excluded": 0,
      "oot_touching_rows_excluded": 0,
      "excluded_by": {
-      "SECURITY_IDENTITY_NOT_READY": 148,
-      "NOT_INDEX_MEMBER_AT_T": 62
-     }
+      "UNIVERSE_NOT_CANONICAL": 1375,
+      "SECURITY_IDENTITY_NOT_READY": 244,
+      "NOT_INDEX_MEMBER_AT_T": 61,
+      "PURGE_EMBARGO_VIOLATION": 55
+     },
+     "rows_by_month": [
+      {
+       "month": "2014-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2014-10",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2014-11",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2014-12",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-01",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-02",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-03",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-04",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-05",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-06",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-07",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-08",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-10",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-11",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2015-12",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-01",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-02",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-03",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-04",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-05",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-06",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-07",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-08",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      },
+      {
+       "month": "2016-10",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2016-11",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2016-12",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-01",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-02",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-03",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-04",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-05",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-06",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-07",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-08",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-10",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-11",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2017-12",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-01",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-02",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-03",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-04",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-05",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-06",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-07",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-08",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-10",
+       "calendar_rows": 55,
+       "label_ready_rows": 49,
+       "eligible_rows": 49,
+       "securities": 49,
+       "issuers": 49
+      },
+      {
+       "month": "2018-11",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2018-12",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-01",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-02",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-03",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-04",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-05",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-06",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-07",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-08",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2019-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 0,
+       "eligible_rows": 0,
+       "securities": 0,
+       "issuers": 0
+      }
+     ]
     },
     "TEST": {
      "calendar_rows": 660,
-     "mature_target_rows": 605,
-     "benchmark_ready_rows": 605,
-     "price_ready_rows": 605,
-     "eligible_rows": 559,
-     "fundamentals_eligible_rows": 456,
-     "holdout_touching_rows_excluded": 55,
+     "mature_target_rows": 660,
+     "benchmark_ready_rows": 660,
+     "price_ready_rows": 660,
+     "benchmark_exclusions": 0,
+     "price_exclusions": 0,
+     "maturity_exclusions": 0,
+     "eligible_rows": 609,
+     "eligible_securities": 51,
+     "eligible_issuers": 51,
+     "eligible_rows_without_issuer_id": 0,
+     "fundamentals_eligible_rows": 497,
+     "holdout_touching_rows_excluded": 0,
      "oot_touching_rows_excluded": 0,
      "excluded_by": {
       "SECURITY_IDENTITY_NOT_READY": 48,
-      "NOT_INDEX_MEMBER_AT_T": 2,
-      "HOLDOUT": 55,
-      "LABEL_NOT_AVAILABLE_AT_CUTOFF": 55,
-      "TARGET_BENCHMARK_NOT_READY": 55,
-      "TARGET_IMMATURE": 55,
-      "TARGET_PRICE_NOT_READY": 55,
-      "TARGET_WINDOW_TOUCHES_HOLDOUT": 55
-     }
+      "NOT_INDEX_MEMBER_AT_T": 3
+     },
+     "rows_by_month": [
+      {
+       "month": "2020-10",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2020-11",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2020-12",
+       "calendar_rows": 55,
+       "label_ready_rows": 50,
+       "eligible_rows": 50,
+       "securities": 50,
+       "issuers": 50
+      },
+      {
+       "month": "2021-01",
+       "calendar_rows": 55,
+       "label_ready_rows": 51,
+       "eligible_rows": 51,
+       "securities": 51,
+       "issuers": 51
+      },
+      {
+       "month": "2021-02",
+       "calendar_rows": 55,
+       "label_ready_rows": 51,
+       "eligible_rows": 51,
+       "securities": 51,
+       "issuers": 51
+      },
+      {
+       "month": "2021-03",
+       "calendar_rows": 55,
+       "label_ready_rows": 51,
+       "eligible_rows": 51,
+       "securities": 51,
+       "issuers": 51
+      },
+      {
+       "month": "2021-04",
+       "calendar_rows": 55,
+       "label_ready_rows": 51,
+       "eligible_rows": 51,
+       "securities": 51,
+       "issuers": 51
+      },
+      {
+       "month": "2021-05",
+       "calendar_rows": 55,
+       "label_ready_rows": 51,
+       "eligible_rows": 51,
+       "securities": 51,
+       "issuers": 51
+      },
+      {
+       "month": "2021-06",
+       "calendar_rows": 55,
+       "label_ready_rows": 51,
+       "eligible_rows": 51,
+       "securities": 51,
+       "issuers": 51
+      },
+      {
+       "month": "2021-07",
+       "calendar_rows": 55,
+       "label_ready_rows": 51,
+       "eligible_rows": 51,
+       "securities": 51,
+       "issuers": 51
+      },
+      {
+       "month": "2021-08",
+       "calendar_rows": 55,
+       "label_ready_rows": 51,
+       "eligible_rows": 51,
+       "securities": 51,
+       "issuers": 51
+      },
+      {
+       "month": "2021-09",
+       "calendar_rows": 55,
+       "label_ready_rows": 51,
+       "eligible_rows": 51,
+       "securities": 51,
+       "issuers": 51
+      }
+     ]
+    },
+    "dates": {
+     "index": 2,
+     "train_start": "2014-09",
+     "train_end": "2019-09",
+     "test_start": "2020-10",
+     "test_end": "2021-09",
+     "train_months": 61,
+     "test_months": 12,
+     "excluded_decision_start": "2019-10",
+     "excluded_decision_end": "2020-09",
+     "embargo_start": "2020-09",
+     "embargo_end": "2020-09",
+     "separation_rule": "train_decision + H12 + embargo1 <= test_start; embargo lies inside the 12 excluded decision months under the frozen inclusive-boundary contract",
+     "purged_months": 12,
+     "embargo_months": 1
     }
    }
   ],
+  "required_history": {
+   "last_admissible_decision_month": "2021-09",
+   "last_decision_at": "2021-09-01T13:30:00+00:00",
+   "target_start": "2021-09-01T13:30:00+00:00",
+   "target_end": "2022-09-01T13:30:00+00:00",
+   "security_exit_session": "2022-08-31",
+   "benchmark_exit_session": "2022-08-31",
+   "earliest_target_mature_at": "2022-08-31T21:00:00+00:00",
+   "next_month_rejected": "2021-10",
+   "minimum_ready_history_start": "2014-09",
+   "last_required_dev_month": "2021-09",
+   "minimum_contiguous_ready_months": 85,
+   "horizon_months": 12,
+   "holdout_start": "2022-10-01",
+   "security_calendar": "XNYS",
+   "benchmark_calendar": "XNYS",
+   "semantics": "Nominal decision_at + H12 date < holdout start; security and SPY exit at their last closed session at that instant. No outcome data read."
+  },
   "row_evidence_file": "FIRST_ML_FOLD_AUDIT.json"
  },
  "gates": {
   "D02_MONTHLY_RESEARCH_READY": {
    "status": "BLOCKED",
-   "required": ">= 85 consecutive READY months; >= 3 calendar and certified trainable folds",
-   "actual": "72/141 months READY, longest run 72, calendar folds 1, trainable folds 0",
-   "blocking_reason": "1 calendar folds; 0 certified trainable; need 3; per-fold minimum UNSPECIFIED_CONTRACT"
+   "required": "85 READY months positioned 2014-09..2021-09; >= 3 LABEL_SAFE folds; statistical coverage separate",
+   "actual": "72/141 READY; required history 60/85; target calendar folds 3, label-safe 0",
+   "blocking_reason": "25 required membership months blocked; 0 LABEL_SAFE folds; need 3. Coverage not evaluated and does not decide D02."
   },
   "US_SECURITY_IDENTITY_READY": {
    "status": "PARTIAL",
@@ -32924,7 +34711,7 @@
   "BENCHMARK_RETURN_BASIS_READY": {
    "status": "READY",
    "required": "first ML US scope: comparable return + currency basis, accepted provenance",
-   "actual": "US rows comparable 7055/7055; non-US via USD conversion (PROXY)",
+   "actual": "US rows comparable 7000/7000; non-US via USD conversion (PROXY)",
    "blocking_reason": null
   },
   "RESEARCH_SECURITY_COVERAGE_READY": {

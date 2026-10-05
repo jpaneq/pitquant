@@ -1,54 +1,86 @@
-# ADR-0055 — Certify first-ML target availability separately from calendar folds
+# ADR-0055 — Calendar, label-safe and ML-eligible folds (V2)
 
-Status: accepted for the readiness audit requested on 2026-10-05; no training authorized.
+Status: amended and applied under the user's 2026-10-05 label-safe critical-path request.
+The initial V1 decision is preserved in Git at a47228d. No training authorized.
 
-## Context
+## Why V1 is amended
 
-The frozen FIRST_EQUITY_ML_12M_V0 calendar can produce a fold whose TEST decisions are
-before the holdout but whose H12 outcomes touch it. With the current 72-month run,
-TRAIN is 2016-10..2019-10 and TEST is 2020-11..2021-10. October 2021's nominal
-H12 endpoint reaches the sealed period beginning 2022-10-01. The calendar's
-inclusive boundaries, 37 first-fold TRAIN months and 12 excluded months are retained.
+V1 distinguished dates from certified trainability but made an unspecified statistical
+row minimum prevent label certification. The user explicitly separates these decisions:
+D02 concerns correct historical universes and usable temporal labels; statistical sample
+sufficiency belongs to RESEARCH_SECURITY_COVERAGE_READY. V2 removes that coupling,
+without approving or inventing a replacement sample-size threshold.
 
-There is no explicit per-fold row minimum in this experiment. The legacy global
-DEV minimum in model_contracts is a different contract and cannot substitute for one.
+## Three levels
 
-## Decision
+CALENDAR_FOLD: expanding TRAIN/PURGE/EMBARGO/TEST dates satisfy the unchanged frozen
+FIRST_EQUITY_ML_12M_V0 contract. TRAIN minimum 36, H12 purge, embargo 1, TEST 12,
+step 12, three folds. The inclusive constructor still gives 37 calendar TRAIN months
+in the first fold. A proposed calendar is structural, not proof that its data exists.
 
-Keep the calendar constructor and all feature, target and model definitions intact.
-Use first_ml_eligibility for membership, identity, price provenance, benchmark basis
-and feature-family checks. Extend its HOLDOUT/OOT guards to the nominal H12 endpoint
-and any later actual exit, so an allegedly OK target cannot bypass sealed boundaries.
+LABEL_SAFE_FOLD: calendar valid, complete usable membership/identity history over its
+required interval, at least the contracted 36 TRAIN decision months with available
+labels at fit, and all twelve TEST months with valid mature H12 outcomes. No row uses
+holdout/OOT outcomes. TRAIN rows also satisfy the existing actual-instant availability
+and purge/embargo checks. Invalid individual rows are excluded and counted; a missing
+individual security does not erase a month with other valid rows. A zero-outcome month
+cannot meet temporal completeness. Existence of outcome rows is not a statistical
+sample-size claim. Missing core model features can reduce ML candidate counts without
+changing temporal label validity.
 
-The read-only fold auditor additionally checks actual entry/exit, security and
-benchmark outcomes, label_available_at, the nominal H12 window, and timezone-aware
-availability cutoffs. TRAIN labels must be available by the first actual TEST
-decision; TEST labels must be available by audit time. Both month-level purge/embargo
-and the corresponding actual decision-plus-H12-plus-embargo boundary are enforced.
-No price rows in sealed periods are read to reconstruct missing targets.
+ML_ELIGIBLE_FOLD: label-safe plus the future approved coverage/sample-size contract.
+`coverage_evaluated=false`, `ml_eligible=null`, status
+NOT_YET_EVALUATED_BLOCKED_BY_COVERAGE. UNSPECIFIED_CONTRACT remains visible for the
+statistical minimum, but neither it nor required_securities decides label safety.
 
-Report every TRAIN/TEST row with its nominal target window, actual exit, maturity,
-cutoff and family-specific exclusion reasons. Count calendar rows, mature labels,
-benchmark-ready, price-ready and eligible rows separately; these marginal counts
-are not interchangeable. Report PRICE and FUNDAMENTALS eligible counts on the same
-calendar. A complete twelve-month TEST window requires eligible rows in all twelve
-months, independently of the future statistical minimum.
+## Derive the latest three folds
 
-Until the per-fold row minimum is explicitly defined, its status is
-UNSPECIFIED_CONTRACT and no fold is certified trainable. D02 for First ML requires
-85 continuous usable membership months, three calendar folds and three certified
-trainable folds. Other identity and dataset gates remain independently required.
-The legacy Research Lab collection flags are not this experiment's certification.
+`latest_label_safe_history` walks backwards over first XNYS monthly opens. The
+nominal decision_at + H12 date must be strictly before holdout start. Both US
+security and SPY use their last closed XNYS session at that target instant;
+label availability uses the existing one-hour close lag. This is a calendar-only
+calculation and reads no prices, labels or performance in sealed periods.
+The nominal boundary is retained even when the preceding close is before holdout.
 
-## Consequences
+For the frozen holdout start 2022-10-01, the latest admissible decision is
+2021-09-01 13:30Z; nominal endpoint 2022-09-01 13:30Z, prior security/benchmark
+close 2022-08-31, earliest label availability 2022-08-31 21:00Z. October 2021
+is rejected by the nominal boundary. These are program outputs, not configured dates.
+Actual existing label maturity remains separately audited per row.
 
-Closing the thirteen missing membership months alone cannot certify three trainable
-folds. Even without the unspecified minimum, the resulting last calendar fold has
-TEST 2021-10..2022-09, whose entire nominal H12 outcome window touches holdout.
-That is an independent outcome-window limitation, not permission to move the
-holdout, shorten TEST, change the target or expand this task's historical scope.
+The frozen constructor requires 36+12+1+12+2×12=85 decision months, positioned
+2014-09..2021-09. Its three latest TEST windows are 2018-10..2019-09,
+2019-10..2020-09 and 2020-10..2021-09, with a common TRAIN start of 2014-09.
+The operational D02 requirement is that positioned interval, not 85 months ending
+anywhere. Required prices/outcomes may extend to September 2022; that does not
+require membership at a subsequent decision merely to compute an existing label.
 
-Under Armour's index-effective date remains unconfirmed. OCC and SEC corporate
-evidence is accepted for class/distribution/listing facts only. This ADR does not
-relax membership evidence or promote the candidate 2016-04-08 date to an index event.
-Required securities remains 100; coverage design and M0–M4 training stay deferred.
+## Certification and audit
+
+Every actual row retains nominal target_start/end, actual exit, target maturity,
+availability cutoff and family-specific exclusions. TRAIN availability cutoff is
+the first TEST decision; TEST cutoff is audit time. Missing, prematurely available
+or future labels fail closed. Nominal/actual windows touching sealed periods are
+rejected before inspecting outcome values. Readiness queries select only label-safe
+DEV target dates; sealed/out-of-time outcome rows are not loaded.
+
+The intended three calendars are reported separately from the old available-READY-run
+calendar. Each fold reports complete twelve-month TEST coverage, TRAIN temporal
+months, missing historical months, securities, issuers, eligible rows and exclusions.
+A calendar can be structurally valid while label safety fails on missing history.
+Unknown issuer IDs are counted explicitly, never treated as securities-as-issuers.
+
+D02_MONTHLY_RESEARCH_READY for First ML requires historical membership/identity
+correctness for the complete derived interval and three LABEL_SAFE_FOLDS. Coverage
+remains a separate mandatory First ML gate. Thus D02 can eventually be READY while
+coverage and FIRST_ML_BASELINE_READY stay BLOCKED. Legacy Research Lab collection
+flags are explicitly distinguished from the first-ML readiness gates.
+
+## Unchanged constraints
+
+required_securities=100. No coverage threshold, calendar constructor, horizon,
+feature/model definitions, holdout/OOT boundaries or market scope is changed.
+No model is trained. No BTC, scheduler, simulation, champion/master or non-US work.
+Under Armour still needs official evidence directly establishing index inclusion
+and its effective date; equivalent official history/notices/files are acceptable.
+Corporate distribution, listing or a secondary candidate date do not close membership.
