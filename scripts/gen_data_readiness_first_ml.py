@@ -18,10 +18,10 @@ from typing import Any
 from sqlalchemy import func, or_, select
 
 from pitquant.config.settings import get_settings
-from pitquant.data.archive import ArchiveStore
+from pitquant.data.archive import ArchiveStore, sha256_hex
 from pitquant.db.models import DataSource, Price, RawSourceArchive, Security, SP500Anchor
 from pitquant.db.session import make_engine, make_session_factory
-from pitquant.market.canonical import FEATURE_VERSION, TARGET_VERSION, audit_series
+from pitquant.market.canonical import TARGET_VERSION, audit_series
 from pitquant.positions import routine as rt
 from pitquant.research import dataset_v1 as DS
 from pitquant.research import first_ml as FM
@@ -29,6 +29,7 @@ from pitquant.research import first_ml_contract as C
 from pitquant.research.coverage_v1 import VERSION as COVERAGE_VERSION
 from pitquant.research.coverage_v1 import audit_coverage, persist_coverage
 from pitquant.research.fold_readiness import audit_folds, latest_label_safe_history
+from pitquant.research.fundamental_recovery import FEATURE_VERSION
 from pitquant.research.membership_bridge import build_bridge
 from pitquant.research.membership_evidence import VERSION as MEMBERSHIP_VERSION
 from pitquant.research.membership_evidence import (
@@ -548,6 +549,18 @@ def main() -> None:
     coverage_audit = audit_coverage(fold_audit, projection, snaps, targets12)
     coverage_audit["feature_set_version"] = FEATURE_VERSION
     coverage_audit["target_set_version"] = TARGET_VERSION
+    recovery_manifest = json.loads((ROOT / "docs/FIRST_ML_FUNDAMENTAL_RECOVERY.json").read_text())
+    if recovery_manifest["feature_version"] != FEATURE_VERSION or recovery_manifest[
+        "source_archive"
+    ]["sha256"] != sha256_hex(
+        (ROOT / "src/pitquant/research/fundamental_recovery.py").read_bytes()
+    ):
+        raise ValueError("fundamental recovery source/version differs from archived build")
+    coverage_audit["fundamental_mapping"] = {
+        "version": recovery_manifest["version"],
+        "feature_version": FEATURE_VERSION,
+        "source_archive": recovery_manifest["source_archive"],
+    }
     coverage_audit["archive"] = persist_coverage(
         S, ArchiveStore(ROOT / "data/archive"), coverage_audit
     )

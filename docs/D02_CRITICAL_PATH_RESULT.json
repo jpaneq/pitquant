@@ -3015,7 +3015,7 @@
     "UNVERIFIED": 47
   },
   "fold_readiness": {
-    "as_of": "2026-10-05T20:55:20.828791+00:00",
+    "as_of": "2026-10-05T21:37:10.941092+00:00",
     "calendar_folds": 3,
     "coverage_contract": "FIRST_ML_COVERAGE_V1",
     "coverage_evaluated": true,
@@ -3034,7 +3034,7 @@
             "NOT_INDEX_MEMBER_AT_T": 36,
             "SECURITY_IDENTITY_NOT_READY": 48
           },
-          "fundamentals_eligible_rows": 416,
+          "fundamentals_eligible_rows": 476,
           "holdout_touching_rows_excluded": 0,
           "mature_target_rows": 660,
           "maturity_exclusions": 0,
@@ -3153,7 +3153,7 @@
             "NOT_INDEX_MEMBER_AT_T": 130,
             "SECURITY_IDENTITY_NOT_READY": 148
           },
-          "fundamentals_eligible_rows": 1156,
+          "fundamentals_eligible_rows": 1318,
           "holdout_touching_rows_excluded": 0,
           "mature_target_rows": 2035,
           "maturity_exclusions": 0,
@@ -3504,8 +3504,8 @@
         "label_safe": true,
         "minimum_rows_per_fold": null,
         "missing_history_months": [],
-        "ml_eligible": false,
-        "ml_eligible_status": "BLOCKED",
+        "ml_eligible": true,
+        "ml_eligible_status": "READY",
         "months": {
           "missing_membership_history": 0,
           "test_label_ready": 12,
@@ -3537,7 +3537,7 @@
             "NOT_INDEX_MEMBER_AT_T": 24,
             "SECURITY_IDENTITY_NOT_READY": 48
           },
-          "fundamentals_eligible_rows": 472,
+          "fundamentals_eligible_rows": 510,
           "holdout_touching_rows_excluded": 0,
           "mature_target_rows": 660,
           "maturity_exclusions": 0,
@@ -3657,7 +3657,7 @@
             "PURGE_EMBARGO_VIOLATION": 55,
             "SECURITY_IDENTITY_NOT_READY": 196
           },
-          "fundamentals_eligible_rows": 1518,
+          "fundamentals_eligible_rows": 1735,
           "holdout_touching_rows_excluded": 0,
           "mature_target_rows": 2695,
           "maturity_exclusions": 0,
@@ -4104,8 +4104,8 @@
         "label_safe": true,
         "minimum_rows_per_fold": null,
         "missing_history_months": [],
-        "ml_eligible": false,
-        "ml_eligible_status": "BLOCKED",
+        "ml_eligible": true,
+        "ml_eligible_status": "READY",
         "months": {
           "missing_membership_history": 0,
           "test_label_ready": 12,
@@ -4137,7 +4137,7 @@
             "NOT_INDEX_MEMBER_AT_T": 15,
             "SECURITY_IDENTITY_NOT_READY": 48
           },
-          "fundamentals_eligible_rows": 497,
+          "fundamentals_eligible_rows": 521,
           "holdout_touching_rows_excluded": 0,
           "mature_target_rows": 660,
           "maturity_exclusions": 0,
@@ -4257,7 +4257,7 @@
             "PURGE_EMBARGO_VIOLATION": 55,
             "SECURITY_IDENTITY_NOT_READY": 244
           },
-          "fundamentals_eligible_rows": 1932,
+          "fundamentals_eligible_rows": 2209,
           "holdout_touching_rows_excluded": 0,
           "mature_target_rows": 3355,
           "maturity_exclusions": 0,
@@ -4800,8 +4800,8 @@
         "label_safe": true,
         "minimum_rows_per_fold": null,
         "missing_history_months": [],
-        "ml_eligible": false,
-        "ml_eligible_status": "BLOCKED",
+        "ml_eligible": true,
+        "ml_eligible_status": "READY",
         "months": {
           "missing_membership_history": 0,
           "test_label_ready": 12,
@@ -4821,7 +4821,7 @@
       }
     ],
     "label_safe_folds": 3,
-    "ml_eligible_folds": 0,
+    "ml_eligible_folds": 3,
     "required_history": {
       "benchmark_calendar": "XNYS",
       "benchmark_exit_session": "2022-08-31",
@@ -4921,10 +4921,10 @@
       "status": "READY"
     },
     "FIRST_ML_BASELINE_READY": {
-      "actual": "false",
-      "blocking_reason": "required gates not READY: RESEARCH_SECURITY_COVERAGE_READY, RESEARCH_DATA_READY",
+      "actual": "true",
+      "blocking_reason": null,
       "required": "all required gates READY",
-      "status": "BLOCKED"
+      "status": "READY"
     },
     "FIRST_ML_IDENTITY_VALIDITY_READY": {
       "actual": true,
@@ -4942,19 +4942,19 @@
       "actual": "derived",
       "blocking_reason": "at least one data gate is not READY",
       "required": "all data gates READY",
-      "status": "BLOCKED"
+      "status": "READY"
     },
     "RESEARCH_SECURITY_COVERAGE_READY": {
       "actual": {
-        "passing_folds": 0,
+        "passing_folds": 3,
         "required_folds": 3
       },
-      "blocking_reason": "See FIRST_ML_COVERAGE_AUDIT.json: exact family/month deficits or class degeneracy",
+      "blocking_reason": null,
       "required": "FIRST_ML_COVERAGE_V1",
-      "status": "BLOCKED"
+      "status": "READY"
     },
     "US_FUNDAMENTALS_READY": {
-      "actual": "40 securities",
+      "actual": "46 securities",
       "blocking_reason": null,
       "required": ">= 30 securities with >= 36 usable PIT months",
       "status": "READY"
@@ -13356,7 +13356,7 @@
   "required_months": 85,
   "required_months_blocked": 0,
   "required_securities": 100,
-  "stop_reason": "Three LABEL_SAFE folds certified; coverage status: BLOCKED",
+  "stop_reason": "Three LABEL_SAFE folds certified; coverage status: READY",
   "strict_unresolved_cards_preserved": 49,
   "under_armour": {
     "additional_sp_search_stopped": true,
