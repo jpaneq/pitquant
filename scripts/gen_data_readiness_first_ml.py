@@ -1,5 +1,5 @@
 # ruff: noqa: E501
-"""DATA READINESS FOR FIRST ML: generates docs/DATA_READINESS_FIRST_ML.md (+ .json) and the US-only fold audit FROM THE DATABASE. Read-only; trains nothing; lowers no gate.
+"""DATA READINESS FOR FIRST ML: generates docs/DATA_READINESS_FIRST_ML.md (+ .json) and the US-only fold audit FROM THE DATABASE. Archives an append-only research membership selection ledger; preserves snapshots and targets; trains nothing; statistical gates unchanged.
 
 PITQUANT_DATABASE_URL=sqlite:///data/pitquant.db python scripts/gen_data_readiness_first_ml.py
 """
@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import os
 import warnings
+from calendar import monthrange
 from collections import Counter, defaultdict
 from datetime import UTC, date, datetime
 from pathlib import Path
@@ -17,7 +18,8 @@ from typing import Any
 from sqlalchemy import func, or_, select
 
 from pitquant.config.settings import get_settings
-from pitquant.db.models import DataSource, Price, Security
+from pitquant.data.archive import ArchiveStore
+from pitquant.db.models import DataSource, Price, RawSourceArchive, Security, SP500Anchor
 from pitquant.db.session import make_engine, make_session_factory
 from pitquant.market.canonical import FEATURE_VERSION, TARGET_VERSION, audit_series
 from pitquant.positions import routine as rt
@@ -26,6 +28,13 @@ from pitquant.research import first_ml as FM
 from pitquant.research import first_ml_contract as C
 from pitquant.research.fold_readiness import audit_folds, latest_label_safe_history
 from pitquant.research.membership_bridge import build_bridge
+from pitquant.research.membership_evidence import VERSION as MEMBERSHIP_VERSION
+from pitquant.research.membership_evidence import (
+    build_projection,
+    context_extra,
+    persist_projection,
+    source_manifest,
+)
 from pitquant.research_readiness import research_readiness
 from pitquant.universe.sp500_anchor_graph import reconstruct
 
@@ -65,15 +74,141 @@ def main() -> None:
     from pitquant.universe.identity_bridge import succession_map
 
     canon = succession_map(S)
+    bridge, unresolved_bridge = build_bridge(S)
+    plan, history_requirement = latest_label_safe_history()
+    configured: dict[str, dict[str, Any]] = {}
+    for snap in S.scalars(
+        select(ResearchFeatureSnapshot)
+        .where(
+            ResearchFeatureSnapshot.feature_set_version == FEATURE_VERSION,
+            ResearchFeatureSnapshot.exchange == "XNYS",
+            ResearchFeatureSnapshot.decision_session < C.HOLDOUT[0],
+        )
+        .order_by(ResearchFeatureSnapshot.decision_at, ResearchFeatureSnapshot.snapshot_id)
+    ):
+        security = S.get_one(Security, snap.security_id)
+        if snap.meta.get("ticker") not in DS.BENCH_TICKERS and not security.is_synthetic:
+            configured[snap.security_id] = {
+                "ticker": snap.meta.get("ticker"),
+                "issuer_id": security.issuer_id,
+                "sector": snap.meta.get("sector_group"),
+            }
+    source_evidence = source_manifest(ROOT / "docs/D02_MEMBERSHIP_SOURCE_MANIFEST.json")
+    source_evidence["anchor_provenance"] = {}
+    for anchor in rep.anchors:
+        row = S.get_one(SP500Anchor, anchor.anchor_id)
+        raw = S.get_one(RawSourceArchive, row.archive_id)
+        ArchiveStore(ROOT / "data/archive").get(raw.sha256)
+        source_evidence["anchor_provenance"][anchor.anchor_id] = {
+            "source_url": raw.source_identifier,
+            "publisher": "State Street / SEC EDGAR",
+            "document_id": row.accession,
+            "accession": row.accession,
+            "retrieved_at": raw.retrieved_at.isoformat(),
+            "source_available_at": row.source_available_at.isoformat(),
+            "sha256": raw.sha256,
+            "raw_document": raw.storage_uri,
+            "evidence_type": "SEC_FILED_INDEX_REPLICATION_ANCHOR",
+            "effective_date": str(anchor.as_of),
+            "resolver_version": row.parser_version,
+        }
+    required_end_month = date.fromisoformat(history_requirement["last_required_dev_month"] + "-01")
+    projection = build_projection(
+        rep,
+        bridge,
+        configured,
+        canon,
+        source_evidence,
+        ArchiveStore(ROOT / "data/archive"),
+        start=date.fromisoformat(history_requirement["minimum_ready_history_start"] + "-01"),
+        end=required_end_month.replace(
+            day=monthrange(required_end_month.year, required_end_month.month)[1]
+        ),
+    )
+    # Count available observation rows without reading targets or performance.
+    snapshot_counts = Counter(
+        (sid, str(day))
+        for sid, day in S.execute(
+            select(
+                ResearchFeatureSnapshot.security_id, ResearchFeatureSnapshot.decision_session
+            ).where(
+                ResearchFeatureSnapshot.feature_set_version == FEATURE_VERSION,
+                ResearchFeatureSnapshot.exchange == "XNYS",
+                ResearchFeatureSnapshot.decision_session < C.HOLDOUT[0],
+            )
+        )
+    )
+    for monthly in projection["months"]:
+        periods = [
+            r for r in projection["rows"] if r["decision_session"] == monthly["decision_session"]
+        ]
+        monthly["eligible_rows"] = sum(
+            snapshot_counts[(r["security_id"], r["decision_session"])]
+            for r in periods
+            if r["membership_research_eligible"]
+        )
+        monthly["rows_lost"] = sum(
+            snapshot_counts[(r["security_id"], r["decision_session"])]
+            for r in periods
+            if not r["membership_research_eligible"]
+        )
+        monthly["rows_lost_evidence"] = sum(
+            snapshot_counts[(r["security_id"], r["decision_session"])]
+            for r in periods
+            if r["evidence_tier"] in ("UNVERIFIED", "CONFLICTED")
+        )
+    ledger = persist_projection(S, ArchiveStore(ROOT / "data/archive"), projection)
+    S.commit()
+    projection["ledger"] = ledger
+    (ROOT / "docs/D02_MEMBERSHIP_ELIGIBILITY.json").write_text(
+        json.dumps(projection, indent=2, sort_keys=True) + "\n"
+    )
+    projected_months = {m["decision_session"]: m for m in projection["months"]}
+    membership_extra = context_extra(projection)
+    js["membership_completeness"] = {
+        "diagnostic_only": True,
+        "statistical_sufficiency_evaluated": False,
+        "configured_securities": len(configured),
+        "months": projection["months"],
+        "selection_bias_report": "D02_MEMBERSHIP_COMPLETENESS.json",
+        "rows_file": "D02_MEMBERSHIP_ELIGIBILITY.json",
+    }
+    js["membership_validity"] = {
+        "evidence_version": MEMBERSHIP_VERSION,
+        "ledger": ledger,
+        "status": "READY"
+        if all(m["status"] == "READY" for m in projection["months"])
+        else "BLOCKED",
+        "months": projection["months"],
+        "rows_file": "D02_MEMBERSHIP_ELIGIBILITY.json",
+        "anchor_security_period_exclusions": projection["anchor_security_period_exclusions"],
+        "outcome_blind": True,
+    }
     weak = set(rep.weak_identity)
     months = []
     for c in rep.cohorts:
-        membership_ready = c.status == "MEMBERSHIP_READY"
+        projected = projected_months.get(str(c.date))
+        membership_ready = (
+            projected["status"] == "READY" if projected else c.status == "MEMBERSHIP_READY"
+        )
         weak_members = sorted(x for x in (c.members or ()) if canon.get(x, x) in weak)
-        ready = FM.cohort_is_usable(c.status, c.members, weak, canon)
+        ready = (
+            projected["status"] == "READY"
+            if projected
+            else FM.cohort_is_usable(c.status, c.members, weak, canon)
+        )
         months.append({"month": c.date.strftime("%Y-%m"), "date": c.date, "expected_universe": c.n_members, "resolved_members": len(c.members) if (ready and c.members) else None, "unresolved_members": None if ready else len(c.reasons) or None,
                        "identity_resolved": membership_ready and not weak_members, "weak_identity_members": weak_members, "membership_ready": membership_ready, "membership_evidence": (f"segment {c.segment}; forward==backward" if c.sets_equal else (f"segment {c.segment}" if c.segment else None)), "status": "READY" if ready else ("PARTIAL" if membership_ready else ("BLOCKED" if c.status == "BLOCKED" else "NO_ANCHOR")),
                        "blocking_reason": None if ready else ("WEAK_IDENTITY: " + ", ".join(weak_members) if weak_members else ("; ".join(c.reasons) or c.status))})  # fmt: skip
+        months[-1]["strict_status"] = c.status
+        if projected:
+            months[-1]["membership_completeness"] = projected
+            months[-1]["identity_resolved"] = True
+            months[-1]["weak_identity_members"] = []
+            months[-1]["resolved_members"] = projected["eligible_securities"]
+            months[-1]["membership_evidence"] = (
+                f"{MEMBERSHIP_VERSION}; explicit security-period exclusions; {ledger['sha256']}"
+            )
     ready_dates = [m["date"] for m in months if m["status"] == "READY"]
     available_plan = C.walk_forward_folds(ready_dates)
     plan, history_requirement = latest_label_safe_history()
@@ -137,6 +272,11 @@ def main() -> None:
     ]
     js["d02"] = d02
     js["monthly_cohorts"] = months
+    d02["validity_scope"] = (
+        "Included US research observations in required history; explicitly excluded periods are not unresolved months"
+    )
+    d02["strict_ready_months_unchanged"] = rep.ready
+    d02["strict_membership_cards_not_closed_by_exclusion"] = True
     js["flags"] = {k: bool(v) for k, v in rf.flags.items()}
     js["flags_scope"] = (
         "Legacy Research Lab feature-collection flags; experiment readiness is defined by gates, not flags."
@@ -181,8 +321,15 @@ def main() -> None:
     bridge, unresolved_bridge = build_bridge(S)
     cohorts = {
         c.date: {
-            "status": c.status if m["status"] == "READY" else "BLOCKED",
-            "members": frozenset(c.members or ()),
+            "status": "MEMBERSHIP_READY" if m["status"] == "READY" else "BLOCKED",
+            "members": frozenset(
+                a
+                for r in projection["rows"]
+                if r["decision_session"] == str(c.date) and r["membership_research_eligible"]
+                for a in r["anchor_security_ids"]
+            )
+            if str(c.date) in projected_months
+            else frozenset(c.members or ()),
         }
         for c, m in zip(rep.cohorts, months, strict=True)
     }
@@ -205,7 +352,9 @@ def main() -> None:
         ("strict", True),
         ("preview_if_D05_accepted", True),
     ):
-        ctx = FM.EligibilityContext(cohorts, bridge, identity_ok, accepted, present)
+        ctx = FM.EligibilityContext(
+            cohorts, bridge, identity_ok, accepted, present, extra=membership_extra
+        )
         for fam in ("PRICE", "FUNDAMENTALS"):
             res = [
                 FM.first_ml_eligibility(
@@ -387,7 +536,7 @@ def main() -> None:
         plan,
         snaps,
         targets12,
-        FM.EligibilityContext(cohorts, bridge, identity_ok, True, present),
+        FM.EligibilityContext(cohorts, bridge, identity_ok, True, present, extra=membership_extra),
         as_of=datetime.now(UTC),
     )
     fold_audit["required_history"] = history_requirement
@@ -417,6 +566,12 @@ def main() -> None:
         and fold_audit["label_safe_folds"] >= C.MIN_FOLDS
     )
     gates = {
+        "D02_MEMBERSHIP_VALIDITY": FM.gate(
+            js["membership_validity"]["status"],
+            "Every included security-period OFFICIAL_DIRECT or CORROBORATED_HISTORICAL; nonempty supported months",
+            f"{d02['required_months_ready']}/{len(projection['months'])} temporally valid months",
+            None if d02_ready else "missing valid temporal folds",
+        ),
         "D02_MONTHLY_RESEARCH_READY": FM.gate(
             "READY" if d02_ready else "BLOCKED",
             f"{history_requirement['minimum_contiguous_ready_months']} READY months positioned {d02['required_history_start']}..{d02['required_history_end']}; >= {C.MIN_FOLDS} LABEL_SAFE folds; statistical coverage separate",
@@ -491,7 +646,7 @@ def main() -> None:
     w = md.append
     w("# DATA READINESS FOR FIRST ML (generado desde la base)\n")
     w(
-        f"Generado {js['generated_at'][:19]}Z · experimento preparado `{C.EXPERIMENT_ID}` (NO ejecutado). Fuente de datos de mercado y FX: **Yahoo Finance** (decisión del propietario; VENDOR, `CANONICAL_PROVIDER_FOR_PITQUANT`). Ningún gate se ha bajado: `required_securities = {C.REQUIRED_SECURITIES}`.\n"
+        f"Generado {js['generated_at'][:19]}Z · experimento preparado `{C.EXPERIMENT_ID}` (NO ejecutado). Fuente de datos de mercado y FX: **Yahoo Finance** (decisión del propietario; VENDOR, `CANONICAL_PROVIDER_FOR_PITQUANT`). Contrato estadístico sin modificar: `required_securities = {C.REQUIRED_SECURITIES}`.\n"
     )
     w("## Matriz de gates\n")
     w(
@@ -506,6 +661,52 @@ def main() -> None:
     w(f"`FIRST_ML_BASELINE_READY = {str(ml).lower()}` (calcularlo no entrena nada).\n")
     w(
         "La matriz corresponde al primer ML. Los `flags` del JSON describen el Research Lab histórico y su disponibilidad para recopilar features; no autorizan entrenamiento ni sustituyen estos gates.\n"
+    )
+    w("## D02: validez y completitud (ADR-0056)\n")
+    w(
+        "Todas las filas incluidas requieren OFFICIAL_DIRECT o CORROBORATED_HISTORICAL. UNVERIFIED/CONFLICTED se excluyen por security y fecha. La reconstrucción estricta se conserva. La completitud no decide suficiencia estadística. Yahoo sigue siendo proveedor de mercado, nunca autoridad de membership.\n"
+    )
+    w(
+        f"Ledger versionado `{MEMBERSHIP_VERSION}`, hash `{ledger['sha256']}`; provenance y exclusiones en D02_MEMBERSHIP_ELIGIBILITY.json.\n"
+    )
+    w(
+        table(
+            [
+                [
+                    m[k]
+                    for k in (
+                        "month",
+                        "configured_relevant_securities",
+                        "resolved_securities",
+                        "eligible_securities",
+                        "eligible_issuers",
+                        "unverified_excluded",
+                        "conflicted_excluded",
+                        "verified_nonmember_excluded",
+                        "eligible_rows",
+                        "rows_lost",
+                        "coverage_pct",
+                    )
+                ]
+                for m in projection["months"]
+            ],
+            [
+                "Month",
+                "Configured",
+                "Resolved",
+                "Eligible securities",
+                "Eligible issuers",
+                "UNVERIFIED",
+                "CONFLICTED",
+                "Verified nonmember",
+                "Included rows",
+                "Lost rows",
+                "Coverage %",
+            ],
+        )
+    )
+    w(
+        "La selección usa exclusivamente evidencia histórica e identidad; no retornos ni scores. Sectores/issuers afectados y pérdidas por evidencia separadas de ausencias verificadas: D02_MEMBERSHIP_COMPLETENESS.json. El subconjunto configurado conserva su limitación de supervivencia.\n"
     )
     w("## Folds factibles\n")
     w(
@@ -540,7 +741,7 @@ def main() -> None:
     )
     w("## D02 mensual\n")
     w(
-        "CALENDAR_FOLD = structural dates; LABEL_SAFE_FOLD = complete required membership history and TRAIN labels available at fit, plus twelve valid TEST outcome months; ML_ELIGIBLE_FOLD adds statistical coverage, NOT_YET_EVALUATED. Sample minimum remains UNSPECIFIED_CONTRACT and does not decide label safety. TRAIN cutoff = first TEST decision; TEST cutoff = audit time. See ADR-0055 V2.\n"
+        "CALENDAR_FOLD = structural dates; LABEL_SAFE_FOLD = valid included membership history with explicit security-period exclusions and TRAIN labels available at fit, plus twelve valid TEST outcome months; ML_ELIGIBLE_FOLD adds statistical coverage, NOT_YET_EVALUATED. Sample minimum remains UNSPECIFIED_CONTRACT and does not decide label safety. TRAIN cutoff = first TEST decision; TEST cutoff = audit time. See ADR-0055 V2 and ADR-0056.\n"
     )
     w(
         table(

@@ -408,3 +408,21 @@ def test_simulated_positions_are_append_only_in_postgres(pg: Engine) -> None:
     ):
         with pytest.raises(DBAPIError), pg.begin() as connection:
             connection.execute(text(stmt))
+
+
+def test_membership_research_ledger_is_append_only_in_postgres(pg: Engine, tmp_path: Path) -> None:
+    from pitquant.data.archive import ArchiveStore
+    from pitquant.research.membership_evidence import VERSION, persist_projection
+
+    with make_session_factory(pg)() as session:
+        ledger = persist_projection(
+            session,
+            ArchiveStore(tmp_path),
+            {"evidence_version": VERSION, "rows": [], "synthetic": True},
+        )
+        session.commit()
+    _rejected(
+        pg,
+        f"UPDATE raw_source_archive SET notes='changed' WHERE archive_id='{ledger['archive_id']}'",
+    )
+    _rejected(pg, f"DELETE FROM raw_source_archive WHERE archive_id='{ledger['archive_id']}'")

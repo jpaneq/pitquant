@@ -21,7 +21,7 @@ from pitquant.research import benchmark_contract as BC
 from pitquant.research import first_ml_contract as C
 
 ORDER = (
-    "HOLDOUT", "OOT", "UNIVERSE_NOT_CANONICAL", "NOT_INDEX_MEMBER_AT_T", "SECURITY_IDENTITY_NOT_READY", "PRICE_DATA_NOT_READY", "BENCHMARK_NOT_READY", "RETURN_BASIS_MISMATCH", "FX_NOT_READY", "TARGET_IMMATURE",
+    "HOLDOUT", "OOT", "UNIVERSE_NOT_CANONICAL", "NOT_INDEX_MEMBER_AT_T", "MEMBERSHIP_UNVERIFIED", "MEMBERSHIP_CONFLICTED", "SECURITY_IDENTITY_NOT_READY", "PRICE_DATA_NOT_READY", "BENCHMARK_NOT_READY", "RETURN_BASIS_MISMATCH", "FX_NOT_READY", "TARGET_IMMATURE",
     "INSUFFICIENT_HISTORY", "FUNDAMENTALS_NOT_READY", "UNSUPPORTED_SECTOR",
 )  # fmt: skip
 GATE_STATES = ("READY", "PARTIAL", "BLOCKED", "NOT_APPLICABLE")
@@ -92,6 +92,35 @@ def first_ml_eligibility(
         reasons.append("UNIVERSE_NOT_CANONICAL")
     elif sid in ctx.bridge and not (ctx.bridge[sid] & cohort["members"]):
         reasons.append("NOT_INDEX_MEMBER_AT_T")
+    if ctx.extra.get("membership_policy_version"):
+        from pitquant.research.membership_evidence import ACCEPTED, VERSION
+
+        period = ctx.extra.get("membership_periods", {}).get((sid, d))
+        # The new projection is deliberately scoped. Outside its date interval
+        # the original strict cohort rules remain in force.
+        projection_dates = ctx.extra.get("membership_projection_dates", set())
+        if d in projection_dates and (
+            ctx.extra.get("membership_policy_version") != VERSION
+            or period is None
+            or period.get("evidence_version") != VERSION
+            or period.get("security_id") != sid
+            or period.get("decision_session") != str(d)
+            or not period.get("provenance")
+            or period.get("evidence_tier") not in ACCEPTED
+            or not period.get("membership_research_eligible")
+        ):
+            if (
+                period
+                and period.get("evidence_tier") in ACCEPTED
+                and period.get("membership_state") == "NON_MEMBER"
+            ):
+                reasons.append("NOT_INDEX_MEMBER_AT_T")
+            else:
+                reasons.append(
+                    "MEMBERSHIP_CONFLICTED"
+                    if period and period.get("evidence_tier") == "CONFLICTED"
+                    else "MEMBERSHIP_UNVERIFIED"
+                )
     if sid not in ctx.identity_ready:
         reasons.append("SECURITY_IDENTITY_NOT_READY")
     if not ctx.price_accepted or sid not in ctx.price_present:

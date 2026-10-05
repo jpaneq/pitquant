@@ -222,6 +222,19 @@ def audit_folds(
                     {
                         "security_id": s["security_id"],
                         "issuer_id": s.get("issuer_id"),
+                        "membership_evidence": {
+                            k: ctx.extra.get("membership_periods", {})
+                            .get((s["security_id"], s["decision_session"]), {})
+                            .get(k)
+                            for k in (
+                                "membership_research_eligible",
+                                "evidence_tier",
+                                "evidence_version",
+                                "exclusion_reason",
+                            )
+                        }
+                        if ctx.extra.get("membership_policy_version")
+                        else None,
                         "decision_at": s["decision_at"].isoformat(),
                         **evidence,
                         "eligible": not families["PRICE"],
@@ -233,6 +246,8 @@ def audit_folds(
                                 "OOT",
                                 "UNIVERSE_NOT_CANONICAL",
                                 "NOT_INDEX_MEMBER_AT_T",
+                                "MEMBERSHIP_UNVERIFIED",
+                                "MEMBERSHIP_CONFLICTED",
                                 "SECURITY_IDENTITY_NOT_READY",
                                 "PRICE_DATA_NOT_READY",
                                 "BENCHMARK_NOT_READY",

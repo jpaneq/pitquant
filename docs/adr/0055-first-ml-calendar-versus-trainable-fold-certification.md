@@ -84,3 +84,7 @@ No model is trained. No BTC, scheduler, simulation, champion/master or non-US wo
 Under Armour still needs official evidence directly establishing index inclusion
 and its effective date; equivalent official history/notices/files are acceptable.
 Corporate distribution, listing or a secondary candidate date do not close membership.
+
+## Actualización por ADR-0056
+
+La historia requerida sigue siendo 2014-09→2021-09 y las ventanas temporales no cambian. La validez de membership pasa a evaluarse sobre las observaciones incluidas, con tiers de evidencia y exclusiones temporales explícitas. Completitud global y suficiencia estadística quedan separadas. Véase ADR-0056; el requisito anterior de resolver todas las securities de un mes no se aplica al subconjunto research filtrado.
