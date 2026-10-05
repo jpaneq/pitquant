@@ -29,7 +29,10 @@
     "feasible_folds": 1,
     "reason_if_no_folds": null,
     "required_continuous_months": 85,
-    "weak_identity_securities": 40
+    "weak_identity_securities": 40,
+    "calendar_folds": 1,
+    "trainable_folds": 0,
+    "fold_row_minimum_status": "UNSPECIFIED_CONTRACT"
   },
   "resolved_months": [
     "2017-09",
@@ -9453,12 +9456,189 @@
       "embargo_months": 1
     }
   ],
+  "fold_readiness": {
+    "version": "first-ml-fold-readiness-v1",
+    "as_of": "2026-10-05T16:27:28.554466+00:00",
+    "calendar_folds": 1,
+    "trainable_folds": 0,
+    "row_minimum_status": "UNSPECIFIED_CONTRACT",
+    "folds": [
+      {
+        "index": 0,
+        "calendar_fold": true,
+        "trainable_fold": false,
+        "row_minimum_status": "UNSPECIFIED_CONTRACT",
+        "minimum_rows_per_fold": null,
+        "eligible_test_months": [
+          "2020-11",
+          "2020-12",
+          "2021-01",
+          "2021-02",
+          "2021-03",
+          "2021-04",
+          "2021-05",
+          "2021-06",
+          "2021-07",
+          "2021-08",
+          "2021-09"
+        ],
+        "complete_test_window": false,
+        "fit_at": "2020-11-02T14:30:00+00:00",
+        "TRAIN": {
+          "calendar_rows": 2035,
+          "mature_target_rows": 2035,
+          "benchmark_ready_rows": 2035,
+          "price_ready_rows": 2035,
+          "eligible_rows": 1825,
+          "fundamentals_eligible_rows": 1235,
+          "holdout_touching_rows_excluded": 0,
+          "oot_touching_rows_excluded": 0,
+          "excluded_by": {
+            "SECURITY_IDENTITY_NOT_READY": 148,
+            "NOT_INDEX_MEMBER_AT_T": 62
+          }
+        },
+        "TEST": {
+          "calendar_rows": 660,
+          "mature_target_rows": 605,
+          "benchmark_ready_rows": 605,
+          "price_ready_rows": 605,
+          "eligible_rows": 559,
+          "fundamentals_eligible_rows": 456,
+          "holdout_touching_rows_excluded": 55,
+          "oot_touching_rows_excluded": 0,
+          "excluded_by": {
+            "SECURITY_IDENTITY_NOT_READY": 48,
+            "NOT_INDEX_MEMBER_AT_T": 2,
+            "HOLDOUT": 55,
+            "LABEL_NOT_AVAILABLE_AT_CUTOFF": 55,
+            "TARGET_BENCHMARK_NOT_READY": 55,
+            "TARGET_IMMATURE": 55,
+            "TARGET_PRICE_NOT_READY": 55,
+            "TARGET_WINDOW_TOUCHES_HOLDOUT": 55
+          }
+        }
+      }
+    ],
+    "row_evidence_file": "FIRST_ML_FOLD_AUDIT.json"
+  },
+  "under_armour_evidence_matrix": {
+    "gap_id": "6c5a95f6a607858fc601",
+    "evaluated_at": "2026-10-05T16:16:21.716836+00:00",
+    "candidate_index_date": "2016-04-08",
+    "candidate_status": "UNCONFIRMED_NOT_REJECTED",
+    "contract": "Official dated index membership evidence; not literally limited to a press release. Alternative official index notices are acceptable, but corporate action notices do not meet the membership assertion.",
+    "combination_sufficient": false,
+    "matrix": [
+      {
+        "source": "OCC notice 38727 hosted by MIAX",
+        "url": "https://www.miaxglobal.com/sites/default/files/alert-files/UA_Distribution__38727.pdf",
+        "official": true,
+        "contemporaneous": true,
+        "directly_proves_index_membership": false,
+        "date_explicit": true,
+        "archived": true,
+        "hashable": true,
+        "acceptable_under_current_contract": false,
+        "archive_id": "3ec81da4-77cb-462d-8654-e548c3cad138",
+        "sha256": "ec55c93987a0631f0052d11d926f474b241dabb4ce38cf7d561464e2f70cb5bf",
+        "raw_path": "data/archive/ec/55/ec55c93987a0631f0052d11d926f474b241dabb4ce38cf7d561464e2f70cb5bf",
+        "retrieved_at": "2026-10-05T16:16:20.786529+00:00",
+        "evidence_type": "CORPORATE_ACTION_SHARE_CLASS",
+        "index_effective_date": null,
+        "resolver_version": "d02-ua-alternative-evidence-v1",
+        "dates_proved": {
+          "distribution": "2016-04-07",
+          "ex_distribution": "2016-04-08",
+          "contract_adjustment": "2016-04-08",
+          "when_issued_listing": "2016-03-23"
+        },
+        "reason": "Corporate action/issuer expectation does not prove index inclusion; S&P retains discretion."
+      },
+      {
+        "source": "SEC preliminary proxy 0001193125-15-223346",
+        "url": "https://www.sec.gov/Archives/edgar/data/1336917/000119312515223346/d931136dpre14a.htm",
+        "official": true,
+        "contemporaneous": false,
+        "directly_proves_index_membership": false,
+        "date_explicit": true,
+        "archived": true,
+        "hashable": true,
+        "acceptable_under_current_contract": false,
+        "archive_id": "bed0ce46-e3ed-4923-a4f5-f0e52ac81b48",
+        "sha256": "d09c63fb3e5d0e09ba8f33d85ace7415432363da310f4459679ef951422b79ac",
+        "raw_path": "data/archive/d0/9c/d09c63fb3e5d0e09ba8f33d85ace7415432363da310f4459679ef951422b79ac",
+        "retrieved_at": "2026-10-05T16:16:21.468138+00:00",
+        "evidence_type": "ISSUER_EXPECTATION_NOT_INDEX_NOTICE",
+        "index_effective_date": null,
+        "resolver_version": "d02-ua-alternative-evidence-v1",
+        "dates_proved": {},
+        "reason": "Corporate action/issuer expectation does not prove index inclusion; S&P retains discretion.",
+        "temporal_relation": "Prospective 2015 expectation; not contemporaneous proof of the 2016 index event"
+      },
+      {
+        "source": "SEC 2016 10-K",
+        "url": "https://www.sec.gov/Archives/edgar/data/1336917/000133691717000017/ua-20161231x10k.htm",
+        "identifier": "0001336917-17-000017",
+        "official": true,
+        "contemporaneous": false,
+        "directly_proves_index_membership": false,
+        "date_explicit": true,
+        "archived": true,
+        "hashable": true,
+        "acceptable_under_current_contract": false,
+        "archive_id": "39fb8862-5d36-4634-af06-075690b00634",
+        "sha256": "732bfdfa2214e277fba5bc60b81ed2d80f06e18a512dd49d55a09242e2bc539e",
+        "raw_path": "data/archive/73/2b/732bfdfa2214e277fba5bc60b81ed2d80f06e18a512dd49d55a09242e2bc539e",
+        "retrieved_at": "2026-10-05T15:20:40.624390+00:00",
+        "evidence_type": "CORPORATE_ACTION_AND_TICKER_HISTORY",
+        "index_effective_date": null,
+        "resolver_version": "identity-events-1",
+        "dates_proved": {
+          "board_approval": "2016-03-16",
+          "record": "2016-03-28",
+          "distribution": "2016-04-07",
+          "regular_way_listing": "2016-04-08",
+          "class_A_UAA_class_C_UA": "2016-12-07"
+        },
+        "reason": "Issuer annual report documents completed share distribution and ticker history, not S&P inclusion."
+      }
+    ],
+    "first_blocked_month": "2016-09",
+    "minimum_evidence": "Dated official S&P DJI notice/history stating addition of Under Armour Class C and its effective date; archive raw bytes and replay 2016-03 to 2016-09 before earlier critical months."
+  },
+  "latest_iteration": {
+    "initial_head": "1b0cc6af7b6b135e73d047904b242ade6c107bc4",
+    "scope": "2015-09..2016-09 only; newest blocked month 2016-09",
+    "before": {
+      "ready_months": 72,
+      "longest_run": 72,
+      "calendar_folds": 1,
+      "critical_cards": 36,
+      "trainable_folds": "NOT_PREVIOUSLY_ASSESSED"
+    },
+    "newly_ready_months": [],
+    "cards_resolved": 0,
+    "events_resolved": 0,
+    "identities_resolved": 0,
+    "conflicts_resolved": 0,
+    "trainable_folds_on_unchanged_initial_data": 0,
+    "remaining_categories": {
+      "PRIMARY_EVENT_MISSING": 28,
+      "SECURITY_IDENTITY_ONLY": 7,
+      "PRIMARY_DELTA_UNEXPLAINED": 1
+    },
+    "preserved_claude_commits": [
+      "c7569b0",
+      "1b0cc6a"
+    ]
+  },
   "gates": {
     "D02_MONTHLY_RESEARCH_READY": {
       "status": "BLOCKED",
-      "required": ">= 3 feasible walk-forward folds on consecutive READY months",
-      "actual": "72/141 months READY, longest run 72, folds 1",
-      "blocking_reason": "1 feasible folds; need 3"
+      "required": ">= 85 consecutive READY months; >= 3 calendar and certified trainable folds",
+      "actual": "72/141 months READY, longest run 72, calendar folds 1, trainable folds 0",
+      "blocking_reason": "1 calendar folds; 0 certified trainable; need 3; per-fold minimum UNSPECIFIED_CONTRACT"
     },
     "US_SECURITY_IDENTITY_READY": {
       "status": "PARTIAL",
@@ -14864,7 +15044,18 @@
         "result": "Official completed distribution April 7 / initial UA.C listing April 8; supports creation and listed class, not S&P effective membership. Retained as insufficient for membership; no event was fabricated."
       }
     ],
-    "minimum_action": "Obtain and archive a dated official S&P corporate-action/index notice for inclusion of Under Armour Class C in April 2016, then replay the 2016-03\u219209 segment before working earlier months."
+    "minimum_action": "Obtain and archive a dated official S&P corporate-action/index notice for inclusion of Under Armour Class C in April 2016, then replay the 2016-03\u219209 segment before working earlier months.",
+    "latest_iteration": {
+      "initial_head": "1b0cc6a",
+      "matrix": "D02_UNDER_ARMOUR_EVIDENCE_MATRIX.json",
+      "queries": [
+        "\"Under Armour\" \"Class C\" \"S&P\" \"April\" \"2016\" announcement",
+        "site:spglobal.com \"UA.C\" \"2016\"",
+        "\"Under Armour\" \"S&P 500\" \"April 8, 2016\" announcement",
+        "site:prnewswire.com \"Under Armour\" \"class C\" \"S&P\""
+      ],
+      "result": "Retrieved and hash-archived OCC notice 38727 and SEC preliminary proxy. Neither directly proves index inclusion; combined with annual filing still insufficient. Candidate not rejected and not confirmed; gap remains blocked."
+    }
   },
   "stop_reason": "Not achieved: official Under Armour Class C index-effective notice still unavailable in retrieved evidence; next chronological segment remains blocked. This does not prove no document exists.",
   "required_securities": 100,

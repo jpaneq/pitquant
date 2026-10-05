@@ -663,6 +663,7 @@
       ],
       "precision": "See event note; date-only is not an exact UTC instant",
       "review_note": "Legal name change on 2017-05-10, date precision only; same common CUSIP in both official lists; no new security or index exit/entry.",
+      "monthly_time_precision_status": "SEE_REVIEW_NOTE",
       "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
     },
     {
@@ -740,6 +741,7 @@
       ],
       "precision": "See event note; date-only is not an exact UTC instant",
       "review_note": "Legal name change 2017-08-01. CUSIP transition is quarterly PARTIAL unless separately corroborated by exchange notice; same security.",
+      "monthly_time_precision_status": "SEE_REVIEW_NOTE",
       "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
     },
     {
@@ -817,6 +819,7 @@
       ],
       "precision": "See event note; date-only is not an exact UTC instant",
       "review_note": "CSC shares replaced 1:1 by new issuer DXC at 2017-04-01 03:01 ET; regular-way trading April 3; S&P slot addition April 4 is independently sourced.",
+      "monthly_time_precision_status": "SEE_REVIEW_NOTE",
       "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
     },
     {
@@ -894,6 +897,7 @@
       ],
       "precision": "See event note; date-only is not an exact UTC instant",
       "review_note": "MERGER closes 2017-08-31; index-effective successor first session 2017-09-01. Dow->new issuer 1:1; DuPont common 1.282 is separate and its index removal is not a continuity link.",
+      "monthly_time_precision_status": "SEE_REVIEW_NOTE",
       "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
     },
     {
@@ -971,6 +975,7 @@
       ],
       "precision": "See event note; date-only is not an exact UTC instant",
       "review_note": "Name change completed 2017-01-27 (2016 annual 10-K filed 2017-02-22); January 18 8-K announced it. Preferred CUSIP 36174X200 is not common 36174X101.",
+      "monthly_time_precision_status": "SEE_REVIEW_NOTE",
       "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
     },
     {
@@ -1048,6 +1053,7 @@
       ],
       "precision": "SOURCE_LOCAL_TIME_TIMEZONE_UNSPECIFIED; stored timestamp is monthly boundary only",
       "review_note": "MERGER 2016-12-31 23:58, source timezone unspecified; effective_at is a monthly reconstruction boundary, not a verified UTC instant. Holding predecessor into operating company 1:1; legal rename one minute later. Separate issuer/security.",
+      "monthly_time_precision_status": "TIME_PRECISION_NOT_MATERIAL_FOR_MONTHLY_MEMBERSHIP",
       "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
     },
     {
@@ -1125,6 +1131,7 @@
       ],
       "precision": "See event note; date-only is not an exact UTC instant",
       "review_note": "MERGER completed January 16, 2017 (NYSE holiday); FMC 1:1 into UK successor. First regular session January 17; Technip 2:1 is a separate instrument.",
+      "monthly_time_precision_status": "SEE_REVIEW_NOTE",
       "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
     },
     {
@@ -1202,6 +1209,7 @@
       ],
       "precision": "SOURCE_LOCAL_TIME_TIMEZONE_UNSPECIFIED; stored timestamp is monthly boundary only",
       "review_note": "Legal rename 2016-10-31 23:59, source timezone unspecified; effective_at is a monthly reconstruction boundary, not a verified UTC instant. Trading ARNC November 1; preceding reverse split and Alcoa Corporation spin-off are separate.",
+      "monthly_time_precision_status": "TIME_PRECISION_NOT_MATERIAL_FOR_MONTHLY_MEMBERSHIP",
       "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
     },
     {
@@ -1279,6 +1287,7 @@
       ],
       "precision": "See event note; date-only is not an exact UTC instant",
       "review_note": "Legal name change effective 2016-09-01; unchanged common CUSIP and ticker, not an exit/entry.",
+      "monthly_time_precision_status": "SEE_REVIEW_NOTE",
       "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
     },
     {
@@ -1356,6 +1365,7 @@
       ],
       "precision": "See event note; date-only is not an exact UTC instant",
       "review_note": "Legal name approved/filed April 27; trading symbol April 28 corroborated by issuer release. CUSIP precise transition remains PARTIAL.",
+      "monthly_time_precision_status": "SEE_REVIEW_NOTE",
       "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
     },
     {
@@ -1433,6 +1443,7 @@
       ],
       "precision": "See event note; date-only is not an exact UTC instant",
       "review_note": "REDOMICILIATION: Irish predecessor shares cancelled; new Bermuda issuer common issued 1:1, July 25 at 12:30 Irish time (11:30 UTC). Same ticker is not proof of same security. CUSIP effective explicitly stated.",
+      "monthly_time_precision_status": "SEE_REVIEW_NOTE",
       "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
     },
     {
@@ -1510,6 +1521,7 @@
       ],
       "precision": "See event note; date-only is not an exact UTC instant",
       "review_note": "SHARE_CONSOLIDATION 0.955:1 of existing Tyco legal issuer plus rename, distinct instrument/CUSIP. Completed merger September 2 at 23:59 New York time; JCI trading September 6. Old Johnson Controls shares' cash/election consideration is separate; no continuity link from that issuer.",
+      "monthly_time_precision_status": "SEE_REVIEW_NOTE",
       "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
     }
   ]

@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
+from dateutil.relativedelta import relativedelta
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -78,9 +79,13 @@ def first_ml_eligibility(
     d: date = snap["decision_session"]
     sid: str = snap["security_id"]
     reasons: list[str] = []
-    if ctx.holdout[0] <= d <= ctx.holdout[1]:
+    target_end = d + relativedelta(months=C.HORIZON_MONTHS)
+    actual_exit = (target or {}).get("exit_session")
+    if actual_exit is not None:
+        target_end = max(target_end, actual_exit)
+    if d <= ctx.holdout[1] and target_end >= ctx.holdout[0]:
         reasons.append("HOLDOUT")
-    if d >= ctx.oot_start:
+    if target_end >= ctx.oot_start:
         reasons.append("OOT")
     cohort = ctx.cohorts.get(d)
     if snap["exchange"] != "XNYS" or cohort is None or cohort["status"] != "MEMBERSHIP_READY":

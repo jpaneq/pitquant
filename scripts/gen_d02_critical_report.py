@@ -189,6 +189,29 @@ def main() -> None:
         "inside_critical_cards": inside,
         "outside_critical_cards": outside,
         "folds": readiness["folds"],
+        "fold_readiness": readiness["fold_readiness"],
+        "under_armour_evidence_matrix": load("D02_UNDER_ARMOUR_EVIDENCE_MATRIX.json"),
+        "latest_iteration": {
+            "initial_head": "1b0cc6af7b6b135e73d047904b242ade6c107bc4",
+            "scope": "2015-09..2016-09 only; newest blocked month 2016-09",
+            "before": {
+                "ready_months": 72,
+                "longest_run": 72,
+                "calendar_folds": 1,
+                "critical_cards": 36,
+                "trainable_folds": "NOT_PREVIOUSLY_ASSESSED",
+            },
+            "newly_ready_months": [],
+            "cards_resolved": 0,
+            "events_resolved": 0,
+            "identities_resolved": 0,
+            "conflicts_resolved": 0,
+            "trainable_folds_on_unchanged_initial_data": readiness["fold_readiness"][
+                "trainable_folds"
+            ],
+            "remaining_categories": dict(Counter(g["category"] for g in inside)),
+            "preserved_claude_commits": ["c7569b0", "1b0cc6a"],
+        },
         "gates": readiness["gates"],
         "membership_provenance": sources,
         "critical_weak_identity_proofs": weak_proofs,
@@ -204,6 +227,7 @@ def main() -> None:
     text = "# D02 critical path to first ML\n\n"
     text += f"**Not achieved.** Usable READY months: 60 → {d['ready_months']}; longest usable run: 60 → {d['longest_run']}/85; calendar folds: 0 → {d['feasible_folds']}/3. Membership-only ready months: {d['membership_ready_months']}. No training.\n\n"
     text += "Scope: 2015-09 through 2017-09, processed newest first. Shared segment proofs closed six-month blocks; the chronology stops at the still-blocked 2016-09 decision. Original baseline rows and all 93 original cards are preserved unchanged in `D02_CRITICAL_PATH_FIRST_ML.json`; current comparison and exact source provenance are in `D02_CRITICAL_PATH_RESULT.json`. Raw anchors remain unchanged.\n\n"
+    text += "## Latest iteration after Claude\n\nInitial HEAD `1b0cc6a` preserves Claude's interface changes. This iteration is limited to the thirteen missing months **2015-09..2016-09**, verified by 85−72=13. READY remains 72/141, streak 2016-10..2022-09; no new membership cards closed (36 remain: 28 events, 7 identities, 1 conflict). The first required month is **2016-09**, blocked by Under Armour Class C. Do not proceed to earlier months until its index evidence closes.\n\nThe official OCC notice 38727, hosted by MIAX, distinguishes CUSIPs 904311107/904311206, distribution April 7, regular-way/ex-distribution April 8, and when-issued trading March 23. SEC's preliminary proxy explicitly leaves index inclusion to S&P's discretion; the completed annual report proves share/ticker facts. Their combination does not establish the index date. April 8 is **UNCONFIRMED_NOT_REJECTED**. The current contract allows alternative official index notices; it does not require literally a press release. The official/dated/direct-membership/archive/hash/contract matrix and raw evidence metadata are in `D02_UNDER_ARMOUR_EVIDENCE_MATRIX.json`. No membership rule is relaxed.\n\n"
     text += table(
         [
             ["Original critical cards", 93],
@@ -232,6 +256,7 @@ def main() -> None:
     text += "## Reviewed closures\n\nOne Broadcom Ltd card changed from contradiction to missing addition and remains blocked; its changed gap ID is not counted as resolved.\n\nDated SEC transactions distinguish Dominion, Tesoro, CSC/DXC, Dow/DowDuPont, GGP, L-3, FMC/TechnipFMC, Alcoa/Arconic, DaVita, McGraw/S&P Global, XL and Tyco/JCI. Ratios are specific to the predecessor: CSC and Dow 1:1, FMC 1:1, XL 1:1, L-3 1:1, Tyco 0.955:1; RTN, DuPont and old Johnson Controls are separate legs. Sources, header CIK/accession checks, classes, CUSIPs/ISINs, legal/trading dates, precision and hashes are in `D02_CRITICAL_IDENTITY_RESOLUTIONS.json`.\n\n"
     text += "Parser fixes retain Nemours' final s, resolve exact same-release full names, accept 'at the open', and admit an index-less pair only if the exact S&P 500 summary table confirms both legs. A pretraded N-30D pair is adjusted only when the same official next-session pair supports both sides. Two document-specific BR artifacts preserve explicit class A. Closed SEC issuer abbreviations resolve only exact names and compatible explicit classes in every anchor quarter; a mismatch remains blocked. No issuer, ticker or spelling similarity merges securities.\n\n"
     text += "**Time precision:** L-3 and Alcoa filings state local times without a timezone. The stored UTC values are monthly reconstruction boundaries, not verified legal UTC instants; reviewed precision notes supersede the initial ET wording retained in immutable local link notes. Neither uncertain instant can change the first NYSE monthly decision here. Intraday use would require explicit timezone evidence. Alcoa's reverse split and spin-off remain separate from the name/identifier event; no research return remapping was performed.\n\n"
+    text += "Monthly assessment: **TIME_PRECISION_NOT_MATERIAL_FOR_MONTHLY_MEMBERSHIP**. L-3's local 2016-12-31 23:58 precedes the NYSE monthly decision 2017-01-03 14:30Z under civil offsets UTC−12..UTC+14; Alcoa's local 2016-10-31 23:59 precedes 2016-11-01 13:30Z even at UTC−12. These are uncertainty bounds compared with verified exchange opens, not assigned legal UTC timestamps.\n\n"
     text += "## Remaining critical cards\n\n" + table(
         [
             [g["gap_id"], g["segment"], g["security"], g["category"], g["document_required"]]
@@ -255,6 +280,35 @@ def main() -> None:
         ["Fold", "Train", "N train", "Excluded decisions", "Embargo", "Test"],
     )
     text += "\nFrozen inequality: train decision + H12 + embargo1 <= test start. Inclusive endpoints yield 37 training decision months in the first fold and 12 excluded decision months; the embargo lies within that excluded span. This documents the existing contract without changing it. Calendar feasibility alone does not certify mature 12M labels; holdout/OOT remain sealed and no labels/features are rebuilt.\n\n"
+    text += (
+        "## Trainable-fold audit\n\nNo folds were previously certified. The unchanged initial dataset now audits to **0 certified trainable folds**, with per-fold minimum **UNSPECIFIED_CONTRACT** (not an invented zero-row threshold).\n\n"
+        + table(
+            [
+                [
+                    f["index"],
+                    f["TEST"]["calendar_rows"],
+                    f["TEST"]["mature_target_rows"],
+                    f["TEST"]["benchmark_ready_rows"],
+                    f["TEST"]["price_ready_rows"],
+                    f["TEST"]["eligible_rows"],
+                    f["TEST"]["fundamentals_eligible_rows"],
+                    f["TEST"]["holdout_touching_rows_excluded"],
+                ]
+                for f in readiness["fold_readiness"]["folds"]
+            ],
+            [
+                "Fold",
+                "Calendar TEST rows",
+                "Mature",
+                "Benchmark",
+                "Price",
+                "Eligible PRICE",
+                "Eligible FUNDAMENTALS",
+                "Holdout excluded",
+            ],
+        )
+    )
+    text += "\nEvery TRAIN/TEST decision's nominal window, actual exit, target maturity, availability cutoff and exclusion reasons are in `FIRST_ML_FOLD_AUDIT.json`. October 2021 nominal targets reach holdout, even if an upstream row claimed OK. TRAIN maturity is checked at the first TEST decision, not today's audit time. A label cannot satisfy purge/embargo merely because it exists today.\n\nClosing 2015-09..2016-09 would produce three **calendar** folds, but the last TEST 2021-10..2022-09 has H12 endpoints in holdout throughout. Thus 85 months alone cannot meet the requested three trainable folds. This task does not move boundaries, shorten TEST or expand to older history. No coverage gate changed and no model trained. See ADR-0055.\n\n"
     text += "## Gate matrix\n\n" + table(
         [[k, v["status"], v["actual"]] for k, v in readiness["gates"].items()],
         ["Gate", "Status", "Evidence"],

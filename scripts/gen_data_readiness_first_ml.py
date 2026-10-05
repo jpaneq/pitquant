@@ -25,6 +25,7 @@ from pitquant.research import benchmark_contract as BC
 from pitquant.research import dataset_v1 as DS
 from pitquant.research import first_ml as FM
 from pitquant.research import first_ml_contract as C
+from pitquant.research.fold_readiness import audit_folds
 from pitquant.research.membership_bridge import build_bridge
 from pitquant.research_readiness import research_readiness
 from pitquant.universe.sp500_anchor_graph import reconstruct
@@ -154,7 +155,7 @@ def main() -> None:
                 "features": {k: v["value"] for k, v in sn.features.items() if k in keep},
             }
         )
-    targets12 = {(t.security_id, t.decision_at): {"status": t.status, "reason": t.reason, "outperform": t.outperform, "details": t.details} for t in S.scalars(select(ResearchTarget).where(ResearchTarget.target_set_version == TARGET_VERSION, ResearchTarget.horizon_months == C.HORIZON_MONTHS))}  # fmt: skip
+    targets12 = {(t.security_id, t.decision_at): {"status": t.status, "reason": t.reason, "outperform": t.outperform, "details": t.details, "entry_session": t.entry_session, "exit_session": t.exit_session, "label_available_at": t.label_available_at, "total_return": t.security_total_return, "benchmark_total_return": t.benchmark_total_return} for t in S.scalars(select(ResearchTarget).where(ResearchTarget.target_set_version == TARGET_VERSION, ResearchTarget.horizon_months == C.HORIZON_MONTHS))}  # fmt: skip
     # ---- context ---------------------------------------------------------------------------------------------------------------
     bridge, unresolved_bridge = build_bridge(S)
     cohorts = {
@@ -350,15 +351,47 @@ def main() -> None:
         if (t["details"]["benchmark_contract"]).get("comparability") == "COMPARABLE"
     )
     fund_ready = fm["n_ok"] >= C.REQUIRED_FUNDAMENTAL_SECURITIES
-    d02_ready = bool(rf.flags["D02_MONTHLY_RESEARCH_READY"]) and len(plan.folds) >= C.MIN_FOLDS
+    fold_audit = audit_folds(
+        plan,
+        snaps,
+        targets12,
+        FM.EligibilityContext(cohorts, bridge, identity_ok, True, present),
+        as_of=datetime.now(UTC),
+    )
+    js["fold_readiness"] = {
+        **fold_audit,
+        "row_evidence_file": "FIRST_ML_FOLD_AUDIT.json",
+        "folds": [
+            {
+                **f,
+                **{
+                    role: {k: v for k, v in f[role].items() if k != "rows"}
+                    for role in ("TRAIN", "TEST")
+                },
+            }
+            for f in fold_audit["folds"]
+        ],
+    }
+    d02["calendar_folds"] = len(plan.folds)
+    d02["trainable_folds"] = fold_audit["trainable_folds"]
+    d02["fold_row_minimum_status"] = fold_audit["row_minimum_status"]
+    d02_ready = (
+        bool(rf.flags["D02_MONTHLY_RESEARCH_READY"])
+        and longest_usable_run >= d02["required_continuous_months"]
+        and len(plan.folds) >= C.MIN_FOLDS
+        and fold_audit["trainable_folds"] >= C.MIN_FOLDS
+    )
     gates = {
         "D02_MONTHLY_RESEARCH_READY": FM.gate(
             "READY" if d02_ready else "BLOCKED",
-            f">= {C.MIN_FOLDS} feasible walk-forward folds on consecutive READY months",
-            f"{d02['ready_months']}/{d02['total_months']} months READY, longest run {d02['longest_run']}, folds {d02['feasible_folds']}",
+            f">= {d02['required_continuous_months']} consecutive READY months; >= {C.MIN_FOLDS} calendar and certified trainable folds",
+            f"{d02['ready_months']}/{d02['total_months']} months READY, longest run {d02['longest_run']}, calendar folds {len(plan.folds)}, trainable folds {fold_audit['trainable_folds']}",
             None
             if d02_ready
-            else (plan.reason_if_none or f"{len(plan.folds)} feasible folds; need {C.MIN_FOLDS}"),
+            else (
+                plan.reason_if_none
+                or f"{len(plan.folds)} calendar folds; {fold_audit['trainable_folds']} certified trainable; need {C.MIN_FOLDS}; per-fold minimum UNSPECIFIED_CONTRACT"
+            ),
         ),
         "US_SECURITY_IDENTITY_READY": FM.gate(
             "READY" if rf.flags["US_SECURITY_IDENTITY_READY"] else "PARTIAL",
@@ -472,6 +505,39 @@ def main() -> None:
         )
     )
     w("## D02 mensual\n")
+    w(
+        "Calendar folds are structural dates, not certified trainable folds. Per-fold row minimum: **UNSPECIFIED_CONTRACT**; no threshold borrowed from legacy RUN 3. TRAIN availability cutoff is the first TEST decision; TEST availability cutoff is audit time. Targets crossing holdout/OOT are excluded without reading sealed prices.\n"
+    )
+    w(
+        table(
+            [
+                [
+                    f["index"],
+                    f["TEST"]["calendar_rows"],
+                    f["TEST"]["mature_target_rows"],
+                    f["TEST"]["benchmark_ready_rows"],
+                    f["TEST"]["price_ready_rows"],
+                    f["TEST"]["eligible_rows"],
+                    f["TEST"]["holdout_touching_rows_excluded"],
+                    f["trainable_fold"],
+                ]
+                for f in fold_audit["folds"]
+            ],
+            [
+                "fold",
+                "calendar TEST rows",
+                "mature targets",
+                "benchmark ready",
+                "price ready",
+                "eligible",
+                "holdout excluded",
+                "trainable",
+            ],
+        )
+    )
+    w(
+        "Every TRAIN/TEST row's target_start, target_end, actual_exit_session, target_mature_at, availability cutoff and exclusion reasons are recorded in `FIRST_ML_FOLD_AUDIT.json`.\n"
+    )
     w(table([[k, v] for k, v in d02.items()], ["métrica", "valor"]))
     w(
         "Walk-forward factible (train_min 36, purge 12, embargo 1, test 12): "
@@ -661,6 +727,9 @@ def main() -> None:
     ]
     Path(ROOT / "docs/BENCHMARK_RETURN_CONTRACT.md").write_text("\n".join(bc_md), encoding="utf-8")
     Path(ROOT / "docs/DATA_READINESS_FIRST_ML.md").write_text("\n".join(md), encoding="utf-8")
+    Path(ROOT / "docs/FIRST_ML_FOLD_AUDIT.json").write_text(
+        json.dumps(fold_audit, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     Path(ROOT / "docs/DATA_READINESS_FIRST_ML.json").write_text(
         json.dumps(js, default=str, indent=1), encoding="utf-8"
     )

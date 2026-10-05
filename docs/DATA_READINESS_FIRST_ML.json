@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-05T15:33:40.332391+00:00",
+ "generated_at": "2026-10-05T16:27:18.018589+00:00",
  "experiment": "FIRST_EQUITY_ML_12M_V0",
  "folds": [
   {
@@ -32,7 +32,10 @@
   "feasible_folds": 1,
   "reason_if_no_folds": null,
   "required_continuous_months": 85,
-  "weak_identity_securities": 40
+  "weak_identity_securities": 40,
+  "calendar_folds": 1,
+  "trainable_folds": 0,
+  "fold_row_minimum_status": "UNSPECIFIED_CONTRACT"
  },
  "monthly_cohorts": [
   {
@@ -3670,36 +3673,36 @@
  "eligibility_6m": {
   "raw": 15208,
   "removed_by": {
-   "HOLDOUT": 0,
+   "HOLDOUT": 1200,
    "OOT": 1300,
-   "UNIVERSE_NOT_CANONICAL": 9948,
+   "UNIVERSE_NOT_CANONICAL": 9408,
    "NOT_INDEX_MEMBER_AT_T": 76,
-   "SECURITY_IDENTITY_NOT_READY": 288,
+   "SECURITY_IDENTITY_NOT_READY": 240,
    "PRICE_DATA_NOT_READY": 0,
    "BENCHMARK_NOT_READY": 0,
    "RETURN_BASIS_MISMATCH": 0,
    "FX_NOT_READY": 0,
-   "TARGET_IMMATURE": 306,
+   "TARGET_IMMATURE": 0,
    "INSUFFICIENT_HISTORY": 0,
    "FUNDAMENTALS_NOT_READY": 0,
    "UNSUPPORTED_SECTOR": 0
   },
-  "eligible": 3290
+  "eligible": 2984
  },
  "funnel": {
   "strict_PRICE": {
    "raw": 15208,
    "removed_by": {
-    "HOLDOUT": 0,
+    "HOLDOUT": 1200,
     "OOT": 1300,
-    "UNIVERSE_NOT_CANONICAL": 9948,
+    "UNIVERSE_NOT_CANONICAL": 9408,
     "NOT_INDEX_MEMBER_AT_T": 76,
-    "SECURITY_IDENTITY_NOT_READY": 288,
+    "SECURITY_IDENTITY_NOT_READY": 240,
     "PRICE_DATA_NOT_READY": 0,
     "BENCHMARK_NOT_READY": 0,
     "RETURN_BASIS_MISMATCH": 0,
     "FX_NOT_READY": 0,
-    "TARGET_IMMATURE": 612,
+    "TARGET_IMMATURE": 0,
     "INSUFFICIENT_HISTORY": 0,
     "FUNDAMENTALS_NOT_READY": 0,
     "UNSUPPORTED_SECTOR": 0
@@ -3710,16 +3713,16 @@
   "strict_FUNDAMENTALS": {
    "raw": 15208,
    "removed_by": {
-    "HOLDOUT": 0,
+    "HOLDOUT": 1200,
     "OOT": 1300,
-    "UNIVERSE_NOT_CANONICAL": 9948,
+    "UNIVERSE_NOT_CANONICAL": 9408,
     "NOT_INDEX_MEMBER_AT_T": 76,
-    "SECURITY_IDENTITY_NOT_READY": 288,
+    "SECURITY_IDENTITY_NOT_READY": 240,
     "PRICE_DATA_NOT_READY": 0,
     "BENCHMARK_NOT_READY": 0,
     "RETURN_BASIS_MISMATCH": 0,
     "FX_NOT_READY": 0,
-    "TARGET_IMMATURE": 612,
+    "TARGET_IMMATURE": 0,
     "INSUFFICIENT_HISTORY": 0,
     "FUNDAMENTALS_NOT_READY": 575,
     "UNSUPPORTED_SECTOR": 240
@@ -3730,16 +3733,16 @@
   "preview_if_D05_accepted_PRICE": {
    "raw": 15208,
    "removed_by": {
-    "HOLDOUT": 0,
+    "HOLDOUT": 1200,
     "OOT": 1300,
-    "UNIVERSE_NOT_CANONICAL": 9948,
+    "UNIVERSE_NOT_CANONICAL": 9408,
     "NOT_INDEX_MEMBER_AT_T": 76,
-    "SECURITY_IDENTITY_NOT_READY": 288,
+    "SECURITY_IDENTITY_NOT_READY": 240,
     "PRICE_DATA_NOT_READY": 0,
     "BENCHMARK_NOT_READY": 0,
     "RETURN_BASIS_MISMATCH": 0,
     "FX_NOT_READY": 0,
-    "TARGET_IMMATURE": 612,
+    "TARGET_IMMATURE": 0,
     "INSUFFICIENT_HISTORY": 0,
     "FUNDAMENTALS_NOT_READY": 0,
     "UNSUPPORTED_SECTOR": 0
@@ -3750,16 +3753,16 @@
   "preview_if_D05_accepted_FUNDAMENTALS": {
    "raw": 15208,
    "removed_by": {
-    "HOLDOUT": 0,
+    "HOLDOUT": 1200,
     "OOT": 1300,
-    "UNIVERSE_NOT_CANONICAL": 9948,
+    "UNIVERSE_NOT_CANONICAL": 9408,
     "NOT_INDEX_MEMBER_AT_T": 76,
-    "SECURITY_IDENTITY_NOT_READY": 288,
+    "SECURITY_IDENTITY_NOT_READY": 240,
     "PRICE_DATA_NOT_READY": 0,
     "BENCHMARK_NOT_READY": 0,
     "RETURN_BASIS_MISMATCH": 0,
     "FX_NOT_READY": 0,
-    "TARGET_IMMATURE": 612,
+    "TARGET_IMMATURE": 0,
     "INSUFFICIENT_HISTORY": 0,
     "FUNDAMENTALS_NOT_READY": 575,
     "UNSUPPORTED_SECTOR": 240
@@ -4380,6 +4383,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4400,6 +4404,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4423,6 +4428,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 23,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4436,7 +4442,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -4445,6 +4451,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 23,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4458,7 +4465,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -4467,6 +4474,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 23,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4480,7 +4488,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -4489,6 +4497,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 23,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4502,7 +4511,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -4511,6 +4520,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 23,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4524,7 +4534,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -4534,6 +4544,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 23,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4547,7 +4558,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -4556,6 +4567,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 23,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4569,7 +4581,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -4578,6 +4590,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 23,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4591,7 +4604,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -4600,6 +4613,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 23,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4613,7 +4627,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "INSUFFICIENT_HISTORY",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -4623,6 +4637,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 23,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4636,7 +4651,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -4645,6 +4660,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 23,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4658,7 +4674,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -4668,6 +4684,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 23,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4681,7 +4698,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -4691,6 +4708,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 23,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4704,13 +4722,14 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 60,
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4746,6 +4765,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4766,6 +4786,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4787,6 +4808,7 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4800,13 +4822,14 @@
    "identity_status": "UNRESOLVED_SECURITY_LINK",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "INSUFFICIENT_HISTORY",
-   "reason_not_usable": "INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 60,
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4827,6 +4850,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4848,6 +4872,7 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4861,13 +4886,14 @@
    "identity_status": "UNRESOLVED_SECURITY_LINK",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "OK",
-   "reason_not_usable": "INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 60,
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4888,6 +4914,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 65,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4908,6 +4935,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4928,6 +4956,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4948,6 +4977,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4968,6 +4998,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -4989,6 +5020,7 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "NOT_INDEX_MEMBER_AT_T": 51,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5009,6 +5041,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5029,6 +5062,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5049,6 +5083,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5069,6 +5104,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5089,6 +5125,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 57,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5109,6 +5146,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5129,6 +5167,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5149,6 +5188,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5169,6 +5209,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5189,6 +5230,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5209,6 +5251,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5229,6 +5272,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5249,6 +5293,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5269,6 +5314,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5289,6 +5335,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5309,6 +5356,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5329,6 +5377,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5349,6 +5398,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5370,6 +5420,7 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
     "NOT_INDEX_MEMBER_AT_T": 25,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5390,6 +5441,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5410,6 +5462,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5430,6 +5483,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5450,6 +5504,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5471,6 +5526,7 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5484,13 +5540,14 @@
    "identity_status": "UNRESOLVED_SECURITY_LINK",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "OK",
-   "reason_not_usable": "INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 60,
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5511,6 +5568,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5531,6 +5589,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5551,6 +5610,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5571,6 +5631,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5591,6 +5652,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5611,6 +5673,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5631,6 +5694,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5651,6 +5715,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5671,6 +5736,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5691,6 +5757,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5711,6 +5778,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5732,6 +5800,7 @@
     "UNIVERSE_NOT_CANONICAL": 81,
     "SECURITY_IDENTITY_NOT_READY": 153,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5745,13 +5814,14 @@
    "identity_status": "UNRESOLVED_SECURITY_LINK",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "OK",
-   "reason_not_usable": "INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 60,
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5772,6 +5842,7 @@
    "exclusion_reasons": {
     "UNIVERSE_NOT_CANONICAL": 81,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5795,6 +5866,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 22,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5808,7 +5880,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -5818,6 +5890,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 11,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5831,7 +5904,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -5841,6 +5914,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 11,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5854,7 +5928,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -5863,6 +5937,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 44,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5876,7 +5951,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -5885,6 +5960,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 44,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5898,7 +5974,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -5907,6 +5983,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 44,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5920,7 +5997,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -5929,6 +6006,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 34,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5942,7 +6020,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -5951,6 +6029,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 34,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5964,7 +6043,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -5974,6 +6053,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 34,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -5987,7 +6067,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -5996,6 +6076,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 34,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6009,7 +6090,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6018,6 +6099,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 34,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6031,7 +6113,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6041,6 +6123,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 24,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6054,7 +6137,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6064,6 +6147,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 24,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6077,7 +6161,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6087,6 +6171,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 30,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6100,7 +6185,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6110,6 +6195,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 24,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6123,7 +6209,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6133,6 +6219,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 29,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6146,7 +6233,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6156,6 +6243,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 24,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6169,7 +6257,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6178,6 +6266,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 31,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6191,7 +6280,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6200,6 +6289,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 11,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6213,7 +6303,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6222,6 +6312,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 11,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6235,7 +6326,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6245,6 +6336,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 21,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6258,7 +6350,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6268,6 +6360,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 21,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6281,7 +6374,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6291,6 +6384,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 21,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6304,7 +6398,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6313,6 +6407,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6326,7 +6421,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6335,6 +6430,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6348,7 +6444,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6356,6 +6452,7 @@
     "UNIVERSE_NOT_CANONICAL": 101,
     "SECURITY_IDENTITY_NOT_READY": 101,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6369,7 +6466,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6378,6 +6475,7 @@
     "SECURITY_IDENTITY_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6391,7 +6489,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6401,6 +6499,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6414,7 +6513,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6424,6 +6523,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6437,7 +6537,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6447,6 +6547,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6460,7 +6561,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6470,6 +6571,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6483,7 +6585,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -6493,6 +6595,7 @@
     "PRICE_DATA_NOT_READY": 153,
     "BENCHMARK_NOT_READY": 12,
     "INSUFFICIENT_HISTORY": 12,
+    "HOLDOUT": 12,
     "TARGET_IMMATURE": 24,
     "OOT": 13
    },
@@ -6506,7 +6609,7 @@
    "identity_status": "NOT_ASSESSED_NON_US",
    "price_status": "YAHOO_CANONICAL (per-series QA required)",
    "fundamental_status": "NOT_REGISTERED",
-   "reason_not_usable": "BENCHMARK_NOT_READY; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
+   "reason_not_usable": "BENCHMARK_NOT_READY; HOLDOUT; INSUFFICIENT_HISTORY; OOT; PRICE_DATA_NOT_READY; SECURITY_IDENTITY_NOT_READY; TARGET_IMMATURE; UNIVERSE_NOT_CANONICAL"
   },
   {
    "eligible_12m_rows": 0,
@@ -32733,12 +32836,78 @@
   "SECURITY_TOTAL_RETURN_CONVERTED_TO_USD_AT_PIT_FX": 5753,
   "NONE_SAME_CURRENCY": 7055
  },
+ "fold_readiness": {
+  "version": "first-ml-fold-readiness-v1",
+  "as_of": "2026-10-05T16:27:28.554466+00:00",
+  "calendar_folds": 1,
+  "trainable_folds": 0,
+  "row_minimum_status": "UNSPECIFIED_CONTRACT",
+  "folds": [
+   {
+    "index": 0,
+    "calendar_fold": true,
+    "trainable_fold": false,
+    "row_minimum_status": "UNSPECIFIED_CONTRACT",
+    "minimum_rows_per_fold": null,
+    "eligible_test_months": [
+     "2020-11",
+     "2020-12",
+     "2021-01",
+     "2021-02",
+     "2021-03",
+     "2021-04",
+     "2021-05",
+     "2021-06",
+     "2021-07",
+     "2021-08",
+     "2021-09"
+    ],
+    "complete_test_window": false,
+    "fit_at": "2020-11-02T14:30:00+00:00",
+    "TRAIN": {
+     "calendar_rows": 2035,
+     "mature_target_rows": 2035,
+     "benchmark_ready_rows": 2035,
+     "price_ready_rows": 2035,
+     "eligible_rows": 1825,
+     "fundamentals_eligible_rows": 1235,
+     "holdout_touching_rows_excluded": 0,
+     "oot_touching_rows_excluded": 0,
+     "excluded_by": {
+      "SECURITY_IDENTITY_NOT_READY": 148,
+      "NOT_INDEX_MEMBER_AT_T": 62
+     }
+    },
+    "TEST": {
+     "calendar_rows": 660,
+     "mature_target_rows": 605,
+     "benchmark_ready_rows": 605,
+     "price_ready_rows": 605,
+     "eligible_rows": 559,
+     "fundamentals_eligible_rows": 456,
+     "holdout_touching_rows_excluded": 55,
+     "oot_touching_rows_excluded": 0,
+     "excluded_by": {
+      "SECURITY_IDENTITY_NOT_READY": 48,
+      "NOT_INDEX_MEMBER_AT_T": 2,
+      "HOLDOUT": 55,
+      "LABEL_NOT_AVAILABLE_AT_CUTOFF": 55,
+      "TARGET_BENCHMARK_NOT_READY": 55,
+      "TARGET_IMMATURE": 55,
+      "TARGET_PRICE_NOT_READY": 55,
+      "TARGET_WINDOW_TOUCHES_HOLDOUT": 55
+     }
+    }
+   }
+  ],
+  "row_evidence_file": "FIRST_ML_FOLD_AUDIT.json"
+ },
  "gates": {
   "D02_MONTHLY_RESEARCH_READY": {
    "status": "BLOCKED",
-   "required": ">= 3 feasible walk-forward folds on consecutive READY months",
-   "actual": "72/141 months READY, longest run 72, folds 1",
-   "blocking_reason": "1 feasible folds; need 3"
+   "required": ">= 85 consecutive READY months; >= 3 calendar and certified trainable folds",
+   "actual": "72/141 months READY, longest run 72, calendar folds 1, trainable folds 0",
+   "blocking_reason": "1 calendar folds; 0 certified trainable; need 3; per-fold minimum UNSPECIFIED_CONTRACT"
   },
   "US_SECURITY_IDENTITY_READY": {
    "status": "PARTIAL",

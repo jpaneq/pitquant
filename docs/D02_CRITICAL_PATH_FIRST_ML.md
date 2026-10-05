@@ -4,6 +4,12 @@
 
 Scope: 2015-09 through 2017-09, processed newest first. Shared segment proofs closed six-month blocks; the chronology stops at the still-blocked 2016-09 decision. Original baseline rows and all 93 original cards are preserved unchanged in `D02_CRITICAL_PATH_FIRST_ML.json`; current comparison and exact source provenance are in `D02_CRITICAL_PATH_RESULT.json`. Raw anchors remain unchanged.
 
+## Latest iteration after Claude
+
+Initial HEAD `1b0cc6a` preserves Claude's interface changes. This iteration is limited to the thirteen missing months **2015-09..2016-09**, verified by 85−72=13. READY remains 72/141, streak 2016-10..2022-09; no new membership cards closed (36 remain: 28 events, 7 identities, 1 conflict). The first required month is **2016-09**, blocked by Under Armour Class C. Do not proceed to earlier months until its index evidence closes.
+
+The official OCC notice 38727, hosted by MIAX, distinguishes CUSIPs 904311107/904311206, distribution April 7, regular-way/ex-distribution April 8, and when-issued trading March 23. SEC's preliminary proxy explicitly leaves index inclusion to S&P's discretion; the completed annual report proves share/ticker facts. Their combination does not establish the index date. April 8 is **UNCONFIRMED_NOT_REJECTED**. The current contract allows alternative official index notices; it does not require literally a press release. The official/dated/direct-membership/archive/hash/contract matrix and raw evidence metadata are in `D02_UNDER_ARMOUR_EVIDENCE_MATRIX.json`. No membership rule is relaxed.
+
 | Measure | Count |
 |---|---|
 | Original critical cards | 93 |
@@ -53,6 +59,8 @@ Dated SEC transactions distinguish Dominion, Tesoro, CSC/DXC, Dow/DowDuPont, GGP
 Parser fixes retain Nemours' final s, resolve exact same-release full names, accept 'at the open', and admit an index-less pair only if the exact S&P 500 summary table confirms both legs. A pretraded N-30D pair is adjusted only when the same official next-session pair supports both sides. Two document-specific BR artifacts preserve explicit class A. Closed SEC issuer abbreviations resolve only exact names and compatible explicit classes in every anchor quarter; a mismatch remains blocked. No issuer, ticker or spelling similarity merges securities.
 
 **Time precision:** L-3 and Alcoa filings state local times without a timezone. The stored UTC values are monthly reconstruction boundaries, not verified legal UTC instants; reviewed precision notes supersede the initial ET wording retained in immutable local link notes. Neither uncertain instant can change the first NYSE monthly decision here. Intraday use would require explicit timezone evidence. Alcoa's reverse split and spin-off remain separate from the name/identifier event; no research return remapping was performed.
+
+Monthly assessment: **TIME_PRECISION_NOT_MATERIAL_FOR_MONTHLY_MEMBERSHIP**. L-3's local 2016-12-31 23:58 precedes the NYSE monthly decision 2017-01-03 14:30Z under civil offsets UTC−12..UTC+14; Alcoa's local 2016-10-31 23:59 precedes 2016-11-01 13:30Z even at UTC−12. These are uncertainty bounds compared with verified exchange opens, not assigned legal UTC timestamps.
 
 ## Remaining critical cards
 
@@ -107,11 +115,23 @@ The newest remaining segment 2016-03→09 is blocked by Under Armour Class C. Th
 
 Frozen inequality: train decision + H12 + embargo1 <= test start. Inclusive endpoints yield 37 training decision months in the first fold and 12 excluded decision months; the embargo lies within that excluded span. This documents the existing contract without changing it. Calendar feasibility alone does not certify mature 12M labels; holdout/OOT remain sealed and no labels/features are rebuilt.
 
+## Trainable-fold audit
+
+No folds were previously certified. The unchanged initial dataset now audits to **0 certified trainable folds**, with per-fold minimum **UNSPECIFIED_CONTRACT** (not an invented zero-row threshold).
+
+| Fold | Calendar TEST rows | Mature | Benchmark | Price | Eligible PRICE | Eligible FUNDAMENTALS | Holdout excluded |
+|---|---|---|---|---|---|---|---|
+| 0 | 660 | 605 | 605 | 605 | 559 | 456 | 55 |
+
+Every TRAIN/TEST decision's nominal window, actual exit, target maturity, availability cutoff and exclusion reasons are in `FIRST_ML_FOLD_AUDIT.json`. October 2021 nominal targets reach holdout, even if an upstream row claimed OK. TRAIN maturity is checked at the first TEST decision, not today's audit time. A label cannot satisfy purge/embargo merely because it exists today.
+
+Closing 2015-09..2016-09 would produce three **calendar** folds, but the last TEST 2021-10..2022-09 has H12 endpoints in holdout throughout. Thus 85 months alone cannot meet the requested three trainable folds. This task does not move boundaries, shorten TEST or expand to older history. No coverage gate changed and no model trained. See ADR-0055.
+
 ## Gate matrix
 
 | Gate | Status | Evidence |
 |---|---|---|
-| D02_MONTHLY_RESEARCH_READY | BLOCKED | 72/141 months READY, longest run 72, folds 1 |
+| D02_MONTHLY_RESEARCH_READY | BLOCKED | 72/141 months READY, longest run 72, calendar folds 1, trainable folds 0 |
 | US_SECURITY_IDENTITY_READY | PARTIAL | 40 weak identity securities; 0 unresolved anchor lines |
 | D05_READY | READY | Yahoo Finance (CANONICAL_PROVIDER_FOR_PITQUANT, VENDOR) |
 | BENCHMARK_RETURN_BASIS_READY | READY | US rows comparable 7055/7055; non-US via USD conversion (PROXY) |

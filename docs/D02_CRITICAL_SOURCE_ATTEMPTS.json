@@ -22,5 +22,16 @@
       "result": "Official completed distribution April 7 / initial UA.C listing April 8; supports creation and listed class, not S&P effective membership. Retained as insufficient for membership; no event was fabricated."
     }
   ],
-  "minimum_action": "Obtain and archive a dated official S&P corporate-action/index notice for inclusion of Under Armour Class C in April 2016, then replay the 2016-03\u219209 segment before working earlier months."
+  "minimum_action": "Obtain and archive a dated official S&P corporate-action/index notice for inclusion of Under Armour Class C in April 2016, then replay the 2016-03\u219209 segment before working earlier months.",
+  "latest_iteration": {
+    "initial_head": "1b0cc6a",
+    "matrix": "D02_UNDER_ARMOUR_EVIDENCE_MATRIX.json",
+    "queries": [
+      "\"Under Armour\" \"Class C\" \"S&P\" \"April\" \"2016\" announcement",
+      "site:spglobal.com \"UA.C\" \"2016\"",
+      "\"Under Armour\" \"S&P 500\" \"April 8, 2016\" announcement",
+      "site:prnewswire.com \"Under Armour\" \"class C\" \"S&P\""
+    ],
+    "result": "Retrieved and hash-archived OCC notice 38727 and SEC preliminary proxy. Neither directly proves index inclusion; combined with annual filing still insufficient. Candidate not rejected and not confirmed; gap remains blocked."
+  }
 }

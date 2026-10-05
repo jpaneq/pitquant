@@ -109,6 +109,11 @@ def main() -> None:
                     if ev.key in ("L3_HOLDING_SUCCESSOR", "ALCOA_ARCONIC_NAME")
                     else "See event note; date-only is not an exact UTC instant",
                     review_note=ev.note,
+                    monthly_time_precision_status=(
+                        "TIME_PRECISION_NOT_MATERIAL_FOR_MONTHLY_MEMBERSHIP"
+                        if ev.key in ("L3_HOLDING_SUCCESSOR", "ALCOA_ARCONIC_NAME")
+                        else "SEE_REVIEW_NOTE"
+                    ),
                     confidence="HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW",
                 )
             )
