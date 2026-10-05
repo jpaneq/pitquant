@@ -9,6 +9,7 @@ kept apart (the legal name change and the ticker change can differ by days); the
 
 from __future__ import annotations
 
+import html
 import json
 import re
 from dataclasses import dataclass
@@ -55,6 +56,7 @@ class CorporateEvent:
     aliases_new: tuple[Alias, ...]
     note: str
     cusip_transition_bounds: str = "PARTIAL"  # EXACT only if a source states the date
+    form: str = "8-K"
 
 
 EVENTS: tuple[CorporateEvent, ...] = (
@@ -164,13 +166,21 @@ def fetch_8k(
     base = f"https://www.sec.gov/Archives/edgar/data/{cik}/{nd}/"
     idx = client.get(base + "index.json").body
     items = [x["name"] for x in json.loads(idx)["directory"]["item"]]
-    prim = next(
-        n for n in items if n.lower().endswith((".htm", ".html")) and "index" not in n.lower()
+    complete = client.get(base + f"{accession}.txt").body
+    hdr = parse_submission_header(complete)
+    if hdr.accession != accession or int(hdr.filer_cik) != cik:
+        raise ValueError("8-K accession/filer CIK does not match the requested filing")
+    primary = re.search(
+        rf"<DOCUMENT>\s*<TYPE>{re.escape(hdr.form)}\s*<SEQUENCE>1\s*<FILENAME>([^\s<]+)",
+        complete.decode("utf-8", "replace"),
     )
+    if primary is None or primary.group(1) not in items:
+        raise ValueError("8-K primary document is not declared in the complete submission")
+    prim = primary.group(1)
     docs = {
         "index.json": idx,
         prim: client.get(base + prim).body,
-        f"{accession}.txt": client.get(base + f"{accession}.txt").body,
+        f"{accession}.txt": complete,
     }
     rows = []
     for name, data in docs.items():
@@ -185,18 +195,17 @@ def fetch_8k(
             archive_document(
                 session,
                 store,
-                provider="SEC_8K",
+                provider="SEC_" + hdr.form.replace("-", ""),
                 source_identifier=base + name,
                 data=data,
                 mime_type=mime,
                 parser_version="identity-events-1",
-                notes=f"8-K {accession}",
+                notes=f"{hdr.form} {accession}",
             )
         )
-    hdr = parse_submission_header(docs[f"{accession}.txt"])
-    if hdr.accession != accession:
-        raise ValueError(f"{accession}: header accession {hdr.accession}")
-    text = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", docs[prim].decode("utf-8", "replace")))
+    text = re.sub(
+        r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", docs[prim].decode("utf-8", "replace")))
+    )
     full = rows[1]
     return Fetched(full.sha256, full.archive_id, text, hdr.form)
 
@@ -225,7 +234,7 @@ def apply_events(
                 )
             )
             continue
-        if f.form != "8-K" or not all(p in f.text for p in ev.phrases):
+        if f.form != ev.form or not all(p in f.text for p in ev.phrases):
             out.append(
                 ResolutionResult(
                     ev.key, False, f"8-K {ev.accession} is form {f.form} or lacks {ev.phrases}"
@@ -263,7 +272,7 @@ def apply_events(
             session,
             old,
             new,
-            f"SEC_8K:{ev.accession}+SEC_13F_LIST",
+            f"SEC_{ev.form.replace('-', '')}:{ev.accession}+SEC_13F_LIST",
             f.sha,
             event_type=ev.event_type,
             effective=ev.effective,
@@ -284,14 +293,16 @@ def apply_events(
                             valid_from=a.valid_from,
                             valid_to=a.valid_to,
                             bounds="EXACT" if (a.valid_from or a.valid_to) else "PARTIAL",
-                            source=f"SEC_8K:{ev.accession}",
+                            source=f"SEC_{ev.form.replace('-', '')}:{ev.accession}",
                             source_hash=f.sha,
                             confidence="HIGH",
                             note=ev.note[:300],
                         )
                     )
         out.append(
-            ResolutionResult(ev.key, True, f"8-K {ev.accession} archived/verified; 13F {ev.verify}")
+            ResolutionResult(
+                ev.key, True, f"{ev.form} {ev.accession} archived/verified; 13F {ev.verify}"
+            )
         )
     session.flush()
     return out

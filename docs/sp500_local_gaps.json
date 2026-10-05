@@ -1856,6 +1856,42 @@
   "segment": "2011-09-30\u21922012-03-31",
   "difference_type": "MISSING_REMOVAL_EVENT",
   "category": "PRIMARY_EVENT_MISSING",
+  "security": "L-3 Communications Holdings, Inc.",
+  "events": "none",
+  "window": [
+   "2011-10-03",
+   "2012-03-31"
+  ],
+  "cohorts_blocked": [
+   "2011-10-03",
+   "2011-11-01",
+   "2011-12-01",
+   "2012-01-03",
+   "2012-02-01",
+   "2012-03-01"
+  ],
+  "blocking_decision_dates": [
+   "2011-10-03",
+   "2011-11-01",
+   "2011-12-01",
+   "2012-01-03",
+   "2012-02-01",
+   "2012-03-01"
+  ],
+  "blocks_monthly_membership": true,
+  "blocks_membership": true,
+  "blocks_identity": false,
+  "hints": [],
+  "security_id": "74ac68be-1293-4c9e-8725-b75b2cc48be5",
+  "anchor_A_status": "MEMBER",
+  "anchor_B_status": "ABSENT",
+  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
+ },
+ {
+  "segment": "2011-09-30\u21922012-03-31",
+  "difference_type": "MISSING_REMOVAL_EVENT",
+  "category": "PRIMARY_EVENT_MISSING",
   "security": "MEMC Electronic Materials, Inc.",
   "events": "none",
   "window": [
@@ -2098,42 +2134,6 @@
   "anchor_B_status": "MEMBER",
   "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
   "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2011-09-30\u21922012-03-31",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "L-3 Communications Holdings, Inc.",
-  "events": "none",
-  "window": [
-   "2011-10-03",
-   "2012-03-31"
-  ],
-  "cohorts_blocked": [
-   "2011-10-03",
-   "2011-11-01",
-   "2011-12-01",
-   "2012-01-03",
-   "2012-02-01",
-   "2012-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2011-10-03",
-   "2011-11-01",
-   "2011-12-01",
-   "2012-01-03",
-   "2012-02-01",
-   "2012-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "a26467ad-9068-4e34-abdb-42ada822ec6b",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2011-09-30\u21922012-03-31",
@@ -2955,6 +2955,42 @@
   "segment": "2012-03-31\u21922012-09-30",
   "difference_type": "MISSING_ADDITION_EVENT",
   "category": "PRIMARY_EVENT_MISSING",
+  "security": "L-3 Communications Holdings, Inc.",
+  "events": "none",
+  "window": [
+   "2012-04-02",
+   "2012-09-30"
+  ],
+  "cohorts_blocked": [
+   "2012-04-02",
+   "2012-05-01",
+   "2012-06-01",
+   "2012-07-02",
+   "2012-08-01",
+   "2012-09-04"
+  ],
+  "blocking_decision_dates": [
+   "2012-04-02",
+   "2012-05-01",
+   "2012-06-01",
+   "2012-07-02",
+   "2012-08-01",
+   "2012-09-04"
+  ],
+  "blocks_monthly_membership": true,
+  "blocks_membership": true,
+  "blocks_identity": false,
+  "hints": [],
+  "security_id": "74ac68be-1293-4c9e-8725-b75b2cc48be5",
+  "anchor_A_status": "ABSENT",
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
+ },
+ {
+  "segment": "2012-03-31\u21922012-09-30",
+  "difference_type": "MISSING_ADDITION_EVENT",
+  "category": "PRIMARY_EVENT_MISSING",
   "security": "Public Service Enterprise Group, Inc.",
   "events": "none",
   "window": [
@@ -3134,78 +3170,6 @@
   "anchor_B_status": "ABSENT",
   "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
   "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2012-03-31\u21922012-09-30",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "L-3 Communications Holdings, Inc.",
-  "events": "none",
-  "window": [
-   "2012-04-02",
-   "2012-09-30"
-  ],
-  "cohorts_blocked": [
-   "2012-04-02",
-   "2012-05-01",
-   "2012-06-01",
-   "2012-07-02",
-   "2012-08-01",
-   "2012-09-04"
-  ],
-  "blocking_decision_dates": [
-   "2012-04-02",
-   "2012-05-01",
-   "2012-06-01",
-   "2012-07-02",
-   "2012-08-01",
-   "2012-09-04"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "a26467ad-9068-4e34-abdb-42ada822ec6b",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2012-03-31\u21922012-09-30",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "DeVry, Inc.",
-  "events": "none",
-  "window": [
-   "2012-04-02",
-   "2012-09-30"
-  ],
-  "cohorts_blocked": [
-   "2012-04-02",
-   "2012-05-01",
-   "2012-06-01",
-   "2012-07-02",
-   "2012-08-01",
-   "2012-09-04"
-  ],
-  "blocking_decision_dates": [
-   "2012-04-02",
-   "2012-05-01",
-   "2012-06-01",
-   "2012-07-02",
-   "2012-08-01",
-   "2012-09-04"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "a4b0868f-8f2a-48a9-9031-83747d06dc29",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2012-03-31\u21922012-09-30",
@@ -3945,10 +3909,10 @@
  },
  {
   "segment": "2012-09-30\u21922013-03-31",
-  "difference_type": "UNEXPLAINED",
-  "category": "PRIMARY_DELTA_UNEXPLAINED",
-  "security": "a4b0868f-8f2a-48a9-9031-83747d06dc29",
-  "events": "REMOVE:OFFICIAL_CONFIRMED",
+  "difference_type": "MISSING_ADDITION_EVENT",
+  "category": "PRIMARY_EVENT_MISSING",
+  "security": "Garmin, Ltd.",
+  "events": "none",
   "window": [
    "2012-10-01",
    "2013-03-31"
@@ -3972,12 +3936,14 @@
   "blocks_monthly_membership": true,
   "blocks_membership": true,
   "blocks_identity": false,
-  "hints": [],
-  "security_id": "a4b0868f-8f2a-48a9-9031-83747d06dc29",
+  "hints": [
+   "discovery CSV leg ADD GRMN 2012-12-12 (unconfirmed, date not trusted)"
+  ],
+  "security_id": "7da27af0-e6bd-4b5f-b2f2-fd25c321dac4",
   "anchor_A_status": "ABSENT",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
-  "missing_evidence": "primary events contradict the anchors for this security"
+  "anchor_B_status": "MEMBER",
+  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2012-09-30\u21922013-03-31",
@@ -4152,30 +4118,6 @@
   "anchor_B_status": "ABSENT",
   "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
   "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2012-09-30\u21922013-03-31",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "RESOLVED",
-  "security": "R.R. Donnelley",
-  "events": "REMOVE:OFFICIAL_CONFIRMED",
-  "window": [
-   "2012-12-12",
-   "2012-12-12"
-  ],
-  "cohorts_blocked": [],
-  "blocking_decision_dates": [],
-  "blocks_monthly_membership": false,
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "name/ticker unknown to the anchors"
-  ],
-  "security_id": "RRD?",
-  "anchor_A_status": "?",
-  "anchor_B_status": "?",
-  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
-  "missing_evidence": ""
  },
  {
   "segment": "2013-03-31\u21922013-09-30",
@@ -4612,7 +4554,7 @@
   "hints": [
    "official effective 2013-12-10 vs discovery CSV 2013-12-09: the primary date stands; the CSV never widens it"
   ],
-  "security_id": "7be23e53-10a4-4cba-8843-ddeb1bb04d57",
+  "security_id": "0ad6c579-b0c1-4f1b-a621-f3037f9fc94b",
   "anchor_A_status": "n/a",
   "anchor_B_status": "n/a",
   "expected_event": "RECONCILE_PRIMARY_TIMELINE",
@@ -4977,54 +4919,6 @@
  },
  {
   "segment": "2014-03-31\u21922015-03-31",
-  "difference_type": "UNEXPLAINED",
-  "category": "PRIMARY_DELTA_UNEXPLAINED",
-  "security": "7dae9412-4a80-4c88-b7a9-f1cf513911aa",
-  "events": "REMOVE:OFFICIAL_CONFIRMED",
-  "window": [
-   "2014-04-01",
-   "2015-03-31"
-  ],
-  "cohorts_blocked": [
-   "2014-04-01",
-   "2014-05-01",
-   "2014-06-02",
-   "2014-07-01",
-   "2014-08-01",
-   "2014-09-02",
-   "2014-10-01",
-   "2014-11-03",
-   "2014-12-01",
-   "2015-01-02",
-   "2015-02-02",
-   "2015-03-02"
-  ],
-  "blocking_decision_dates": [
-   "2014-04-01",
-   "2014-05-01",
-   "2014-06-02",
-   "2014-07-01",
-   "2014-08-01",
-   "2014-09-02",
-   "2014-10-01",
-   "2014-11-03",
-   "2014-12-01",
-   "2015-01-02",
-   "2015-02-02",
-   "2015-03-02"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "7dae9412-4a80-4c88-b7a9-f1cf513911aa",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
-  "missing_evidence": "primary events contradict the anchors for this security"
- },
- {
-  "segment": "2014-03-31\u21922015-03-31",
   "difference_type": "SECURITY_IDENTITY_GAP",
   "category": "SECURITY_IDENTITY_ONLY",
   "security": "Google, Inc. (Class C)",
@@ -5317,54 +5211,6 @@
  },
  {
   "segment": "2014-03-31\u21922015-03-31",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Rowan Companies PLC (Class A)",
-  "events": "none",
-  "window": [
-   "2014-04-01",
-   "2015-03-31"
-  ],
-  "cohorts_blocked": [
-   "2014-04-01",
-   "2014-05-01",
-   "2014-06-02",
-   "2014-07-01",
-   "2014-08-01",
-   "2014-09-02",
-   "2014-10-01",
-   "2014-11-03",
-   "2014-12-01",
-   "2015-01-02",
-   "2015-02-02",
-   "2015-03-02"
-  ],
-  "blocking_decision_dates": [
-   "2014-04-01",
-   "2014-05-01",
-   "2014-06-02",
-   "2014-07-01",
-   "2014-08-01",
-   "2014-09-02",
-   "2014-10-01",
-   "2014-11-03",
-   "2014-12-01",
-   "2015-01-02",
-   "2015-02-02",
-   "2015-03-02"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "ea656026-457d-476b-ab7f-09ecde32a2fb",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2014-03-31\u21922015-03-31",
   "difference_type": "DISCOVERY_CONFLICT",
   "category": "DISCOVERY_CONFLICT",
   "security": "Avago Technologies, Ltd.",
@@ -5634,44 +5480,6 @@
   "segment": "2015-03-31\u21922015-09-30",
   "difference_type": "MISSING_REMOVAL_EVENT",
   "category": "PRIMARY_EVENT_MISSING",
-  "security": "Windstream Holdings, Inc.",
-  "events": "none",
-  "window": [
-   "2015-04-01",
-   "2015-09-30"
-  ],
-  "cohorts_blocked": [
-   "2015-04-01",
-   "2015-05-01",
-   "2015-06-01",
-   "2015-07-01",
-   "2015-08-03",
-   "2015-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2015-04-01",
-   "2015-05-01",
-   "2015-06-01",
-   "2015-07-01",
-   "2015-08-03",
-   "2015-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [
-   "discovery CSV leg REMOVE WIN 2015-04-07 (unconfirmed, date not trusted)"
-  ],
-  "security_id": "2c773a18-077b-46c8-972f-bbc8554275e5",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2015-03-31\u21922015-09-30",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
   "security": "Health Care REIT, Inc.",
   "events": "none",
   "window": [
@@ -5853,44 +5661,6 @@
   "anchor_B_status": "MEMBER",
   "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
   "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2015-03-31\u21922015-09-30",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Realty Income Corp.",
-  "events": "none",
-  "window": [
-   "2015-04-01",
-   "2015-09-30"
-  ],
-  "cohorts_blocked": [
-   "2015-04-01",
-   "2015-05-01",
-   "2015-06-01",
-   "2015-07-01",
-   "2015-08-03",
-   "2015-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2015-04-01",
-   "2015-05-01",
-   "2015-06-01",
-   "2015-07-01",
-   "2015-08-03",
-   "2015-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [
-   "discovery CSV leg ADD O 2015-04-07 (unconfirmed, date not trusted)"
-  ],
-  "security_id": "65511787-d7bc-48e8-91f0-031067fb0341",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2015-03-31\u21922015-09-30",
@@ -6744,80 +6514,6 @@
  },
  {
   "segment": "2015-09-30\u21922016-03-31",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "SECURITY_IDENTITY_ONLY",
-  "security": "XL Group PLC Class A",
-  "events": "none",
-  "window": [
-   "2015-10-01",
-   "2016-03-31"
-  ],
-  "cohorts_blocked": [
-   "2015-10-01",
-   "2015-11-02",
-   "2015-12-01",
-   "2016-01-04",
-   "2016-02-01",
-   "2016-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2015-10-01",
-   "2015-11-02",
-   "2015-12-01",
-   "2016-01-04",
-   "2016-02-01",
-   "2016-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": true,
-  "hints": [
-   "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ],
-  "security_id": "5cc78849-fa77-4845-a126-c8225f1575ef",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2015-09-30\u21922016-03-31",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "XL Group PLC",
-  "events": "none",
-  "window": [
-   "2015-10-01",
-   "2016-03-31"
-  ],
-  "cohorts_blocked": [
-   "2015-10-01",
-   "2015-11-02",
-   "2015-12-01",
-   "2016-01-04",
-   "2016-02-01",
-   "2016-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2015-10-01",
-   "2015-11-02",
-   "2015-12-01",
-   "2016-01-04",
-   "2016-02-01",
-   "2016-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "5d9a82cd-f742-4bfd-b9e6-ed63deb52753",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2015-09-30\u21922016-03-31",
   "difference_type": "MISSING_REMOVAL_EVENT",
   "category": "PRIMARY_EVENT_MISSING",
   "security": "Roper Industries, Inc.",
@@ -6890,10 +6586,10 @@
  },
  {
   "segment": "2015-09-30\u21922016-03-31",
-  "difference_type": "UNEXPLAINED",
-  "category": "PRIMARY_DELTA_UNEXPLAINED",
+  "difference_type": "MISSING_ADDITION_EVENT",
+  "category": "PRIMARY_EVENT_MISSING",
   "security": "Broadcom, Ltd.",
-  "events": "REMOVE:OFFICIAL_CONFIRMED",
+  "events": "none",
   "window": [
    "2015-10-01",
    "2016-03-31"
@@ -6922,7 +6618,7 @@
   "anchor_A_status": "ABSENT",
   "anchor_B_status": "MEMBER",
   "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "primary events contradict the anchors for this security"
+  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2015-09-30\u21922016-03-31",
@@ -7025,116 +6721,6 @@
   "anchor_B_status": "ABSENT",
   "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
   "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2015-09-30\u21922016-03-31",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Broadcom Corp. (Class A)",
-  "events": "none",
-  "window": [
-   "2015-10-01",
-   "2016-03-31"
-  ],
-  "cohorts_blocked": [
-   "2015-10-01",
-   "2015-11-02",
-   "2015-12-01",
-   "2016-01-04",
-   "2016-02-01",
-   "2016-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2015-10-01",
-   "2015-11-02",
-   "2015-12-01",
-   "2016-01-04",
-   "2016-02-01",
-   "2016-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "ba5d1101-760e-4ccd-b8fd-71360406ab67",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2015-09-30\u21922016-03-31",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "SECURITY_IDENTITY_ONLY",
-  "security": "DaVita HealthCare Partners,Inc.",
-  "events": "none",
-  "window": [
-   "2015-10-01",
-   "2016-03-31"
-  ],
-  "cohorts_blocked": [
-   "2015-10-01",
-   "2015-11-02",
-   "2015-12-01",
-   "2016-01-04",
-   "2016-02-01",
-   "2016-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2015-10-01",
-   "2015-11-02",
-   "2015-12-01",
-   "2016-01-04",
-   "2016-02-01",
-   "2016-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": true,
-  "hints": [
-   "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ],
-  "security_id": "d0a5a96b-aa71-4c34-ada5-33d7351a47b9",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2015-09-30\u21922016-03-31",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "DaVita, Inc.",
-  "events": "none",
-  "window": [
-   "2015-10-01",
-   "2016-03-31"
-  ],
-  "cohorts_blocked": [
-   "2015-10-01",
-   "2015-11-02",
-   "2015-12-01",
-   "2016-01-04",
-   "2016-02-01",
-   "2016-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2015-10-01",
-   "2015-11-02",
-   "2015-12-01",
-   "2016-01-04",
-   "2016-02-01",
-   "2016-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "e509ddea-2423-4b27-bde9-a00972d7d40c",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2015-09-30\u21922016-03-31",
@@ -7347,27 +6933,6 @@
   "segment": "2015-09-30\u21922016-03-31",
   "difference_type": "TICKER_ALIAS_ONLY",
   "category": "TICKER_OR_NAME_CHANGE",
-  "security": "DXC",
-  "events": "REMOVE:DISCOVERY_ONLY",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocking_decision_dates": [],
-  "blocks_monthly_membership": false,
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "discovery CSV REMOVE DXC 2015-12-01: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ],
-  "security_id": "4df3fe95-650c-4e30-a8e2-b26c2fed3d5d",
-  "anchor_A_status": "n/a",
-  "anchor_B_status": "n/a",
-  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
-  "missing_evidence": ""
- },
- {
-  "segment": "2015-09-30\u21922016-03-31",
-  "difference_type": "TICKER_ALIAS_ONLY",
-  "category": "TICKER_OR_NAME_CHANGE",
   "security": "CPRI",
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
@@ -7384,412 +6949,6 @@
   "anchor_B_status": "n/a",
   "expected_event": "RECONCILE_PRIMARY_TIMELINE",
   "missing_evidence": ""
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "CBRE Group, Inc. Class A",
-  "events": "none",
-  "window": [
-   "2016-04-01",
-   "2016-09-30"
-  ],
-  "cohorts_blocked": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "05aaf736-9901-437a-b13b-a26dcc0b4a6c",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Fortune Brands Home & Security, Inc.",
-  "events": "none",
-  "window": [
-   "2016-04-01",
-   "2016-09-30"
-  ],
-  "cohorts_blocked": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [
-   "discovery CSV leg ADD FBHS 2016-06-24 (unconfirmed, date not trusted)"
-  ],
-  "security_id": "136bd019-6e2d-43d5-b17c-d8dc2527dcf5",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "SECURITY_IDENTITY_ONLY",
-  "security": "McGraw Hill Financial, Inc.",
-  "events": "none",
-  "window": [
-   "2016-04-01",
-   "2016-09-30"
-  ],
-  "cohorts_blocked": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": true,
-  "hints": [
-   "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ],
-  "security_id": "1ef2c796-2347-4205-b002-cdaf99ed7ad2",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Tyco International PLC",
-  "events": "none",
-  "window": [
-   "2016-04-01",
-   "2016-09-30"
-  ],
-  "cohorts_blocked": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "573e8391-d6da-4ba7-bb25-b95634d2c62a",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "SECURITY_IDENTITY_ONLY",
-  "security": "XL Group PLC Class A",
-  "events": "none",
-  "window": [
-   "2016-04-01",
-   "2016-09-30"
-  ],
-  "cohorts_blocked": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": true,
-  "hints": [
-   "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ],
-  "security_id": "5cc78849-fa77-4845-a126-c8225f1575ef",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "XL Group, Ltd.",
-  "events": "none",
-  "window": [
-   "2016-04-01",
-   "2016-09-30"
-  ],
-  "cohorts_blocked": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "5d9a82cd-f742-4bfd-b9e6-ed63deb52753",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Cablevision Systems Corp. Class A",
-  "events": "none",
-  "window": [
-   "2016-04-01",
-   "2016-09-30"
-  ],
-  "cohorts_blocked": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "65082008-9521-4c8a-bf05-ff362b047e14",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "S&P Global, Inc.",
-  "events": "none",
-  "window": [
-   "2016-04-01",
-   "2016-09-30"
-  ],
-  "cohorts_blocked": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "77eee470-79cd-46be-b315-c31c715d5658",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "SECURITY_IDENTITY_ONLY",
-  "security": "DaVita HealthCare Partners,Inc.",
-  "events": "none",
-  "window": [
-   "2016-04-01",
-   "2016-09-30"
-  ],
-  "cohorts_blocked": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": true,
-  "hints": [
-   "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ],
-  "security_id": "d0a5a96b-aa71-4c34-ada5-33d7351a47b9",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "SECURITY_IDENTITY_ONLY",
-  "security": "LyondellBasell Industries NVClass A",
-  "events": "none",
-  "window": [
-   "2016-04-01",
-   "2016-09-30"
-  ],
-  "cohorts_blocked": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": true,
-  "hints": [
-   "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ],
-  "security_id": "dbed208e-9590-4d84-9387-98fa392cf755",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "DaVita, Inc.",
-  "events": "none",
-  "window": [
-   "2016-04-01",
-   "2016-09-30"
-  ],
-  "cohorts_blocked": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "e509ddea-2423-4b27-bde9-a00972d7d40c",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2016-03-31\u21922016-09-30",
@@ -7827,152 +6986,6 @@
   "anchor_A_status": "ABSENT",
   "anchor_B_status": "MEMBER",
   "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "SECURITY_IDENTITY_ONLY",
-  "security": "CBRE Group, Inc. Class AREIT",
-  "events": "none",
-  "window": [
-   "2016-04-01",
-   "2016-09-30"
-  ],
-  "cohorts_blocked": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": true,
-  "hints": [
-   "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ],
-  "security_id": "f030d63e-5314-4e1b-ac19-6c77e0e4f8c1",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Johnson Controls International PLC",
-  "events": "none",
-  "window": [
-   "2016-04-01",
-   "2016-09-30"
-  ],
-  "cohorts_blocked": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "f6a03920-041e-4373-80b6-e94145de31cf",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "LyondellBasell Industries NV Class A",
-  "events": "none",
-  "window": [
-   "2016-04-01",
-   "2016-09-30"
-  ],
-  "cohorts_blocked": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "f9e74e98-a858-4cfe-91fc-1754d7f84346",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Diamond Offshore Drilling, Inc.",
-  "events": "none",
-  "window": [
-   "2016-04-01",
-   "2016-09-30"
-  ],
-  "cohorts_blocked": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-04-01",
-   "2016-05-02",
-   "2016-06-01",
-   "2016-07-01",
-   "2016-08-01",
-   "2016-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "fe76bb4f-35ce-4684-9682-b0b051caa021",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
   "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
@@ -8021,6 +7034,48 @@
   "segment": "2016-03-31\u21922016-09-30",
   "difference_type": "DISCOVERY_CONFLICT",
   "category": "DISCOVERY_CONFLICT",
+  "security": "Fortune Brands Home & Security, Inc.",
+  "events": "ADD:CONFLICT",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "official effective 2016-06-24 vs discovery CSV 2016-06-21: the primary date stands; the CSV never widens it"
+  ],
+  "security_id": "136bd019-6e2d-43d5-b17c-d8dc2527dcf5",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2016-03-31\u21922016-09-30",
+  "difference_type": "DISCOVERY_CONFLICT",
+  "category": "DISCOVERY_CONFLICT",
+  "security": "Cablevision Systems Corp. Class A",
+  "events": "REMOVE:CONFLICT",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "official effective 2016-06-24 vs discovery CSV 2016-06-21: the primary date stands; the CSV never widens it"
+  ],
+  "security_id": "65082008-9521-4c8a-bf05-ff362b047e14",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2016-03-31\u21922016-09-30",
+  "difference_type": "DISCOVERY_CONFLICT",
+  "category": "DISCOVERY_CONFLICT",
   "security": "Columbia Pipeline Group, Inc.",
   "events": "REMOVE:CONFLICT",
   "window": null,
@@ -8037,1248 +7092,6 @@
   "anchor_B_status": "n/a",
   "expected_event": "RECONCILE_PRIMARY_TIMELINE",
   "missing_evidence": ""
- },
- {
-  "segment": "2016-03-31\u21922016-09-30",
-  "difference_type": "TICKER_ALIAS_ONLY",
-  "category": "TICKER_OR_NAME_CHANGE",
-  "security": "CVC",
-  "events": "REMOVE:DISCOVERY_ONLY",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocking_decision_dates": [],
-  "blocks_monthly_membership": false,
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "discovery CSV REMOVE CVC 2016-06-21: the anchors show no membership change for this security (ticker/class artifact); QA only"
-  ],
-  "security_id": "eb2ebc85-55b8-46f4-8ce8-785e36ab3f7d",
-  "anchor_A_status": "n/a",
-  "anchor_B_status": "n/a",
-  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
-  "missing_evidence": ""
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Urban Outfitters, Inc.",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "048d607f-a0b0-4bfe-8f3b-78d095ae8e4b",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Alexandria Real Estate Equities, Inc.",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [
-   "discovery CSV leg ADD ARE 2017-03-20 (unconfirmed, date not trusted)"
-  ],
-  "security_id": "04dc4688-7dc9-4209-94e6-b110b9e27d46",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Arconic, Inc.",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "05803e71-b1dc-4f55-9900-d802b81ac253",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "CBRE Group, Inc. Class A",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "05aaf736-9901-437a-b13b-a26dcc0b4a6c",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "First Solar, Inc.",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [
-   "discovery CSV leg REMOVE FSLR 2017-03-20 (unconfirmed, date not trusted)"
-  ],
-  "security_id": "0609d5b0-a4f3-4db0-ab8c-3cd47b08426f",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "DATE_MISSING_IN_RELEASE",
-  "category": "MONTHLY_DATE_AMBIGUITY",
-  "security": "CBOE Holdings, Inc.",
-  "events": "ADD:UNRESOLVED",
-  "window": [
-   "2017-02-24",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "0a2e35da-3eb9-4b8d-b16f-7686754c3c1a",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "the release states no concrete effective date and the possible interval crosses a monthly decision_at"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "GGP, Inc.",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "0ad6c579-b0c1-4f1b-a621-f3037f9fc94b",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Raymond James Financial, Inc.",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [
-   "discovery CSV leg ADD RJF 2017-03-20 (unconfirmed, date not trusted)"
-  ],
-  "security_id": "17da24b7-0f63-4b94-99b9-25c955f077c9",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "DATE_MISSING_IN_RELEASE",
-  "category": "MONTHLY_DATE_AMBIGUITY",
-  "security": "Spectra Energy Corp.",
-  "events": "REMOVE:UNRESOLVED",
-  "window": [
-   "2017-02-24",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "3930542e-8c76-4816-a5c3-58c7dfd8d010",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "the release states no concrete effective date and the possible interval crosses a monthly decision_at"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Advanced Micro Devices, Inc.",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [
-   "discovery CSV leg ADD AMD 2017-03-20 (unconfirmed, date not trusted)"
-  ],
-  "security_id": "65f3b889-8e3b-43b1-9c46-f7d1a1ec0876",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "TechnipFMC PLC",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "6a326e50-2686-4adf-af70-b6e474a3f542",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "L3 Technologies, Inc.",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "74ac68be-1293-4c9e-8725-b75b2cc48be5",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "General Growth Properties, Inc.",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "7be23e53-10a4-4cba-8843-ddeb1bb04d57",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "L-3 Communications Holdings, Inc.",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "a26467ad-9068-4e34-abdb-42ada822ec6b",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Alcoa, Inc.",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "b7de864f-f8a6-4070-921d-84456c0404e9",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "FMC Technologies, Inc.",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "cc191110-57e5-4e27-a0b2-a1333932d7cc",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Frontier Communications Corp.",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [
-   "discovery CSV leg REMOVE FTR 2017-03-20 (unconfirmed, date not trusted)"
-  ],
-  "security_id": "d9100ee2-af0d-436d-a979-d10a8f7e4ad8",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "SECURITY_IDENTITY_ONLY",
-  "security": "LyondellBasell Industries NVClass A",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": true,
-  "hints": [
-   "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ],
-  "security_id": "dbed208e-9590-4d84-9387-98fa392cf755",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "DATE_MISSING_IN_RELEASE",
-  "category": "MONTHLY_DATE_AMBIGUITY",
-  "security": "Pitney Bowes, Inc.",
-  "events": "REMOVE:UNRESOLVED",
-  "window": [
-   "2017-02-24",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "dccbaa18-d975-4b81-8bb2-81bceb0ddb6d",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "the release states no concrete effective date and the possible interval crosses a monthly decision_at"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "DATE_MISSING_IN_RELEASE",
-  "category": "MONTHLY_DATE_AMBIGUITY",
-  "security": "Regency Centers Corp.",
-  "events": "ADD:UNRESOLVED",
-  "window": [
-   "2017-02-24",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "e68e3ad5-cc5e-4420-b570-143414db2d3a",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "the release states no concrete effective date and the possible interval crosses a monthly decision_at"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "DATE_MISSING_IN_RELEASE",
-  "category": "MONTHLY_DATE_AMBIGUITY",
-  "security": "Endo International PLC",
-  "events": "REMOVE:UNRESOLVED",
-  "window": [
-   "2017-02-24",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "ee37cd68-b2f5-4bf4-96c8-06492cdd2906",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "the release states no concrete effective date and the possible interval crosses a monthly decision_at"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "SECURITY_IDENTITY_ONLY",
-  "security": "CBRE Group, Inc. Class AREIT",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": true,
-  "hints": [
-   "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ],
-  "security_id": "f030d63e-5314-4e1b-ac19-6c77e0e4f8c1",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "DATE_MISSING_IN_RELEASE",
-  "category": "MONTHLY_DATE_AMBIGUITY",
-  "security": "Incyte Corp.",
-  "events": "ADD:UNRESOLVED",
-  "window": [
-   "2017-02-24",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "f2629e95-e797-428a-a092-95eaf6fc8bc9",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "the release states no concrete effective date and the possible interval crosses a monthly decision_at"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "LyondellBasell Industries NV Class A",
-  "events": "none",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "f9e74e98-a858-4cfe-91fc-1754d7f84346",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2016-09-30\u21922017-03-31",
-  "difference_type": "UNEXPLAINED",
-  "category": "PRIMARY_DELTA_UNEXPLAINED",
-  "security": "fe76bb4f-35ce-4684-9682-b0b051caa021",
-  "events": "REMOVE:OFFICIAL_CONFIRMED",
-  "window": [
-   "2016-10-03",
-   "2017-03-31"
-  ],
-  "cohorts_blocked": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocking_decision_dates": [
-   "2016-10-03",
-   "2016-11-01",
-   "2016-12-01",
-   "2017-01-03",
-   "2017-02-01",
-   "2017-03-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "fe76bb4f-35ce-4684-9682-b0b051caa021",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
-  "missing_evidence": "primary events contradict the anchors for this security"
- },
- {
-  "segment": "2017-03-31\u21922017-09-30",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "E.I. du Pont de Nemours & Co.",
-  "events": "none",
-  "window": [
-   "2017-04-03",
-   "2017-09-30"
-  ],
-  "cohorts_blocked": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "1f5bf423-0fae-4ed7-8eaf-9090a7676997",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2017-03-31\u21922017-09-30",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Tesoro Corp.",
-  "events": "none",
-  "window": [
-   "2017-04-03",
-   "2017-09-30"
-  ],
-  "cohorts_blocked": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "4a16cc1c-69f6-45c9-8428-29e676f33007",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2017-03-31\u21922017-09-30",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "DXC Technology Co.",
-  "events": "none",
-  "window": [
-   "2017-04-03",
-   "2017-09-30"
-  ],
-  "cohorts_blocked": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [
-   "discovery CSV leg ADD DXC 2017-04-04 (unconfirmed, date not trusted)"
-  ],
-  "security_id": "4df3fe95-650c-4e30-a8e2-b26c2fed3d5d",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2017-03-31\u21922017-09-30",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Dominion Resources, Inc.",
-  "events": "none",
-  "window": [
-   "2017-04-03",
-   "2017-09-30"
-  ],
-  "cohorts_blocked": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "5b4db8e9-12f3-444e-bfde-18a8655d27f1",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2017-03-31\u21922017-09-30",
-  "difference_type": "MISSING_REMOVAL_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Dow Chemical Co.",
-  "events": "none",
-  "window": [
-   "2017-04-03",
-   "2017-09-30"
-  ],
-  "cohorts_blocked": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "615fa1ab-7125-4543-beed-1df189184fb3",
-  "anchor_A_status": "MEMBER",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "REMOVAL_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2017-03-31\u21922017-09-30",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "Dominion Energy, Inc.",
-  "events": "none",
-  "window": [
-   "2017-04-03",
-   "2017-09-30"
-  ],
-  "cohorts_blocked": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "9499bdfe-7546-4985-ad29-554fedea4d28",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
- },
- {
-  "segment": "2017-03-31\u21922017-09-30",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "SECURITY_IDENTITY_ONLY",
-  "security": "DowDuPont, Inc.",
-  "events": "none",
-  "window": [
-   "2017-04-03",
-   "2017-09-30"
-  ],
-  "cohorts_blocked": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": true,
-  "hints": [
-   "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP",
-   "discovery CSV leg ADD DWDP 2017-09-01 (unconfirmed, date not trusted)"
-  ],
-  "security_id": "b008c8ec-8f7e-4be4-8745-c8085e0e4f77",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2017-03-31\u21922017-09-30",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "SECURITY_IDENTITY_ONLY",
-  "security": "Andeavor",
-  "events": "none",
-  "window": [
-   "2017-04-03",
-   "2017-09-30"
-  ],
-  "cohorts_blocked": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": true,
-  "hints": [
-   "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
-  ],
-  "security_id": "b39afb97-0c31-4b3d-8ec3-04627a3e4c0f",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "identity link (same issuer under a new name/CUSIP?) between the unresolved N-30D security and its counterpart; membership unknown until then"
- },
- {
-  "segment": "2017-03-31\u21922017-09-30",
-  "difference_type": "UNEXPLAINED",
-  "category": "PRIMARY_DELTA_UNEXPLAINED",
-  "security": "c2237917-63d2-45a7-85f4-81f7bd60b507",
-  "events": "ADD:OFFICIAL_CONFIRMED",
-  "window": [
-   "2017-04-04",
-   "2017-09-30"
-  ],
-  "cohorts_blocked": [
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [],
-  "security_id": "c2237917-63d2-45a7-85f4-81f7bd60b507",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "ABSENT",
-  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
-  "missing_evidence": "primary events contradict the anchors for this security"
- },
- {
-  "segment": "2017-03-31\u21922017-09-30",
-  "difference_type": "MISSING_ADDITION_EVENT",
-  "category": "PRIMARY_EVENT_MISSING",
-  "security": "SBA Communications Corp.",
-  "events": "none",
-  "window": [
-   "2017-04-03",
-   "2017-09-30"
-  ],
-  "cohorts_blocked": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocking_decision_dates": [
-   "2017-04-03",
-   "2017-05-01",
-   "2017-06-01",
-   "2017-07-03",
-   "2017-08-01",
-   "2017-09-01"
-  ],
-  "blocks_monthly_membership": true,
-  "blocks_membership": true,
-  "blocks_identity": false,
-  "hints": [
-   "discovery CSV leg ADD SBAC 2017-09-01 (unconfirmed, date not trusted)"
-  ],
-  "security_id": "d6831e4c-8ff1-4991-837f-6c562d71a170",
-  "anchor_A_status": "ABSENT",
-  "anchor_B_status": "MEMBER",
-  "expected_event": "ADDITION_OR_SECURITY_CONTINUITY",
-  "missing_evidence": "official effective date of the addition/removal (absent/present at anchor A, opposite at anchor B; no primary event pins it)"
  },
  {
   "segment": "2017-03-31\u21922017-09-30",
@@ -9443,6 +7256,27 @@
    "official effective 2017-09-18 vs discovery CSV 2017-09-13: the primary date stands; the CSV never widens it"
   ],
   "security_id": "bdedad79-7a2d-4296-bcb4-f84e21456656",
+  "anchor_A_status": "n/a",
+  "anchor_B_status": "n/a",
+  "expected_event": "RECONCILE_PRIMARY_TIMELINE",
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2017-03-31\u21922017-09-30",
+  "difference_type": "TICKER_ALIAS_ONLY",
+  "category": "TICKER_OR_NAME_CHANGE",
+  "security": "DWDP",
+  "events": "ADD:DISCOVERY_ONLY",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocking_decision_dates": [],
+  "blocks_monthly_membership": false,
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "discovery CSV ADD DWDP 2017-09-01: the anchors show no membership change for this security (ticker/class artifact); QA only"
+  ],
+  "security_id": "b102449c-9f0e-4a7c-a3ea-9a68c168363e",
   "anchor_A_status": "n/a",
   "anchor_B_status": "n/a",
   "expected_event": "RECONCILE_PRIMARY_TIMELINE",
@@ -9873,8 +7707,8 @@
  },
  {
   "segment": "2019-03-31\u21922019-09-30",
-  "difference_type": "SECURITY_IDENTITY_GAP",
-  "category": "DISCOVERY_UNCORROBORATED",
+  "difference_type": "TICKER_ALIAS_ONLY",
+  "category": "TICKER_OR_NAME_CHANGE",
   "security": "DD",
   "events": "ADD:DISCOVERY_ONLY",
   "window": null,
@@ -9884,9 +7718,9 @@
   "blocks_membership": false,
   "blocks_identity": false,
   "hints": [
-   "discovery CSV ADD DD 2019-06-03: unconfirmed, date not trusted; more discovery legs than anchor-visible changes (unresolved ticker); monthly: DISCOVERY_UNCORROBORATED: warning only for monthly research; daily canonical: blocks the segment"
+   "discovery CSV ADD DD 2019-06-03: the anchors show no membership change for this security (ticker/class artifact); QA only"
   ],
-  "security_id": "DD?",
+  "security_id": "1f5bf423-0fae-4ed7-8eaf-9090a7676997",
   "anchor_A_status": "n/a",
   "anchor_B_status": "n/a",
   "expected_event": "RECONCILE_PRIMARY_TIMELINE",
@@ -10190,21 +8024,6 @@
   "segment": "2019-09-30\u21922019-12-31",
   "difference_type": "ALIAS",
   "category": "SUCCESSOR_SECURITY",
-  "security": "Symantec Corp -> NortonLifeLock Inc",
-  "events": "anchor LEI / discovery pair",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "same issuer LEI YF6ZV0M6AU4FY94MK914 in both NPORT-P filings (identity transition, not membership)"
-  ],
-  "missing_evidence": ""
- },
- {
-  "segment": "2019-09-30\u21922019-12-31",
-  "difference_type": "ALIAS",
-  "category": "SUCCESSOR_SECURITY",
   "security": "HCP Inc -> Healthpeak Properties Inc",
   "events": "anchor LEI / discovery pair",
   "window": null,
@@ -10228,6 +8047,21 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI 5KYC8KF17ROCY24M3H09 in both NPORT-P filings (identity transition, not membership)"
+  ],
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2019-09-30\u21922019-12-31",
+  "difference_type": "ALIAS",
+  "category": "SUCCESSOR_SECURITY",
+  "security": "Symantec Corp -> NortonLifeLock Inc",
+  "events": "anchor LEI / discovery pair",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "same issuer LEI YF6ZV0M6AU4FY94MK914 in both NPORT-P filings (identity transition, not membership)"
   ],
   "missing_evidence": ""
  },
@@ -10319,21 +8153,6 @@
   "segment": "2020-03-31\u21922020-06-30",
   "difference_type": "ALIAS",
   "category": "SUCCESSOR_SECURITY",
-  "security": "Arconic Inc -> Howmet Aerospace Inc",
-  "events": "anchor LEI / discovery pair",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "same issuer LEI 549300HO5WFZUT5N2T22 in both NPORT-P filings (identity transition, not membership)"
-  ],
-  "missing_evidence": ""
- },
- {
-  "segment": "2020-03-31\u21922020-06-30",
-  "difference_type": "ALIAS",
-  "category": "SUCCESSOR_SECURITY",
   "security": "United Technologies Corp -> Raytheon Technologies Corp",
   "events": "anchor LEI / discovery pair",
   "window": null,
@@ -10342,6 +8161,21 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI I07WOS4YJ0N7YRFE7309 in both NPORT-P filings (identity transition, not membership)"
+  ],
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2020-03-31\u21922020-06-30",
+  "difference_type": "ALIAS",
+  "category": "SUCCESSOR_SECURITY",
+  "security": "Arconic Inc -> Howmet Aerospace Inc",
+  "events": "anchor LEI / discovery pair",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "same issuer LEI 549300HO5WFZUT5N2T22 in both NPORT-P filings (identity transition, not membership)"
   ],
   "missing_evidence": ""
  },
@@ -10454,21 +8288,6 @@
   "segment": "2020-12-31\u21922021-03-31",
   "difference_type": "ALIAS",
   "category": "SUCCESSOR_SECURITY",
-  "security": "CenturyLink Inc -> Lumen Technologies Inc",
-  "events": "anchor LEI / discovery pair",
-  "window": null,
-  "cohorts_blocked": [],
-  "blocks_membership": false,
-  "blocks_identity": false,
-  "hints": [
-   "same issuer LEI 8M3THTGWLTYZVE6BBY25 in both NPORT-P filings (identity transition, not membership)"
-  ],
-  "missing_evidence": ""
- },
- {
-  "segment": "2020-12-31\u21922021-03-31",
-  "difference_type": "ALIAS",
-  "category": "SUCCESSOR_SECURITY",
   "security": "National Oilwell Varco Inc -> NOV Inc",
   "events": "anchor LEI / discovery pair",
   "window": null,
@@ -10477,6 +8296,21 @@
   "blocks_identity": false,
   "hints": [
    "same issuer LEI 549300EHF3IW1AR6U008 in both NPORT-P filings (identity transition, not membership)"
+  ],
+  "missing_evidence": ""
+ },
+ {
+  "segment": "2020-12-31\u21922021-03-31",
+  "difference_type": "ALIAS",
+  "category": "SUCCESSOR_SECURITY",
+  "security": "CenturyLink Inc -> Lumen Technologies Inc",
+  "events": "anchor LEI / discovery pair",
+  "window": null,
+  "cohorts_blocked": [],
+  "blocks_membership": false,
+  "blocks_identity": false,
+  "hints": [
+   "same issuer LEI 8M3THTGWLTYZVE6BBY25 in both NPORT-P filings (identity transition, not membership)"
   ],
   "missing_evidence": ""
  },

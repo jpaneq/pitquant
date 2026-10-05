@@ -32,11 +32,11 @@ from pitquant.universe.document_aliases import document_name
 from pitquant.universe.sources.spy_sec_anchors import norm_name
 
 _CLASS_N30D = re.compile(r"\b(?:Class|Series)\s+([A-Z])\b", re.I)
-_CLASS_13F = re.compile(r"\b(?:CL|CLASS|SER|SERIES)\s+([A-Z])\b")
+_CLASS_13F = re.compile(r"\b(?:CL|CLASS|SER|SERIES|SHS\s*-?)\s+([A-Z])\b")
 _NOT_COMMON = re.compile(r"\b(PFD|WT|WTS|RIGHT|RTS|UNIT|UNITS|NOTE|NOTES|DEBT|SUB|WHEN ISSUED)\b")
 
 
-NAME_FORMAT_VERSION = "sec13f-legal-name-format-v2"
+NAME_FORMAT_VERSION = "sec13f-legal-name-format-v5"
 
 _ABBR = {
     "HLDGS": "HOLDINGS",
@@ -70,7 +70,25 @@ def expand13f(name: str) -> str:
     expanded = " ".join(_ABBR.get(w, w) for w in words)
     # Exact inverted-initial format printed by archived SEC 2017Q3/Q4 lists.
     # This does not reorder arbitrary names, infer a class or accept similarity.
-    return {"BARD C R INC": "C R BARD INC"}.get(expanded, expanded)
+    return {
+        "BARD C R INC": "C R BARD INC",
+        # Exact SEC list compression, corroborated by 2017 SC 13G accession
+        # 0000932471-17-001660 naming LyondellBasell Industries NV / N53745100.
+        "LYONDELLBASELL INDUSTRIES N": "LYONDELLBASELL INDUSTRIES NV",
+        "CABLEVISION SYS CORP": "CABLEVISION SYSTEMS CORP",
+        # Closed issuer formats in archived lists for the nine weak instruments
+        # actually present in the new critical-window cohorts (ADR-0054).
+        # These are exact expansions, not ticker or issuer-security substitutions.
+        "DU PONT E I DE NEMOURS & CO": "E I DU PONT DE NEMOURS & CO",
+        "HARMAN INTERNATIONAL INDS INC": "HARMAN INTERNATIONAL INDUSTRIES INC",
+        "DUN & BRADSTREET CORP DEL NE": "DUN & BRADSTREET CORP",
+        "ST JUDE MED INC": "ST JUDE MEDICAL INC",
+        "TRANSOCEAN LTD REG": "TRANSOCEAN LTD",
+        "WHOLE FOODS MKT INC": "WHOLE FOODS MARKET INC",
+        "OWENS ILL INC": "OWENS ILLINOIS INC",
+        "RYDER SYS INC": "RYDER SYSTEM INC",
+        "MALLINCKRODT PUB LTD CO": "MALLINCKRODT PLC",
+    }.get(expanded, expanded)
 
 
 def quarter_of(d: date) -> str:
@@ -103,9 +121,17 @@ def candidates_for(session: Session, name: str, quarter: str) -> list[Sec13FList
             Sec13FListEntry.quarter == quarter, Sec13FListEntry.parser_version == F13_VERSION
         )
     ):
-        if _NOT_COMMON.search(e.issuer_description) or norm_name(expand13f(e.issuer_name)) != base:
+        issuer_name, description = e.issuer_name, e.issuer_description
+        if issuer_name == "LYONDELLBASELL INDUSTRIES N SHS - A -" and not description:
+            # This exact list row's class column was concatenated to its issuer column.
+            # Preserve the original row; expose its explicit A designation for matching.
+            issuer_name, description = "LYONDELLBASELL INDUSTRIES N", "SHS - A -"
+        if issuer_name == "CABLEVISION SYS CORP CL A NY CABLVS" and not description:
+            # Exact archived SEC row: CL A is explicit; NY CABLVS is its list label.
+            issuer_name, description = "CABLEVISION SYS CORP", "CL A"
+        if _NOT_COMMON.search(description) or norm_name(expand13f(issuer_name)) != base:
             continue
-        m = _CLASS_13F.search(e.issuer_description)
+        m = _CLASS_13F.search(description)
         if (cls is None and m is None) or (cls is not None and m is not None and m.group(1) == cls):
             out.append(e)
         elif cls is not None and m is None:

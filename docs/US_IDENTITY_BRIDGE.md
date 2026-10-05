@@ -42,19 +42,17 @@
 
 ## N-30D identificadas sólo por nombre: 271
 
-- resueltas por la lista 13F (nombre legal normalizado exacto + clase, candidato único): **214** (22 enlazadas con una security que ya tenía CUSIP)
-- sin resolver: **57** (Counter({'UNRESOLVED_NONE': 57}))
+- resueltas por la lista 13F (nombre legal normalizado exacto + clase, candidato único): **226** (24 enlazadas con una security que ya tenía CUSIP)
+- sin resolver: **45** (Counter({'UNRESOLVED_NONE': 45}))
 
 | security | estado | candidatos |
 |---|---|---|
 | Crown Castle InternationalCorp. | UNRESOLVED_NONE |  |
 | Forest Laboratories, Inc.* | UNRESOLVED_NONE |  |
 | Qwest Communications International, Inc. | UNRESOLVED_NONE |  |
-| E. I. du Pont de Nemours & Co. | UNRESOLVED_NONE |  |
 | Janus Capital Group, Inc. | UNRESOLVED_NONE |  |
 | Graham Holdings Co. (Class B) | UNRESOLVED_NONE |  |
 | Freeport-McMoRan Copper & Gold, Inc. | UNRESOLVED_NONE |  |
-| Harman International Industries, Inc.* | UNRESOLVED_NONE |  |
 | Starwood Hotels & Resorts Worldwide, Inc. | UNRESOLVED_NONE |  |
 | Novellus Systems, Inc.* | UNRESOLVED_NONE |  |
 | Public Service EnterpriseGroup, Inc. | UNRESOLVED_NONE |  |
@@ -62,9 +60,7 @@
 | The Dow Chemical Co. | UNRESOLVED_NONE |  |
 | International Game Technology | UNRESOLVED_NONE |  |
 | Federated Investors, Inc. (Class B) | UNRESOLVED_NONE |  |
-| Cablevision Systems Corp. (Class A) | UNRESOLVED_NONE |  |
 | Roper Industries, Inc. | UNRESOLVED_NONE |  |
-| Dun & Bradstreet Corp. | UNRESOLVED_NONE |  |
 | H.J. Heinz Co. | UNRESOLVED_NONE |  |
 | Johnson Controls, Inc. | UNRESOLVED_NONE |  |
 | General Growth Properties, Inc. | UNRESOLVED_NONE |  |
@@ -73,7 +69,6 @@
 | DIRECTV* | UNRESOLVED_NONE |  |
 | PNC Financial ServicesGroup, Inc. | UNRESOLVED_NONE |  |
 | EMC Corp.* | UNRESOLVED_NONE |  |
-| St. Jude Medical, Inc.* | UNRESOLVED_NONE |  |
 | U.S. Bancorp | UNRESOLVED_NONE |  |
 | Hartford Financial ServicesGroup, Inc. | UNRESOLVED_NONE |  |
 | Noble Corp. | UNRESOLVED_NONE |  |
@@ -87,19 +82,12 @@
 | Laboratory Corp. of AmericaHoldings | UNRESOLVED_NONE |  |
 | J.C. Penney Co., Inc. | UNRESOLVED_NONE |  |
 | AK Steel Holding Corp. | UNRESOLVED_NONE |  |
-| Transocean, Ltd. | UNRESOLVED_NONE |  |
 | Avon Products, Inc. | UNRESOLVED_NONE |  |
-| Whole Foods Market, Inc.* | UNRESOLVED_NONE |  |
 | DaVita HealthCare Partners,Inc. | UNRESOLVED_NONE |  |
-| Owens-Illinois, Inc.* | UNRESOLVED_NONE |  |
-| Ryder System, Inc. | UNRESOLVED_NONE |  |
 | United States Steel Corp. | UNRESOLVED_NONE |  |
-| LyondellBasell Industries NVClass A | UNRESOLVED_NONE |  |
-| Mallinckrodt PLC | UNRESOLVED_NONE |  |
 | JDS Uniphase Corp.* | UNRESOLVED_NONE |  |
 | Cablevision Systems Corp. | UNRESOLVED_NONE |  |
 | Family Dollar Stores, Inc. | UNRESOLVED_NONE |  |
-| CBRE Group, Inc. Class AREIT | UNRESOLVED_NONE |  |
 | The Goodyear Tire & RubberCo. | UNRESOLVED_NONE |  |
 | The Bank of New YorkMellon Corp. | UNRESOLVED_NONE |  |
 | Diamond Offshore Drilling, Inc. | UNRESOLVED_NONE |  |
@@ -151,3 +139,17 @@
 | V.F. Corp. | VF Corp. | SAME_SECURITY_IDENTITY_LINK | — | — | True | SEC_13F_LIST |
 | Zimmer Holdings, Inc. | Zimmer Biomet Holdings, Inc. | SAME_SECURITY_IDENTITY_LINK | — | — | True | SEC_13F_LIST |
 | DENTSPLY International, Inc. | DENTSPLY SIRONA, Inc. | IDENTIFIER_CHANGE_SAME_SECURITY | — | — | True | SP_PRESS_STATEMENT+SEC_13F_LIST |
+| Dominion Resources, Inc. | Dominion Energy, Inc. | NAME_CHANGE_SAME_SECURITY | 2017-05-10 00:00:00+00:00 | — | True | SEC_8K:0000715957-17-000019+SEC_13F_LIST |
+| Tesoro Corp. | Andeavor | NAME_TICKER_IDENTIFIER_CHANGE_SAME_SECURITY | 2017-08-01 00:00:00+00:00 | — | True | SEC_8K:0000050104-17-000180+SEC_13F_LIST |
+| Computer Sciences Corp. | DXC Technology Co. | SECURITY_REPLACEMENT_SUCCESSOR | 2017-04-01 07:01:00+00:00 | 1.0 | True | SEC_8K:0001193125-17-112036+SEC_13F_LIST |
+| Dow Chemical Co. | DowDuPont, Inc. | SECURITY_REPLACEMENT_SUCCESSOR | 2017-09-01 13:30:00+00:00 | 1.0 | True | SEC_8K:0001193125-17-274834+SEC_13F_LIST |
+| General Growth Properties, Inc. | GGP, Inc. | NAME_TICKER_IDENTIFIER_CHANGE_SAME_SECURITY | 2017-01-27 00:00:00+00:00 | — | True | SEC_8K:0001496048-17-000018+SEC_13F_LIST |
+| L-3 Communications Holdings, Inc. | L3 Technologies, Inc. | SECURITY_REPLACEMENT_SUCCESSOR | 2017-01-01 04:58:00+00:00 | 1.0 | True | SEC_8K:0001567619-17-000002+SEC_13F_LIST |
+| FMC Technologies, Inc. | TechnipFMC PLC | SECURITY_REPLACEMENT_SUCCESSOR | 2017-01-17 14:30:00+00:00 | 1.0 | True | SEC_8K:0001193125-17-010427+SEC_13F_LIST |
+| Alcoa, Inc. | Arconic, Inc. | NAME_TICKER_IDENTIFIER_CHANGE_SAME_SECURITY | 2016-11-01 03:59:00+00:00 | — | True | SEC_8K:0001193125-16-755445+SEC_13F_LIST |
+| CBRE Group, Inc. Class AREIT | CBRE Group, Inc. Class A | SAME_SECURITY_IDENTITY_LINK | — | — | True | SEC_13F_LIST |
+| LyondellBasell Industries NVClass A | LyondellBasell Industries NV Class A | SAME_SECURITY_IDENTITY_LINK | — | — | True | d02-document-breaks-1:SEC_N30D+SEC_13F_LIST |
+| DaVita HealthCare Partners,Inc. | DaVita, Inc. | NAME_CHANGE_SAME_SECURITY | 2016-09-01 00:00:00+00:00 | — | True | SEC_8K:0001193125-16-702143+SEC_13F_LIST |
+| McGraw Hill Financial, Inc. | S&P Global, Inc. | NAME_TICKER_IDENTIFIER_CHANGE_SAME_SECURITY | 2016-04-27 00:00:00+00:00 | — | True | SEC_8K:0000064040-16-000062+SEC_13F_LIST |
+| XL Group PLC Class A | XL Group, Ltd. | SECURITY_REPLACEMENT_SUCCESSOR | 2016-07-25 11:30:00+00:00 | 1.0 | True | SEC_8K12B:0000875159-16-000163+SEC_13F_LIST |
+| Tyco International PLC | Johnson Controls International PLC | SECURITY_REPLACEMENT_SUCCESSOR | 2016-09-03 03:59:00+00:00 | 0.955 | True | SEC_8K:0001104659-16-143068+SEC_13F_LIST |

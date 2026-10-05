@@ -1,0 +1,1516 @@
+{
+  "resolver_version": "d02-critical-identity-1",
+  "events": [
+    {
+      "key": "DOMINION_RESOURCES_ENERGY",
+      "event_type": "NAME_CHANGE_SAME_SECURITY",
+      "accession": "0000715957-17-000019",
+      "cik": 715957,
+      "phrases": [
+        "to change the name of the Company from Dominion Resources, Inc. to Dominion Energy, Inc.",
+        "On May 10, 2017, the Company's shareholders approved the Name Change"
+      ],
+      "effective": "2017-05-10 00:00:00+00:00",
+      "old_name_only": "Dominion Resources, Inc.",
+      "old_cusip": "25746U109",
+      "new_cusip": "25746U109",
+      "new_isin": null,
+      "verify": [
+        [
+          "2017Q1",
+          "25746U109"
+        ],
+        [
+          "2017Q3",
+          "25746U109"
+        ]
+      ],
+      "ratio": null,
+      "aliases_old": [
+        {
+          "ticker": "D",
+          "valid_from": null,
+          "valid_to": "2017-05-09"
+        }
+      ],
+      "aliases_new": [
+        {
+          "ticker": "D",
+          "valid_from": "2017-05-10",
+          "valid_to": null
+        }
+      ],
+      "note": "Legal name change on 2017-05-10, date precision only; same common CUSIP in both official lists; no new security or index exit/entry.",
+      "cusip_transition_bounds": "PARTIAL",
+      "form": "8-K"
+    },
+    {
+      "key": "TESORO_ANDEAVOR",
+      "event_type": "NAME_TICKER_IDENTIFIER_CHANGE_SAME_SECURITY",
+      "accession": "0000050104-17-000180",
+      "cik": 50104,
+      "phrases": [
+        "Effective August 1, 2017, we amended our Restated Certificate of Incorporation",
+        "to change our name from \u201cTesoro Corporation\u201d to \u201cAndeavor\u201d"
+      ],
+      "effective": "2017-08-01 00:00:00+00:00",
+      "old_name_only": "Tesoro Corp.",
+      "old_cusip": "881609101",
+      "new_cusip": "03349M105",
+      "new_isin": null,
+      "verify": [
+        [
+          "2017Q1",
+          "881609101"
+        ],
+        [
+          "2017Q3",
+          "03349M105"
+        ]
+      ],
+      "ratio": null,
+      "aliases_old": [
+        {
+          "ticker": "TSO",
+          "valid_from": null,
+          "valid_to": "2017-07-31"
+        }
+      ],
+      "aliases_new": [
+        {
+          "ticker": "ANDV",
+          "valid_from": "2017-08-01",
+          "valid_to": null
+        }
+      ],
+      "note": "Legal name change 2017-08-01. CUSIP transition is quarterly PARTIAL unless separately corroborated by exchange notice; same security.",
+      "cusip_transition_bounds": "PARTIAL",
+      "form": "8-K"
+    },
+    {
+      "key": "CSC_DXC",
+      "event_type": "SECURITY_REPLACEMENT_SUCCESSOR",
+      "accession": "0001193125-17-112036",
+      "cik": 1688568,
+      "phrases": [
+        "Effective as of 3:01 a.m. Eastern time on April 1, 2017",
+        "CSC stockholders received one share of DXC Common Stock for every one share of CSC common stock"
+      ],
+      "effective": "2017-04-01 07:01:00+00:00",
+      "old_name_only": "Computer Sciences Corp.",
+      "old_cusip": "205363104",
+      "new_cusip": "23355L106",
+      "new_isin": null,
+      "verify": [
+        [
+          "2017Q1",
+          "205363104"
+        ],
+        [
+          "2017Q3",
+          "23355L106"
+        ]
+      ],
+      "ratio": 1.0,
+      "aliases_old": [
+        {
+          "ticker": "CSC",
+          "valid_from": null,
+          "valid_to": "2017-03-31"
+        }
+      ],
+      "aliases_new": [
+        {
+          "ticker": "DXC",
+          "valid_from": "2017-04-03",
+          "valid_to": null
+        }
+      ],
+      "note": "CSC shares replaced 1:1 by new issuer DXC at 2017-04-01 03:01 ET; regular-way trading April 3; S&P slot addition April 4 is independently sourced.",
+      "cusip_transition_bounds": "PARTIAL",
+      "form": "8-K"
+    },
+    {
+      "key": "DOW_DOWDUPONT",
+      "event_type": "SECURITY_REPLACEMENT_SUCCESSOR",
+      "accession": "0001193125-17-274834",
+      "cik": 1666700,
+      "phrases": [
+        "Effective August 31, 2017, DowDuPont Inc.",
+        "was converted into the right to receive one fully paid and non-assessable share",
+        "This Current Report on Form 8-K establishes the Company as the successor issuer to Dow and DuPont"
+      ],
+      "effective": "2017-09-01 13:30:00+00:00",
+      "old_name_only": "The Dow Chemical Co.",
+      "old_cusip": "260543103",
+      "new_cusip": "26078J100",
+      "new_isin": null,
+      "verify": [
+        [
+          "2017Q1",
+          "260543103"
+        ],
+        [
+          "2017Q3",
+          "26078J100"
+        ]
+      ],
+      "ratio": 1.0,
+      "aliases_old": [
+        {
+          "ticker": "DOW",
+          "valid_from": null,
+          "valid_to": "2017-08-31"
+        }
+      ],
+      "aliases_new": [
+        {
+          "ticker": "DWDP",
+          "valid_from": "2017-09-01",
+          "valid_to": null
+        }
+      ],
+      "note": "MERGER closes 2017-08-31; index-effective successor first session 2017-09-01. Dow->new issuer 1:1; DuPont common 1.282 is separate and its index removal is not a continuity link.",
+      "cusip_transition_bounds": "PARTIAL",
+      "form": "8-K12B"
+    },
+    {
+      "key": "GENERAL_GROWTH_GGP",
+      "event_type": "NAME_TICKER_IDENTIFIER_CHANGE_SAME_SECURITY",
+      "accession": "0001496048-17-000018",
+      "cik": 1496048,
+      "phrases": [
+        "effective January 27, 2017",
+        "changed its name from General Growth Properties, Inc. to GGP Inc."
+      ],
+      "effective": "2017-01-27 00:00:00+00:00",
+      "old_name_only": "General Growth Properties, Inc.",
+      "old_cusip": "370023103",
+      "new_cusip": "36174X101",
+      "new_isin": null,
+      "verify": [
+        [
+          "2016Q3",
+          "370023103"
+        ],
+        [
+          "2017Q1",
+          "36174X101"
+        ]
+      ],
+      "ratio": null,
+      "aliases_old": [
+        {
+          "ticker": "GGP",
+          "valid_from": null,
+          "valid_to": "2017-01-26"
+        }
+      ],
+      "aliases_new": [
+        {
+          "ticker": "GGP",
+          "valid_from": "2017-01-27",
+          "valid_to": null
+        }
+      ],
+      "note": "Name change completed 2017-01-27 (2016 annual 10-K filed 2017-02-22); January 18 8-K announced it. Preferred CUSIP 36174X200 is not common 36174X101.",
+      "cusip_transition_bounds": "PARTIAL",
+      "form": "10-K"
+    },
+    {
+      "key": "L3_HOLDING_SUCCESSOR",
+      "event_type": "SECURITY_REPLACEMENT_SUCCESSOR",
+      "accession": "0001567619-17-000002",
+      "cik": 1039101,
+      "phrases": [
+        "Effective as of December 31, 2016 at 11:58 p.m.",
+        "was converted into one share of common stock, par value $0.01 per share, of the Company",
+        "Outstanding shares of the Company\u2019s common stock have been issued CUSIP number 502413107"
+      ],
+      "effective": "2017-01-01 04:58:00+00:00",
+      "old_name_only": "L-3 Communications Holdings, Inc.",
+      "old_cusip": "502424104",
+      "new_cusip": "502413107",
+      "new_isin": null,
+      "verify": [
+        [
+          "2016Q3",
+          "502424104"
+        ],
+        [
+          "2017Q1",
+          "502413107"
+        ]
+      ],
+      "ratio": 1.0,
+      "aliases_old": [
+        {
+          "ticker": "LLL",
+          "valid_from": null,
+          "valid_to": "2016-12-31"
+        }
+      ],
+      "aliases_new": [
+        {
+          "ticker": "LLL",
+          "valid_from": "2017-01-01",
+          "valid_to": null
+        }
+      ],
+      "note": "MERGER 2016-12-31 23:58, source timezone unspecified; effective_at is a monthly reconstruction boundary, not a verified UTC instant. Holding predecessor into operating company 1:1; legal rename one minute later. Separate issuer/security.",
+      "cusip_transition_bounds": "EXACT",
+      "form": "8-K12B"
+    },
+    {
+      "key": "FMC_TECHNIPFMC",
+      "event_type": "SECURITY_REPLACEMENT_SUCCESSOR",
+      "accession": "0001193125-17-010427",
+      "cik": 1135152,
+      "phrases": [
+        "On January 16, 2017",
+        "was automatically exchanged for one TechnipFMC Ordinary Share",
+        "suspended from trading on the NYSE and Euronext Paris, respectively, prior to the open of trading on January 17, 2017"
+      ],
+      "effective": "2017-01-17 14:30:00+00:00",
+      "old_name_only": "FMC Technologies, Inc.*",
+      "old_cusip": "30249U101",
+      "new_cusip": "G87110105",
+      "new_isin": "GB00BDSFG982",
+      "verify": [
+        [
+          "2016Q3",
+          "30249U101"
+        ],
+        [
+          "2017Q1",
+          "G87110105"
+        ]
+      ],
+      "ratio": 1.0,
+      "aliases_old": [
+        {
+          "ticker": "FTI",
+          "valid_from": null,
+          "valid_to": "2017-01-13"
+        }
+      ],
+      "aliases_new": [
+        {
+          "ticker": "FTI",
+          "valid_from": "2017-01-17",
+          "valid_to": null
+        }
+      ],
+      "note": "MERGER completed January 16, 2017 (NYSE holiday); FMC 1:1 into UK successor. First regular session January 17; Technip 2:1 is a separate instrument.",
+      "cusip_transition_bounds": "PARTIAL",
+      "form": "8-K"
+    },
+    {
+      "key": "ALCOA_ARCONIC_NAME",
+      "event_type": "NAME_TICKER_IDENTIFIER_CHANGE_SAME_SECURITY",
+      "accession": "0001193125-16-755445",
+      "cik": 4281,
+      "phrases": [
+        "change the name of the Company to Arconic Inc.",
+        "it became effective as of 11:59 p.m. on October 31, 2016"
+      ],
+      "effective": "2016-11-01 03:59:00+00:00",
+      "old_name_only": "Alcoa, Inc.",
+      "old_cusip": "013817101",
+      "new_cusip": "03965L100",
+      "new_isin": null,
+      "verify": [
+        [
+          "2016Q3",
+          "013817101"
+        ],
+        [
+          "2017Q1",
+          "03965L100"
+        ]
+      ],
+      "ratio": null,
+      "aliases_old": [
+        {
+          "ticker": "AA",
+          "valid_from": null,
+          "valid_to": "2016-10-31"
+        }
+      ],
+      "aliases_new": [
+        {
+          "ticker": "ARNC",
+          "valid_from": "2016-11-01",
+          "valid_to": null
+        }
+      ],
+      "note": "Legal rename 2016-10-31 23:59, source timezone unspecified; effective_at is a monthly reconstruction boundary, not a verified UTC instant. Trading ARNC November 1; preceding reverse split and Alcoa Corporation spin-off are separate.",
+      "cusip_transition_bounds": "PARTIAL",
+      "form": "8-K"
+    },
+    {
+      "key": "DAVITA_NAME",
+      "event_type": "NAME_CHANGE_SAME_SECURITY",
+      "accession": "0001193125-16-702143",
+      "cik": 927066,
+      "phrases": [
+        "Effective September 1, 2016",
+        "changed its name to DaVita Inc.",
+        "CUSIP number will remain the same"
+      ],
+      "effective": "2016-09-01 00:00:00+00:00",
+      "old_name_only": "DaVita HealthCare Partners,Inc.",
+      "old_cusip": "23918K108",
+      "new_cusip": "23918K108",
+      "new_isin": null,
+      "verify": [
+        [
+          "2016Q1",
+          "23918K108"
+        ],
+        [
+          "2016Q3",
+          "23918K108"
+        ]
+      ],
+      "ratio": null,
+      "aliases_old": [
+        {
+          "ticker": "DVA",
+          "valid_from": null,
+          "valid_to": "2016-08-31"
+        }
+      ],
+      "aliases_new": [
+        {
+          "ticker": "DVA",
+          "valid_from": "2016-09-01",
+          "valid_to": null
+        }
+      ],
+      "note": "Legal name change effective 2016-09-01; unchanged common CUSIP and ticker, not an exit/entry.",
+      "cusip_transition_bounds": "PARTIAL",
+      "form": "8-K"
+    },
+    {
+      "key": "MCGRAW_SP_GLOBAL",
+      "event_type": "NAME_TICKER_IDENTIFIER_CHANGE_SAME_SECURITY",
+      "accession": "0000064040-16-000062",
+      "cik": 64040,
+      "phrases": [
+        "to change the name of the Company to \u201cS&P Global Inc.\u201d from \u201cMcGraw Hill Financial, Inc.\u201d",
+        "on April 27, 2016"
+      ],
+      "effective": "2016-04-27 00:00:00+00:00",
+      "old_name_only": "McGraw Hill Financial, Inc.",
+      "old_cusip": "580645109",
+      "new_cusip": "78409V104",
+      "new_isin": null,
+      "verify": [
+        [
+          "2016Q1",
+          "580645109"
+        ],
+        [
+          "2016Q3",
+          "78409V104"
+        ]
+      ],
+      "ratio": null,
+      "aliases_old": [
+        {
+          "ticker": "MHFI",
+          "valid_from": null,
+          "valid_to": "2016-04-27"
+        }
+      ],
+      "aliases_new": [
+        {
+          "ticker": "SPGI",
+          "valid_from": "2016-04-28",
+          "valid_to": null
+        }
+      ],
+      "note": "Legal name approved/filed April 27; trading symbol April 28 corroborated by issuer release. CUSIP precise transition remains PARTIAL.",
+      "cusip_transition_bounds": "PARTIAL",
+      "form": "8-K"
+    },
+    {
+      "key": "XL_REDOMICILIATION",
+      "event_type": "SECURITY_REPLACEMENT_SUCCESSOR",
+      "accession": "0000875159-16-000163",
+      "cik": 875159,
+      "phrases": [
+        "At 12:30 p.m., Irish time, on July 25, 2016",
+        "on a one-for-one basis",
+        "the CUSIP number for the XL-Bermuda common shares issued in place of the XL-Ireland ordinary shares will be G98294 104"
+      ],
+      "effective": "2016-07-25 11:30:00+00:00",
+      "old_name_only": "XL Group PLC Class A",
+      "old_cusip": "G98290102",
+      "new_cusip": "G98294104",
+      "new_isin": null,
+      "verify": [
+        [
+          "2016Q1",
+          "G98290102"
+        ],
+        [
+          "2016Q3",
+          "G98294104"
+        ]
+      ],
+      "ratio": 1.0,
+      "aliases_old": [
+        {
+          "ticker": "XL",
+          "valid_from": null,
+          "valid_to": "2016-07-22"
+        }
+      ],
+      "aliases_new": [
+        {
+          "ticker": "XL",
+          "valid_from": "2016-07-25",
+          "valid_to": null
+        }
+      ],
+      "note": "REDOMICILIATION: Irish predecessor shares cancelled; new Bermuda issuer common issued 1:1, July 25 at 12:30 Irish time (11:30 UTC). Same ticker is not proof of same security. CUSIP effective explicitly stated.",
+      "cusip_transition_bounds": "EXACT",
+      "form": "8-K12B"
+    },
+    {
+      "key": "TYCO_JCI_CONSOLIDATION_NAME",
+      "event_type": "SECURITY_REPLACEMENT_SUCCESSOR",
+      "accession": "0001104659-16-143068",
+      "cik": 833444,
+      "phrases": [
+        "at 11:59 p.m. New York time on September 2, 2016",
+        "Tyco changed its name to \u201cJohnson Controls International plc\u201d",
+        "by virtue of a 0.955-for-one share consolidation",
+        "A new CUSIP number of G51502 105 and a new ISIN number of IE00BY7QL619"
+      ],
+      "effective": "2016-09-03 03:59:00+00:00",
+      "old_name_only": "Tyco International, Ltd.",
+      "old_cusip": "G91442106",
+      "new_cusip": "G51502105",
+      "new_isin": "IE00BY7QL619",
+      "verify": [
+        [
+          "2016Q1",
+          "G91442106"
+        ],
+        [
+          "2016Q3",
+          "G51502105"
+        ]
+      ],
+      "ratio": 0.955,
+      "aliases_old": [
+        {
+          "ticker": "TYC",
+          "valid_from": null,
+          "valid_to": "2016-09-02"
+        }
+      ],
+      "aliases_new": [
+        {
+          "ticker": "JCI",
+          "valid_from": "2016-09-06",
+          "valid_to": null
+        }
+      ],
+      "note": "SHARE_CONSOLIDATION 0.955:1 of existing Tyco legal issuer plus rename, distinct instrument/CUSIP. Completed merger September 2 at 23:59 New York time; JCI trading September 6. Old Johnson Controls shares' cash/election consideration is separate; no continuity link from that issuer.",
+      "cusip_transition_bounds": "PARTIAL",
+      "form": "8-K"
+    }
+  ],
+  "results": [
+    {
+      "key": "DOMINION_RESOURCES_ENERGY",
+      "applied": true,
+      "reason": "8-K 0000715957-17-000019 archived/verified; 13F (('2017Q1', '25746U109'), ('2017Q3', '25746U109'))"
+    },
+    {
+      "key": "TESORO_ANDEAVOR",
+      "applied": true,
+      "reason": "8-K 0000050104-17-000180 archived/verified; 13F (('2017Q1', '881609101'), ('2017Q3', '03349M105'))"
+    },
+    {
+      "key": "CSC_DXC",
+      "applied": true,
+      "reason": "8-K 0001193125-17-112036 archived/verified; 13F (('2017Q1', '205363104'), ('2017Q3', '23355L106'))"
+    },
+    {
+      "key": "DOW_DOWDUPONT",
+      "applied": true,
+      "reason": "8-K12B 0001193125-17-274834 archived/verified; 13F (('2017Q1', '260543103'), ('2017Q3', '26078J100'))"
+    },
+    {
+      "key": "GENERAL_GROWTH_GGP",
+      "applied": true,
+      "reason": "10-K 0001496048-17-000018 archived/verified; 13F (('2016Q3', '370023103'), ('2017Q1', '36174X101'))"
+    },
+    {
+      "key": "L3_HOLDING_SUCCESSOR",
+      "applied": true,
+      "reason": "8-K12B 0001567619-17-000002 archived/verified; 13F (('2016Q3', '502424104'), ('2017Q1', '502413107'))"
+    },
+    {
+      "key": "FMC_TECHNIPFMC",
+      "applied": true,
+      "reason": "8-K 0001193125-17-010427 archived/verified; 13F (('2016Q3', '30249U101'), ('2017Q1', 'G87110105'))"
+    },
+    {
+      "key": "ALCOA_ARCONIC_NAME",
+      "applied": true,
+      "reason": "8-K 0001193125-16-755445 archived/verified; 13F (('2016Q3', '013817101'), ('2017Q1', '03965L100'))"
+    },
+    {
+      "key": "DAVITA_NAME",
+      "applied": true,
+      "reason": "8-K 0001193125-16-702143 archived/verified; 13F (('2016Q1', '23918K108'), ('2016Q3', '23918K108'))"
+    },
+    {
+      "key": "MCGRAW_SP_GLOBAL",
+      "applied": true,
+      "reason": "8-K 0000064040-16-000062 archived/verified; 13F (('2016Q1', '580645109'), ('2016Q3', '78409V104'))"
+    },
+    {
+      "key": "XL_REDOMICILIATION",
+      "applied": true,
+      "reason": "8-K12B 0000875159-16-000163 archived/verified; 13F (('2016Q1', 'G98290102'), ('2016Q3', 'G98294104'))"
+    },
+    {
+      "key": "TYCO_JCI_CONSOLIDATION_NAME",
+      "applied": true,
+      "reason": "8-K 0001104659-16-143068 archived/verified; 13F (('2016Q1', 'G91442106'), ('2016Q3', 'G51502105'))"
+    }
+  ],
+  "provenance": [
+    {
+      "key": "DOMINION_RESOURCES_ENERGY",
+      "document_form": "8-K",
+      "accession": "0000715957-17-000019",
+      "filer_cik": 715957,
+      "primary_proofs": [
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/715957/000071595717000019/index.json",
+          "archive_id": "0eee0b7f-6028-4fa4-9ebb-757778849240",
+          "sha256": "3880c2dc8cd663cbe79a7cc0fa4e8c076263dce88154606f86f27929b52d0f9e",
+          "retrieved_at": "2026-10-05 14:37:50.860963+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 772
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/715957/000071595717000019/driannualmeeting8k05102017.htm",
+          "archive_id": "250d44ac-2fcc-499e-a8ef-4f74f85d088f",
+          "sha256": "637671ac0c6072d41625ca16619903a3a0a4393325d6171d94393e917b403612",
+          "retrieved_at": "2026-10-05 14:37:50.863335+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 53785
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/715957/000071595717000019/0000715957-17-000019.txt",
+          "archive_id": "1f670df7-15fc-4289-b61c-7d96342cc0f9",
+          "sha256": "d31db1dc81224db4c150501097d15a90274c02a6ecc3bdbc305a004c7b53f63d",
+          "retrieved_at": "2026-10-05 14:37:50.864468+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 268806
+        }
+      ],
+      "official_13f": [
+        {
+          "quarter": "2017Q1",
+          "cusip": "25746U109",
+          "issuer_text": "DOMINION RES INC VA",
+          "class_text": "NEW COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q1.pdf",
+          "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+          "sha256": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+          "retrieved_at": "2026-10-05 05:15:36.881132+00:00"
+        },
+        {
+          "quarter": "2017Q3",
+          "cusip": "25746U109",
+          "issuer_text": "DOMINION ENERGY INC",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q3.pdf",
+          "archive_id": "976f2977-b501-49e6-9a46-f9eb3ef4d2f1",
+          "sha256": "7fa1277cb4e8b2029f76a089a6548aff830e61f45a86cd538836ebee9fae721c",
+          "retrieved_at": "2026-10-03 13:56:30.420398+00:00"
+        }
+      ],
+      "links": [
+        {
+          "predecessor_id": "5b4db8e9-12f3-444e-bfde-18a8655d27f1",
+          "successor_id": "9499bdfe-7546-4985-ad29-554fedea4d28",
+          "ratio": null,
+          "effective_at": "2017-05-10 00:00:00+00:00",
+          "source_hash": "637671ac0c6072d41625ca16619903a3a0a4393325d6171d94393e917b403612",
+          "issuer_before": {
+            "issuer_id": null,
+            "anchor_security_name": "Dominion Resources, Inc."
+          },
+          "issuer_after": {
+            "issuer_id": null,
+            "anchor_security_name": "Dominion Energy Inc"
+          }
+        }
+      ],
+      "precision": "See event note; date-only is not an exact UTC instant",
+      "review_note": "Legal name change on 2017-05-10, date precision only; same common CUSIP in both official lists; no new security or index exit/entry.",
+      "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
+    },
+    {
+      "key": "TESORO_ANDEAVOR",
+      "document_form": "8-K",
+      "accession": "0000050104-17-000180",
+      "filer_cik": 50104,
+      "primary_proofs": [
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/50104/000005010417000180/index.json",
+          "archive_id": "b347b30b-48a4-4c5a-8e17-0b6f22abd0b6",
+          "sha256": "800cfb17fafdcf9fe54a3ee3dfc9676ed5603bac33fc42303c84a53ba670c411",
+          "retrieved_at": "2026-10-05 14:37:52.047131+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 893
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/50104/000005010417000180/andvnamechange8-k.htm",
+          "archive_id": "f8fefca3-4c29-4036-8195-b5c3b66bdd0b",
+          "sha256": "0ce7117ebbd2d4144477d9be497b84c98517b274bc9f704b8450fb9aede52e85",
+          "retrieved_at": "2026-10-05 14:37:52.049893+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 36907
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/50104/000005010417000180/0000050104-17-000180.txt",
+          "archive_id": "d2e447e0-db34-40d3-bf90-2b2b72603be6",
+          "sha256": "6f46b2a40503a33d619372f43e95d7ce98a2abe148612a3539712a0804fce011",
+          "retrieved_at": "2026-10-05 14:37:52.051779+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 343860
+        }
+      ],
+      "official_13f": [
+        {
+          "quarter": "2017Q1",
+          "cusip": "881609101",
+          "issuer_text": "TESORO CORP",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q1.pdf",
+          "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+          "sha256": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+          "retrieved_at": "2026-10-05 05:15:36.881132+00:00"
+        },
+        {
+          "quarter": "2017Q3",
+          "cusip": "03349M105",
+          "issuer_text": "ANDEAVOR",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q3.pdf",
+          "archive_id": "976f2977-b501-49e6-9a46-f9eb3ef4d2f1",
+          "sha256": "7fa1277cb4e8b2029f76a089a6548aff830e61f45a86cd538836ebee9fae721c",
+          "retrieved_at": "2026-10-03 13:56:30.420398+00:00"
+        }
+      ],
+      "links": [
+        {
+          "predecessor_id": "4a16cc1c-69f6-45c9-8428-29e676f33007",
+          "successor_id": "b39afb97-0c31-4b3d-8ec3-04627a3e4c0f",
+          "ratio": null,
+          "effective_at": "2017-08-01 00:00:00+00:00",
+          "source_hash": "0ce7117ebbd2d4144477d9be497b84c98517b274bc9f704b8450fb9aede52e85",
+          "issuer_before": {
+            "issuer_id": null,
+            "anchor_security_name": "Tesoro Corp."
+          },
+          "issuer_after": {
+            "issuer_id": null,
+            "anchor_security_name": "Andeavor"
+          }
+        }
+      ],
+      "precision": "See event note; date-only is not an exact UTC instant",
+      "review_note": "Legal name change 2017-08-01. CUSIP transition is quarterly PARTIAL unless separately corroborated by exchange notice; same security.",
+      "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
+    },
+    {
+      "key": "CSC_DXC",
+      "document_form": "8-K",
+      "accession": "0001193125-17-112036",
+      "filer_cik": 1688568,
+      "primary_proofs": [
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1688568/000119312517112036/index.json",
+          "archive_id": "f00e7c8a-5699-4548-bd6f-5cd6fb58baac",
+          "sha256": "ce0b55d57e473f4e1a5046d6cd87ad8849405032d3b5a1fdd51847d73aa0c4f1",
+          "retrieved_at": "2026-10-05 14:37:53.637168+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 1784
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1688568/000119312517112036/d250548d8k.htm",
+          "archive_id": "90885f20-6e15-4ac7-9430-c3129a33c603",
+          "sha256": "e1f7a6779c74542803e94e294483a7bfeb64e2afdb25a93263d915e88d87a5d3",
+          "retrieved_at": "2026-10-05 14:37:53.640217+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 32797
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1688568/000119312517112036/0001193125-17-112036.txt",
+          "archive_id": "eee24938-0c41-4a2a-80da-5448a48a2c2d",
+          "sha256": "aa90b18bb1568cd0840db832b1ea7599d16ef7af37303baf99310f859cc96299",
+          "retrieved_at": "2026-10-05 14:37:53.649152+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 5821989
+        }
+      ],
+      "official_13f": [
+        {
+          "quarter": "2017Q1",
+          "cusip": "205363104",
+          "issuer_text": "COMPUTER SCIENCES CORP",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q1.pdf",
+          "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+          "sha256": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+          "retrieved_at": "2026-10-05 05:15:36.881132+00:00"
+        },
+        {
+          "quarter": "2017Q3",
+          "cusip": "23355L106",
+          "issuer_text": "DXC TECHNOLOGY CO",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q3.pdf",
+          "archive_id": "976f2977-b501-49e6-9a46-f9eb3ef4d2f1",
+          "sha256": "7fa1277cb4e8b2029f76a089a6548aff830e61f45a86cd538836ebee9fae721c",
+          "retrieved_at": "2026-10-03 13:56:30.420398+00:00"
+        }
+      ],
+      "links": [
+        {
+          "predecessor_id": "c2237917-63d2-45a7-85f4-81f7bd60b507",
+          "successor_id": "4df3fe95-650c-4e30-a8e2-b26c2fed3d5d",
+          "ratio": 1.0,
+          "effective_at": "2017-04-01 07:01:00+00:00",
+          "source_hash": "e1f7a6779c74542803e94e294483a7bfeb64e2afdb25a93263d915e88d87a5d3",
+          "issuer_before": {
+            "issuer_id": null,
+            "anchor_security_name": "Computer Sciences Corp."
+          },
+          "issuer_after": {
+            "issuer_id": null,
+            "anchor_security_name": "DXC Technology Co"
+          }
+        }
+      ],
+      "precision": "See event note; date-only is not an exact UTC instant",
+      "review_note": "CSC shares replaced 1:1 by new issuer DXC at 2017-04-01 03:01 ET; regular-way trading April 3; S&P slot addition April 4 is independently sourced.",
+      "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
+    },
+    {
+      "key": "DOW_DOWDUPONT",
+      "document_form": "8-K12B",
+      "accession": "0001193125-17-274834",
+      "filer_cik": 1666700,
+      "primary_proofs": [
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1666700/000119312517274834/index.json",
+          "archive_id": "756b7279-6d92-4d75-ae97-97b4ebfc0e92",
+          "sha256": "e04e01825a4b64b56a1cfcf601551011e0e5483735f5fd928a377393dbb16849",
+          "retrieved_at": "2026-10-05 14:37:54.161889+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 971
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1666700/000119312517274834/d426905d8k12b.htm",
+          "archive_id": "be18ec47-cff7-4d2d-beca-e36d01c4c068",
+          "sha256": "3adc0fc32a5af1e75d04b4390c2bb1ab142d60b622c11cfbd61676704dd1ac38",
+          "retrieved_at": "2026-10-05 14:37:54.164846+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 70491
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1666700/000119312517274834/0001193125-17-274834.txt",
+          "archive_id": "f91ff083-901d-4666-8c6e-c2c9cb6dd663",
+          "sha256": "38da93181e473232187738ac85c30cba2c70e2f0d3dba0f82dc3c92f51359d7a",
+          "retrieved_at": "2026-10-05 14:37:54.167528+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 373787
+        }
+      ],
+      "official_13f": [
+        {
+          "quarter": "2017Q1",
+          "cusip": "260543103",
+          "issuer_text": "DOW CHEM CO",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q1.pdf",
+          "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+          "sha256": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+          "retrieved_at": "2026-10-05 05:15:36.881132+00:00"
+        },
+        {
+          "quarter": "2017Q3",
+          "cusip": "26078J100",
+          "issuer_text": "DOWDUPONT INC",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q3.pdf",
+          "archive_id": "976f2977-b501-49e6-9a46-f9eb3ef4d2f1",
+          "sha256": "7fa1277cb4e8b2029f76a089a6548aff830e61f45a86cd538836ebee9fae721c",
+          "retrieved_at": "2026-10-03 13:56:30.420398+00:00"
+        }
+      ],
+      "links": [
+        {
+          "predecessor_id": "615fa1ab-7125-4543-beed-1df189184fb3",
+          "successor_id": "b102449c-9f0e-4a7c-a3ea-9a68c168363e",
+          "ratio": 1.0,
+          "effective_at": "2017-09-01 13:30:00+00:00",
+          "source_hash": "3adc0fc32a5af1e75d04b4390c2bb1ab142d60b622c11cfbd61676704dd1ac38",
+          "issuer_before": {
+            "issuer_id": null,
+            "anchor_security_name": "The Dow Chemical Co."
+          },
+          "issuer_after": {
+            "issuer_id": null,
+            "anchor_security_name": "DowDuPont, Inc."
+          }
+        }
+      ],
+      "precision": "See event note; date-only is not an exact UTC instant",
+      "review_note": "MERGER closes 2017-08-31; index-effective successor first session 2017-09-01. Dow->new issuer 1:1; DuPont common 1.282 is separate and its index removal is not a continuity link.",
+      "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
+    },
+    {
+      "key": "GENERAL_GROWTH_GGP",
+      "document_form": "10-K",
+      "accession": "0001496048-17-000018",
+      "filer_cik": 1496048,
+      "primary_proofs": [
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1496048/000149604817000018/index.json",
+          "archive_id": "aa64396e-ffd4-42ff-a2c5-63e0f61573b9",
+          "sha256": "5aae819fb5afd26cdf8289484a6f9f1c6ce15cf13d1fc3f3d3c72019bcdb75f7",
+          "retrieved_at": "2026-10-05 14:53:07.919002+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 11798
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1496048/000149604817000018/ggp12311610k.htm",
+          "archive_id": "ec6ffd05-0948-4e11-bebd-098833213108",
+          "sha256": "3477203441bca8ea7586877cc10689731fc2b5c93e9dfa243a1c9cead178d6c1",
+          "retrieved_at": "2026-10-05 14:53:07.928635+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 5337090
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1496048/000149604817000018/0001496048-17-000018.txt",
+          "archive_id": "b7f27c0b-ed03-4ead-89f6-4202ea226c58",
+          "sha256": "e61162674f2134374984f5491bbbd91b05fc3ae33f3914362d726d9b3367cfd5",
+          "retrieved_at": "2026-10-05 14:53:07.952591+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 23405671
+        }
+      ],
+      "official_13f": [
+        {
+          "quarter": "2016Q3",
+          "cusip": "370023103",
+          "issuer_text": "GENERAL GROWTH PPTYS INC",
+          "class_text": "NEW COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf",
+          "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+          "sha256": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+          "retrieved_at": "2026-10-05 05:15:34.025446+00:00"
+        },
+        {
+          "quarter": "2017Q1",
+          "cusip": "36174X101",
+          "issuer_text": "GGP INC",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q1.pdf",
+          "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+          "sha256": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+          "retrieved_at": "2026-10-05 05:15:36.881132+00:00"
+        }
+      ],
+      "links": [
+        {
+          "predecessor_id": "7be23e53-10a4-4cba-8843-ddeb1bb04d57",
+          "successor_id": "0ad6c579-b0c1-4f1b-a621-f3037f9fc94b",
+          "ratio": null,
+          "effective_at": "2017-01-27 00:00:00+00:00",
+          "source_hash": "3477203441bca8ea7586877cc10689731fc2b5c93e9dfa243a1c9cead178d6c1",
+          "issuer_before": {
+            "issuer_id": null,
+            "anchor_security_name": "General Growth Properties, Inc."
+          },
+          "issuer_after": {
+            "issuer_id": null,
+            "anchor_security_name": "GGP, Inc."
+          }
+        }
+      ],
+      "precision": "See event note; date-only is not an exact UTC instant",
+      "review_note": "Name change completed 2017-01-27 (2016 annual 10-K filed 2017-02-22); January 18 8-K announced it. Preferred CUSIP 36174X200 is not common 36174X101.",
+      "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
+    },
+    {
+      "key": "L3_HOLDING_SUCCESSOR",
+      "document_form": "8-K12B",
+      "accession": "0001567619-17-000002",
+      "filer_cik": 1039101,
+      "primary_proofs": [
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1039101/000156761917000002/index.json",
+          "archive_id": "fca5f751-54b5-4a1f-9780-834c4447f6d2",
+          "sha256": "3b5d524c40d6b64ee0f16642ef1358357ec9ddefdc4b1cf498da37c878a86e98",
+          "retrieved_at": "2026-10-05 14:46:39.083435+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 775
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1039101/000156761917000002/s001495x1_8k12b.htm",
+          "archive_id": "525065ac-11cf-4353-9910-dacae7562792",
+          "sha256": "d469bf52b1eaac18bee15e309255d5142584305f74eb0d66d18ca4f9dd78b794",
+          "retrieved_at": "2026-10-05 14:46:39.084034+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 25735
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1039101/000156761917000002/0001567619-17-000002.txt",
+          "archive_id": "5c7a4cc4-fd8a-463e-97fa-d66efce76fd6",
+          "sha256": "360a1d9a2499fef939a7c45fc45d4377810642822849ffc15fe9041801e195cc",
+          "retrieved_at": "2026-10-05 14:46:39.084701+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 206831
+        }
+      ],
+      "official_13f": [
+        {
+          "quarter": "2016Q3",
+          "cusip": "502424104",
+          "issuer_text": "L-3 COMMUNICATIONS HLDGS INC",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf",
+          "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+          "sha256": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+          "retrieved_at": "2026-10-05 05:15:34.025446+00:00"
+        },
+        {
+          "quarter": "2017Q1",
+          "cusip": "502413107",
+          "issuer_text": "L3 TECHNOLOGIES INC",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q1.pdf",
+          "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+          "sha256": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+          "retrieved_at": "2026-10-05 05:15:36.881132+00:00"
+        }
+      ],
+      "links": [
+        {
+          "predecessor_id": "a26467ad-9068-4e34-abdb-42ada822ec6b",
+          "successor_id": "74ac68be-1293-4c9e-8725-b75b2cc48be5",
+          "ratio": 1.0,
+          "effective_at": "2017-01-01 04:58:00+00:00",
+          "source_hash": "d469bf52b1eaac18bee15e309255d5142584305f74eb0d66d18ca4f9dd78b794",
+          "issuer_before": {
+            "issuer_id": null,
+            "anchor_security_name": "L-3 Communications Holdings, Inc."
+          },
+          "issuer_after": {
+            "issuer_id": null,
+            "anchor_security_name": "L3 Technologies, Inc."
+          }
+        }
+      ],
+      "precision": "SOURCE_LOCAL_TIME_TIMEZONE_UNSPECIFIED; stored timestamp is monthly boundary only",
+      "review_note": "MERGER 2016-12-31 23:58, source timezone unspecified; effective_at is a monthly reconstruction boundary, not a verified UTC instant. Holding predecessor into operating company 1:1; legal rename one minute later. Separate issuer/security.",
+      "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
+    },
+    {
+      "key": "FMC_TECHNIPFMC",
+      "document_form": "8-K",
+      "accession": "0001193125-17-010427",
+      "filer_cik": 1135152,
+      "primary_proofs": [
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1135152/000119312517010427/index.json",
+          "archive_id": "43c11ab8-2a21-4aef-b081-ac00538aa676",
+          "sha256": "d2d28c25cef5010a9bcfc37492a60a6c26800ae54bc8c301757717be8c082472",
+          "retrieved_at": "2026-10-05 14:46:40.349955+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 763
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1135152/000119312517010427/d326621d8k.htm",
+          "archive_id": "04965139-7c9a-4126-a3d7-1f889b943fc3",
+          "sha256": "103b50bbb60678b44e4857e1f5e2c145c9599984c17e3500cdbebc0b1b35e227",
+          "retrieved_at": "2026-10-05 14:46:40.350864+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 24036
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1135152/000119312517010427/0001193125-17-010427.txt",
+          "archive_id": "4743805f-9b83-4886-b8da-de0a0d702d3a",
+          "sha256": "6859dc72c8a7dcc0e54f9bf0245e1c7f7fadf1a55938c150283dfff9c8da1224",
+          "retrieved_at": "2026-10-05 14:46:40.351593+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 95902
+        }
+      ],
+      "official_13f": [
+        {
+          "quarter": "2016Q3",
+          "cusip": "30249U101",
+          "issuer_text": "FMC TECHNOLOGIES INC",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf",
+          "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+          "sha256": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+          "retrieved_at": "2026-10-05 05:15:34.025446+00:00"
+        },
+        {
+          "quarter": "2017Q1",
+          "cusip": "G87110105",
+          "issuer_text": "TECHNIPFMC",
+          "class_text": "PLC COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q1.pdf",
+          "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+          "sha256": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+          "retrieved_at": "2026-10-05 05:15:36.881132+00:00"
+        }
+      ],
+      "links": [
+        {
+          "predecessor_id": "cc191110-57e5-4e27-a0b2-a1333932d7cc",
+          "successor_id": "6a326e50-2686-4adf-af70-b6e474a3f542",
+          "ratio": 1.0,
+          "effective_at": "2017-01-17 14:30:00+00:00",
+          "source_hash": "103b50bbb60678b44e4857e1f5e2c145c9599984c17e3500cdbebc0b1b35e227",
+          "issuer_before": {
+            "issuer_id": null,
+            "anchor_security_name": "FMC Technologies, Inc.*"
+          },
+          "issuer_after": {
+            "issuer_id": null,
+            "anchor_security_name": "TechnipFMC PLC"
+          }
+        }
+      ],
+      "precision": "See event note; date-only is not an exact UTC instant",
+      "review_note": "MERGER completed January 16, 2017 (NYSE holiday); FMC 1:1 into UK successor. First regular session January 17; Technip 2:1 is a separate instrument.",
+      "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
+    },
+    {
+      "key": "ALCOA_ARCONIC_NAME",
+      "document_form": "8-K",
+      "accession": "0001193125-16-755445",
+      "filer_cik": 4281,
+      "primary_proofs": [
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/4281/000119312516755445/index.json",
+          "archive_id": "656e79a6-e516-40b4-a416-152114c3abf8",
+          "sha256": "de9b51112c63deaa535e112e9279ae888ad02d5eac385cfa5f51a28898f24410",
+          "retrieved_at": "2026-10-05 14:46:41.906919+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 761
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/4281/000119312516755445/d273759d8k.htm",
+          "archive_id": "fdc42e4b-9c3e-46cd-ab94-8fa97ad27a2f",
+          "sha256": "8c1ffe645be6950d5c06804e3ace1b2ad968f4300ab2de7ca9bce53116452972",
+          "retrieved_at": "2026-10-05 14:46:41.907743+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 16713
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/4281/000119312516755445/0001193125-16-755445.txt",
+          "archive_id": "3440f295-d3b5-4cc6-b499-b0bc43b02298",
+          "sha256": "e2775bbc49099463daa63cd933de045ec905a262a8c4b1b2d29ba2ce8dbb8d55",
+          "retrieved_at": "2026-10-05 14:46:41.908395+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 42421
+        }
+      ],
+      "official_13f": [
+        {
+          "quarter": "2016Q3",
+          "cusip": "013817101",
+          "issuer_text": "ALCOA INC",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf",
+          "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+          "sha256": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+          "retrieved_at": "2026-10-05 05:15:34.025446+00:00"
+        },
+        {
+          "quarter": "2017Q1",
+          "cusip": "03965L100",
+          "issuer_text": "ARCONIC INC",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q1.pdf",
+          "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+          "sha256": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+          "retrieved_at": "2026-10-05 05:15:36.881132+00:00"
+        }
+      ],
+      "links": [
+        {
+          "predecessor_id": "b7de864f-f8a6-4070-921d-84456c0404e9",
+          "successor_id": "05803e71-b1dc-4f55-9900-d802b81ac253",
+          "ratio": null,
+          "effective_at": "2016-11-01 03:59:00+00:00",
+          "source_hash": "8c1ffe645be6950d5c06804e3ace1b2ad968f4300ab2de7ca9bce53116452972",
+          "issuer_before": {
+            "issuer_id": null,
+            "anchor_security_name": "Alcoa, Inc."
+          },
+          "issuer_after": {
+            "issuer_id": null,
+            "anchor_security_name": "Arconic Inc"
+          }
+        }
+      ],
+      "precision": "SOURCE_LOCAL_TIME_TIMEZONE_UNSPECIFIED; stored timestamp is monthly boundary only",
+      "review_note": "Legal rename 2016-10-31 23:59, source timezone unspecified; effective_at is a monthly reconstruction boundary, not a verified UTC instant. Trading ARNC November 1; preceding reverse split and Alcoa Corporation spin-off are separate.",
+      "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
+    },
+    {
+      "key": "DAVITA_NAME",
+      "document_form": "8-K",
+      "accession": "0001193125-16-702143",
+      "filer_cik": 927066,
+      "primary_proofs": [
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/927066/000119312516702143/index.json",
+          "archive_id": "21c41293-d547-4595-bd29-35bab16679fb",
+          "sha256": "5bb9c75129208f04a22f5a89501e18e5717df975bcfc6968b249d64eecb4a853",
+          "retrieved_at": "2026-10-05 15:03:51.546550+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 953
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/927066/000119312516702143/d249311d8k.htm",
+          "archive_id": "adc5be00-bd1f-4bd9-8ad5-4b81311af98e",
+          "sha256": "a50910e1a7eba2fc12251a4c63a191b3ab7bb27ce7b1da359d74356d760ebaff",
+          "retrieved_at": "2026-10-05 15:03:51.549457+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 14878
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/927066/000119312516702143/0001193125-16-702143.txt",
+          "archive_id": "b39858b2-7699-4632-ba6c-9feca9e7a970",
+          "sha256": "ad1c51b623f8e3edd148dfe3e1aed6c05d67d0c4fe753220f9a620005b063117",
+          "retrieved_at": "2026-10-05 15:03:51.551338+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 41667
+        }
+      ],
+      "official_13f": [
+        {
+          "quarter": "2016Q1",
+          "cusip": "23918K108",
+          "issuer_text": "DAVITA HEALTHCARE PARTNERS I",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q1.pdf",
+          "archive_id": "a505db97-fd62-4e3e-878c-bbf3ab59c8ce",
+          "sha256": "1fda4bd11b87452625442113d783b4456d6d89809c3abe910d3816aedb6d77c4",
+          "retrieved_at": "2026-10-05 05:15:28.281930+00:00"
+        },
+        {
+          "quarter": "2016Q3",
+          "cusip": "23918K108",
+          "issuer_text": "DAVITA INC",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf",
+          "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+          "sha256": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+          "retrieved_at": "2026-10-05 05:15:34.025446+00:00"
+        }
+      ],
+      "links": [
+        {
+          "predecessor_id": "d0a5a96b-aa71-4c34-ada5-33d7351a47b9",
+          "successor_id": "e509ddea-2423-4b27-bde9-a00972d7d40c",
+          "ratio": null,
+          "effective_at": "2016-09-01 00:00:00+00:00",
+          "source_hash": "a50910e1a7eba2fc12251a4c63a191b3ab7bb27ce7b1da359d74356d760ebaff",
+          "issuer_before": {
+            "issuer_id": null,
+            "anchor_security_name": "DaVita HealthCare Partners,Inc."
+          },
+          "issuer_after": {
+            "issuer_id": null,
+            "anchor_security_name": "DaVita Inc"
+          }
+        }
+      ],
+      "precision": "See event note; date-only is not an exact UTC instant",
+      "review_note": "Legal name change effective 2016-09-01; unchanged common CUSIP and ticker, not an exit/entry.",
+      "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
+    },
+    {
+      "key": "MCGRAW_SP_GLOBAL",
+      "document_form": "8-K",
+      "accession": "0000064040-16-000062",
+      "filer_cik": 64040,
+      "primary_proofs": [
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/64040/000006404016000062/index.json",
+          "archive_id": "cff2844b-2672-4edb-b4e4-226c2a54b3d2",
+          "sha256": "954e02a0b4d00a2a4a734ca9809d2a132bcc0c5f8aa3c6b1747f984ae45e2ae5",
+          "retrieved_at": "2026-10-05 15:01:52.663269+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 775
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/64040/000006404016000062/a04272016form8-k.htm",
+          "archive_id": "f0717444-2d78-48cd-a047-1f9e14d5ccb2",
+          "sha256": "aeb1d5f36c48e60733b21e241e829fe56208598ef10c4e26b1cfe9f0e3afb01b",
+          "retrieved_at": "2026-10-05 15:01:52.665872+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 45899
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/64040/000006404016000062/0000064040-16-000062.txt",
+          "archive_id": "5f98ddee-7602-41d6-93a5-e6d2d801f48b",
+          "sha256": "27990d6b9e7c1d321dc741ab8300884d6a400baf9d23ee1c10b3c685de880d94",
+          "retrieved_at": "2026-10-05 15:01:52.667147+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 287747
+        }
+      ],
+      "official_13f": [
+        {
+          "quarter": "2016Q1",
+          "cusip": "580645109",
+          "issuer_text": "MCGRAW HILL FINL INC",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q1.pdf",
+          "archive_id": "a505db97-fd62-4e3e-878c-bbf3ab59c8ce",
+          "sha256": "1fda4bd11b87452625442113d783b4456d6d89809c3abe910d3816aedb6d77c4",
+          "retrieved_at": "2026-10-05 05:15:28.281930+00:00"
+        },
+        {
+          "quarter": "2016Q3",
+          "cusip": "78409V104",
+          "issuer_text": "S&P GLOBAL INC",
+          "class_text": "COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf",
+          "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+          "sha256": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+          "retrieved_at": "2026-10-05 05:15:34.025446+00:00"
+        }
+      ],
+      "links": [
+        {
+          "predecessor_id": "1ef2c796-2347-4205-b002-cdaf99ed7ad2",
+          "successor_id": "77eee470-79cd-46be-b315-c31c715d5658",
+          "ratio": null,
+          "effective_at": "2016-04-27 00:00:00+00:00",
+          "source_hash": "aeb1d5f36c48e60733b21e241e829fe56208598ef10c4e26b1cfe9f0e3afb01b",
+          "issuer_before": {
+            "issuer_id": null,
+            "anchor_security_name": "McGraw Hill Financial, Inc."
+          },
+          "issuer_after": {
+            "issuer_id": null,
+            "anchor_security_name": "S&P Global Inc"
+          }
+        }
+      ],
+      "precision": "See event note; date-only is not an exact UTC instant",
+      "review_note": "Legal name approved/filed April 27; trading symbol April 28 corroborated by issuer release. CUSIP precise transition remains PARTIAL.",
+      "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
+    },
+    {
+      "key": "XL_REDOMICILIATION",
+      "document_form": "8-K12B",
+      "accession": "0000875159-16-000163",
+      "filer_cik": 875159,
+      "primary_proofs": [
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/875159/000087515916000163/index.json",
+          "archive_id": "010d9d87-c590-410d-add7-5aaeb30bda1d",
+          "sha256": "c95a8fe76864af73f1fbb59eeb0a05e5a822d706058e6ef41335fdc2fd46b109",
+          "retrieved_at": "2026-10-05 15:04:30.692471+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K12B",
+          "bytes": 2688
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/875159/000087515916000163/form8-k.htm",
+          "archive_id": "122d0926-6dbf-4ea6-a234-7e83af8f5451",
+          "sha256": "55fb39b55ca580a26375dd94897ddaf4d327d79b3a2f521f8e62cf05c6deb143",
+          "retrieved_at": "2026-10-05 15:04:30.696022+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K12B",
+          "bytes": 79407
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/875159/000087515916000163/0000875159-16-000163.txt",
+          "archive_id": "b371b277-554f-4405-a293-73f205ef1426",
+          "sha256": "3063e0ba076c45e5394e45caab15ca85c93e4a5e81a7b53031103a51f394c2e1",
+          "retrieved_at": "2026-10-05 15:04:30.709848+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K12B",
+          "bytes": 10444157
+        }
+      ],
+      "official_13f": [
+        {
+          "quarter": "2016Q1",
+          "cusip": "G98290102",
+          "issuer_text": "XL GROUP",
+          "class_text": "PLC SHS",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q1.pdf",
+          "archive_id": "a505db97-fd62-4e3e-878c-bbf3ab59c8ce",
+          "sha256": "1fda4bd11b87452625442113d783b4456d6d89809c3abe910d3816aedb6d77c4",
+          "retrieved_at": "2026-10-05 05:15:28.281930+00:00"
+        },
+        {
+          "quarter": "2016Q3",
+          "cusip": "G98294104",
+          "issuer_text": "XL GROUP",
+          "class_text": "LTD COM",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf",
+          "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+          "sha256": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+          "retrieved_at": "2026-10-05 05:15:34.025446+00:00"
+        }
+      ],
+      "links": [
+        {
+          "predecessor_id": "5cc78849-fa77-4845-a126-c8225f1575ef",
+          "successor_id": "5d9a82cd-f742-4bfd-b9e6-ed63deb52753",
+          "ratio": 1.0,
+          "effective_at": "2016-07-25 11:30:00+00:00",
+          "source_hash": "55fb39b55ca580a26375dd94897ddaf4d327d79b3a2f521f8e62cf05c6deb143",
+          "issuer_before": {
+            "issuer_id": null,
+            "anchor_security_name": "XL Group PLC Class A"
+          },
+          "issuer_after": {
+            "issuer_id": null,
+            "anchor_security_name": "XL Group, Ltd."
+          }
+        }
+      ],
+      "precision": "See event note; date-only is not an exact UTC instant",
+      "review_note": "REDOMICILIATION: Irish predecessor shares cancelled; new Bermuda issuer common issued 1:1, July 25 at 12:30 Irish time (11:30 UTC). Same ticker is not proof of same security. CUSIP effective explicitly stated.",
+      "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
+    },
+    {
+      "key": "TYCO_JCI_CONSOLIDATION_NAME",
+      "document_form": "8-K",
+      "accession": "0001104659-16-143068",
+      "filer_cik": 833444,
+      "primary_proofs": [
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/833444/000110465916143068/index.json",
+          "archive_id": "62141344-d463-4040-b529-7f12d10a9c66",
+          "sha256": "b57a0f735286af93147ccd4e6322136b93a16750662531e656f50e7e4ee2a407",
+          "retrieved_at": "2026-10-05 15:04:32.594386+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 2026
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/833444/000110465916143068/a16-17941_18k.htm",
+          "archive_id": "b53a10ff-3cd2-4dc4-8b01-ad650db68f96",
+          "sha256": "dcd8065aec8a55e2644c163ebca0881cab6684e9b2de48fa5e87171c2c738bde",
+          "retrieved_at": "2026-10-05 15:04:32.598139+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 92880
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/833444/000110465916143068/0001104659-16-143068.txt",
+          "archive_id": "b6cb34a1-f808-4ff4-8642-7e83521d5a3c",
+          "sha256": "f2cac58f218dd62a1448629751b1fd717aae7a6785f9970f085868bccc9ccc4a",
+          "retrieved_at": "2026-10-05 15:04:32.600873+00:00",
+          "published_at": "None",
+          "provider": "SEC_8K",
+          "bytes": 1286485
+        }
+      ],
+      "official_13f": [
+        {
+          "quarter": "2016Q1",
+          "cusip": "G91442106",
+          "issuer_text": "TYCO INTL",
+          "class_text": "PLC SHS",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q1.pdf",
+          "archive_id": "a505db97-fd62-4e3e-878c-bbf3ab59c8ce",
+          "sha256": "1fda4bd11b87452625442113d783b4456d6d89809c3abe910d3816aedb6d77c4",
+          "retrieved_at": "2026-10-05 05:15:28.281930+00:00"
+        },
+        {
+          "quarter": "2016Q3",
+          "cusip": "G51502105",
+          "issuer_text": "JOHNSON CTLS INTL",
+          "class_text": "PLC SHS",
+          "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf",
+          "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+          "sha256": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+          "retrieved_at": "2026-10-05 05:15:34.025446+00:00"
+        }
+      ],
+      "links": [
+        {
+          "predecessor_id": "573e8391-d6da-4ba7-bb25-b95634d2c62a",
+          "successor_id": "f6a03920-041e-4373-80b6-e94145de31cf",
+          "ratio": 0.955,
+          "effective_at": "2016-09-03 03:59:00+00:00",
+          "source_hash": "dcd8065aec8a55e2644c163ebca0881cab6684e9b2de48fa5e87171c2c738bde",
+          "issuer_before": {
+            "issuer_id": null,
+            "anchor_security_name": "Tyco International, Ltd."
+          },
+          "issuer_after": {
+            "issuer_id": null,
+            "anchor_security_name": "Johnson Controls International plc"
+          }
+        }
+      ],
+      "precision": "See event note; date-only is not an exact UTC instant",
+      "review_note": "SHARE_CONSOLIDATION 0.955:1 of existing Tyco legal issuer plus rename, distinct instrument/CUSIP. Completed merger September 2 at 23:59 New York time; JCI trading September 6. Old Johnson Controls shares' cash/election consideration is separate; no continuity link from that issuer.",
+      "confidence": "HIGH_CLASS_PRESERVING_DOCUMENT_REVIEW"
+    }
+  ]
+}

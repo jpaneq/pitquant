@@ -1,0 +1,26 @@
+{
+  "membership_blocker": "Under Armour, Inc. Class C",
+  "gap_id": "6c5a95f6a607858fc601",
+  "attempts": [
+    {
+      "source": "S&P press archive / indexnews",
+      "queries": [
+        "site:spglobal.com \"Under Armour\" \"April 8, 2016\"",
+        "site:press.spglobal.com \"Under Armour\" \"2016\" \"dividend\"",
+        "\"S&P\" \"UA.C\" \"2016\" \"April\"",
+        "site:spdji.com \"Under Armour\" \"2016\""
+      ],
+      "result": "No official dated S&P Class C addition retrieved; search misses are not proof a document does not exist."
+    },
+    {
+      "source": "SEC 2016 annual 10-K",
+      "accession": "0001336917-17-000017",
+      "url": "https://www.sec.gov/Archives/edgar/data/1336917/000133691717000017/ua-20161231x10k.htm",
+      "archive_id": "39fb8862-5d36-4634-af06-075690b00634",
+      "sha256": "732bfdfa2214e277fba5bc60b81ed2d80f06e18a512dd49d55a09242e2bc539e",
+      "form": "10-K",
+      "result": "Official completed distribution April 7 / initial UA.C listing April 8; supports creation and listed class, not S&P effective membership. Retained as insufficient for membership; no event was fabricated."
+    }
+  ],
+  "minimum_action": "Obtain and archive a dated official S&P corporate-action/index notice for inclusion of Under Armour Class C in April 2016, then replay the 2016-03\u219209 segment before working earlier months."
+}

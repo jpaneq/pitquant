@@ -76,8 +76,16 @@ def main() -> None:
                        "blocking_reason": None if ready else ("WEAK_IDENTITY: " + ", ".join(weak_members) if weak_members else ("; ".join(c.reasons) or c.status))})  # fmt: skip
     ready_dates = [m["date"] for m in months if m["status"] == "READY"]
     plan = C.walk_forward_folds(ready_dates)
+    indices = sorted({C.month_index(d) for d in ready_dates})
+    runs: list[list[int]] = []
+    for idx in indices:
+        if runs and idx == runs[-1][-1] + 1:
+            runs[-1].append(idx)
+        else:
+            runs.append([idx])
+    longest_usable_run = max((len(r) for r in runs), default=0)
     d02 = {"total_months": len(months), "ready_months": len(ready_dates), "membership_ready_months": rep.ready, "partial_months": sum(m["status"] == "PARTIAL" for m in months), "blocked_months": sum(1 for m in months if m["status"] == "BLOCKED"), "no_anchor_months": sum(1 for m in months if m["status"] == "NO_ANCHOR"),
-           "coverage_pct": round(100 * len(ready_dates) / max(len(months), 1), 1), "longest_run": rep.longest_run, "feasible_folds": len(plan.folds), "reason_if_no_folds": plan.reason_if_none}  # fmt: skip
+           "coverage_pct": round(100 * len(ready_dates) / max(len(months), 1), 1), "longest_run": longest_usable_run, "longest_membership_run": rep.longest_run, "feasible_folds": len(plan.folds), "reason_if_no_folds": plan.reason_if_none}  # fmt: skip
     d02["required_continuous_months"] = (
         C.TRAIN_MIN_MONTHS
         + C.HORIZON_MONTHS
@@ -98,6 +106,12 @@ def main() -> None:
             "test_start": month_label(f.test_start),
             "test_end": month_label(f.test_end),
             "train_months": f.n_train_months,
+            "test_months": f.test_end - f.test_start + 1,
+            "excluded_decision_start": month_label(f.train_end + 1),
+            "excluded_decision_end": month_label(f.test_start - 1),
+            "embargo_start": month_label(f.test_start - C.EMBARGO_MONTHS),
+            "embargo_end": month_label(f.test_start - 1),
+            "separation_rule": "train_decision + H12 + embargo1 <= test_start; embargo lies inside the 12 excluded decision months under the frozen inclusive-boundary contract",
             "purged_months": f.purged_months,
             "embargo_months": C.EMBARGO_MONTHS,
         }
@@ -342,7 +356,9 @@ def main() -> None:
             "READY" if d02_ready else "BLOCKED",
             f">= {C.MIN_FOLDS} feasible walk-forward folds on consecutive READY months",
             f"{d02['ready_months']}/{d02['total_months']} months READY, longest run {d02['longest_run']}, folds {d02['feasible_folds']}",
-            None if d02_ready else (plan.reason_if_none or "existing D02 gate false"),
+            None
+            if d02_ready
+            else (plan.reason_if_none or f"{len(plan.folds)} feasible folds; need {C.MIN_FOLDS}"),
         ),
         "US_SECURITY_IDENTITY_READY": FM.gate(
             "READY" if rf.flags["US_SECURITY_IDENTITY_READY"] else "PARTIAL",

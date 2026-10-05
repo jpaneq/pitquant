@@ -101,7 +101,7 @@ def pairs(
 
 # ───────────────────────────────────────────── parser v4
 def test_parser_version_is_bumped_so_v3_rows_are_never_mixed_in() -> None:
-    assert PARSER_VERSION == "sp500-evidence-4"
+    assert PARSER_VERSION == "sp500-evidence-8"
 
 
 def test_a_removal_named_without_ticker_never_takes_the_added_companys_ticker() -> None:
