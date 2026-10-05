@@ -1,0 +1,22 @@
+[
+  {
+    "ticker": "DIS",
+    "url": "https://data.sec.gov/submissions/CIK0001744489.json",
+    "status": 200,
+    "archive": {
+      "archive_id": "82503140-528f-4aae-b15e-7f5fe81108b3",
+      "sha256": "08e3f049a640552dea50d2e2a976c91d24f863ea270c6ebcb3ec23bf2c4d5eeb"
+    },
+    "retrieved_at": "2026-10-05T21:18:04.825783+00:00"
+  },
+  {
+    "ticker": "AVGO",
+    "url": "https://data.sec.gov/submissions/CIK0001730168.json",
+    "status": 200,
+    "archive": {
+      "archive_id": "175d171d-6b75-4bf0-a851-7b69ff275894",
+      "sha256": "b3bb8094e6809c7b3c7d2d7f419363b213bfa5071b40adb2bc2534317637f061"
+    },
+    "retrieved_at": "2026-10-05T21:18:05.138786+00:00"
+  }
+]

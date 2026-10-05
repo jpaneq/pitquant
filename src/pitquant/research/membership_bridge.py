@@ -8,6 +8,8 @@ not eligible: ``SECURITY_IDENTITY_NOT_READY``); similarity is never enough. The 
 
 from __future__ import annotations
 
+import re
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -17,12 +19,21 @@ from pitquant.universe.sources.spy_sec_anchors import norm_name
 EVIDENCE_CLASS = "DERIVED_EXACT_NAME_UNIQUE"
 
 
+def legal_name_key(name: str) -> str:
+    """SEC display suffixes are annotations; apostrophes are punctuation, not words.
+
+    Class designators remain intact. This is exact equivalence, never similarity.
+    """
+    name = re.sub(r"\s*/(?:NEW|MN|DE)/?$", "", name, flags=re.I)
+    return norm_name(name.replace("'", "").replace("’", ""))
+
+
 def build_bridge(session: Session) -> tuple[dict[str, frozenset[str]], dict[str, str]]:
     """(bridge: research security_id -> anchor security_ids, unresolved: research security_id -> reason)."""
     by_name: dict[str, set[str]] = {}
     for m in session.scalars(select(SP500AnchorMember)):
         if m.security_id:
-            by_name.setdefault(norm_name(m.issuer_name), set()).add(m.security_id)
+            by_name.setdefault(legal_name_key(m.issuer_name), set()).add(m.security_id)
     bridge: dict[str, frozenset[str]] = {}
     unresolved: dict[str, str] = {}
     for s in session.scalars(
@@ -44,7 +55,7 @@ def build_bridge(session: Session) -> tuple[dict[str, frozenset[str]], dict[str,
         if p is None:
             unresolved[s.security_id] = "NO_SEC_PROFILE_NAME"
             continue
-        cands = by_name.get(norm_name(p.display_name), set())
+        cands = by_name.get(legal_name_key(p.display_name), set())
         if len(cands) == 1:
             bridge[s.security_id] = frozenset(cands)
         else:

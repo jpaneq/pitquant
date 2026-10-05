@@ -721,5 +721,6 @@ def test_research_readiness_flags_are_separate_and_default_false(
         f["FEATURE_RESEARCH_READY_US"] is False and f["FEATURE_RESEARCH_READY_ES"] is False
     )  # ...data does not
     assert f["FEATURE_RESEARCH_READY"] is False and f["D02_RESEARCH_READY"] is False
-    assert rf.status["ES_D05_RESEARCH_READY"] == "ES_D05_BLOCKED_BY_ENTITLEMENT"
+    assert rf.status["ES_D05_RESEARCH_READY"] == "BLOCKED"
+    assert rf.reasons["ES_D05_RESEARCH_READY"] == ["MISSING_YAHOO_SERIES"]
     assert f["BASELINE_MODEL_READY"] is False and f["LABEL_ENGINE_READY_US"] is False

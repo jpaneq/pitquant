@@ -469,7 +469,7 @@ def test_without_a_vendor_key_the_free_yahoo_source_is_used_and_labelled(
                 "chart": {
                     "result": [
                         {
-                            "meta": {"currency": "USD", "gmtoffset": -18000},
+                            "meta": {"symbol": "YHOO", "currency": "USD", "gmtoffset": -18000},
                             "timestamp": ts,
                             "indicators": {"quote": [q], "adjclose": [{"adjclose": [10.5, 11.5]}]},
                             "events": {},

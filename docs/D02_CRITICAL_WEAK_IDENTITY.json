@@ -1,0 +1,1228 @@
+[
+  {
+    "name": "E. I. du Pont de Nemours & Co.",
+    "security_id": "1f5bf423-0fae-4ed7-8eaf-9090a7676997",
+    "observations": [
+      {
+        "name_at_anchor": "E. I. du Pont de Nemours & Co.",
+        "anchor_date": "2010-09-30",
+        "quarter": "2010Q3",
+        "cusip": "263534109",
+        "original_issuer": "DU PONT E I DE NEMOURS & CO",
+        "original_class": "COM",
+        "archive_id": "8c7b9701-e75d-45d2-9e20-1b975f8bb3d3",
+        "hash": "2e245359627c822bb49cd915d1050124320d2f0401bfda46dcaafa6d9ff79573",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2010q3.pdf"
+      },
+      {
+        "name_at_anchor": "E. I. du Pont de Nemours & Co.",
+        "anchor_date": "2011-03-31",
+        "quarter": "2011Q1",
+        "cusip": "263534109",
+        "original_issuer": "DU PONT E I DE NEMOURS & CO",
+        "original_class": "COM",
+        "archive_id": "32afb04f-cda8-4e21-bd3b-d07bded52994",
+        "hash": "53db9bd3e4b3e54c3dc9593afec7b3b36ff14c4c671575a78875da5ee7cd1485",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2011q1.pdf"
+      },
+      {
+        "name_at_anchor": "E. I. du Pont de Nemours & Co.",
+        "anchor_date": "2011-09-30",
+        "quarter": "2011Q3",
+        "cusip": "263534109",
+        "original_issuer": "DU PONT E I DE NEMOURS & CO",
+        "original_class": "COM",
+        "archive_id": "8c2f2b77-3a3e-428b-af4e-d96e5db00032",
+        "hash": "270debc4f1c6f651b4416cce7ba8663100261375807ec0e846d2ac6017eb5ec6",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2011q3.pdf"
+      },
+      {
+        "name_at_anchor": "E. I. du Pont de Nemours & Co.",
+        "anchor_date": "2012-03-31",
+        "quarter": "2012Q1",
+        "cusip": "263534109",
+        "original_issuer": "DU PONT E I DE NEMOURS & CO",
+        "original_class": "COM",
+        "archive_id": "06e0fedf-82d0-4498-af00-56df9ad9abf6",
+        "hash": "6456f3d5ba2dacf2136bc55f65c5171bb89a73eb8087cf8cdb29bf4c8437ad33",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2012q1.pdf"
+      },
+      {
+        "name_at_anchor": "E. I. du Pont de Nemours & Co.",
+        "anchor_date": "2012-09-30",
+        "quarter": "2012Q3",
+        "cusip": "263534109",
+        "original_issuer": "DU PONT E I DE NEMOURS & CO",
+        "original_class": "COM",
+        "archive_id": "a98f9583-c3b2-4612-b4ef-117256c7cf3d",
+        "hash": "31cc3c869e65e6a36d6e32ebba2b4472a5e9d6bb1b97caae9e57f92fc38a5b9b",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2012q3.pdf"
+      },
+      {
+        "name_at_anchor": "E. I. du Pont de Nemours & Co.",
+        "anchor_date": "2013-03-31",
+        "quarter": "2013Q1",
+        "cusip": "263534109",
+        "original_issuer": "DU PONT E I DE NEMOURS & CO",
+        "original_class": "COM",
+        "archive_id": "ecc843bc-fb3f-4121-952c-f96c153c4708",
+        "hash": "beff0d0272a9e4ccd46ef3702d80fd88606a59820ac16eab258bb5582593e46f",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q1.pdf"
+      },
+      {
+        "name_at_anchor": "E. I. du Pont de Nemours & Co.",
+        "anchor_date": "2013-09-30",
+        "quarter": "2013Q3",
+        "cusip": "263534109",
+        "original_issuer": "DU PONT E I DE NEMOURS & CO",
+        "original_class": "COM",
+        "archive_id": "36d34ad4-1b12-4d2e-bfa0-56a26241762c",
+        "hash": "e9a56a26b8aaef1a942aa5c69d529df166804ecdf48240fc79f57c12cf1a46dc",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q3.pdf"
+      },
+      {
+        "name_at_anchor": "E. I. du Pont de Nemours & Co.",
+        "anchor_date": "2014-03-31",
+        "quarter": "2014Q1",
+        "cusip": "263534109",
+        "original_issuer": "DU PONT E I DE NEMOURS & CO",
+        "original_class": "COM",
+        "archive_id": "4fed90e9-4c51-401d-bb2d-f10a0d033c8b",
+        "hash": "addc408062de84a1c5f017faffa3c0a7343ed6105b3798a2a55c57b788bacc43",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2014q1.pdf"
+      },
+      {
+        "name_at_anchor": "E. I. du Pont de Nemours & Co.",
+        "anchor_date": "2015-03-31",
+        "quarter": "2015Q1",
+        "cusip": "263534109",
+        "original_issuer": "DU PONT E I DE NEMOURS & CO",
+        "original_class": "COM",
+        "archive_id": "faf48ef3-7e66-431f-9e7b-fd79c976de3b",
+        "hash": "1ba13ae870d59b2236905cb16f58984c43e6a38bbb543e18be5bc65c9ad04952",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q1.pdf"
+      },
+      {
+        "name_at_anchor": "E. I. du Pont de Nemours & Co.",
+        "anchor_date": "2015-09-30",
+        "quarter": "2015Q3",
+        "cusip": "263534109",
+        "original_issuer": "DU PONT E I DE NEMOURS & CO",
+        "original_class": "COM",
+        "archive_id": "ce6c0054-93a4-4a9c-bcbc-69cb5493b88d",
+        "hash": "c42fd0ed9e0d482e5ae1852eeb0bcce1c09fa82d3269d2d1cbd43004d4010537",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q3.pdf"
+      },
+      {
+        "name_at_anchor": "E.I. du Pont de Nemours & Co.",
+        "anchor_date": "2016-03-31",
+        "quarter": "2016Q1",
+        "cusip": "263534109",
+        "original_issuer": "DU PONT E I DE NEMOURS & CO",
+        "original_class": "COM",
+        "archive_id": "a505db97-fd62-4e3e-878c-bbf3ab59c8ce",
+        "hash": "1fda4bd11b87452625442113d783b4456d6d89809c3abe910d3816aedb6d77c4",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q1.pdf"
+      },
+      {
+        "name_at_anchor": "E.I. du Pont de Nemours & Co.",
+        "anchor_date": "2016-09-30",
+        "quarter": "2016Q3",
+        "cusip": "263534109",
+        "original_issuer": "DU PONT E I DE NEMOURS & CO",
+        "original_class": "COM",
+        "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+        "hash": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf"
+      },
+      {
+        "name_at_anchor": "E.I. du Pont de Nemours & Co.",
+        "anchor_date": "2017-03-31",
+        "quarter": "2017Q1",
+        "cusip": "263534109",
+        "original_issuer": "DU PONT E I DE NEMOURS & CO",
+        "original_class": "COM",
+        "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+        "hash": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q1.pdf"
+      }
+    ]
+  },
+  {
+    "name": "Harman International Industries, Inc.",
+    "security_id": "38bf85dd-d63a-40aa-a42d-1269ecbb8cad",
+    "observations": [
+      {
+        "name_at_anchor": "Harman International Industries, Inc.*",
+        "anchor_date": "2010-09-30",
+        "quarter": "2010Q3",
+        "cusip": "413086109",
+        "original_issuer": "HARMAN INTL INDS INC",
+        "original_class": "COM",
+        "archive_id": "8c7b9701-e75d-45d2-9e20-1b975f8bb3d3",
+        "hash": "2e245359627c822bb49cd915d1050124320d2f0401bfda46dcaafa6d9ff79573",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2010q3.pdf"
+      },
+      {
+        "name_at_anchor": "Harman International Industries, Inc.",
+        "anchor_date": "2011-03-31",
+        "quarter": "2011Q1",
+        "cusip": "413086109",
+        "original_issuer": "HARMAN INTL INDS INC",
+        "original_class": "COM",
+        "archive_id": "32afb04f-cda8-4e21-bd3b-d07bded52994",
+        "hash": "53db9bd3e4b3e54c3dc9593afec7b3b36ff14c4c671575a78875da5ee7cd1485",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2011q1.pdf"
+      },
+      {
+        "name_at_anchor": "Harman International Industries, Inc.",
+        "anchor_date": "2011-09-30",
+        "quarter": "2011Q3",
+        "cusip": "413086109",
+        "original_issuer": "HARMAN INTL INDS INC",
+        "original_class": "COM",
+        "archive_id": "8c2f2b77-3a3e-428b-af4e-d96e5db00032",
+        "hash": "270debc4f1c6f651b4416cce7ba8663100261375807ec0e846d2ac6017eb5ec6",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2011q3.pdf"
+      },
+      {
+        "name_at_anchor": "Harman International Industries, Inc.",
+        "anchor_date": "2012-09-30",
+        "quarter": "2012Q3",
+        "cusip": "413086109",
+        "original_issuer": "HARMAN INTL INDS INC",
+        "original_class": "COM",
+        "archive_id": "a98f9583-c3b2-4612-b4ef-117256c7cf3d",
+        "hash": "31cc3c869e65e6a36d6e32ebba2b4472a5e9d6bb1b97caae9e57f92fc38a5b9b",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2012q3.pdf"
+      },
+      {
+        "name_at_anchor": "Harman International Industries, Inc.",
+        "anchor_date": "2013-03-31",
+        "quarter": "2013Q1",
+        "cusip": "413086109",
+        "original_issuer": "HARMAN INTL INDS INC",
+        "original_class": "COM",
+        "archive_id": "ecc843bc-fb3f-4121-952c-f96c153c4708",
+        "hash": "beff0d0272a9e4ccd46ef3702d80fd88606a59820ac16eab258bb5582593e46f",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q1.pdf"
+      },
+      {
+        "name_at_anchor": "Harman International Industries, Inc.",
+        "anchor_date": "2013-09-30",
+        "quarter": "2013Q3",
+        "cusip": "413086109",
+        "original_issuer": "HARMAN INTL INDS INC",
+        "original_class": "COM",
+        "archive_id": "36d34ad4-1b12-4d2e-bfa0-56a26241762c",
+        "hash": "e9a56a26b8aaef1a942aa5c69d529df166804ecdf48240fc79f57c12cf1a46dc",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q3.pdf"
+      },
+      {
+        "name_at_anchor": "Harman International Industries, Inc.",
+        "anchor_date": "2014-03-31",
+        "quarter": "2014Q1",
+        "cusip": "413086109",
+        "original_issuer": "HARMAN INTL INDS INC",
+        "original_class": "COM",
+        "archive_id": "4fed90e9-4c51-401d-bb2d-f10a0d033c8b",
+        "hash": "addc408062de84a1c5f017faffa3c0a7343ed6105b3798a2a55c57b788bacc43",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2014q1.pdf"
+      },
+      {
+        "name_at_anchor": "Harman International Industries, Inc.",
+        "anchor_date": "2015-03-31",
+        "quarter": "2015Q1",
+        "cusip": "413086109",
+        "original_issuer": "HARMAN INTL INDS INC",
+        "original_class": "COM",
+        "archive_id": "faf48ef3-7e66-431f-9e7b-fd79c976de3b",
+        "hash": "1ba13ae870d59b2236905cb16f58984c43e6a38bbb543e18be5bc65c9ad04952",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q1.pdf"
+      },
+      {
+        "name_at_anchor": "Harman International Industries, Inc.",
+        "anchor_date": "2015-09-30",
+        "quarter": "2015Q3",
+        "cusip": "413086109",
+        "original_issuer": "HARMAN INTL INDS INC",
+        "original_class": "COM",
+        "archive_id": "ce6c0054-93a4-4a9c-bcbc-69cb5493b88d",
+        "hash": "c42fd0ed9e0d482e5ae1852eeb0bcce1c09fa82d3269d2d1cbd43004d4010537",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q3.pdf"
+      },
+      {
+        "name_at_anchor": "Harman International Industries, Inc.",
+        "anchor_date": "2016-03-31",
+        "quarter": "2016Q1",
+        "cusip": "413086109",
+        "original_issuer": "HARMAN INTL INDS INC",
+        "original_class": "COM",
+        "archive_id": "a505db97-fd62-4e3e-878c-bbf3ab59c8ce",
+        "hash": "1fda4bd11b87452625442113d783b4456d6d89809c3abe910d3816aedb6d77c4",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q1.pdf"
+      },
+      {
+        "name_at_anchor": "Harman International Industries, Inc.",
+        "anchor_date": "2016-09-30",
+        "quarter": "2016Q3",
+        "cusip": "413086109",
+        "original_issuer": "HARMAN INTL INDS INC",
+        "original_class": "COM",
+        "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+        "hash": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf"
+      }
+    ]
+  },
+  {
+    "name": "Dun & Bradstreet Corp.",
+    "security_id": "6fa036f9-b3f6-41e3-a943-b4009051c02b",
+    "observations": [
+      {
+        "name_at_anchor": "Dun & Bradstreet Corp.",
+        "anchor_date": "2010-09-30",
+        "quarter": "2010Q3",
+        "cusip": "26483E100",
+        "original_issuer": "DUN & BRADSTREET CORP DEL NE",
+        "original_class": "COM",
+        "archive_id": "8c7b9701-e75d-45d2-9e20-1b975f8bb3d3",
+        "hash": "2e245359627c822bb49cd915d1050124320d2f0401bfda46dcaafa6d9ff79573",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2010q3.pdf"
+      },
+      {
+        "name_at_anchor": "Dun & Bradstreet Corp.",
+        "anchor_date": "2011-03-31",
+        "quarter": "2011Q1",
+        "cusip": "26483E100",
+        "original_issuer": "DUN & BRADSTREET CORP DEL NE",
+        "original_class": "COM",
+        "archive_id": "32afb04f-cda8-4e21-bd3b-d07bded52994",
+        "hash": "53db9bd3e4b3e54c3dc9593afec7b3b36ff14c4c671575a78875da5ee7cd1485",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2011q1.pdf"
+      },
+      {
+        "name_at_anchor": "Dun & Bradstreet Corp.",
+        "anchor_date": "2011-09-30",
+        "quarter": "2011Q3",
+        "cusip": "26483E100",
+        "original_issuer": "DUN & BRADSTREET CORP DEL NE",
+        "original_class": "COM",
+        "archive_id": "8c2f2b77-3a3e-428b-af4e-d96e5db00032",
+        "hash": "270debc4f1c6f651b4416cce7ba8663100261375807ec0e846d2ac6017eb5ec6",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2011q3.pdf"
+      },
+      {
+        "name_at_anchor": "Dun & Bradstreet Corp.",
+        "anchor_date": "2012-03-31",
+        "quarter": "2012Q1",
+        "cusip": "26483E100",
+        "original_issuer": "DUN & BRADSTREET CORP DEL NE",
+        "original_class": "COM",
+        "archive_id": "06e0fedf-82d0-4498-af00-56df9ad9abf6",
+        "hash": "6456f3d5ba2dacf2136bc55f65c5171bb89a73eb8087cf8cdb29bf4c8437ad33",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2012q1.pdf"
+      },
+      {
+        "name_at_anchor": "Dun & Bradstreet Corp.",
+        "anchor_date": "2012-09-30",
+        "quarter": "2012Q3",
+        "cusip": "26483E100",
+        "original_issuer": "DUN & BRADSTREET CORP DEL NE",
+        "original_class": "COM",
+        "archive_id": "a98f9583-c3b2-4612-b4ef-117256c7cf3d",
+        "hash": "31cc3c869e65e6a36d6e32ebba2b4472a5e9d6bb1b97caae9e57f92fc38a5b9b",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2012q3.pdf"
+      },
+      {
+        "name_at_anchor": "Dun & Bradstreet Corp.",
+        "anchor_date": "2013-03-31",
+        "quarter": "2013Q1",
+        "cusip": "26483E100",
+        "original_issuer": "DUN & BRADSTREET CORP DEL NE",
+        "original_class": "COM",
+        "archive_id": "ecc843bc-fb3f-4121-952c-f96c153c4708",
+        "hash": "beff0d0272a9e4ccd46ef3702d80fd88606a59820ac16eab258bb5582593e46f",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q1.pdf"
+      },
+      {
+        "name_at_anchor": "Dun & Bradstreet Corp.",
+        "anchor_date": "2013-09-30",
+        "quarter": "2013Q3",
+        "cusip": "26483E100",
+        "original_issuer": "DUN & BRADSTREET CORP DEL NE",
+        "original_class": "COM",
+        "archive_id": "36d34ad4-1b12-4d2e-bfa0-56a26241762c",
+        "hash": "e9a56a26b8aaef1a942aa5c69d529df166804ecdf48240fc79f57c12cf1a46dc",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q3.pdf"
+      },
+      {
+        "name_at_anchor": "Dun & Bradstreet Corp.",
+        "anchor_date": "2014-03-31",
+        "quarter": "2014Q1",
+        "cusip": "26483E100",
+        "original_issuer": "DUN & BRADSTREET CORP DEL NE",
+        "original_class": "COM",
+        "archive_id": "4fed90e9-4c51-401d-bb2d-f10a0d033c8b",
+        "hash": "addc408062de84a1c5f017faffa3c0a7343ed6105b3798a2a55c57b788bacc43",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2014q1.pdf"
+      },
+      {
+        "name_at_anchor": "Dun & Bradstreet Corp.",
+        "anchor_date": "2015-03-31",
+        "quarter": "2015Q1",
+        "cusip": "26483E100",
+        "original_issuer": "DUN & BRADSTREET CORP DEL NE",
+        "original_class": "COM",
+        "archive_id": "faf48ef3-7e66-431f-9e7b-fd79c976de3b",
+        "hash": "1ba13ae870d59b2236905cb16f58984c43e6a38bbb543e18be5bc65c9ad04952",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q1.pdf"
+      },
+      {
+        "name_at_anchor": "Dun & Bradstreet Corp.",
+        "anchor_date": "2015-09-30",
+        "quarter": "2015Q3",
+        "cusip": "26483E100",
+        "original_issuer": "DUN & BRADSTREET CORP DEL NE",
+        "original_class": "COM",
+        "archive_id": "ce6c0054-93a4-4a9c-bcbc-69cb5493b88d",
+        "hash": "c42fd0ed9e0d482e5ae1852eeb0bcce1c09fa82d3269d2d1cbd43004d4010537",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q3.pdf"
+      },
+      {
+        "name_at_anchor": "Dun & Bradstreet Corp.",
+        "anchor_date": "2016-03-31",
+        "quarter": "2016Q1",
+        "cusip": "26483E100",
+        "original_issuer": "DUN & BRADSTREET CORP DEL NE",
+        "original_class": "COM",
+        "archive_id": "a505db97-fd62-4e3e-878c-bbf3ab59c8ce",
+        "hash": "1fda4bd11b87452625442113d783b4456d6d89809c3abe910d3816aedb6d77c4",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q1.pdf"
+      },
+      {
+        "name_at_anchor": "Dun & Bradstreet Corp.",
+        "anchor_date": "2016-09-30",
+        "quarter": "2016Q3",
+        "cusip": "26483E100",
+        "original_issuer": "DUN & BRADSTREET CORP DEL NE",
+        "original_class": "COM",
+        "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+        "hash": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf"
+      },
+      {
+        "name_at_anchor": "Dun & Bradstreet Corp.",
+        "anchor_date": "2017-03-31",
+        "quarter": "2017Q1",
+        "cusip": "26483E100",
+        "original_issuer": "DUN & BRADSTREET CORP DEL NE",
+        "original_class": "COM",
+        "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+        "hash": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q1.pdf"
+      }
+    ]
+  },
+  {
+    "name": "St. Jude Medical, Inc.",
+    "security_id": "9a3b66a2-829d-489f-93f2-7b1e87f540dc",
+    "observations": [
+      {
+        "name_at_anchor": "St. Jude Medical, Inc.*",
+        "anchor_date": "2010-09-30",
+        "quarter": "2010Q3",
+        "cusip": "790849103",
+        "original_issuer": "ST JUDE MED INC",
+        "original_class": "COM",
+        "archive_id": "8c7b9701-e75d-45d2-9e20-1b975f8bb3d3",
+        "hash": "2e245359627c822bb49cd915d1050124320d2f0401bfda46dcaafa6d9ff79573",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2010q3.pdf"
+      },
+      {
+        "name_at_anchor": "St. Jude Medical, Inc.",
+        "anchor_date": "2011-03-31",
+        "quarter": "2011Q1",
+        "cusip": "790849103",
+        "original_issuer": "ST JUDE MED INC",
+        "original_class": "COM",
+        "archive_id": "32afb04f-cda8-4e21-bd3b-d07bded52994",
+        "hash": "53db9bd3e4b3e54c3dc9593afec7b3b36ff14c4c671575a78875da5ee7cd1485",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2011q1.pdf"
+      },
+      {
+        "name_at_anchor": "St. Jude Medical, Inc.",
+        "anchor_date": "2011-09-30",
+        "quarter": "2011Q3",
+        "cusip": "790849103",
+        "original_issuer": "ST JUDE MED INC",
+        "original_class": "COM",
+        "archive_id": "8c2f2b77-3a3e-428b-af4e-d96e5db00032",
+        "hash": "270debc4f1c6f651b4416cce7ba8663100261375807ec0e846d2ac6017eb5ec6",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2011q3.pdf"
+      },
+      {
+        "name_at_anchor": "St. Jude Medical, Inc.",
+        "anchor_date": "2012-03-31",
+        "quarter": "2012Q1",
+        "cusip": "790849103",
+        "original_issuer": "ST JUDE MED INC",
+        "original_class": "COM",
+        "archive_id": "06e0fedf-82d0-4498-af00-56df9ad9abf6",
+        "hash": "6456f3d5ba2dacf2136bc55f65c5171bb89a73eb8087cf8cdb29bf4c8437ad33",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2012q1.pdf"
+      },
+      {
+        "name_at_anchor": "St. Jude Medical, Inc.",
+        "anchor_date": "2012-09-30",
+        "quarter": "2012Q3",
+        "cusip": "790849103",
+        "original_issuer": "ST JUDE MED INC",
+        "original_class": "COM",
+        "archive_id": "a98f9583-c3b2-4612-b4ef-117256c7cf3d",
+        "hash": "31cc3c869e65e6a36d6e32ebba2b4472a5e9d6bb1b97caae9e57f92fc38a5b9b",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2012q3.pdf"
+      },
+      {
+        "name_at_anchor": "St. Jude Medical, Inc.",
+        "anchor_date": "2013-03-31",
+        "quarter": "2013Q1",
+        "cusip": "790849103",
+        "original_issuer": "ST JUDE MED INC",
+        "original_class": "COM",
+        "archive_id": "ecc843bc-fb3f-4121-952c-f96c153c4708",
+        "hash": "beff0d0272a9e4ccd46ef3702d80fd88606a59820ac16eab258bb5582593e46f",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q1.pdf"
+      },
+      {
+        "name_at_anchor": "St. Jude Medical, Inc.",
+        "anchor_date": "2013-09-30",
+        "quarter": "2013Q3",
+        "cusip": "790849103",
+        "original_issuer": "ST JUDE MED INC",
+        "original_class": "COM",
+        "archive_id": "36d34ad4-1b12-4d2e-bfa0-56a26241762c",
+        "hash": "e9a56a26b8aaef1a942aa5c69d529df166804ecdf48240fc79f57c12cf1a46dc",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q3.pdf"
+      },
+      {
+        "name_at_anchor": "St. Jude Medical, Inc.",
+        "anchor_date": "2014-03-31",
+        "quarter": "2014Q1",
+        "cusip": "790849103",
+        "original_issuer": "ST JUDE MED INC",
+        "original_class": "COM",
+        "archive_id": "4fed90e9-4c51-401d-bb2d-f10a0d033c8b",
+        "hash": "addc408062de84a1c5f017faffa3c0a7343ed6105b3798a2a55c57b788bacc43",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2014q1.pdf"
+      },
+      {
+        "name_at_anchor": "St. Jude Medical, Inc.",
+        "anchor_date": "2015-03-31",
+        "quarter": "2015Q1",
+        "cusip": "790849103",
+        "original_issuer": "ST JUDE MED INC",
+        "original_class": "COM",
+        "archive_id": "faf48ef3-7e66-431f-9e7b-fd79c976de3b",
+        "hash": "1ba13ae870d59b2236905cb16f58984c43e6a38bbb543e18be5bc65c9ad04952",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q1.pdf"
+      },
+      {
+        "name_at_anchor": "St. Jude Medical, Inc.",
+        "anchor_date": "2015-09-30",
+        "quarter": "2015Q3",
+        "cusip": "790849103",
+        "original_issuer": "ST JUDE MED INC",
+        "original_class": "COM",
+        "archive_id": "ce6c0054-93a4-4a9c-bcbc-69cb5493b88d",
+        "hash": "c42fd0ed9e0d482e5ae1852eeb0bcce1c09fa82d3269d2d1cbd43004d4010537",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q3.pdf"
+      },
+      {
+        "name_at_anchor": "St. Jude Medical, Inc.",
+        "anchor_date": "2016-03-31",
+        "quarter": "2016Q1",
+        "cusip": "790849103",
+        "original_issuer": "ST JUDE MED INC",
+        "original_class": "COM",
+        "archive_id": "a505db97-fd62-4e3e-878c-bbf3ab59c8ce",
+        "hash": "1fda4bd11b87452625442113d783b4456d6d89809c3abe910d3816aedb6d77c4",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q1.pdf"
+      },
+      {
+        "name_at_anchor": "St. Jude Medical, Inc.",
+        "anchor_date": "2016-09-30",
+        "quarter": "2016Q3",
+        "cusip": "790849103",
+        "original_issuer": "ST JUDE MED INC",
+        "original_class": "COM",
+        "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+        "hash": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf"
+      }
+    ]
+  },
+  {
+    "name": "Transocean, Ltd.",
+    "security_id": "c69556ba-d94b-40ce-8f16-e755ed96674d",
+    "observations": [
+      {
+        "name_at_anchor": "Transocean, Ltd.",
+        "anchor_date": "2014-03-31",
+        "quarter": "2014Q1",
+        "cusip": "H8817H100",
+        "original_issuer": "TRANSOCEAN LTD REG",
+        "original_class": "SHS",
+        "archive_id": "4fed90e9-4c51-401d-bb2d-f10a0d033c8b",
+        "hash": "addc408062de84a1c5f017faffa3c0a7343ed6105b3798a2a55c57b788bacc43",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2014q1.pdf"
+      },
+      {
+        "name_at_anchor": "Transocean, Ltd.",
+        "anchor_date": "2015-03-31",
+        "quarter": "2015Q1",
+        "cusip": "H8817H100",
+        "original_issuer": "TRANSOCEAN LTD REG",
+        "original_class": "SHS",
+        "archive_id": "faf48ef3-7e66-431f-9e7b-fd79c976de3b",
+        "hash": "1ba13ae870d59b2236905cb16f58984c43e6a38bbb543e18be5bc65c9ad04952",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q1.pdf"
+      },
+      {
+        "name_at_anchor": "Transocean, Ltd.",
+        "anchor_date": "2015-09-30",
+        "quarter": "2015Q3",
+        "cusip": "H8817H100",
+        "original_issuer": "TRANSOCEAN LTD REG",
+        "original_class": "SHS",
+        "archive_id": "ce6c0054-93a4-4a9c-bcbc-69cb5493b88d",
+        "hash": "c42fd0ed9e0d482e5ae1852eeb0bcce1c09fa82d3269d2d1cbd43004d4010537",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q3.pdf"
+      },
+      {
+        "name_at_anchor": "Transocean, Ltd.",
+        "anchor_date": "2016-03-31",
+        "quarter": "2016Q1",
+        "cusip": "H8817H100",
+        "original_issuer": "TRANSOCEAN LTD REG",
+        "original_class": "SHS",
+        "archive_id": "a505db97-fd62-4e3e-878c-bbf3ab59c8ce",
+        "hash": "1fda4bd11b87452625442113d783b4456d6d89809c3abe910d3816aedb6d77c4",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q1.pdf"
+      },
+      {
+        "name_at_anchor": "Transocean, Ltd.",
+        "anchor_date": "2016-09-30",
+        "quarter": "2016Q3",
+        "cusip": "H8817H100",
+        "original_issuer": "TRANSOCEAN LTD REG",
+        "original_class": "SHS",
+        "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+        "hash": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf"
+      },
+      {
+        "name_at_anchor": "Transocean, Ltd.",
+        "anchor_date": "2017-03-31",
+        "quarter": "2017Q1",
+        "cusip": "H8817H100",
+        "original_issuer": "TRANSOCEAN LTD REG",
+        "original_class": "SHS",
+        "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+        "hash": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q1.pdf"
+      }
+    ]
+  },
+  {
+    "name": "Whole Foods Market, Inc.",
+    "security_id": "ccaf4880-ad73-42a9-8c3a-acff8aca5275",
+    "observations": [
+      {
+        "name_at_anchor": "Whole Foods Market, Inc.*",
+        "anchor_date": "2010-09-30",
+        "quarter": "2010Q3",
+        "cusip": "966837106",
+        "original_issuer": "WHOLE FOODS MKT INC",
+        "original_class": "COM",
+        "archive_id": "8c7b9701-e75d-45d2-9e20-1b975f8bb3d3",
+        "hash": "2e245359627c822bb49cd915d1050124320d2f0401bfda46dcaafa6d9ff79573",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2010q3.pdf"
+      },
+      {
+        "name_at_anchor": "Whole Foods Market, Inc.",
+        "anchor_date": "2011-03-31",
+        "quarter": "2011Q1",
+        "cusip": "966837106",
+        "original_issuer": "WHOLE FOODS MKT INC",
+        "original_class": "COM",
+        "archive_id": "32afb04f-cda8-4e21-bd3b-d07bded52994",
+        "hash": "53db9bd3e4b3e54c3dc9593afec7b3b36ff14c4c671575a78875da5ee7cd1485",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2011q1.pdf"
+      },
+      {
+        "name_at_anchor": "Whole Foods Market, Inc.",
+        "anchor_date": "2011-09-30",
+        "quarter": "2011Q3",
+        "cusip": "966837106",
+        "original_issuer": "WHOLE FOODS MKT INC",
+        "original_class": "COM",
+        "archive_id": "8c2f2b77-3a3e-428b-af4e-d96e5db00032",
+        "hash": "270debc4f1c6f651b4416cce7ba8663100261375807ec0e846d2ac6017eb5ec6",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2011q3.pdf"
+      },
+      {
+        "name_at_anchor": "Whole Foods Market, Inc.",
+        "anchor_date": "2012-03-31",
+        "quarter": "2012Q1",
+        "cusip": "966837106",
+        "original_issuer": "WHOLE FOODS MKT INC",
+        "original_class": "COM",
+        "archive_id": "06e0fedf-82d0-4498-af00-56df9ad9abf6",
+        "hash": "6456f3d5ba2dacf2136bc55f65c5171bb89a73eb8087cf8cdb29bf4c8437ad33",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2012q1.pdf"
+      },
+      {
+        "name_at_anchor": "Whole Foods Market, Inc.",
+        "anchor_date": "2012-09-30",
+        "quarter": "2012Q3",
+        "cusip": "966837106",
+        "original_issuer": "WHOLE FOODS MKT INC",
+        "original_class": "COM",
+        "archive_id": "a98f9583-c3b2-4612-b4ef-117256c7cf3d",
+        "hash": "31cc3c869e65e6a36d6e32ebba2b4472a5e9d6bb1b97caae9e57f92fc38a5b9b",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2012q3.pdf"
+      },
+      {
+        "name_at_anchor": "Whole Foods Market, Inc.",
+        "anchor_date": "2013-03-31",
+        "quarter": "2013Q1",
+        "cusip": "966837106",
+        "original_issuer": "WHOLE FOODS MKT INC",
+        "original_class": "COM",
+        "archive_id": "ecc843bc-fb3f-4121-952c-f96c153c4708",
+        "hash": "beff0d0272a9e4ccd46ef3702d80fd88606a59820ac16eab258bb5582593e46f",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q1.pdf"
+      },
+      {
+        "name_at_anchor": "Whole Foods Market, Inc.",
+        "anchor_date": "2013-09-30",
+        "quarter": "2013Q3",
+        "cusip": "966837106",
+        "original_issuer": "WHOLE FOODS MKT INC",
+        "original_class": "COM",
+        "archive_id": "36d34ad4-1b12-4d2e-bfa0-56a26241762c",
+        "hash": "e9a56a26b8aaef1a942aa5c69d529df166804ecdf48240fc79f57c12cf1a46dc",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q3.pdf"
+      },
+      {
+        "name_at_anchor": "Whole Foods Market, Inc.",
+        "anchor_date": "2014-03-31",
+        "quarter": "2014Q1",
+        "cusip": "966837106",
+        "original_issuer": "WHOLE FOODS MKT INC",
+        "original_class": "COM",
+        "archive_id": "4fed90e9-4c51-401d-bb2d-f10a0d033c8b",
+        "hash": "addc408062de84a1c5f017faffa3c0a7343ed6105b3798a2a55c57b788bacc43",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2014q1.pdf"
+      },
+      {
+        "name_at_anchor": "Whole Foods Market, Inc.",
+        "anchor_date": "2015-03-31",
+        "quarter": "2015Q1",
+        "cusip": "966837106",
+        "original_issuer": "WHOLE FOODS MKT INC",
+        "original_class": "COM",
+        "archive_id": "faf48ef3-7e66-431f-9e7b-fd79c976de3b",
+        "hash": "1ba13ae870d59b2236905cb16f58984c43e6a38bbb543e18be5bc65c9ad04952",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q1.pdf"
+      },
+      {
+        "name_at_anchor": "Whole Foods Market, Inc.",
+        "anchor_date": "2015-09-30",
+        "quarter": "2015Q3",
+        "cusip": "966837106",
+        "original_issuer": "WHOLE FOODS MKT INC",
+        "original_class": "COM",
+        "archive_id": "ce6c0054-93a4-4a9c-bcbc-69cb5493b88d",
+        "hash": "c42fd0ed9e0d482e5ae1852eeb0bcce1c09fa82d3269d2d1cbd43004d4010537",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q3.pdf"
+      },
+      {
+        "name_at_anchor": "Whole Foods Market, Inc.",
+        "anchor_date": "2016-03-31",
+        "quarter": "2016Q1",
+        "cusip": "966837106",
+        "original_issuer": "WHOLE FOODS MKT INC",
+        "original_class": "COM",
+        "archive_id": "a505db97-fd62-4e3e-878c-bbf3ab59c8ce",
+        "hash": "1fda4bd11b87452625442113d783b4456d6d89809c3abe910d3816aedb6d77c4",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q1.pdf"
+      },
+      {
+        "name_at_anchor": "Whole Foods Market, Inc.",
+        "anchor_date": "2016-09-30",
+        "quarter": "2016Q3",
+        "cusip": "966837106",
+        "original_issuer": "WHOLE FOODS MKT INC",
+        "original_class": "COM",
+        "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+        "hash": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf"
+      },
+      {
+        "name_at_anchor": "Whole Foods Market, Inc.",
+        "anchor_date": "2017-03-31",
+        "quarter": "2017Q1",
+        "cusip": "966837106",
+        "original_issuer": "WHOLE FOODS MKT INC",
+        "original_class": "COM",
+        "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+        "hash": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q1.pdf"
+      }
+    ]
+  },
+  {
+    "name": "Owens-Illinois, Inc.",
+    "security_id": "d0faf05d-2172-4ea7-9448-44ae828556d3",
+    "observations": [
+      {
+        "name_at_anchor": "Owens-Illinois, Inc.*",
+        "anchor_date": "2010-09-30",
+        "quarter": "2010Q3",
+        "cusip": "690768403",
+        "original_issuer": "OWENS ILL INC",
+        "original_class": "COM NEW",
+        "archive_id": "8c7b9701-e75d-45d2-9e20-1b975f8bb3d3",
+        "hash": "2e245359627c822bb49cd915d1050124320d2f0401bfda46dcaafa6d9ff79573",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2010q3.pdf"
+      },
+      {
+        "name_at_anchor": "Owens-Illinois, Inc.*",
+        "anchor_date": "2011-03-31",
+        "quarter": "2011Q1",
+        "cusip": "690768403",
+        "original_issuer": "OWENS ILL INC",
+        "original_class": "COM NEW",
+        "archive_id": "32afb04f-cda8-4e21-bd3b-d07bded52994",
+        "hash": "53db9bd3e4b3e54c3dc9593afec7b3b36ff14c4c671575a78875da5ee7cd1485",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2011q1.pdf"
+      },
+      {
+        "name_at_anchor": "Owens-Illinois, Inc.",
+        "anchor_date": "2011-09-30",
+        "quarter": "2011Q3",
+        "cusip": "690768403",
+        "original_issuer": "OWENS ILL INC",
+        "original_class": "COM NEW",
+        "archive_id": "8c2f2b77-3a3e-428b-af4e-d96e5db00032",
+        "hash": "270debc4f1c6f651b4416cce7ba8663100261375807ec0e846d2ac6017eb5ec6",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2011q3.pdf"
+      },
+      {
+        "name_at_anchor": "Owens-Illinois, Inc.",
+        "anchor_date": "2012-03-31",
+        "quarter": "2012Q1",
+        "cusip": "690768403",
+        "original_issuer": "OWENS ILL INC",
+        "original_class": "COM NEW",
+        "archive_id": "06e0fedf-82d0-4498-af00-56df9ad9abf6",
+        "hash": "6456f3d5ba2dacf2136bc55f65c5171bb89a73eb8087cf8cdb29bf4c8437ad33",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2012q1.pdf"
+      },
+      {
+        "name_at_anchor": "Owens-Illinois, Inc.",
+        "anchor_date": "2012-09-30",
+        "quarter": "2012Q3",
+        "cusip": "690768403",
+        "original_issuer": "OWENS ILL INC",
+        "original_class": "COM NEW",
+        "archive_id": "a98f9583-c3b2-4612-b4ef-117256c7cf3d",
+        "hash": "31cc3c869e65e6a36d6e32ebba2b4472a5e9d6bb1b97caae9e57f92fc38a5b9b",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2012q3.pdf"
+      },
+      {
+        "name_at_anchor": "Owens-Illinois, Inc.",
+        "anchor_date": "2013-03-31",
+        "quarter": "2013Q1",
+        "cusip": "690768403",
+        "original_issuer": "OWENS ILL INC",
+        "original_class": "COM NEW",
+        "archive_id": "ecc843bc-fb3f-4121-952c-f96c153c4708",
+        "hash": "beff0d0272a9e4ccd46ef3702d80fd88606a59820ac16eab258bb5582593e46f",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q1.pdf"
+      },
+      {
+        "name_at_anchor": "Owens-Illinois, Inc.",
+        "anchor_date": "2013-09-30",
+        "quarter": "2013Q3",
+        "cusip": "690768403",
+        "original_issuer": "OWENS ILL INC",
+        "original_class": "COM NEW",
+        "archive_id": "36d34ad4-1b12-4d2e-bfa0-56a26241762c",
+        "hash": "e9a56a26b8aaef1a942aa5c69d529df166804ecdf48240fc79f57c12cf1a46dc",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q3.pdf"
+      },
+      {
+        "name_at_anchor": "Owens-Illinois, Inc.",
+        "anchor_date": "2014-03-31",
+        "quarter": "2014Q1",
+        "cusip": "690768403",
+        "original_issuer": "OWENS ILL INC",
+        "original_class": "COM NEW",
+        "archive_id": "4fed90e9-4c51-401d-bb2d-f10a0d033c8b",
+        "hash": "addc408062de84a1c5f017faffa3c0a7343ed6105b3798a2a55c57b788bacc43",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2014q1.pdf"
+      },
+      {
+        "name_at_anchor": "Owens-Illinois, Inc.",
+        "anchor_date": "2015-03-31",
+        "quarter": "2015Q1",
+        "cusip": "690768403",
+        "original_issuer": "OWENS ILL INC",
+        "original_class": "COM NEW",
+        "archive_id": "faf48ef3-7e66-431f-9e7b-fd79c976de3b",
+        "hash": "1ba13ae870d59b2236905cb16f58984c43e6a38bbb543e18be5bc65c9ad04952",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q1.pdf"
+      },
+      {
+        "name_at_anchor": "Owens-Illinois, Inc.",
+        "anchor_date": "2015-09-30",
+        "quarter": "2015Q3",
+        "cusip": "690768403",
+        "original_issuer": "OWENS ILL INC",
+        "original_class": "COM NEW",
+        "archive_id": "ce6c0054-93a4-4a9c-bcbc-69cb5493b88d",
+        "hash": "c42fd0ed9e0d482e5ae1852eeb0bcce1c09fa82d3269d2d1cbd43004d4010537",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q3.pdf"
+      },
+      {
+        "name_at_anchor": "Owens-Illinois, Inc.",
+        "anchor_date": "2016-03-31",
+        "quarter": "2016Q1",
+        "cusip": "690768403",
+        "original_issuer": "OWENS ILL INC",
+        "original_class": "COM NEW",
+        "archive_id": "a505db97-fd62-4e3e-878c-bbf3ab59c8ce",
+        "hash": "1fda4bd11b87452625442113d783b4456d6d89809c3abe910d3816aedb6d77c4",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q1.pdf"
+      },
+      {
+        "name_at_anchor": "Owens-Illinois, Inc.",
+        "anchor_date": "2016-09-30",
+        "quarter": "2016Q3",
+        "cusip": "690768403",
+        "original_issuer": "OWENS ILL INC",
+        "original_class": "COM NEW",
+        "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+        "hash": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf"
+      }
+    ]
+  },
+  {
+    "name": "Ryder System, Inc.",
+    "security_id": "d2ce86fb-10d0-40e7-9dd0-9fe220d7a0c9",
+    "observations": [
+      {
+        "name_at_anchor": "Ryder System, Inc.",
+        "anchor_date": "2010-09-30",
+        "quarter": "2010Q3",
+        "cusip": "783549108",
+        "original_issuer": "RYDER SYS INC",
+        "original_class": "COM",
+        "archive_id": "8c7b9701-e75d-45d2-9e20-1b975f8bb3d3",
+        "hash": "2e245359627c822bb49cd915d1050124320d2f0401bfda46dcaafa6d9ff79573",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2010q3.pdf"
+      },
+      {
+        "name_at_anchor": "Ryder System, Inc.",
+        "anchor_date": "2011-03-31",
+        "quarter": "2011Q1",
+        "cusip": "783549108",
+        "original_issuer": "RYDER SYS INC",
+        "original_class": "COM",
+        "archive_id": "32afb04f-cda8-4e21-bd3b-d07bded52994",
+        "hash": "53db9bd3e4b3e54c3dc9593afec7b3b36ff14c4c671575a78875da5ee7cd1485",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2011q1.pdf"
+      },
+      {
+        "name_at_anchor": "Ryder System, Inc.",
+        "anchor_date": "2011-09-30",
+        "quarter": "2011Q3",
+        "cusip": "783549108",
+        "original_issuer": "RYDER SYS INC",
+        "original_class": "COM",
+        "archive_id": "8c2f2b77-3a3e-428b-af4e-d96e5db00032",
+        "hash": "270debc4f1c6f651b4416cce7ba8663100261375807ec0e846d2ac6017eb5ec6",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2011q3.pdf"
+      },
+      {
+        "name_at_anchor": "Ryder System, Inc.",
+        "anchor_date": "2012-03-31",
+        "quarter": "2012Q1",
+        "cusip": "783549108",
+        "original_issuer": "RYDER SYS INC",
+        "original_class": "COM",
+        "archive_id": "06e0fedf-82d0-4498-af00-56df9ad9abf6",
+        "hash": "6456f3d5ba2dacf2136bc55f65c5171bb89a73eb8087cf8cdb29bf4c8437ad33",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2012q1.pdf"
+      },
+      {
+        "name_at_anchor": "Ryder System, Inc.",
+        "anchor_date": "2012-09-30",
+        "quarter": "2012Q3",
+        "cusip": "783549108",
+        "original_issuer": "RYDER SYS INC",
+        "original_class": "COM",
+        "archive_id": "a98f9583-c3b2-4612-b4ef-117256c7cf3d",
+        "hash": "31cc3c869e65e6a36d6e32ebba2b4472a5e9d6bb1b97caae9e57f92fc38a5b9b",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2012q3.pdf"
+      },
+      {
+        "name_at_anchor": "Ryder System, Inc.",
+        "anchor_date": "2013-03-31",
+        "quarter": "2013Q1",
+        "cusip": "783549108",
+        "original_issuer": "RYDER SYS INC",
+        "original_class": "COM",
+        "archive_id": "ecc843bc-fb3f-4121-952c-f96c153c4708",
+        "hash": "beff0d0272a9e4ccd46ef3702d80fd88606a59820ac16eab258bb5582593e46f",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q1.pdf"
+      },
+      {
+        "name_at_anchor": "Ryder System, Inc.",
+        "anchor_date": "2013-09-30",
+        "quarter": "2013Q3",
+        "cusip": "783549108",
+        "original_issuer": "RYDER SYS INC",
+        "original_class": "COM",
+        "archive_id": "36d34ad4-1b12-4d2e-bfa0-56a26241762c",
+        "hash": "e9a56a26b8aaef1a942aa5c69d529df166804ecdf48240fc79f57c12cf1a46dc",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q3.pdf"
+      },
+      {
+        "name_at_anchor": "Ryder System, Inc.",
+        "anchor_date": "2014-03-31",
+        "quarter": "2014Q1",
+        "cusip": "783549108",
+        "original_issuer": "RYDER SYS INC",
+        "original_class": "COM",
+        "archive_id": "4fed90e9-4c51-401d-bb2d-f10a0d033c8b",
+        "hash": "addc408062de84a1c5f017faffa3c0a7343ed6105b3798a2a55c57b788bacc43",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2014q1.pdf"
+      },
+      {
+        "name_at_anchor": "Ryder System, Inc.",
+        "anchor_date": "2015-03-31",
+        "quarter": "2015Q1",
+        "cusip": "783549108",
+        "original_issuer": "RYDER SYS INC",
+        "original_class": "COM",
+        "archive_id": "faf48ef3-7e66-431f-9e7b-fd79c976de3b",
+        "hash": "1ba13ae870d59b2236905cb16f58984c43e6a38bbb543e18be5bc65c9ad04952",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q1.pdf"
+      },
+      {
+        "name_at_anchor": "Ryder System, Inc.",
+        "anchor_date": "2015-09-30",
+        "quarter": "2015Q3",
+        "cusip": "783549108",
+        "original_issuer": "RYDER SYS INC",
+        "original_class": "COM",
+        "archive_id": "ce6c0054-93a4-4a9c-bcbc-69cb5493b88d",
+        "hash": "c42fd0ed9e0d482e5ae1852eeb0bcce1c09fa82d3269d2d1cbd43004d4010537",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q3.pdf"
+      },
+      {
+        "name_at_anchor": "Ryder System, Inc.",
+        "anchor_date": "2016-03-31",
+        "quarter": "2016Q1",
+        "cusip": "783549108",
+        "original_issuer": "RYDER SYS INC",
+        "original_class": "COM",
+        "archive_id": "a505db97-fd62-4e3e-878c-bbf3ab59c8ce",
+        "hash": "1fda4bd11b87452625442113d783b4456d6d89809c3abe910d3816aedb6d77c4",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q1.pdf"
+      },
+      {
+        "name_at_anchor": "Ryder System, Inc.",
+        "anchor_date": "2016-09-30",
+        "quarter": "2016Q3",
+        "cusip": "783549108",
+        "original_issuer": "RYDER SYS INC",
+        "original_class": "COM",
+        "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+        "hash": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf"
+      },
+      {
+        "name_at_anchor": "Ryder System, Inc.",
+        "anchor_date": "2017-03-31",
+        "quarter": "2017Q1",
+        "cusip": "783549108",
+        "original_issuer": "RYDER SYS INC",
+        "original_class": "COM",
+        "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+        "hash": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q1.pdf"
+      }
+    ]
+  },
+  {
+    "name": "Mallinckrodt PLC",
+    "security_id": "dff57c93-452d-40bc-b6cc-bb1835281ac5",
+    "observations": [
+      {
+        "name_at_anchor": "Mallinckrodt PLC",
+        "anchor_date": "2015-03-31",
+        "quarter": "2015Q1",
+        "cusip": "G5785G107",
+        "original_issuer": "MALLINCKRODT PUB LTD CO",
+        "original_class": "SHS",
+        "archive_id": "faf48ef3-7e66-431f-9e7b-fd79c976de3b",
+        "hash": "1ba13ae870d59b2236905cb16f58984c43e6a38bbb543e18be5bc65c9ad04952",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q1.pdf"
+      },
+      {
+        "name_at_anchor": "Mallinckrodt PLC",
+        "anchor_date": "2015-09-30",
+        "quarter": "2015Q3",
+        "cusip": "G5785G107",
+        "original_issuer": "MALLINCKRODT PUB LTD CO",
+        "original_class": "SHS",
+        "archive_id": "ce6c0054-93a4-4a9c-bcbc-69cb5493b88d",
+        "hash": "c42fd0ed9e0d482e5ae1852eeb0bcce1c09fa82d3269d2d1cbd43004d4010537",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q3.pdf"
+      },
+      {
+        "name_at_anchor": "Mallinckrodt PLC",
+        "anchor_date": "2016-03-31",
+        "quarter": "2016Q1",
+        "cusip": "G5785G107",
+        "original_issuer": "MALLINCKRODT PUB LTD CO",
+        "original_class": "SHS",
+        "archive_id": "a505db97-fd62-4e3e-878c-bbf3ab59c8ce",
+        "hash": "1fda4bd11b87452625442113d783b4456d6d89809c3abe910d3816aedb6d77c4",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q1.pdf"
+      },
+      {
+        "name_at_anchor": "Mallinckrodt PLC",
+        "anchor_date": "2016-09-30",
+        "quarter": "2016Q3",
+        "cusip": "G5785G107",
+        "original_issuer": "MALLINCKRODT PUB LTD CO",
+        "original_class": "SHS",
+        "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+        "hash": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q3.pdf"
+      },
+      {
+        "name_at_anchor": "Mallinckrodt PLC",
+        "anchor_date": "2017-03-31",
+        "quarter": "2017Q1",
+        "cusip": "G5785G107",
+        "original_issuer": "MALLINCKRODT PUB LTD CO",
+        "original_class": "SHS",
+        "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+        "hash": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2017q1.pdf"
+      }
+    ]
+  },
+  {
+    "name": "Cablevision Systems Corp. (Class A)",
+    "security_id": "65082008-9521-4c8a-bf05-ff362b047e14",
+    "observations": [
+      {
+        "name_at_anchor": "Cablevision Systems Corp. (Class A)",
+        "anchor_date": "2012-03-31",
+        "quarter": "2012Q1",
+        "cusip": "12686C109",
+        "original_issuer": "CABLEVISION SYS CORP CL A NY CABLVS",
+        "original_class": "",
+        "archive_id": "06e0fedf-82d0-4498-af00-56df9ad9abf6",
+        "hash": "6456f3d5ba2dacf2136bc55f65c5171bb89a73eb8087cf8cdb29bf4c8437ad33",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2012q1.pdf"
+      },
+      {
+        "name_at_anchor": "Cablevision Systems Corp. (Class A)",
+        "anchor_date": "2012-09-30",
+        "quarter": "2012Q3",
+        "cusip": "12686C109",
+        "original_issuer": "CABLEVISION SYS CORP CL A NY CABLVS",
+        "original_class": "",
+        "archive_id": "a98f9583-c3b2-4612-b4ef-117256c7cf3d",
+        "hash": "31cc3c869e65e6a36d6e32ebba2b4472a5e9d6bb1b97caae9e57f92fc38a5b9b",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2012q3.pdf"
+      },
+      {
+        "name_at_anchor": "Cablevision Systems Corp. (Class A)",
+        "anchor_date": "2013-03-31",
+        "quarter": "2013Q1",
+        "cusip": "12686C109",
+        "original_issuer": "CABLEVISION SYS CORP CL A NY CABLVS",
+        "original_class": "",
+        "archive_id": "ecc843bc-fb3f-4121-952c-f96c153c4708",
+        "hash": "beff0d0272a9e4ccd46ef3702d80fd88606a59820ac16eab258bb5582593e46f",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q1.pdf"
+      },
+      {
+        "name_at_anchor": "Cablevision Systems Corp. (Class A)",
+        "anchor_date": "2013-09-30",
+        "quarter": "2013Q3",
+        "cusip": "12686C109",
+        "original_issuer": "CABLEVISION SYS CORP CL A NY CABLVS",
+        "original_class": "",
+        "archive_id": "36d34ad4-1b12-4d2e-bfa0-56a26241762c",
+        "hash": "e9a56a26b8aaef1a942aa5c69d529df166804ecdf48240fc79f57c12cf1a46dc",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2013q3.pdf"
+      },
+      {
+        "name_at_anchor": "Cablevision Systems Corp. (Class A)",
+        "anchor_date": "2014-03-31",
+        "quarter": "2014Q1",
+        "cusip": "12686C109",
+        "original_issuer": "CABLEVISION SYS CORP CL A NY CABLVS",
+        "original_class": "",
+        "archive_id": "4fed90e9-4c51-401d-bb2d-f10a0d033c8b",
+        "hash": "addc408062de84a1c5f017faffa3c0a7343ed6105b3798a2a55c57b788bacc43",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2014q1.pdf"
+      },
+      {
+        "name_at_anchor": "Cablevision Systems Corp. (Class A)",
+        "anchor_date": "2015-03-31",
+        "quarter": "2015Q1",
+        "cusip": "12686C109",
+        "original_issuer": "CABLEVISION SYS CORP CL A NY CABLVS",
+        "original_class": "",
+        "archive_id": "faf48ef3-7e66-431f-9e7b-fd79c976de3b",
+        "hash": "1ba13ae870d59b2236905cb16f58984c43e6a38bbb543e18be5bc65c9ad04952",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q1.pdf"
+      },
+      {
+        "name_at_anchor": "Cablevision Systems Corp. (Class A)",
+        "anchor_date": "2015-09-30",
+        "quarter": "2015Q3",
+        "cusip": "12686C109",
+        "original_issuer": "CABLEVISION SYS CORP CL A NY CABLVS",
+        "original_class": "",
+        "archive_id": "ce6c0054-93a4-4a9c-bcbc-69cb5493b88d",
+        "hash": "c42fd0ed9e0d482e5ae1852eeb0bcce1c09fa82d3269d2d1cbd43004d4010537",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2015q3.pdf"
+      },
+      {
+        "name_at_anchor": "Cablevision Systems Corp. Class A",
+        "anchor_date": "2016-03-31",
+        "quarter": "2016Q1",
+        "cusip": "12686C109",
+        "original_issuer": "CABLEVISION SYS CORP CL A NY CABLVS",
+        "original_class": "",
+        "archive_id": "a505db97-fd62-4e3e-878c-bbf3ab59c8ce",
+        "hash": "1fda4bd11b87452625442113d783b4456d6d89809c3abe910d3816aedb6d77c4",
+        "url": "https://www.sec.gov/divisions/investment/13f/13flist2016q1.pdf"
+      }
+    ]
+  }
+]

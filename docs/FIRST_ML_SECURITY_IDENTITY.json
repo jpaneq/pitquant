@@ -1,0 +1,89 @@
+{
+  "XOM": {
+    "status": "PARTIAL",
+    "event": "SECURITY_REPLACEMENT_SUCCESSOR",
+    "effective_on": "2026-07-01",
+    "reason": "Old Exxon Mobil CIK 34088 and new ExxonMobil Holdings CIK 2115436 are different legal issuers/securities, 1:1. The current SEC profile cannot certify the old research security. Post-DEV evidence is identity audit only, never a feature or membership input.",
+    "minimum_action": "Create dated predecessor/successor security intervals and bind vendor history to the old instrument; verify old CUSIP 30231G102 independently.",
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/34088/000119312526291986/d70995d8k.htm",
+        "archive_id": "04b64c51-41fb-41b3-a057-5375e38880ad",
+        "sha256": "b7538e8826581f7a001070e68ec6fa7cbcff59f20d9f8e823c2000f93dba2cc2",
+        "retrieved_at": "2026-10-05 05:19:40.484136+00:00",
+        "parser_version": "first-ml-identity-audit-1"
+      }
+    ],
+    "eligible_promoted": false
+  },
+  "RTX": {
+    "status": "PARTIAL",
+    "event": "UTX_NAME_CHANGE_AND_RTN_MERGER",
+    "effective_on": "2020-04-03",
+    "reason": "UTX issuer CIK 101829 continues as RTX; RTN CIK 1047122 is a different instrument exchanged at 2.3348. The exchange ratio must never be applied to UTX. Carrier/Otis spin-offs require a separate return reconciliation.",
+    "minimum_action": "Bind UTX/RTX common-share lineage by dated identifiers, keep RTN separate and QA returns crossing the spin-offs.",
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/101829/000114036120008397/nc10010681x2_8k.htm",
+        "archive_id": "bbf7c63b-1054-4078-a12d-8620c155b085",
+        "sha256": "8ff7197524b6ac8fec2e6013d423805f4601a96452279d2b1265ff549894ba9a",
+        "retrieved_at": "2026-10-05 05:19:40.619142+00:00",
+        "parser_version": "first-ml-identity-audit-1"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1047122/000119312520097237/d827106d8k.htm",
+        "archive_id": "5bfebe01-7e4a-409e-b51a-b6f7545aa0cd",
+        "sha256": "7c476c72e39fd57d02d144bc7ca1b852abe0567418e619e86ab946d8a2a1a7fe",
+        "retrieved_at": "2026-10-05 05:19:40.822191+00:00",
+        "parser_version": "first-ml-identity-audit-1"
+      }
+    ],
+    "eligible_promoted": false
+  },
+  "GOOGL": {
+    "status": "PARTIAL",
+    "event": "GOOGLE_ALPHABET_CLASS_PRESERVING_REPLACEMENT",
+    "effective_on": "2015-10-05",
+    "verified_cusip": "02079K305",
+    "class": "A",
+    "distinct_other_cusip": "02079K107",
+    "reason": "SEC proves Alphabet Class A 02079K305; Nasdaq proves GOOGL Class A and GOOG Class C are distinct 1:1 replacements. This closes the identifier fact, not the dated research-price instrument assignment across the 2014 class distribution and 2015 replacement.",
+    "minimum_action": "Introduce dated class-A instrument bindings for the research series; keep Google predecessor and Alphabet successor distinct, with official corporate-action evidence.",
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000119312517040409/d347399dsc13ga.htm",
+        "archive_id": "022beb4a-b369-4bef-b997-865f477aaf66",
+        "sha256": "d9790fb52e4417c0b8b9f6a483500728fbeb3106b79fa14d03f1cd73c373ca9f",
+        "retrieved_at": "2026-10-05 05:19:41.122459+00:00",
+        "parser_version": "first-ml-identity-audit-1"
+      },
+      {
+        "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ETA2015-156",
+        "archive_id": "a5f7e54d-ed54-47d4-8727-250d5b925662",
+        "sha256": "39bfe42141e91f611bcacd0d6e2b77c6a707e3417a3f92013bc233aeb278dc9d",
+        "retrieved_at": "2026-10-05 05:35:38.650232+00:00",
+        "parser_version": "first-ml-identity-audit-1"
+      }
+    ],
+    "eligible_promoted": false
+  },
+  "GE": {
+    "status": "PARTIAL",
+    "event": "REVERSE_SPLIT_IDENTIFIER_CHANGE_SAME_COMMON_CLASS",
+    "effective_on": "2021-08-02",
+    "verified_cusip": "369604301",
+    "previous_cusip": "369604103",
+    "reason": "Issuer exhibit proves 1-for-8 reverse split and new common-stock CUSIP. Same issuer alone does not join the two anchor securities. Later healthcare/Vernova spin-offs must not relabel pre-event history as the current business.",
+    "minimum_action": "Formalize the dated common-share identifier event using existing old-CUSIP anchor evidence and the July 2021 exhibit, preserve reverse-split units and reconcile vendor adjusted returns separately.",
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/40545/000120677421001925/ge3936671-ex911.htm",
+        "archive_id": "d4ed3a3e-5ea1-48b1-aafb-d96778c51752",
+        "sha256": "8ed738dc890ecc2e41baca8dfb9091141e30a459f05459ba3b2045b9be20b305",
+        "retrieved_at": "2026-10-05 05:19:42.018027+00:00",
+        "parser_version": "first-ml-identity-audit-1"
+      }
+    ],
+    "eligible_promoted": false
+  }
+}

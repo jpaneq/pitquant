@@ -40,7 +40,7 @@ from pitquant.universe.sources.sp500_evidence import PARSER_VERSION as EVIDENCE_
 from pitquant.universe.sources.spy_sec_anchors import PARSER_VERSION as ANCHOR_PARSER
 from pitquant.universe.sources.spy_sec_anchors import norm_name
 
-ENGINE_VERSION = "anchor-graph-5"
+ENGINE_VERSION = "anchor-graph-9"
 CONFIRMED = {"OFFICIAL_CONFIRMED", "OFFICIAL_REPUBLISHED_CONFIRMED"}
 
 
@@ -234,7 +234,18 @@ class Resolver:
         «Apache» does not win over «Apache Corp» and junk before the name is ignored)."""
         exact = self.name_idx.get(norm_name(raw))
         if exact:
-            return set(exact)
+            # A company-only exact row must not hide explicitly named share classes.
+            # Return the whole exact company/class pool; segment plausibility still
+            # requires a unique instrument. This never joins classes or issuers.
+            base = norm_name(raw)
+            classes = {
+                sid
+                for key, ids in self.name_idx.items()
+                if key.startswith(base + " ")
+                and re.fullmatch(r"(?:class|series) [a-z0-9]{1,2}", key[len(base) + 1 :])
+                for sid in ids
+            }
+            return set(exact) | classes
         n = " " + norm_name(raw) + " "
         hits = [k for k in self.name_idx if len(k) >= 4 and f" {k} " in n]
         if not hits:
@@ -309,7 +320,19 @@ class Resolver:
         cands: set[str] = set()
         how = "RELEASE_NAME"
         ok: set[str] = set()
-        for rc, rh in self.routes(leg.ticker, leg.name, leg.lo or leg.discovery_date):
+        routes = self.routes(leg.ticker, leg.name, leg.lo or leg.discovery_date)
+        # A dated S&P rename can name the predecessor in an ADD release. Once
+        # historical anchors introduce that predecessor, it must not steal the
+        # successor's event merely because it is absent from A. Prefer the stated
+        # new name only when the successor is actually present in B and absent in A.
+        if leg.kind == "ADD":
+            preferred = [
+                (cs, how)
+                for cs, how in routes
+                if how == "RENAME_STATEMENT" and len(plausible(cs) & b.members) == 1
+            ]
+            routes = preferred + [r for r in routes if r not in preferred]
+        for rc, rh in routes:
             rc = {lineage.get(c, c) for c in rc} if lineage else rc
             if not cands:
                 cands, how = rc, rh  # first non-empty route: the fallback when none is plausible
@@ -401,7 +424,9 @@ def adjust_tier_b(anchors: list[AnchorNode], legs: list[Leg], res: Resolver) -> 
     """An N-30D schedule is the portfolio AFTER the closing trades of its date: SPY already holds a stock that enters the index at
     the open of the NEXT session (e.g. EQT and PG&E were in the 2022-09-30 schedule, effective 2022-10-03) while the NPORT-P of the
     same date shows the index state. For a Tier B anchor the confirmed ADDs effective at the next session are removed from its
-    member set (state = index membership at the close of ``as_of``). Removals are not pre-traded (Duke/Citrix were still held)."""
+    member set (state = index membership at the close of ``as_of``). A removal absent from the
+    portfolio is restored only when the SAME exact official pair's addition is held ahead of
+    that next-session change. Unpaired removals do not justify changing an anchor."""
     cal = get_calendar("XNYS")
     out: list[AnchorNode] = []
     for a in anchors:
@@ -410,12 +435,20 @@ def adjust_tier_b(anchors: list[AnchorNode], legs: list[Leg], res: Resolver) -> 
             continue
         nxt = _next_session(cal, a.as_of)
         pre: set[str] = set()
+        pairs: set[str] = set()
         for leg in legs:
             if leg.kind == "ADD" and leg.exact and leg.lo == nxt:
                 c, _how = res.candidates(leg.ticker, leg.name)
                 hit = {x for x in c if x in a.members}
                 if len(hit) == 1:
                     pre |= hit
+                    pairs.add(leg.event_id)
+        restored: set[str] = set()
+        for leg in legs:
+            if leg.kind == "REMOVE" and leg.exact and leg.lo == nxt and leg.event_id in pairs:
+                c, _how = res.candidates(leg.ticker, leg.name)
+                if len(c) == 1:
+                    restored |= c - a.members
         out.append(
             AnchorNode(
                 a.anchor_id,
@@ -423,7 +456,7 @@ def adjust_tier_b(anchors: list[AnchorNode], legs: list[Leg], res: Resolver) -> 
                 a.tier,
                 a.form,
                 a.source_available_at,
-                frozenset(a.members - pre),
+                frozenset((a.members - pre) | restored),
                 a.unresolved_lines,
                 a.basis,
                 a.names,

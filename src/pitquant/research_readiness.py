@@ -18,7 +18,6 @@ from sqlalchemy.orm import Session
 
 from pitquant.config.settings import Settings
 from pitquant.db.models import (
-    CorporateActionEvent,
     DataSource,
     FeatureSnapshotRow,
     Price,
@@ -114,8 +113,35 @@ def research_readiness(session: Session, settings: Settings) -> ResearchFlags:
         and gm.get("security_identity_resolution", {}).get("weak_identity_members", 1) == 0
         and gm.get("security_identity_resolution", {}).get("unresolved_lines", 1) == 0
     )
+    from pitquant.db.models_research import ResearchFeatureSnapshot
+    from pitquant.market.canonical import FEATURE_VERSION
+    from pitquant.research.first_ml import fundamentals_months
+    from pitquant.research.first_ml_contract import REQUIRED_FUNDAMENTAL_SECURITIES
+
+    fundamental_rows = [
+        {
+            "security_id": row.security_id,
+            "decision_session": row.decision_session,
+            "ticker": row.meta.get("ticker"),
+            "meta": row.meta,
+            "features": {name: feature["value"] for name, feature in row.features.items()},
+        }
+        for row in session.scalars(
+            select(ResearchFeatureSnapshot).where(
+                ResearchFeatureSnapshot.feature_set_version == FEATURE_VERSION
+            )
+        )
+    ]
+    fundamental_coverage = fundamentals_months(fundamental_rows)
+    rf.metrics["fundamental_securities_36_months"] = fundamental_coverage["n_ok"]
     rf.flags["US_FUNDAMENTALS_READY"] = (
-        False  # separate denominator (D-02 answers only «who was a member»); needs SEC facts per member
+        fundamental_coverage["n_ok"] >= REQUIRED_FUNDAMENTAL_SECURITIES
+    )
+    rf.status["US_FUNDAMENTALS_READY"] = "READY" if rf.flags["US_FUNDAMENTALS_READY"] else "BLOCKED"
+    rf.reasons["US_FUNDAMENTALS_READY"] = (
+        []
+        if rf.flags["US_FUNDAMENTALS_READY"]
+        else ["fewer than 30 securities with at least 36 usable PIT fundamental months"]
     )
     rf.metrics["d02_anchor_graph"] = gm
     rf.metrics["d02"] = {
@@ -145,49 +171,55 @@ def research_readiness(session: Session, settings: Settings) -> ResearchFlags:
         "sample coverage (>=98% active, >=95% former/delisted) not measured: "
         + ("no PITQUANT_TIINGO_API_KEY" if not key else "run scripts/tiingo_evaluate.py")
     ]
-    rf.flags["US_D05_RESEARCH_READY"] = bool(rf.flags["TIINGO_D05_CANDIDATE"]) and any(
-        r.prices_ready and r.corporate_actions_ready for r in cohorts.rows
-    )
-    rf.status["US_D05_RESEARCH_READY"] = "BLOCKED_BY_CREDENTIAL" if not key else "NOT_READY"
-    rf.flags["ES_D05_RESEARCH_READY"] = False
-    rf.status["ES_D05_RESEARCH_READY"] = "ES_D05_BLOCKED_BY_ENTITLEMENT"
-    rf.reasons["ES_D05_RESEARCH_READY"] = [
-        "BME/EODHD full history is a paid product: not contracted (owner decision pending)"
-    ]
+    from pitquant.market.canonical import audit_series
+
+    yahoo_rows = session.scalars(
+        select(Security)
+        .join(Price)
+        .join(DataSource)
+        .where(DataSource.name == "YAHOO_CHART:eod", Security.is_synthetic.is_(False))
+        .distinct()
+    ).all()
+    qa = [dict(audit_series(session, sec), exchange=sec.exchange) for sec in yahoo_rows]
+    rf.metrics["yahoo_d05"] = qa
+    for region, exchanges in (("US", {"XNYS"}), ("ES", {"XMAD"})):
+        relevant = [r for r in qa if r["exchange"] in exchanges]
+        flag = region + "_D05_RESEARCH_READY"
+        rf.flags[flag] = bool(relevant) and all(r["status"] == "READY" for r in relevant)
+        rf.status[flag] = "READY" if rf.flags[flag] else "BLOCKED"
+        rf.reasons[flag] = [
+            f"{r['security_id']}: {', '.join(r['reasons'])}"
+            for r in relevant
+            if r["status"] != "READY"
+        ] or ([] if relevant else ["MISSING_YAHOO_SERIES"])
 
     from pitquant.features.v0.engine import FEATURE_NAMES
 
     rf.flags["FEATURE_ENGINE_IMPLEMENTED"] = len(FEATURE_NAMES) > 0
     rf.metrics["n_features"] = len(FEATURE_NAMES)
-    spy_ok = (
-        session.scalar(
-            select(func.count()).select_from(Security).where(Security.name.like("%SPY%"))
-        )
-        or 0
+    spy_ok = any(
+        session.get_one(Security, r["security_id"]).name.startswith("SPY")
+        and r["status"] == "READY"
+        for r in qa
     )
     n_pre = cohorts.complete_pre_holdout
     gates = {
         "D02_RESEARCH_READY": bool(rf.flags["D02_RESEARCH_READY"]),
         "D05_market_data_research_ready": rf.flags["US_D05_RESEARCH_READY"],
-        "SPY_benchmark_available": spy_ok > 0 and tiingo_bars > 0,
+        "SPY_benchmark_available": spy_ok,
         "corporate_action_engine_real_validated": True,  # AAPL 4:1, MSFT special, ENG dividends (ADR-0023)
         "total_return_real_validated": True,
-        "sec_fundamentals_pit_available": (
-            session.scalar(select(func.count()).select_from(CorporateActionEvent)) or 0
-        )
-        >= 0,
+        "sec_fundamentals_pit_available": rf.flags["US_FUNDAMENTALS_READY"],
         "min_60_consecutive_cohorts_outside_holdout": longest >= 60 and n_pre >= 60,
     }
     rf.flags["FEATURE_RESEARCH_READY_US"] = all(gates.values())
     rf.reasons["FEATURE_RESEARCH_READY_US"] = [f"gate {k} = {v}" for k, v in gates.items() if not v]
     rf.flags["FEATURE_RESEARCH_READY_ES"] = False
-    rf.status["FEATURE_RESEARCH_READY_ES"] = "ES_D05_BLOCKED_BY_ENTITLEMENT"
+    rf.status["FEATURE_RESEARCH_READY_ES"] = rf.status["ES_D05_RESEARCH_READY"]
     rf.flags["FEATURE_RESEARCH_READY"] = (
         rf.flags["FEATURE_RESEARCH_READY_US"] and rf.flags["FEATURE_RESEARCH_READY_ES"]
     )
-    rf.flags["LABEL_ENGINE_READY_US"] = (
-        bool(rf.flags["FEATURE_ENGINE_IMPLEMENTED"]) and spy_ok > 0 and tiingo_bars > 0
-    )
+    rf.flags["LABEL_ENGINE_READY_US"] = bool(rf.flags["FEATURE_ENGINE_IMPLEMENTED"]) and spy_ok
     rf.reasons["LABEL_ENGINE_READY_US"] = (
         [
             "engine implemented (6M/12M, TR, ETF_PROXY benchmark); needs SPY and constituent prices (D-05)"

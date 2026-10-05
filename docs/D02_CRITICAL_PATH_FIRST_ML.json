@@ -1,0 +1,4905 @@
+{
+  "initial_head": "f4c01f1",
+  "critical_window": [
+    "2015-09",
+    "2017-09"
+  ],
+  "initial_streak": 60,
+  "initial_folds": 0,
+  "months": [
+    {
+      "month": "2017-09",
+      "decision_at": "2017-09-01",
+      "status": "BLOCKED",
+      "segment": "2017-03-31→2017-09-30",
+      "reasons": [
+        "10 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2017-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-17-183633",
+          "filer_cik": "0000884394",
+          "hash": "847938e49ade890c0f4a5630b32ef26694b636ca4d3a6c021b30a2491c7e97fc",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2017-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-17-355427",
+          "filer_cik": "0000884394",
+          "hash": "45cc19b41167f64718da41ce5ea3f3871e32b6716e646ecd5255b4cd3941ad81",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "2d17026b5a66e2c0fba8",
+        "6222b0b13d0f2393ed60",
+        "7136b8bbe85c159b7dfe",
+        "72ece61da9278fe6f795",
+        "8c2001b680f25cd6cd62",
+        "aec1aaa60eb41c40e769",
+        "d695658a9382ff6bf19c",
+        "edce6e4c7039d25483bf",
+        "f21b9725b2d55f3209dd",
+        "f91c0af73605de28d4ee"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2017-08",
+      "decision_at": "2017-08-01",
+      "status": "BLOCKED",
+      "segment": "2017-03-31→2017-09-30",
+      "reasons": [
+        "10 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2017-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-17-183633",
+          "filer_cik": "0000884394",
+          "hash": "847938e49ade890c0f4a5630b32ef26694b636ca4d3a6c021b30a2491c7e97fc",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2017-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-17-355427",
+          "filer_cik": "0000884394",
+          "hash": "45cc19b41167f64718da41ce5ea3f3871e32b6716e646ecd5255b4cd3941ad81",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "2d17026b5a66e2c0fba8",
+        "6222b0b13d0f2393ed60",
+        "7136b8bbe85c159b7dfe",
+        "72ece61da9278fe6f795",
+        "8c2001b680f25cd6cd62",
+        "aec1aaa60eb41c40e769",
+        "d695658a9382ff6bf19c",
+        "edce6e4c7039d25483bf",
+        "f21b9725b2d55f3209dd",
+        "f91c0af73605de28d4ee"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2017-07",
+      "decision_at": "2017-07-03",
+      "status": "BLOCKED",
+      "segment": "2017-03-31→2017-09-30",
+      "reasons": [
+        "10 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2017-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-17-183633",
+          "filer_cik": "0000884394",
+          "hash": "847938e49ade890c0f4a5630b32ef26694b636ca4d3a6c021b30a2491c7e97fc",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2017-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-17-355427",
+          "filer_cik": "0000884394",
+          "hash": "45cc19b41167f64718da41ce5ea3f3871e32b6716e646ecd5255b4cd3941ad81",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "2d17026b5a66e2c0fba8",
+        "6222b0b13d0f2393ed60",
+        "7136b8bbe85c159b7dfe",
+        "72ece61da9278fe6f795",
+        "8c2001b680f25cd6cd62",
+        "aec1aaa60eb41c40e769",
+        "d695658a9382ff6bf19c",
+        "edce6e4c7039d25483bf",
+        "f21b9725b2d55f3209dd",
+        "f91c0af73605de28d4ee"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2017-06",
+      "decision_at": "2017-06-01",
+      "status": "BLOCKED",
+      "segment": "2017-03-31→2017-09-30",
+      "reasons": [
+        "10 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2017-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-17-183633",
+          "filer_cik": "0000884394",
+          "hash": "847938e49ade890c0f4a5630b32ef26694b636ca4d3a6c021b30a2491c7e97fc",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2017-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-17-355427",
+          "filer_cik": "0000884394",
+          "hash": "45cc19b41167f64718da41ce5ea3f3871e32b6716e646ecd5255b4cd3941ad81",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "2d17026b5a66e2c0fba8",
+        "6222b0b13d0f2393ed60",
+        "7136b8bbe85c159b7dfe",
+        "72ece61da9278fe6f795",
+        "8c2001b680f25cd6cd62",
+        "aec1aaa60eb41c40e769",
+        "d695658a9382ff6bf19c",
+        "edce6e4c7039d25483bf",
+        "f21b9725b2d55f3209dd",
+        "f91c0af73605de28d4ee"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2017-05",
+      "decision_at": "2017-05-01",
+      "status": "BLOCKED",
+      "segment": "2017-03-31→2017-09-30",
+      "reasons": [
+        "10 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2017-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-17-183633",
+          "filer_cik": "0000884394",
+          "hash": "847938e49ade890c0f4a5630b32ef26694b636ca4d3a6c021b30a2491c7e97fc",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2017-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-17-355427",
+          "filer_cik": "0000884394",
+          "hash": "45cc19b41167f64718da41ce5ea3f3871e32b6716e646ecd5255b4cd3941ad81",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "2d17026b5a66e2c0fba8",
+        "6222b0b13d0f2393ed60",
+        "7136b8bbe85c159b7dfe",
+        "72ece61da9278fe6f795",
+        "8c2001b680f25cd6cd62",
+        "aec1aaa60eb41c40e769",
+        "d695658a9382ff6bf19c",
+        "edce6e4c7039d25483bf",
+        "f21b9725b2d55f3209dd",
+        "f91c0af73605de28d4ee"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2017-04",
+      "decision_at": "2017-04-03",
+      "status": "BLOCKED",
+      "segment": "2017-03-31→2017-09-30",
+      "reasons": [
+        "9 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2017-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-17-183633",
+          "filer_cik": "0000884394",
+          "hash": "847938e49ade890c0f4a5630b32ef26694b636ca4d3a6c021b30a2491c7e97fc",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2017-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-17-355427",
+          "filer_cik": "0000884394",
+          "hash": "45cc19b41167f64718da41ce5ea3f3871e32b6716e646ecd5255b4cd3941ad81",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "2d17026b5a66e2c0fba8",
+        "6222b0b13d0f2393ed60",
+        "7136b8bbe85c159b7dfe",
+        "72ece61da9278fe6f795",
+        "8c2001b680f25cd6cd62",
+        "aec1aaa60eb41c40e769",
+        "d695658a9382ff6bf19c",
+        "edce6e4c7039d25483bf",
+        "f21b9725b2d55f3209dd"
+      ],
+      "failure_kind": [
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2017-03",
+      "decision_at": "2017-03-01",
+      "status": "BLOCKED",
+      "segment": "2016-09-30→2017-03-31",
+      "reasons": [
+        "25 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2016-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-16-777823",
+          "filer_cik": "0000884394",
+          "hash": "997f53d43c213337fc103c27ea92e7653ab558dea8999835959429ab7222222a",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2017-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-17-183633",
+          "filer_cik": "0000884394",
+          "hash": "847938e49ade890c0f4a5630b32ef26694b636ca4d3a6c021b30a2491c7e97fc",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "0a4a3e12233d45990515",
+        "1bee07b5ab3d483d2e0f",
+        "1c24220a23bbbb68970f",
+        "241910983e6c9e086298",
+        "2a9856dc949cf2898cec",
+        "3759e70f5e5c9de8c66d",
+        "3d4bcdda4cecb09fd61c",
+        "40b145086069f39e559f",
+        "637be434a8435c2b732e",
+        "74e47e4f0b28b0fed349",
+        "86201eaf5f056b6088d9",
+        "895667440302dcc98dc8",
+        "8a078ace9f0e14cd0e18",
+        "8e67c26575fcb9d9a4e5",
+        "919a3b85ba12379a9e89",
+        "932a5a984d41ebec26be",
+        "956c58c58ef93fa259f3",
+        "a19f2256d9ab066fe628",
+        "b3a1ad44dbdc75f7bd0d",
+        "bfc22f399692936d743b",
+        "d138ddd85f653991017c",
+        "d62cbc10cbc5bac3ba52",
+        "ebd23ab240ffd52b407c",
+        "f0e9f8b037b42d99e8ac",
+        "fa6c3ad439d8167021ea"
+      ],
+      "failure_kind": [
+        "MONTHLY_DATE_AMBIGUITY",
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2017-02",
+      "decision_at": "2017-02-01",
+      "status": "BLOCKED",
+      "segment": "2016-09-30→2017-03-31",
+      "reasons": [
+        "19 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2016-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-16-777823",
+          "filer_cik": "0000884394",
+          "hash": "997f53d43c213337fc103c27ea92e7653ab558dea8999835959429ab7222222a",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2017-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-17-183633",
+          "filer_cik": "0000884394",
+          "hash": "847938e49ade890c0f4a5630b32ef26694b636ca4d3a6c021b30a2491c7e97fc",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "1bee07b5ab3d483d2e0f",
+        "1c24220a23bbbb68970f",
+        "2a9856dc949cf2898cec",
+        "3759e70f5e5c9de8c66d",
+        "3d4bcdda4cecb09fd61c",
+        "40b145086069f39e559f",
+        "637be434a8435c2b732e",
+        "8a078ace9f0e14cd0e18",
+        "8e67c26575fcb9d9a4e5",
+        "919a3b85ba12379a9e89",
+        "932a5a984d41ebec26be",
+        "956c58c58ef93fa259f3",
+        "a19f2256d9ab066fe628",
+        "b3a1ad44dbdc75f7bd0d",
+        "bfc22f399692936d743b",
+        "d138ddd85f653991017c",
+        "ebd23ab240ffd52b407c",
+        "f0e9f8b037b42d99e8ac",
+        "fa6c3ad439d8167021ea"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2017-01",
+      "decision_at": "2017-01-03",
+      "status": "BLOCKED",
+      "segment": "2016-09-30→2017-03-31",
+      "reasons": [
+        "19 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2016-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-16-777823",
+          "filer_cik": "0000884394",
+          "hash": "997f53d43c213337fc103c27ea92e7653ab558dea8999835959429ab7222222a",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2017-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-17-183633",
+          "filer_cik": "0000884394",
+          "hash": "847938e49ade890c0f4a5630b32ef26694b636ca4d3a6c021b30a2491c7e97fc",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "1bee07b5ab3d483d2e0f",
+        "1c24220a23bbbb68970f",
+        "2a9856dc949cf2898cec",
+        "3759e70f5e5c9de8c66d",
+        "3d4bcdda4cecb09fd61c",
+        "40b145086069f39e559f",
+        "637be434a8435c2b732e",
+        "8a078ace9f0e14cd0e18",
+        "8e67c26575fcb9d9a4e5",
+        "919a3b85ba12379a9e89",
+        "932a5a984d41ebec26be",
+        "956c58c58ef93fa259f3",
+        "a19f2256d9ab066fe628",
+        "b3a1ad44dbdc75f7bd0d",
+        "bfc22f399692936d743b",
+        "d138ddd85f653991017c",
+        "ebd23ab240ffd52b407c",
+        "f0e9f8b037b42d99e8ac",
+        "fa6c3ad439d8167021ea"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2016-12",
+      "decision_at": "2016-12-01",
+      "status": "BLOCKED",
+      "segment": "2016-09-30→2017-03-31",
+      "reasons": [
+        "19 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2016-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-16-777823",
+          "filer_cik": "0000884394",
+          "hash": "997f53d43c213337fc103c27ea92e7653ab558dea8999835959429ab7222222a",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2017-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-17-183633",
+          "filer_cik": "0000884394",
+          "hash": "847938e49ade890c0f4a5630b32ef26694b636ca4d3a6c021b30a2491c7e97fc",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "1bee07b5ab3d483d2e0f",
+        "1c24220a23bbbb68970f",
+        "2a9856dc949cf2898cec",
+        "3759e70f5e5c9de8c66d",
+        "3d4bcdda4cecb09fd61c",
+        "40b145086069f39e559f",
+        "637be434a8435c2b732e",
+        "8a078ace9f0e14cd0e18",
+        "8e67c26575fcb9d9a4e5",
+        "919a3b85ba12379a9e89",
+        "932a5a984d41ebec26be",
+        "956c58c58ef93fa259f3",
+        "a19f2256d9ab066fe628",
+        "b3a1ad44dbdc75f7bd0d",
+        "bfc22f399692936d743b",
+        "d138ddd85f653991017c",
+        "ebd23ab240ffd52b407c",
+        "f0e9f8b037b42d99e8ac",
+        "fa6c3ad439d8167021ea"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2016-11",
+      "decision_at": "2016-11-01",
+      "status": "BLOCKED",
+      "segment": "2016-09-30→2017-03-31",
+      "reasons": [
+        "19 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2016-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-16-777823",
+          "filer_cik": "0000884394",
+          "hash": "997f53d43c213337fc103c27ea92e7653ab558dea8999835959429ab7222222a",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2017-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-17-183633",
+          "filer_cik": "0000884394",
+          "hash": "847938e49ade890c0f4a5630b32ef26694b636ca4d3a6c021b30a2491c7e97fc",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "1bee07b5ab3d483d2e0f",
+        "1c24220a23bbbb68970f",
+        "2a9856dc949cf2898cec",
+        "3759e70f5e5c9de8c66d",
+        "3d4bcdda4cecb09fd61c",
+        "40b145086069f39e559f",
+        "637be434a8435c2b732e",
+        "8a078ace9f0e14cd0e18",
+        "8e67c26575fcb9d9a4e5",
+        "919a3b85ba12379a9e89",
+        "932a5a984d41ebec26be",
+        "956c58c58ef93fa259f3",
+        "a19f2256d9ab066fe628",
+        "b3a1ad44dbdc75f7bd0d",
+        "bfc22f399692936d743b",
+        "d138ddd85f653991017c",
+        "ebd23ab240ffd52b407c",
+        "f0e9f8b037b42d99e8ac",
+        "fa6c3ad439d8167021ea"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2016-10",
+      "decision_at": "2016-10-03",
+      "status": "BLOCKED",
+      "segment": "2016-09-30→2017-03-31",
+      "reasons": [
+        "19 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2016-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-16-777823",
+          "filer_cik": "0000884394",
+          "hash": "997f53d43c213337fc103c27ea92e7653ab558dea8999835959429ab7222222a",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2017-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-17-183633",
+          "filer_cik": "0000884394",
+          "hash": "847938e49ade890c0f4a5630b32ef26694b636ca4d3a6c021b30a2491c7e97fc",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "1bee07b5ab3d483d2e0f",
+        "1c24220a23bbbb68970f",
+        "2a9856dc949cf2898cec",
+        "3759e70f5e5c9de8c66d",
+        "3d4bcdda4cecb09fd61c",
+        "40b145086069f39e559f",
+        "637be434a8435c2b732e",
+        "8a078ace9f0e14cd0e18",
+        "8e67c26575fcb9d9a4e5",
+        "919a3b85ba12379a9e89",
+        "932a5a984d41ebec26be",
+        "956c58c58ef93fa259f3",
+        "a19f2256d9ab066fe628",
+        "b3a1ad44dbdc75f7bd0d",
+        "bfc22f399692936d743b",
+        "d138ddd85f653991017c",
+        "ebd23ab240ffd52b407c",
+        "f0e9f8b037b42d99e8ac",
+        "fa6c3ad439d8167021ea"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2016-09",
+      "decision_at": "2016-09-01",
+      "status": "BLOCKED",
+      "segment": "2016-03-31→2016-09-30",
+      "reasons": [
+        "16 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2016-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-16-605805",
+          "filer_cik": "0000884394",
+          "hash": "c375108950f64ee9fc6c9711d895fac7b6b07ab8beded0e7955e7078e9bec265",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2016-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-16-777823",
+          "filer_cik": "0000884394",
+          "hash": "997f53d43c213337fc103c27ea92e7653ab558dea8999835959429ab7222222a",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "1f801b90f2c7b28e6bd0",
+        "27933f3a9d3cbad01b13",
+        "297a29e9851c1adbaad9",
+        "3639812061f80ff6b5fa",
+        "41ad44444289a557154b",
+        "60a8b61e9a629102c217",
+        "6c5a95f6a607858fc601",
+        "7f3e5c10891857b487f3",
+        "a1f8b8b4f1ab621bad69",
+        "aa9b78f9c8f0d124c745",
+        "aec59714b7c87ad3eb8c",
+        "d789b278f1e5d83d33f4",
+        "d79ad0bb578ea8fbdadd",
+        "e907c88e6b82f4b909bc",
+        "e977aa0ba6ae7f639bf6",
+        "fc6eddb81dcace80cf59"
+      ],
+      "failure_kind": [
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2016-08",
+      "decision_at": "2016-08-01",
+      "status": "BLOCKED",
+      "segment": "2016-03-31→2016-09-30",
+      "reasons": [
+        "16 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2016-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-16-605805",
+          "filer_cik": "0000884394",
+          "hash": "c375108950f64ee9fc6c9711d895fac7b6b07ab8beded0e7955e7078e9bec265",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2016-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-16-777823",
+          "filer_cik": "0000884394",
+          "hash": "997f53d43c213337fc103c27ea92e7653ab558dea8999835959429ab7222222a",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "1f801b90f2c7b28e6bd0",
+        "27933f3a9d3cbad01b13",
+        "297a29e9851c1adbaad9",
+        "3639812061f80ff6b5fa",
+        "41ad44444289a557154b",
+        "60a8b61e9a629102c217",
+        "6c5a95f6a607858fc601",
+        "7f3e5c10891857b487f3",
+        "a1f8b8b4f1ab621bad69",
+        "aa9b78f9c8f0d124c745",
+        "aec59714b7c87ad3eb8c",
+        "d789b278f1e5d83d33f4",
+        "d79ad0bb578ea8fbdadd",
+        "e907c88e6b82f4b909bc",
+        "e977aa0ba6ae7f639bf6",
+        "fc6eddb81dcace80cf59"
+      ],
+      "failure_kind": [
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2016-07",
+      "decision_at": "2016-07-01",
+      "status": "BLOCKED",
+      "segment": "2016-03-31→2016-09-30",
+      "reasons": [
+        "16 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2016-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-16-605805",
+          "filer_cik": "0000884394",
+          "hash": "c375108950f64ee9fc6c9711d895fac7b6b07ab8beded0e7955e7078e9bec265",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2016-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-16-777823",
+          "filer_cik": "0000884394",
+          "hash": "997f53d43c213337fc103c27ea92e7653ab558dea8999835959429ab7222222a",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "1f801b90f2c7b28e6bd0",
+        "27933f3a9d3cbad01b13",
+        "297a29e9851c1adbaad9",
+        "3639812061f80ff6b5fa",
+        "41ad44444289a557154b",
+        "60a8b61e9a629102c217",
+        "6c5a95f6a607858fc601",
+        "7f3e5c10891857b487f3",
+        "a1f8b8b4f1ab621bad69",
+        "aa9b78f9c8f0d124c745",
+        "aec59714b7c87ad3eb8c",
+        "d789b278f1e5d83d33f4",
+        "d79ad0bb578ea8fbdadd",
+        "e907c88e6b82f4b909bc",
+        "e977aa0ba6ae7f639bf6",
+        "fc6eddb81dcace80cf59"
+      ],
+      "failure_kind": [
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2016-06",
+      "decision_at": "2016-06-01",
+      "status": "BLOCKED",
+      "segment": "2016-03-31→2016-09-30",
+      "reasons": [
+        "16 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2016-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-16-605805",
+          "filer_cik": "0000884394",
+          "hash": "c375108950f64ee9fc6c9711d895fac7b6b07ab8beded0e7955e7078e9bec265",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2016-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-16-777823",
+          "filer_cik": "0000884394",
+          "hash": "997f53d43c213337fc103c27ea92e7653ab558dea8999835959429ab7222222a",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "1f801b90f2c7b28e6bd0",
+        "27933f3a9d3cbad01b13",
+        "297a29e9851c1adbaad9",
+        "3639812061f80ff6b5fa",
+        "41ad44444289a557154b",
+        "60a8b61e9a629102c217",
+        "6c5a95f6a607858fc601",
+        "7f3e5c10891857b487f3",
+        "a1f8b8b4f1ab621bad69",
+        "aa9b78f9c8f0d124c745",
+        "aec59714b7c87ad3eb8c",
+        "d789b278f1e5d83d33f4",
+        "d79ad0bb578ea8fbdadd",
+        "e907c88e6b82f4b909bc",
+        "e977aa0ba6ae7f639bf6",
+        "fc6eddb81dcace80cf59"
+      ],
+      "failure_kind": [
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2016-05",
+      "decision_at": "2016-05-02",
+      "status": "BLOCKED",
+      "segment": "2016-03-31→2016-09-30",
+      "reasons": [
+        "16 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2016-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-16-605805",
+          "filer_cik": "0000884394",
+          "hash": "c375108950f64ee9fc6c9711d895fac7b6b07ab8beded0e7955e7078e9bec265",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2016-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-16-777823",
+          "filer_cik": "0000884394",
+          "hash": "997f53d43c213337fc103c27ea92e7653ab558dea8999835959429ab7222222a",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "1f801b90f2c7b28e6bd0",
+        "27933f3a9d3cbad01b13",
+        "297a29e9851c1adbaad9",
+        "3639812061f80ff6b5fa",
+        "41ad44444289a557154b",
+        "60a8b61e9a629102c217",
+        "6c5a95f6a607858fc601",
+        "7f3e5c10891857b487f3",
+        "a1f8b8b4f1ab621bad69",
+        "aa9b78f9c8f0d124c745",
+        "aec59714b7c87ad3eb8c",
+        "d789b278f1e5d83d33f4",
+        "d79ad0bb578ea8fbdadd",
+        "e907c88e6b82f4b909bc",
+        "e977aa0ba6ae7f639bf6",
+        "fc6eddb81dcace80cf59"
+      ],
+      "failure_kind": [
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2016-04",
+      "decision_at": "2016-04-01",
+      "status": "BLOCKED",
+      "segment": "2016-03-31→2016-09-30",
+      "reasons": [
+        "16 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2016-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-16-605805",
+          "filer_cik": "0000884394",
+          "hash": "c375108950f64ee9fc6c9711d895fac7b6b07ab8beded0e7955e7078e9bec265",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2016-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-16-777823",
+          "filer_cik": "0000884394",
+          "hash": "997f53d43c213337fc103c27ea92e7653ab558dea8999835959429ab7222222a",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "1f801b90f2c7b28e6bd0",
+        "27933f3a9d3cbad01b13",
+        "297a29e9851c1adbaad9",
+        "3639812061f80ff6b5fa",
+        "41ad44444289a557154b",
+        "60a8b61e9a629102c217",
+        "6c5a95f6a607858fc601",
+        "7f3e5c10891857b487f3",
+        "a1f8b8b4f1ab621bad69",
+        "aa9b78f9c8f0d124c745",
+        "aec59714b7c87ad3eb8c",
+        "d789b278f1e5d83d33f4",
+        "d79ad0bb578ea8fbdadd",
+        "e907c88e6b82f4b909bc",
+        "e977aa0ba6ae7f639bf6",
+        "fc6eddb81dcace80cf59"
+      ],
+      "failure_kind": [
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2016-03",
+      "decision_at": "2016-03-01",
+      "status": "BLOCKED",
+      "segment": "2015-09-30→2016-03-31",
+      "reasons": [
+        "17 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2015-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-15-390230",
+          "filer_cik": "0000884394",
+          "hash": "5f03e72452ec04665b86d0230692d5b413ad7e0d8d5eb107b4a44b91d5b8588a",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2016-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-16-605805",
+          "filer_cik": "0000884394",
+          "hash": "c375108950f64ee9fc6c9711d895fac7b6b07ab8beded0e7955e7078e9bec265",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "12a490a52ac07a0c6868",
+        "2e8eb8994f1a6866134c",
+        "41931f8149de6f0554fb",
+        "48e76ec550ab6d971b4d",
+        "6188a99eed2cc5eaefbb",
+        "6b0e257649daf7ee6719",
+        "6f4e22f34663daaa316d",
+        "7594a7ce86e97edf85ef",
+        "7cccaeafbc8bf8a9315d",
+        "863202f5c4256d4f50b9",
+        "9369adca69da6c677b1a",
+        "948c6451731ed389c0c0",
+        "9c97d251e2be894e1c76",
+        "a1d14708088e8915b073",
+        "c227fe2ba3c93644647f",
+        "c27dddff95c06848ed93",
+        "cb5ee259ed04df5c8c78"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2016-02",
+      "decision_at": "2016-02-01",
+      "status": "BLOCKED",
+      "segment": "2015-09-30→2016-03-31",
+      "reasons": [
+        "17 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2015-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-15-390230",
+          "filer_cik": "0000884394",
+          "hash": "5f03e72452ec04665b86d0230692d5b413ad7e0d8d5eb107b4a44b91d5b8588a",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2016-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-16-605805",
+          "filer_cik": "0000884394",
+          "hash": "c375108950f64ee9fc6c9711d895fac7b6b07ab8beded0e7955e7078e9bec265",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "12a490a52ac07a0c6868",
+        "2e8eb8994f1a6866134c",
+        "41931f8149de6f0554fb",
+        "48e76ec550ab6d971b4d",
+        "6188a99eed2cc5eaefbb",
+        "6b0e257649daf7ee6719",
+        "6f4e22f34663daaa316d",
+        "7594a7ce86e97edf85ef",
+        "7cccaeafbc8bf8a9315d",
+        "863202f5c4256d4f50b9",
+        "9369adca69da6c677b1a",
+        "948c6451731ed389c0c0",
+        "9c97d251e2be894e1c76",
+        "a1d14708088e8915b073",
+        "c227fe2ba3c93644647f",
+        "c27dddff95c06848ed93",
+        "cb5ee259ed04df5c8c78"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2016-01",
+      "decision_at": "2016-01-04",
+      "status": "BLOCKED",
+      "segment": "2015-09-30→2016-03-31",
+      "reasons": [
+        "16 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2015-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-15-390230",
+          "filer_cik": "0000884394",
+          "hash": "5f03e72452ec04665b86d0230692d5b413ad7e0d8d5eb107b4a44b91d5b8588a",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2016-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-16-605805",
+          "filer_cik": "0000884394",
+          "hash": "c375108950f64ee9fc6c9711d895fac7b6b07ab8beded0e7955e7078e9bec265",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "12a490a52ac07a0c6868",
+        "2e8eb8994f1a6866134c",
+        "41931f8149de6f0554fb",
+        "6188a99eed2cc5eaefbb",
+        "6b0e257649daf7ee6719",
+        "6f4e22f34663daaa316d",
+        "7594a7ce86e97edf85ef",
+        "7cccaeafbc8bf8a9315d",
+        "863202f5c4256d4f50b9",
+        "9369adca69da6c677b1a",
+        "948c6451731ed389c0c0",
+        "9c97d251e2be894e1c76",
+        "a1d14708088e8915b073",
+        "c227fe2ba3c93644647f",
+        "c27dddff95c06848ed93",
+        "cb5ee259ed04df5c8c78"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2015-12",
+      "decision_at": "2015-12-01",
+      "status": "BLOCKED",
+      "segment": "2015-09-30→2016-03-31",
+      "reasons": [
+        "16 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2015-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-15-390230",
+          "filer_cik": "0000884394",
+          "hash": "5f03e72452ec04665b86d0230692d5b413ad7e0d8d5eb107b4a44b91d5b8588a",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2016-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-16-605805",
+          "filer_cik": "0000884394",
+          "hash": "c375108950f64ee9fc6c9711d895fac7b6b07ab8beded0e7955e7078e9bec265",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "12a490a52ac07a0c6868",
+        "2e8eb8994f1a6866134c",
+        "41931f8149de6f0554fb",
+        "6188a99eed2cc5eaefbb",
+        "6b0e257649daf7ee6719",
+        "6f4e22f34663daaa316d",
+        "7594a7ce86e97edf85ef",
+        "7cccaeafbc8bf8a9315d",
+        "863202f5c4256d4f50b9",
+        "9369adca69da6c677b1a",
+        "948c6451731ed389c0c0",
+        "9c97d251e2be894e1c76",
+        "a1d14708088e8915b073",
+        "c227fe2ba3c93644647f",
+        "c27dddff95c06848ed93",
+        "cb5ee259ed04df5c8c78"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2015-11",
+      "decision_at": "2015-11-02",
+      "status": "BLOCKED",
+      "segment": "2015-09-30→2016-03-31",
+      "reasons": [
+        "16 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2015-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-15-390230",
+          "filer_cik": "0000884394",
+          "hash": "5f03e72452ec04665b86d0230692d5b413ad7e0d8d5eb107b4a44b91d5b8588a",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2016-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-16-605805",
+          "filer_cik": "0000884394",
+          "hash": "c375108950f64ee9fc6c9711d895fac7b6b07ab8beded0e7955e7078e9bec265",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "12a490a52ac07a0c6868",
+        "2e8eb8994f1a6866134c",
+        "41931f8149de6f0554fb",
+        "6188a99eed2cc5eaefbb",
+        "6b0e257649daf7ee6719",
+        "6f4e22f34663daaa316d",
+        "7594a7ce86e97edf85ef",
+        "7cccaeafbc8bf8a9315d",
+        "863202f5c4256d4f50b9",
+        "9369adca69da6c677b1a",
+        "948c6451731ed389c0c0",
+        "9c97d251e2be894e1c76",
+        "a1d14708088e8915b073",
+        "c227fe2ba3c93644647f",
+        "c27dddff95c06848ed93",
+        "cb5ee259ed04df5c8c78"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2015-10",
+      "decision_at": "2015-10-01",
+      "status": "BLOCKED",
+      "segment": "2015-09-30→2016-03-31",
+      "reasons": [
+        "16 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2015-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-15-390230",
+          "filer_cik": "0000884394",
+          "hash": "5f03e72452ec04665b86d0230692d5b413ad7e0d8d5eb107b4a44b91d5b8588a",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2016-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-16-605805",
+          "filer_cik": "0000884394",
+          "hash": "c375108950f64ee9fc6c9711d895fac7b6b07ab8beded0e7955e7078e9bec265",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "12a490a52ac07a0c6868",
+        "2e8eb8994f1a6866134c",
+        "41931f8149de6f0554fb",
+        "6188a99eed2cc5eaefbb",
+        "6b0e257649daf7ee6719",
+        "6f4e22f34663daaa316d",
+        "7594a7ce86e97edf85ef",
+        "7cccaeafbc8bf8a9315d",
+        "863202f5c4256d4f50b9",
+        "9369adca69da6c677b1a",
+        "948c6451731ed389c0c0",
+        "9c97d251e2be894e1c76",
+        "a1d14708088e8915b073",
+        "c227fe2ba3c93644647f",
+        "c27dddff95c06848ed93",
+        "cb5ee259ed04df5c8c78"
+      ],
+      "failure_kind": [
+        "PRIMARY_DELTA_UNEXPLAINED",
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    },
+    {
+      "month": "2015-09",
+      "decision_at": "2015-09-01",
+      "status": "BLOCKED",
+      "segment": "2015-03-31→2015-09-30",
+      "reasons": [
+        "25 securities with an effective-date uncertainty covering this decision_at"
+      ],
+      "anchors": [
+        {
+          "period": "2015-03-31",
+          "form": "N-30D",
+          "accession": "0001193125-15-211393",
+          "filer_cik": "0000884394",
+          "hash": "b144dad1ca484123e7362ff5b0b21462311b16c246773dd7014a3363a399c013",
+          "unresolved_lines": 0
+        },
+        {
+          "period": "2015-09-30",
+          "form": "N-30D",
+          "accession": "0001193125-15-390230",
+          "filer_cik": "0000884394",
+          "hash": "5f03e72452ec04665b86d0230692d5b413ad7e0d8d5eb107b4a44b91d5b8588a",
+          "unresolved_lines": 0
+        }
+      ],
+      "gap_ids": [
+        "260b8ac8b650438679b6",
+        "32f800082db059fb0795",
+        "35cf8ce953c75ab6b4e6",
+        "3dfc145a83e78bbe08ef",
+        "4014d7c5461a5cdfc7ed",
+        "4260ccf361b495bfde83",
+        "44fdf340690c77c3a25f",
+        "4a733a71a16cc4b19b5b",
+        "53f9dec23b7e708f434c",
+        "55ff93bd6e220947454a",
+        "6288ce30ff6ca090c074",
+        "773157b6ab379b614ad3",
+        "775ad4ebdb8a3e9f1e46",
+        "9975561bbd86d605d534",
+        "9e84a8070786d6765738",
+        "a5179c57e07bc68517bf",
+        "b90d1b8e5ed9be70322c",
+        "bc21d9429ac9a7d88d1e",
+        "cce5f52831d09f95a80b",
+        "da1151e425832bcbe2eb",
+        "dc22bb93050a9aa7d1c5",
+        "e165e78849d521c286b0",
+        "efea0e5c230ed42b0a57",
+        "f0cc5692bd0bce476a62",
+        "f5d21137d6351abe81d2"
+      ],
+      "failure_kind": [
+        "PRIMARY_EVENT_MISSING",
+        "SECURITY_IDENTITY_ONLY"
+      ],
+      "minimum_action": "Archive official effective event dates or class-preserving identity transitions for each listed gap; replay forward/backward. Discovery dates do not close gaps."
+    }
+  ],
+  "blocking_cards": [
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Laboratory Corp. of America Holdings",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "24e1c267-d5bc-4d1f-971a-bb86c6f8a679",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "e165e78849d521c286b0"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Windstream Holdings, Inc.",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg REMOVE WIN 2015-04-07 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "2c773a18-077b-46c8-972f-bbc8554275e5",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "4260ccf361b495bfde83"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Health Care REIT, Inc.",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "4e747a26-523a-4930-94da-a347cab62693",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "f0cc5692bd0bce476a62"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "News Corp. (Class B)",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg ADD NWS 2015-09-21 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "54247bc8-add6-407d-a46d-5951e494e661",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "dc22bb93050a9aa7d1c5"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Alphabet, Inc. (Class C)",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "5d00f026-df66-4293-a902-cf4e989abeb7",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "b90d1b8e5ed9be70322c"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "WestRock Co.",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg ADD WRK 2015-07-02 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "5d6fb0a6-e221-4b0c-9d51-b96ef79261e9",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "9975561bbd86d605d534"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "Alphabet, Inc. (Class A)",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "possible identity link with Google, Inc. (Class A) (name token overlap, shares ratio 1.00): CUSIP/name change of ONE issuer?"
+      ],
+      "security_id": "648dff41-1cdb-448a-ba57-477a51a2bcb4",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "260b8ac8b650438679b6"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Realty Income Corp.",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg ADD O 2015-04-07 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "65511787-d7bc-48e8-91f0-031067fb0341",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "53f9dec23b7e708f434c"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "MeadWestvaco Corp.",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg REMOVE MWV 2015-07-02 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "686bb5de-e5e8-46da-ac06-dd128abe8a4e",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "44fdf340690c77c3a25f"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Actavis PLC",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "7bb2f4ba-5879-4c19-83dc-224de7db4625",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "f5d21137d6351abe81d2"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Kraft Heinz Co.",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg ADD KHC 2015-07-06 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "7d7bbea5-ec61-4e6e-bbe0-31813080c823",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "775ad4ebdb8a3e9f1e46"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "Google, Inc. (Class C)",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
+      ],
+      "security_id": "7e5881b3-9f1a-4576-9208-eeebfe0a1fe3",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "55ff93bd6e220947454a"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Twenty-First Century Fox, Inc. (Class B)",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "8563d9ba-428f-410e-8b8d-828f3907c194",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "efea0e5c230ed42b0a57"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "WEC Energy Group, Inc.",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "8609f7bf-df4c-4cd1-95d7-bbb2dbfd0b86",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "bc21d9429ac9a7d88d1e"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Allergan PLC",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "86f51cd9-087b-460c-aeed-7a3fc50b0de1",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "4014d7c5461a5cdfc7ed"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Kraft Foods Group, Inc.",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "9a914c13-aa6f-498b-9177-69ab8690d2ee",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "773157b6ab379b614ad3"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Gannett Co., Inc.",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "9cc3512a-864b-4a6e-b765-43543dffd5ce",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "9e84a8070786d6765738"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Welltower, Inc.",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "9de61b8f-4eaa-42c3-a979-dfa2db3d40bd",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "4a733a71a16cc4b19b5b"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Noble Corp. PLC",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "a3905b7e-4c77-4637-b770-b76793f69b5f",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "cce5f52831d09f95a80b"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "TEGNA, Inc.",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
+      ],
+      "security_id": "a45ce486-c2bc-43b5-bc86-05c9be0bb1d7",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "6288ce30ff6ca090c074"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "Comcast Corp. (Special Class A)",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
+      ],
+      "security_id": "a48f9c8a-64e8-4d65-94e7-e9d7bcda7030",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "3dfc145a83e78bbe08ef"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "Laboratory Corp. of AmericaHoldings",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
+      ],
+      "security_id": "bb7de616-a9af-4132-a7e6-2bfe3f9e334b",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "32f800082db059fb0795"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "PayPal Holdings, Inc.",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg ADD PYPL 2015-07-20 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "c135b302-3cf7-4a1b-bf0b-936773eac78a",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "a5179c57e07bc68517bf"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Wisconsin Energy Corp.",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "f88d8cd0-04fd-45e0-9484-af2d6e282465",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "da1151e425832bcbe2eb"
+    },
+    {
+      "segment": "2015-03-31→2015-09-30",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "Google, Inc. (Class A)",
+      "events": "none",
+      "window": [
+        "2015-04-01",
+        "2015-09-30"
+      ],
+      "cohorts_blocked": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-04-01",
+        "2015-05-01",
+        "2015-06-01",
+        "2015-07-01",
+        "2015-08-03",
+        "2015-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "possible identity link with Alphabet, Inc. (Class A) (name token overlap, shares ratio 1.00): CUSIP/name change of ONE issuer?"
+      ],
+      "security_id": "f963fbf4-ac21-43b1-b467-5d63f8438397",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "35cf8ce953c75ab6b4e6"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Willis Towers Watson PLC",
+      "events": "none",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "0b4930e8-1e22-46e0-8f56-101726bbbe12",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "863202f5c4256d4f50b9"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Avago Technologies, Ltd.",
+      "events": "none",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "26a1f52a-fd93-4153-b6e2-36f6dc7c2ea8",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "12a490a52ac07a0c6868"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "HP, Inc.",
+      "events": "none",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "2799c052-c183-458d-a4c3-e6f48f2281d5",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "6188a99eed2cc5eaefbb"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "US Bancorp",
+      "events": "none",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "2e2d4016-5880-45b0-b2c9-86d525d87935",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "7594a7ce86e97edf85ef"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Roper Technologies, Inc.",
+      "events": "none",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "3b6e43e8-f85a-41b6-85d5-e96e27719207",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "7cccaeafbc8bf8a9315d"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "XL Group PLC Class A",
+      "events": "none",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
+      ],
+      "security_id": "5cc78849-fa77-4845-a126-c8225f1575ef",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "2e8eb8994f1a6866134c"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "XL Group PLC",
+      "events": "none",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "5d9a82cd-f742-4bfd-b9e6-ed63deb52753",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "6f4e22f34663daaa316d"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Roper Industries, Inc.",
+      "events": "none",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "6cb1e29d-989f-4b21-a30a-fd4a104dd141",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "9369adca69da6c677b1a"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Hewlett-Packard Co.",
+      "events": "none",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "7d5fdfc4-1449-4274-895b-3afad9799b45",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "6b0e257649daf7ee6719"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "UNEXPLAINED",
+      "category": "PRIMARY_DELTA_UNEXPLAINED",
+      "security": "Broadcom, Ltd.",
+      "events": "REMOVE:OFFICIAL_CONFIRMED",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "87efab9e-3dfc-408b-94c4-62db774fad7e",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "ARCHIVED_PRIMARY_INCONSISTENT",
+      "document_required": "Audit the linked primary release and both anchor rows; resolve contradictory event legs, transient positions or legal predecessor/successor with official evidence.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "41931f8149de6f0554fb"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "UNEXPLAINED",
+      "category": "PRIMARY_DELTA_UNEXPLAINED",
+      "security": "Chubb Corp.",
+      "events": "REMOVE:OFFICIAL_CONFIRMED",
+      "window": [
+        "2016-01-19",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "8a571368-043e-4611-aea1-1aa42ff15766",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "ARCHIVED_PRIMARY_INCONSISTENT",
+      "document_required": "Audit the linked primary release and both anchor rows; resolve contradictory event legs, transient positions or legal predecessor/successor with official evidence.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "48e76ec550ab6d971b4d"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "U.S. Bancorp",
+      "events": "none",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "9e4100d1-e180-48e2-a0e0-9abfd5f53b12",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "948c6451731ed389c0c0"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "Comcast Corp. (Special Class A)",
+      "events": "none",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
+      ],
+      "security_id": "a48f9c8a-64e8-4d65-94e7-e9d7bcda7030",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "c227fe2ba3c93644647f"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Broadcom Corp. (Class A)",
+      "events": "none",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "ba5d1101-760e-4ccd-b8fd-71360406ab67",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "a1d14708088e8915b073"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "DaVita HealthCare Partners,Inc.",
+      "events": "none",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
+      ],
+      "security_id": "d0a5a96b-aa71-4c34-ada5-33d7351a47b9",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "cb5ee259ed04df5c8c78"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "DaVita, Inc.",
+      "events": "none",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "e509ddea-2423-4b27-bde9-a00972d7d40c",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "c27dddff95c06848ed93"
+    },
+    {
+      "segment": "2015-09-30→2016-03-31",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "ACE, Ltd.",
+      "events": "none",
+      "window": [
+        "2015-10-01",
+        "2016-03-31"
+      ],
+      "cohorts_blocked": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2015-10-01",
+        "2015-11-02",
+        "2015-12-01",
+        "2016-01-04",
+        "2016-02-01",
+        "2016-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "e7112067-64c7-41e6-a5b5-0f7584c5e551",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "9c97d251e2be894e1c76"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "CBRE Group, Inc. Class A",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "05aaf736-9901-437a-b13b-a26dcc0b4a6c",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "27933f3a9d3cbad01b13"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Fortune Brands Home & Security, Inc.",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg ADD FBHS 2016-06-24 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "136bd019-6e2d-43d5-b17c-d8dc2527dcf5",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "7f3e5c10891857b487f3"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "McGraw Hill Financial, Inc.",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
+      ],
+      "security_id": "1ef2c796-2347-4205-b002-cdaf99ed7ad2",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "a1f8b8b4f1ab621bad69"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Tyco International PLC",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "573e8391-d6da-4ba7-bb25-b95634d2c62a",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "41ad44444289a557154b"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "XL Group PLC Class A",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
+      ],
+      "security_id": "5cc78849-fa77-4845-a126-c8225f1575ef",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "aa9b78f9c8f0d124c745"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "XL Group, Ltd.",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "5d9a82cd-f742-4bfd-b9e6-ed63deb52753",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "e977aa0ba6ae7f639bf6"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Cablevision Systems Corp. Class A",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "65082008-9521-4c8a-bf05-ff362b047e14",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "1f801b90f2c7b28e6bd0"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "S&P Global, Inc.",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "77eee470-79cd-46be-b315-c31c715d5658",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "d79ad0bb578ea8fbdadd"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "DaVita HealthCare Partners,Inc.",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
+      ],
+      "security_id": "d0a5a96b-aa71-4c34-ada5-33d7351a47b9",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "3639812061f80ff6b5fa"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "LyondellBasell Industries NVClass A",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
+      ],
+      "security_id": "dbed208e-9590-4d84-9387-98fa392cf755",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "fc6eddb81dcace80cf59"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "DaVita, Inc.",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "e509ddea-2423-4b27-bde9-a00972d7d40c",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "e907c88e6b82f4b909bc"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Under Armour, Inc. Class C",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg ADD UA 2016-04-08 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "ea33aaa6-2990-475f-b03d-3852d591c274",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "6c5a95f6a607858fc601"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "CBRE Group, Inc. Class AREIT",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
+      ],
+      "security_id": "f030d63e-5314-4e1b-ac19-6c77e0e4f8c1",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "60a8b61e9a629102c217"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Johnson Controls International PLC",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "f6a03920-041e-4373-80b6-e94145de31cf",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "297a29e9851c1adbaad9"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "LyondellBasell Industries NV Class A",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "f9e74e98-a858-4cfe-91fc-1754d7f84346",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "d789b278f1e5d83d33f4"
+    },
+    {
+      "segment": "2016-03-31→2016-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Diamond Offshore Drilling, Inc.",
+      "events": "none",
+      "window": [
+        "2016-04-01",
+        "2016-09-30"
+      ],
+      "cohorts_blocked": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-04-01",
+        "2016-05-02",
+        "2016-06-01",
+        "2016-07-01",
+        "2016-08-01",
+        "2016-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "fe76bb4f-35ce-4684-9682-b0b051caa021",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "aec59714b7c87ad3eb8c"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Urban Outfitters, Inc.",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "048d607f-a0b0-4bfe-8f3b-78d095ae8e4b",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "932a5a984d41ebec26be"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Alexandria Real Estate Equities, Inc.",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg ADD ARE 2017-03-20 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "04dc4688-7dc9-4209-94e6-b110b9e27d46",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "f0e9f8b037b42d99e8ac"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Arconic, Inc.",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "05803e71-b1dc-4f55-9900-d802b81ac253",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "3759e70f5e5c9de8c66d"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "CBRE Group, Inc. Class A",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "05aaf736-9901-437a-b13b-a26dcc0b4a6c",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "40b145086069f39e559f"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "First Solar, Inc.",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg REMOVE FSLR 2017-03-20 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "0609d5b0-a4f3-4db0-ab8c-3cd47b08426f",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "8a078ace9f0e14cd0e18"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "DATE_MISSING_IN_RELEASE",
+      "category": "MONTHLY_DATE_AMBIGUITY",
+      "security": "CBOE Holdings, Inc.",
+      "events": "ADD:UNRESOLVED",
+      "window": [
+        "2017-02-24",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "0a2e35da-3eb9-4b8d-b16f-7686754c3c1a",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "PRIMARY_DATE_INSUFFICIENT",
+      "document_required": "Official completed event/effective-session evidence narrowing the candidate interval away from the listed monthly opens.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "241910983e6c9e086298"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "GGP, Inc.",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "0ad6c579-b0c1-4f1b-a621-f3037f9fc94b",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "637be434a8435c2b732e"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Raymond James Financial, Inc.",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg ADD RJF 2017-03-20 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "17da24b7-0f63-4b94-99b9-25c955f077c9",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "b3a1ad44dbdc75f7bd0d"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "DATE_MISSING_IN_RELEASE",
+      "category": "MONTHLY_DATE_AMBIGUITY",
+      "security": "Spectra Energy Corp.",
+      "events": "REMOVE:UNRESOLVED",
+      "window": [
+        "2017-02-24",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "3930542e-8c76-4816-a5c3-58c7dfd8d010",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "PRIMARY_DATE_INSUFFICIENT",
+      "document_required": "Official completed event/effective-session evidence narrowing the candidate interval away from the listed monthly opens.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "86201eaf5f056b6088d9"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Advanced Micro Devices, Inc.",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg ADD AMD 2017-03-20 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "65f3b889-8e3b-43b1-9c46-f7d1a1ec0876",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "919a3b85ba12379a9e89"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "TechnipFMC PLC",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "6a326e50-2686-4adf-af70-b6e474a3f542",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "3d4bcdda4cecb09fd61c"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "L3 Technologies, Inc.",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "74ac68be-1293-4c9e-8725-b75b2cc48be5",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "fa6c3ad439d8167021ea"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "General Growth Properties, Inc.",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "7be23e53-10a4-4cba-8843-ddeb1bb04d57",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "1bee07b5ab3d483d2e0f"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "L-3 Communications Holdings, Inc.",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "a26467ad-9068-4e34-abdb-42ada822ec6b",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "1c24220a23bbbb68970f"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Alcoa, Inc.",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "b7de864f-f8a6-4070-921d-84456c0404e9",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "d138ddd85f653991017c"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "FMC Technologies, Inc.",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "cc191110-57e5-4e27-a0b2-a1333932d7cc",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "a19f2256d9ab066fe628"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Frontier Communications Corp.",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg REMOVE FTR 2017-03-20 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "d9100ee2-af0d-436d-a979-d10a8f7e4ad8",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "bfc22f399692936d743b"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "LyondellBasell Industries NVClass A",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
+      ],
+      "security_id": "dbed208e-9590-4d84-9387-98fa392cf755",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "ebd23ab240ffd52b407c"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "DATE_MISSING_IN_RELEASE",
+      "category": "MONTHLY_DATE_AMBIGUITY",
+      "security": "Pitney Bowes, Inc.",
+      "events": "REMOVE:UNRESOLVED",
+      "window": [
+        "2017-02-24",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "dccbaa18-d975-4b81-8bb2-81bceb0ddb6d",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "PRIMARY_DATE_INSUFFICIENT",
+      "document_required": "Official completed event/effective-session evidence narrowing the candidate interval away from the listed monthly opens.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "895667440302dcc98dc8"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "DATE_MISSING_IN_RELEASE",
+      "category": "MONTHLY_DATE_AMBIGUITY",
+      "security": "Regency Centers Corp.",
+      "events": "ADD:UNRESOLVED",
+      "window": [
+        "2017-02-24",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "e68e3ad5-cc5e-4420-b570-143414db2d3a",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "PRIMARY_DATE_INSUFFICIENT",
+      "document_required": "Official completed event/effective-session evidence narrowing the candidate interval away from the listed monthly opens.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "0a4a3e12233d45990515"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "DATE_MISSING_IN_RELEASE",
+      "category": "MONTHLY_DATE_AMBIGUITY",
+      "security": "Endo International PLC",
+      "events": "REMOVE:UNRESOLVED",
+      "window": [
+        "2017-02-24",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "ee37cd68-b2f5-4bf4-96c8-06492cdd2906",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "PRIMARY_DATE_INSUFFICIENT",
+      "document_required": "Official completed event/effective-session evidence narrowing the candidate interval away from the listed monthly opens.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "74e47e4f0b28b0fed349"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "CBRE Group, Inc. Class AREIT",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
+      ],
+      "security_id": "f030d63e-5314-4e1b-ac19-6c77e0e4f8c1",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "956c58c58ef93fa259f3"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "DATE_MISSING_IN_RELEASE",
+      "category": "MONTHLY_DATE_AMBIGUITY",
+      "security": "Incyte Corp.",
+      "events": "ADD:UNRESOLVED",
+      "window": [
+        "2017-02-24",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "f2629e95-e797-428a-a092-95eaf6fc8bc9",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "PRIMARY_DATE_INSUFFICIENT",
+      "document_required": "Official completed event/effective-session evidence narrowing the candidate interval away from the listed monthly opens.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "d62cbc10cbc5bac3ba52"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "LyondellBasell Industries NV Class A",
+      "events": "none",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "f9e74e98-a858-4cfe-91fc-1754d7f84346",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "2a9856dc949cf2898cec"
+    },
+    {
+      "segment": "2016-09-30→2017-03-31",
+      "difference_type": "UNEXPLAINED",
+      "category": "PRIMARY_DELTA_UNEXPLAINED",
+      "security": "fe76bb4f-35ce-4684-9682-b0b051caa021",
+      "events": "REMOVE:OFFICIAL_CONFIRMED",
+      "window": [
+        "2016-10-03",
+        "2017-03-31"
+      ],
+      "cohorts_blocked": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocking_decision_dates": [
+        "2016-10-03",
+        "2016-11-01",
+        "2016-12-01",
+        "2017-01-03",
+        "2017-02-01",
+        "2017-03-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "fe76bb4f-35ce-4684-9682-b0b051caa021",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "ARCHIVED_PRIMARY_INCONSISTENT",
+      "document_required": "Audit the linked primary release and both anchor rows; resolve contradictory event legs, transient positions or legal predecessor/successor with official evidence.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "8e67c26575fcb9d9a4e5"
+    },
+    {
+      "segment": "2017-03-31→2017-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "E.I. du Pont de Nemours & Co.",
+      "events": "none",
+      "window": [
+        "2017-04-03",
+        "2017-09-30"
+      ],
+      "cohorts_blocked": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "1f5bf423-0fae-4ed7-8eaf-9090a7676997",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "aec1aaa60eb41c40e769"
+    },
+    {
+      "segment": "2017-03-31→2017-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Tesoro Corp.",
+      "events": "none",
+      "window": [
+        "2017-04-03",
+        "2017-09-30"
+      ],
+      "cohorts_blocked": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "4a16cc1c-69f6-45c9-8428-29e676f33007",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "d695658a9382ff6bf19c"
+    },
+    {
+      "segment": "2017-03-31→2017-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "DXC Technology Co.",
+      "events": "none",
+      "window": [
+        "2017-04-03",
+        "2017-09-30"
+      ],
+      "cohorts_blocked": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg ADD DXC 2017-04-04 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "4df3fe95-650c-4e30-a8e2-b26c2fed3d5d",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "8c2001b680f25cd6cd62"
+    },
+    {
+      "segment": "2017-03-31→2017-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Dominion Resources, Inc.",
+      "events": "none",
+      "window": [
+        "2017-04-03",
+        "2017-09-30"
+      ],
+      "cohorts_blocked": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "5b4db8e9-12f3-444e-bfde-18a8655d27f1",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "edce6e4c7039d25483bf"
+    },
+    {
+      "segment": "2017-03-31→2017-09-30",
+      "difference_type": "MISSING_REMOVAL_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Dow Chemical Co.",
+      "events": "none",
+      "window": [
+        "2017-04-03",
+        "2017-09-30"
+      ],
+      "cohorts_blocked": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "615fa1ab-7125-4543-beed-1df189184fb3",
+      "anchor_A_status": "MEMBER",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "f21b9725b2d55f3209dd"
+    },
+    {
+      "segment": "2017-03-31→2017-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "Dominion Energy, Inc.",
+      "events": "none",
+      "window": [
+        "2017-04-03",
+        "2017-09-30"
+      ],
+      "cohorts_blocked": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "9499bdfe-7546-4985-ad29-554fedea4d28",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "7136b8bbe85c159b7dfe"
+    },
+    {
+      "segment": "2017-03-31→2017-09-30",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "DowDuPont, Inc.",
+      "events": "none",
+      "window": [
+        "2017-04-03",
+        "2017-09-30"
+      ],
+      "cohorts_blocked": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP",
+        "discovery CSV leg ADD DWDP 2017-09-01 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "b008c8ec-8f7e-4be4-8745-c8085e0e4f77",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "72ece61da9278fe6f795"
+    },
+    {
+      "segment": "2017-03-31→2017-09-30",
+      "difference_type": "SECURITY_IDENTITY_GAP",
+      "category": "SECURITY_IDENTITY_ONLY",
+      "security": "Andeavor",
+      "events": "none",
+      "window": [
+        "2017-04-03",
+        "2017-09-30"
+      ],
+      "cohorts_blocked": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": true,
+      "hints": [
+        "one side of this change rests on a name-only identity (N-30D): it may be the same security under another name/CUSIP"
+      ],
+      "security_id": "b39afb97-0c31-4b3d-8ec3-04627a3e4c0f",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_CLASS_PRESERVING_IDENTITY_LINK",
+      "document_required": "Official dated CUSIP/class observation and issuer/exchange transaction evidence linking exactly these instruments. Same issuer/name/ticker is insufficient.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "6222b0b13d0f2393ed60"
+    },
+    {
+      "segment": "2017-03-31→2017-09-30",
+      "difference_type": "UNEXPLAINED",
+      "category": "PRIMARY_DELTA_UNEXPLAINED",
+      "security": "c2237917-63d2-45a7-85f4-81f7bd60b507",
+      "events": "ADD:OFFICIAL_CONFIRMED",
+      "window": [
+        "2017-04-04",
+        "2017-09-30"
+      ],
+      "cohorts_blocked": [
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [],
+      "security_id": "c2237917-63d2-45a7-85f4-81f7bd60b507",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "ABSENT",
+      "evidence_availability": "ARCHIVED_PRIMARY_INCONSISTENT",
+      "document_required": "Audit the linked primary release and both anchor rows; resolve contradictory event legs, transient positions or legal predecessor/successor with official evidence.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "f91c0af73605de28d4ee"
+    },
+    {
+      "segment": "2017-03-31→2017-09-30",
+      "difference_type": "MISSING_ADDITION_EVENT",
+      "category": "PRIMARY_EVENT_MISSING",
+      "security": "SBA Communications Corp.",
+      "events": "none",
+      "window": [
+        "2017-04-03",
+        "2017-09-30"
+      ],
+      "cohorts_blocked": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocking_decision_dates": [
+        "2017-04-03",
+        "2017-05-01",
+        "2017-06-01",
+        "2017-07-03",
+        "2017-08-01",
+        "2017-09-01"
+      ],
+      "blocks_monthly_membership": true,
+      "blocks_membership": true,
+      "blocks_identity": false,
+      "hints": [
+        "discovery CSV leg ADD SBAC 2017-09-01 (unconfirmed, date not trusted)"
+      ],
+      "security_id": "d6831e4c-8ff1-4991-837f-6c562d71a170",
+      "anchor_A_status": "ABSENT",
+      "anchor_B_status": "MEMBER",
+      "evidence_availability": "NO_VERIFIED_PRIMARY_EVENT_LINK",
+      "document_required": "Dated S&P release proving the actual addition/removal effective session; issuer 8-K may corroborate a transaction, not index membership by itself.",
+      "source_role": "membership: S&P; identity: regulator/issuer/exchange",
+      "condition_to_close": "Document the event or class-preserving continuity within the candidate interval; replay forward/backward to equality at every listed decision_at; retain the original source and hash.",
+      "gap_id": "2d17026b5a66e2c0fba8"
+    }
+  ]
+}

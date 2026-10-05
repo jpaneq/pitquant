@@ -68,6 +68,7 @@ def main() -> int:
             s, anchors[0].as_of, pre_holdout_limit(cfg), settings=cfg, standard="DAILY"
         )
         w60, w96 = reconstruct(s, *MIN_W, settings=cfg), reconstruct(s, *PREF_W, settings=cfg)
+        dev = reconstruct(s, date(2011, 1, 1), pre_holdout_limit(cfg), settings=cfg)
         stored = persist_graph(s, monthly)
         succ = list(s.scalars(select(SecuritySuccession)))
         names = {
@@ -80,10 +81,10 @@ def main() -> int:
                 select(Sec13FListEntry.quarter, func.count()).group_by(Sec13FListEntry.quarter)
             ).all()
         )
-    gaps = classify_gaps(w60)
+    gaps = classify_gaps(dev)
     # Enrich the export from the actual anchor delta, never from discovery guesses.
     deltas: dict[tuple[str, str, str], deque[Delta]] = defaultdict(deque)
-    for sg in w60.segments:
+    for sg in dev.segments:
         for d in sg.deltas:
             deltas[(f"{sg.a.as_of}→{sg.b.as_of}", d.name, d.difference_type)].append(d)
     for g in gaps:
@@ -137,7 +138,7 @@ def main() -> int:
     ):
         L += [
             f"## {title}: {win[0]} → {win[1]}\n",
-            f"- monthly_cohorts {len(w.cohorts)} · membership_ready **{w.ready}** · racha continua {w.longest_run} · cohortes sin ancla {sum(1 for c in w.cohorts if c.status == 'NO_ANCHOR')} (no se ha extendido a 2014-2017)",
+            f"- monthly_cohorts {len(w.cohorts)} · membership_ready **{w.ready}** · racha continua {w.longest_run} · cohortes sin ancla {sum(1 for c in w.cohorts if c.status == 'NO_ANCHOR')} (anclas extendidas; eventos e identidad se verifican por separado)",
             "",
         ]
     L += [
@@ -200,7 +201,7 @@ def main() -> int:
         "# D-02 — fichas residuales para investigación documental\n",
         "> Generado desde el archivo local. Las fechas de discovery son pistas, nunca evidencia. "
         "Una diferencia entre anclas puede ser una sucesión; no prueba una entrada/salida real.\n",
-        f"Ventana 2017-10 → 2022-09: **{w60.ready}/60** cohortes, "
+        f"Ventana DEV 2011-01 → 2022-09: **{dev.ready}/{len(dev.cohorts)}** cohortes, "
         f"**{len(mem_block)}** bloqueos mensuales; **{len(id_block)}** requieren identidad. "
         "Los bloqueos de identidad se cuentan también como mensuales sólo cuando "
         "impiden determinar la composición.\n",

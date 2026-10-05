@@ -92,3 +92,50 @@ def test_guard_fails_loudly() -> None:
         g.check("future", utc(2020, 6, 15, 20, 0, 1))
     with pytest.raises(LookAheadError):
         g.check_all([("a", utc(2020, 1, 1)), ("b", utc(2021, 1, 1))])
+
+
+def test_canonical_source_isolation_preserves_ingestion_pin(market: Session) -> None:
+    from sqlalchemy import select
+
+    from pitquant.db.models import DataSource, Price
+
+    a = sid(market, "S-A")
+    original = market.scalars(select(Price).where(Price.security_id == a)).first()
+    assert original is not None
+    original.ingested_at = utc(2020, 1, 1)
+    source = DataSource(name="YAHOO_CHART:eod", provider_type="market")
+    market.add(source)
+    market.flush()
+    market.add(
+        Price(
+            security_id=a,
+            session_date=original.session_date,
+            source_id=source.source_id,
+            open=200,
+            high=210,
+            low=190,
+            close=205,
+            volume=100,
+            currency="USD",
+            bar_close_at=original.bar_close_at,
+            ingested_at=utc(2026, 10, 5),
+        )
+    )
+    market.flush()
+    now = utc(2026, 10, 6)
+    canonical = PITContext(market, now).raw_bars(a)
+    assert len(canonical) == 1 and canonical.iloc[0]["close"] == 205
+    pinned = PITContext(market, now, ingested_before=utc(2026, 10, 4)).raw_bars(a)
+    assert pinned.loc[original.session_date, "close"] == original.close
+    explicit = PITContext(market, now, market_source="YAHOO_CHART:eod").raw_bars(a)
+    assert explicit.index.is_unique and explicit.iloc[0]["close"] == 205
+    assert (
+        market.scalar(
+            select(Price.close).where(
+                Price.security_id == a,
+                Price.session_date == original.session_date,
+                Price.source_id == original.source_id,
+            )
+        )
+        == original.close
+    )

@@ -22,7 +22,9 @@ EMBARGO_MONTHS = 1
 MIN_FOLDS = 3
 HOLDOUT = (date(2022, 10, 1), date(2025, 9, 30))
 OOT_START = date(2025, 10, 1)
-REQUIRED_SECURITIES = 100  # NOT changed in this phase (see docs/adr/0049: separate proposal)
+REQUIRED_SECURITIES = (
+    100  # Legacy global RUN 3 diagnostic only; First US ML uses FIRST_ML_COVERAGE_V1 (ADR-0057).
+)
 REQUIRED_FUNDAMENTAL_SECURITIES = 30
 REQUIRED_FUNDAMENTAL_MONTHS = 36
 CORE_PRICE_FEATURES = ("ret_12m", "momentum_12_1", "realized_vol_126", "distance_sma200")
@@ -163,7 +165,9 @@ def walk_forward_folds(
     spans a missing month. Purge + embargo: a training month t is allowed for a test window starting at s iff idx(t) + horizon + embargo <= idx(s). A fold needs >= ``train_min`` allowed training months and a FULL test window."""
     if not months:
         return FoldPlan([], "no usable decision months")
-    idx = sorted({month_index(m) for m in months})
+    idx = sorted({month_index(m) for m in months if m < HOLDOUT[0]})
+    if not idx:
+        return FoldPlan([], "no usable decision months before sealed holdout")
     runs: list[list[int]] = [[idx[0]]]
     for i in idx[1:]:
         if i == runs[-1][-1] + 1:

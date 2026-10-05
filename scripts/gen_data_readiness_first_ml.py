@@ -1,5 +1,5 @@
 # ruff: noqa: E501
-"""DATA READINESS FOR FIRST ML: generates docs/DATA_READINESS_FIRST_ML.md and docs/BENCHMARK_RETURN_CONTRACT.md (+ .json) FROM THE DATABASE. Read-only; trains nothing; lowers no gate.
+"""DATA READINESS FOR FIRST ML: generates docs/DATA_READINESS_FIRST_ML.md (+ .json) and the US-only fold audit FROM THE DATABASE. Archives an append-only research membership selection ledger; preserves snapshots and targets; trains nothing; US fold-level coverage versioned separately from legacy global counts.
 
 PITQUANT_DATABASE_URL=sqlite:///data/pitquant.db python scripts/gen_data_readiness_first_ml.py
 """
@@ -9,23 +9,35 @@ from __future__ import annotations
 import json
 import os
 import warnings
+from calendar import monthrange
 from collections import Counter, defaultdict
 from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 
 from pitquant.config.settings import get_settings
-from pitquant.db.models import Price, Security
+from pitquant.data.archive import ArchiveStore, sha256_hex
+from pitquant.db.models import DataSource, Price, RawSourceArchive, Security, SP500Anchor
 from pitquant.db.session import make_engine, make_session_factory
+from pitquant.market.canonical import TARGET_VERSION, audit_series
 from pitquant.positions import routine as rt
-from pitquant.research import benchmark_contract as BC
 from pitquant.research import dataset_v1 as DS
 from pitquant.research import first_ml as FM
 from pitquant.research import first_ml_contract as C
+from pitquant.research.coverage_v1 import VERSION as COVERAGE_VERSION
+from pitquant.research.coverage_v1 import audit_coverage, persist_coverage
+from pitquant.research.fold_readiness import audit_folds, latest_label_safe_history
+from pitquant.research.fundamental_recovery import FEATURE_VERSION
 from pitquant.research.membership_bridge import build_bridge
-from pitquant.research.targets_v2 import TARGET_SET_VERSION_V2
+from pitquant.research.membership_evidence import VERSION as MEMBERSHIP_VERSION
+from pitquant.research.membership_evidence import (
+    build_projection,
+    context_extra,
+    persist_projection,
+    source_manifest,
+)
 from pitquant.research_readiness import research_readiness
 from pitquant.universe.sp500_anchor_graph import reconstruct
 
@@ -62,18 +74,216 @@ def main() -> None:
     }
     # ---- D02 ------------------------------------------------------------------------------------------------------------------
     rep = reconstruct(S, date(2011, 1, 1), date(2022, 9, 30), standard="MONTHLY")
+    from pitquant.universe.identity_bridge import succession_map
+
+    canon = succession_map(S)
+    bridge, unresolved_bridge = build_bridge(S)
+    plan, history_requirement = latest_label_safe_history()
+    configured: dict[str, dict[str, Any]] = {}
+    for snap in S.scalars(
+        select(ResearchFeatureSnapshot)
+        .where(
+            ResearchFeatureSnapshot.feature_set_version == FEATURE_VERSION,
+            ResearchFeatureSnapshot.exchange == "XNYS",
+            ResearchFeatureSnapshot.decision_session < C.HOLDOUT[0],
+        )
+        .order_by(ResearchFeatureSnapshot.decision_at, ResearchFeatureSnapshot.snapshot_id)
+    ):
+        security = S.get_one(Security, snap.security_id)
+        if snap.meta.get("ticker") not in DS.BENCH_TICKERS and not security.is_synthetic:
+            configured[snap.security_id] = {
+                "ticker": snap.meta.get("ticker"),
+                "issuer_id": security.issuer_id,
+                "sector": snap.meta.get("sector_group"),
+            }
+    source_evidence = source_manifest(ROOT / "docs/D02_MEMBERSHIP_SOURCE_MANIFEST.json")
+    source_evidence["anchor_provenance"] = {}
+    for anchor in rep.anchors:
+        row = S.get_one(SP500Anchor, anchor.anchor_id)
+        raw = S.get_one(RawSourceArchive, row.archive_id)
+        ArchiveStore(ROOT / "data/archive").get(raw.sha256)
+        source_evidence["anchor_provenance"][anchor.anchor_id] = {
+            "source_url": raw.source_identifier,
+            "publisher": "State Street / SEC EDGAR",
+            "document_id": row.accession,
+            "accession": row.accession,
+            "retrieved_at": raw.retrieved_at.isoformat(),
+            "source_available_at": row.source_available_at.isoformat(),
+            "sha256": raw.sha256,
+            "raw_document": raw.storage_uri,
+            "evidence_type": "SEC_FILED_INDEX_REPLICATION_ANCHOR",
+            "effective_date": str(anchor.as_of),
+            "resolver_version": row.parser_version,
+        }
+    required_end_month = date.fromisoformat(history_requirement["last_required_dev_month"] + "-01")
+    projection = build_projection(
+        rep,
+        bridge,
+        configured,
+        canon,
+        source_evidence,
+        ArchiveStore(ROOT / "data/archive"),
+        start=date.fromisoformat(history_requirement["minimum_ready_history_start"] + "-01"),
+        end=required_end_month.replace(
+            day=monthrange(required_end_month.year, required_end_month.month)[1]
+        ),
+    )
+    # Count available observation rows without reading targets or performance.
+    snapshot_counts = Counter(
+        (sid, str(day))
+        for sid, day in S.execute(
+            select(
+                ResearchFeatureSnapshot.security_id, ResearchFeatureSnapshot.decision_session
+            ).where(
+                ResearchFeatureSnapshot.feature_set_version == FEATURE_VERSION,
+                ResearchFeatureSnapshot.exchange == "XNYS",
+                ResearchFeatureSnapshot.decision_session < C.HOLDOUT[0],
+            )
+        )
+    )
+    for monthly in projection["months"]:
+        periods = [
+            r for r in projection["rows"] if r["decision_session"] == monthly["decision_session"]
+        ]
+        monthly["eligible_rows"] = sum(
+            snapshot_counts[(r["security_id"], r["decision_session"])]
+            for r in periods
+            if r["membership_research_eligible"]
+        )
+        monthly["rows_lost"] = sum(
+            snapshot_counts[(r["security_id"], r["decision_session"])]
+            for r in periods
+            if not r["membership_research_eligible"]
+        )
+        monthly["rows_lost_evidence"] = sum(
+            snapshot_counts[(r["security_id"], r["decision_session"])]
+            for r in periods
+            if r["evidence_tier"] in ("UNVERIFIED", "CONFLICTED")
+        )
+    ledger = persist_projection(S, ArchiveStore(ROOT / "data/archive"), projection)
+    S.commit()
+    projection["ledger"] = ledger
+    (ROOT / "docs/D02_MEMBERSHIP_ELIGIBILITY.json").write_text(
+        json.dumps(projection, indent=2, sort_keys=True) + "\n"
+    )
+    projected_months = {m["decision_session"]: m for m in projection["months"]}
+    membership_extra = context_extra(projection)
+    js["membership_completeness"] = {
+        "diagnostic_only": True,
+        "statistical_sufficiency_evaluated": False,
+        "configured_securities": len(configured),
+        "months": projection["months"],
+        "selection_bias_report": "D02_MEMBERSHIP_COMPLETENESS.json",
+        "rows_file": "D02_MEMBERSHIP_ELIGIBILITY.json",
+    }
+    js["membership_validity"] = {
+        "evidence_version": MEMBERSHIP_VERSION,
+        "ledger": ledger,
+        "status": "READY"
+        if all(m["status"] == "READY" for m in projection["months"])
+        else "BLOCKED",
+        "months": projection["months"],
+        "rows_file": "D02_MEMBERSHIP_ELIGIBILITY.json",
+        "anchor_security_period_exclusions": projection["anchor_security_period_exclusions"],
+        "outcome_blind": True,
+    }
+    weak = set(rep.weak_identity)
     months = []
     for c in rep.cohorts:
-        ready = c.status == "MEMBERSHIP_READY"
+        projected = projected_months.get(str(c.date))
+        membership_ready = (
+            projected["status"] == "READY" if projected else c.status == "MEMBERSHIP_READY"
+        )
+        weak_members = sorted(x for x in (c.members or ()) if canon.get(x, x) in weak)
+        ready = (
+            projected["status"] == "READY"
+            if projected
+            else FM.cohort_is_usable(c.status, c.members, weak, canon)
+        )
         months.append({"month": c.date.strftime("%Y-%m"), "date": c.date, "expected_universe": c.n_members, "resolved_members": len(c.members) if (ready and c.members) else None, "unresolved_members": None if ready else len(c.reasons) or None,
-                       "identity_resolved": ready, "membership_evidence": (f"segment {c.segment}; forward==backward" if c.sets_equal else (f"segment {c.segment}" if c.segment else None)), "status": "READY" if ready else ("BLOCKED" if c.status == "BLOCKED" else "NO_ANCHOR"),
-                       "blocking_reason": None if ready else ("; ".join(c.reasons)[:120] or c.status)})  # fmt: skip
+                       "identity_resolved": membership_ready and not weak_members, "weak_identity_members": weak_members, "membership_ready": membership_ready, "membership_evidence": (f"segment {c.segment}; forward==backward" if c.sets_equal else (f"segment {c.segment}" if c.segment else None)), "status": "READY" if ready else ("PARTIAL" if membership_ready else ("BLOCKED" if c.status == "BLOCKED" else "NO_ANCHOR")),
+                       "blocking_reason": None if ready else ("WEAK_IDENTITY: " + ", ".join(weak_members) if weak_members else ("; ".join(c.reasons) or c.status))})  # fmt: skip
+        months[-1]["strict_status"] = c.status
+        if projected:
+            months[-1]["membership_completeness"] = projected
+            months[-1]["identity_resolved"] = True
+            months[-1]["weak_identity_members"] = []
+            months[-1]["resolved_members"] = projected["eligible_securities"]
+            months[-1]["membership_evidence"] = (
+                f"{MEMBERSHIP_VERSION}; explicit security-period exclusions; {ledger['sha256']}"
+            )
     ready_dates = [m["date"] for m in months if m["status"] == "READY"]
-    plan = C.walk_forward_folds(ready_dates)
-    d02 = {"total_months": len(months), "ready_months": len(ready_dates), "partial_months": 0, "blocked_months": sum(1 for m in months if m["status"] == "BLOCKED"), "no_anchor_months": sum(1 for m in months if m["status"] == "NO_ANCHOR"),
-           "coverage_pct": round(100 * len(ready_dates) / max(len(months), 1), 1), "longest_run": rep.longest_run, "feasible_folds": len(plan.folds), "reason_if_no_folds": plan.reason_if_none}  # fmt: skip
+    available_plan = C.walk_forward_folds(ready_dates)
+    plan, history_requirement = latest_label_safe_history()
+    js["required_history"] = history_requirement
+    indices = sorted({C.month_index(d) for d in ready_dates})
+    runs: list[list[int]] = []
+    for idx in indices:
+        if runs and idx == runs[-1][-1] + 1:
+            runs[-1].append(idx)
+        else:
+            runs.append([idx])
+    longest_usable_run = max((len(r) for r in runs), default=0)
+    d02 = {"total_months": len(months), "ready_months": len(ready_dates), "membership_ready_months": rep.ready, "partial_months": sum(m["status"] == "PARTIAL" for m in months), "blocked_months": sum(1 for m in months if m["status"] == "BLOCKED"), "no_anchor_months": sum(1 for m in months if m["status"] == "NO_ANCHOR"),
+           "coverage_pct": round(100 * len(ready_dates) / max(len(months), 1), 1), "longest_run": longest_usable_run, "longest_membership_run": rep.longest_run, "feasible_folds": len(available_plan.folds), "reason_if_no_folds": available_plan.reason_if_none}  # fmt: skip
+    d02["required_continuous_months"] = (
+        C.TRAIN_MIN_MONTHS
+        + C.HORIZON_MONTHS
+        + C.EMBARGO_MONTHS
+        + C.TEST_MONTHS
+        + (C.MIN_FOLDS - 1) * C.STEP_MONTHS
+    )
+    d02["weak_identity_securities"] = len(weak)
+    required_months = [
+        m
+        for m in months
+        if history_requirement["minimum_ready_history_start"]
+        <= m["month"]
+        <= history_requirement["last_required_dev_month"]
+    ]
+    d02["required_history_start"] = history_requirement["minimum_ready_history_start"]
+    d02["required_history_end"] = history_requirement["last_required_dev_month"]
+    d02["required_months_ready"] = sum(m["status"] == "READY" for m in required_months)
+    d02["required_months_blocked"] = sum(m["status"] != "READY" for m in required_months)
+    streak = relevant_run = 0
+    for m in required_months:
+        streak = streak + 1 if m["status"] == "READY" else 0
+        relevant_run = max(relevant_run, streak)
+    d02["longest_relevant_run"] = relevant_run
+
+    def month_label(idx: int) -> str:
+        return f"{(idx - 1) // 12:04d}-{(idx - 1) % 12 + 1:02d}"
+
+    js["folds"] = [
+        {
+            "index": f.index,
+            "train_start": month_label(f.train_start),
+            "train_end": month_label(f.train_end),
+            "test_start": month_label(f.test_start),
+            "test_end": month_label(f.test_end),
+            "train_months": f.n_train_months,
+            "test_months": f.test_end - f.test_start + 1,
+            "excluded_decision_start": month_label(f.train_end + 1),
+            "excluded_decision_end": month_label(f.test_start - 1),
+            "embargo_start": month_label(f.test_start - C.EMBARGO_MONTHS),
+            "embargo_end": month_label(f.test_start - 1),
+            "separation_rule": "train_decision + H12 + embargo1 <= test_start; embargo lies inside the 12 excluded decision months under the frozen inclusive-boundary contract",
+            "purged_months": f.purged_months,
+            "embargo_months": C.EMBARGO_MONTHS,
+        }
+        for f in plan.folds
+    ]
     js["d02"] = d02
+    js["monthly_cohorts"] = months
+    d02["validity_scope"] = (
+        "Included US research observations in required history; explicitly excluded periods are not unresolved months"
+    )
+    d02["strict_ready_months_unchanged"] = rep.ready
+    d02["strict_membership_cards_not_closed_by_exclusion"] = True
     js["flags"] = {k: bool(v) for k, v in rf.flags.items()}
+    js["flags_scope"] = (
+        "Legacy Research Lab feature-collection flags; experiment readiness is defined by gates, not flags."
+    )
     # ---- data ------------------------------------------------------------------------------------------------------------------
     securities = [
         s
@@ -90,13 +300,15 @@ def main() -> None:
     snaps: list[dict[str, Any]] = []
     for sn in S.scalars(
         select(ResearchFeatureSnapshot).where(
-            ResearchFeatureSnapshot.feature_set_version == "research-features-v1"
+            ResearchFeatureSnapshot.feature_set_version == FEATURE_VERSION,
+            ResearchFeatureSnapshot.decision_session < C.HOLDOUT[0],
         )
     ):
-        keep = set(C.CORE_PRICE_FEATURES) | set(C.CORE_FUNDAMENTAL_FEATURES)
+        keep = set(C.PRICE_FAMILY + C.FUNDAMENTAL_FAMILY + C.RISK_FAMILY)
         snaps.append(
             {
                 "security_id": sn.security_id,
+                "issuer_id": S.get_one(Security, sn.security_id).issuer_id,
                 "decision_at": sn.decision_at,
                 "decision_session": sn.decision_session,
                 "exchange": sn.exchange,
@@ -105,11 +317,25 @@ def main() -> None:
                 "features": {k: v["value"] for k, v in sn.features.items() if k in keep},
             }
         )
-    targets12 = {(t.security_id, t.decision_at): {"status": t.status, "reason": t.reason, "outperform": t.outperform, "details": t.details} for t in S.scalars(select(ResearchTarget).where(ResearchTarget.target_set_version == TARGET_SET_VERSION_V2, ResearchTarget.horizon_months == C.HORIZON_MONTHS))}  # fmt: skip
+    safe_h12_cutoff = datetime.fromisoformat(
+        history_requirement["next_month_rejected"] + "-01T00:00:00+00:00"
+    )
+    targets12 = {(t.security_id, t.decision_at): {"status": t.status, "reason": t.reason, "outperform": t.outperform, "details": t.details, "entry_session": t.entry_session, "exit_session": t.exit_session, "label_available_at": t.label_available_at, "total_return": t.security_total_return, "benchmark_total_return": t.benchmark_total_return} for t in S.scalars(select(ResearchTarget).join(Security, Security.security_id == ResearchTarget.security_id).where(Security.exchange == "XNYS", ResearchTarget.target_set_version == TARGET_VERSION, ResearchTarget.horizon_months == C.HORIZON_MONTHS, ResearchTarget.decision_at < safe_h12_cutoff, or_(ResearchTarget.exit_session.is_(None), ResearchTarget.exit_session < C.HOLDOUT[0])))}  # fmt: skip
     # ---- context ---------------------------------------------------------------------------------------------------------------
     bridge, unresolved_bridge = build_bridge(S)
     cohorts = {
-        c.date: {"status": c.status, "members": frozenset(c.members or ())} for c in rep.cohorts
+        c.date: {
+            "status": "MEMBERSHIP_READY" if m["status"] == "READY" else "BLOCKED",
+            "members": frozenset(
+                a
+                for r in projection["rows"]
+                if r["decision_session"] == str(c.date) and r["membership_research_eligible"]
+                for a in r["anchor_security_ids"]
+            )
+            if str(c.date) in projected_months
+            else frozenset(c.members or ()),
+        }
+        for c, m in zip(rep.cohorts, months, strict=True)
     }
     identity_ok = set(bridge)
     js["identity_bridge"] = {
@@ -117,13 +343,22 @@ def main() -> None:
         "bridged": len(bridge),
         "unresolved": unresolved_bridge,
     }
-    present = {s.security_id for s in securities}
+    cached_qa = {row["security_id"]: row for row in rf.metrics["yahoo_d05"]}
+    qa = [
+        cached_qa[s.security_id] if s.security_id in cached_qa else audit_series(S, s)
+        for s in securities
+    ]
+    js["d05_quality"] = qa
+    present = {r["security_id"] for r in qa if r["status"] == "READY"}
     out: dict[str, Any] = {}
+    eligible_panel: dict[str, list[dict[str, Any]]] = {}
     for label, accepted in (
-        ("strict", bool(rf.flags["US_D05_RESEARCH_READY"])),
+        ("strict", True),
         ("preview_if_D05_accepted", True),
     ):
-        ctx = FM.EligibilityContext(cohorts, bridge, identity_ok, accepted, present)
+        ctx = FM.EligibilityContext(
+            cohorts, bridge, identity_ok, accepted, present, extra=membership_extra
+        )
         for fam in ("PRICE", "FUNDAMENTALS"):
             res = [
                 FM.first_ml_eligibility(
@@ -131,12 +366,55 @@ def main() -> None:
                 )
                 for s in snaps
             ]
+            if label == "strict":
+                eligible_panel[fam] = [
+                    {
+                        "security_id": s["security_id"],
+                        "decision_date": str(s["decision_session"]),
+                        "month": s["decision_session"].strftime("%Y-%m"),
+                    }
+                    for s, r in zip(snaps, res, strict=True)
+                    if r["eligible"]
+                ]
             out[f"{label}_{fam}"] = {
                 **FM.funnel(res),
                 "securities_with_eligible_rows": len(
                     {s["security_id"] for s, r in zip(snaps, res, strict=True) if r["eligible"]}
                 ),
             }
+    safe_h6_cutoff = datetime.fromisoformat(
+        latest_label_safe_history(horizon=6)[1]["next_month_rejected"] + "-01T00:00:00+00:00"
+    )
+    targets6 = {
+        (t.security_id, t.decision_at): {
+            "status": t.status,
+            "reason": t.reason,
+            "outperform": t.outperform,
+            "details": t.details,
+        }
+        for t in S.scalars(
+            select(ResearchTarget)
+            .join(Security, Security.security_id == ResearchTarget.security_id)
+            .where(
+                Security.exchange == "XNYS",
+                or_(
+                    ResearchTarget.exit_session.is_(None),
+                    ResearchTarget.exit_session < C.HOLDOUT[0],
+                ),
+                ResearchTarget.target_set_version == TARGET_VERSION,
+                ResearchTarget.horizon_months == 6,
+                ResearchTarget.decision_at < safe_h6_cutoff,
+            )
+        )
+    }
+    js["eligibility_6m"] = FM.funnel(
+        [
+            FM.first_ml_eligibility(
+                ctx, snap, targets6.get((snap["security_id"], snap["decision_at"])), family="PRICE"
+            )
+            for snap in snaps
+        ]
+    )
     js["funnel"] = out
     fm = FM.fundamentals_months(snaps)
     js["fundamentals"] = {"n_ok": fm["n_ok"], "required": C.REQUIRED_FUNDAMENTAL_SECURITIES, "per_security": {v["ticker"]: {"usable_months": v["usable"], "first": str(v["first"]) if v["first"] else None, "last": str(v["last"]) if v["last"] else None, "snapshots": v["n"]} for v in fm["per_security"].values()}}  # fmt: skip
@@ -150,9 +428,9 @@ def main() -> None:
     for s in securities:
         tk = ticker_of[s.security_id]
         dates = S.execute(
-            select(func.min(Price.session_date), func.max(Price.session_date), func.count()).where(
-                Price.security_id == s.security_id
-            )
+            select(func.min(Price.session_date), func.max(Price.session_date), func.count())
+            .join(DataSource)
+            .where(Price.security_id == s.security_id, DataSource.name == "YAHOO_CHART:eod")
         ).one()
         st = defaultdict(int)
         for x in snaps:
@@ -163,7 +441,18 @@ def main() -> None:
             reason = "BENCHMARK_SERIES (not a research security)"
         elif s.security_id not in snap_secs:
             reason = "PRICES: fewer than 30 bars" if dates[2] < 30 else "OTHER: no snapshots built"
-        audit.append({"security_id": s.security_id, "ticker_at_T": tk, "issuer_id": s.issuer_id, "market": s.exchange, "first_date": str(dates[0]), "last_date": str(dates[1]), "bars": dates[2], "identity_status": ("RESOLVED" if s.issuer_id else "NO_ISSUER_LINK") if s.exchange == "XNYS" else "NOT_ASSESSED_NON_US", "price_status": "EXPLORATORY_SOURCE (Yahoo, VENDOR)", "fundamental_status": max(st, key=lambda k: st[k]) if st else "NONE", "reason_not_usable": reason})  # fmt: skip
+        eligibility = [
+            FM.first_ml_eligibility(
+                ctx, x, targets12.get((x["security_id"], x["decision_at"])), family="PRICE"
+            )
+            for x in snaps
+            if x["security_id"] == s.security_id
+        ]
+        eligible_rows = sum(r["eligible"] for r in eligibility)
+        exclusion_reasons = dict(Counter(reason for r in eligibility for reason in r["reasons"]))
+        if reason is None and not eligible_rows:
+            reason = "; ".join(sorted(exclusion_reasons)) or "NO_ELIGIBLE_SNAPSHOTS"
+        audit.append({"eligible_12m_rows": eligible_rows, "exclusion_reasons": exclusion_reasons,"security_id": s.security_id, "ticker_at_T": tk, "issuer_id": s.issuer_id, "market": s.exchange, "first_date": str(dates[0]), "last_date": str(dates[1]), "bars": dates[2], "identity_status": ("RESOLVED" if s.security_id in identity_ok else "UNRESOLVED_SECURITY_LINK") if s.exchange == "XNYS" else "NOT_ASSESSED_NON_US", "price_status": "YAHOO_CANONICAL (per-series QA required)", "fundamental_status": max(st, key=lambda k: st[k]) if st else "NONE", "reason_not_usable": reason})  # fmt: skip
     in_cfg = {t for t in cfg_tickers}
     have = {a["ticker_at_T"] for a in audit}
     missing_cfg = sorted(t for t in in_cfg if t not in have)
@@ -172,8 +461,30 @@ def main() -> None:
         for a in audit
         if a["ticker_at_T"] not in DS.BENCH_TICKERS and a["security_id"] in snap_secs
     ]
-    js["coverage"] = {"required": C.REQUIRED_SECURITIES, "configured_tickers": len(cfg_tickers) - 3, "with_prices": len([a for a in audit if a["ticker_at_T"] not in DS.BENCH_TICKERS]), "with_snapshots": len(research), "configured_without_prices": [t for t in missing_cfg if t not in DS.BENCH_TICKERS],
+    js["security_audit"] = audit
+    js["coverage"] = {"required": C.REQUIRED_SECURITIES, "configured_tickers": len(cfg_tickers) - 3, "with_prices": len([a for a in audit if a["ticker_at_T"] not in DS.BENCH_TICKERS]), "with_snapshots": len(research), "identity_ready": sum(a["security_id"] in identity_ok for a in research), "configured_labels_unmatched": [t for t in missing_cfg if t not in DS.BENCH_TICKERS],
                       "usable_strict": out["strict_PRICE"]["securities_with_eligible_rows"], "usable_preview": out["preview_if_D05_accepted_PRICE"]["securities_with_eligible_rows"]}  # fmt: skip
+    eligible_ids = {r["security_id"] for r in eligible_panel["PRICE"]}
+    eligible_issuers = {
+        s.issuer_id for s in securities if s.security_id in eligible_ids and s.issuer_id
+    }
+    monthly_eligible = Counter({m["month"]: 0 for m in months})
+    monthly_eligible.update(r["month"] for r in eligible_panel["PRICE"])
+    rows_per_security = Counter(r["security_id"] for r in eligible_panel["PRICE"])
+    js["coverage"].update(
+        {
+            "us_configured_with_snapshots": sum(a["market"] == "XNYS" for a in research),
+            "non_us_configured_with_snapshots": sum(a["market"] != "XNYS" for a in research),
+            "global_eligible_under_current_contract": len(eligible_ids),
+            "distinct_issuer_ids_with_eligible_rows": len(eligible_issuers),
+            "monthly_eligible_counts": dict(sorted(monthly_eligible.items())),
+            "eligible_months_per_security": dict(sorted(rows_per_security.items())),
+            "scope": "US_ONLY: XNYS membership + SPY comparable benchmark; non-US excluded by current eligibility contract",
+            "iid_effective_sample_size": None,
+            "ess_reason": "Overlapping 12M targets and shared market regimes; counts do not establish statistical independence.",
+        }
+    )
+    js["eligible_panel_audit"] = eligible_panel
     # ---- benchmark table ------------------------------------------------------------------------------------------------------
     bt: dict[tuple[Any, ...], Counter[str]] = defaultdict(Counter)
     for (sid, _), t in targets12.items():
@@ -225,41 +536,203 @@ def main() -> None:
         if (t["details"]["benchmark_contract"]).get("comparability") == "COMPARABLE"
     )
     fund_ready = fm["n_ok"] >= C.REQUIRED_FUNDAMENTAL_SECURITIES
-    d02_ready = bool(rf.flags["D02_MONTHLY_RESEARCH_READY"]) and len(plan.folds) >= C.MIN_FOLDS
+    fold_audit = audit_folds(
+        plan,
+        snaps,
+        targets12,
+        FM.EligibilityContext(cohorts, bridge, identity_ok, True, present, extra=membership_extra),
+        as_of=datetime.now(UTC),
+    )
+    fold_audit["required_history"] = history_requirement
+    for f, dates in zip(fold_audit["folds"], js["folds"], strict=True):
+        f["dates"] = dates
+    coverage_audit = audit_coverage(fold_audit, projection, snaps, targets12)
+    coverage_audit["feature_set_version"] = FEATURE_VERSION
+    coverage_audit["target_set_version"] = TARGET_VERSION
+    recovery_manifest = json.loads((ROOT / "docs/FIRST_ML_FUNDAMENTAL_RECOVERY.json").read_text())
+    if recovery_manifest["feature_version"] != FEATURE_VERSION or recovery_manifest[
+        "source_archive"
+    ]["sha256"] != sha256_hex(
+        (ROOT / "src/pitquant/research/fundamental_recovery.py").read_bytes()
+    ):
+        raise ValueError("fundamental recovery source/version differs from archived build")
+    coverage_audit["fundamental_mapping"] = {
+        "version": recovery_manifest["version"],
+        "feature_version": FEATURE_VERSION,
+        "source_archive": recovery_manifest["source_archive"],
+    }
+    coverage_audit["archive"] = persist_coverage(
+        S, ArchiveStore(ROOT / "data/archive"), coverage_audit
+    )
+    S.commit()
+    fold_audit["coverage_evaluated"] = True
+    fold_audit["row_minimum_status"] = "STRUCTURAL_ISSUER_MONTH_COVERAGE"
+    fold_audit["coverage_contract"] = COVERAGE_VERSION
+    fold_audit["ml_eligible_folds"] = sum(f["passes"] for f in coverage_audit["folds"])
+    for f, coverage_fold in zip(fold_audit["folds"], coverage_audit["folds"], strict=True):
+        f["coverage_evaluated"] = True
+        f["coverage_contract"] = COVERAGE_VERSION
+        f["ml_eligible"] = coverage_fold["passes"]
+        f["ml_eligible_status"] = "READY" if coverage_fold["passes"] else "BLOCKED"
+        f["row_minimum_status"] = "STRUCTURAL_ISSUER_MONTH_COVERAGE"
+        f["coverage_audit_file"] = "FIRST_ML_COVERAGE_AUDIT.json"
+    js["first_ml_coverage"] = coverage_audit
+    (ROOT / "docs/FIRST_ML_COVERAGE_AUDIT.json").write_text(
+        json.dumps(coverage_audit, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    coverage_md = [
+        "# First ML US coverage — FIRST_ML_COVERAGE_V1\n",
+        "Generado desde filas DEV; sin entrenamiento ni rendimiento. Cohorte común TRAIN y TEST para M0–M4; native por familia solo diagnóstico. El 100 global no decide este experimento.\n",
+        "PRICE: >=40 issuers y >=80% de membresía válida configurada. FUNDAMENTALS/COMBINED: >=30 issuers y >=70% de PRICE. TRAIN >=90% meses; TEST 12/12. Ambos targets deben existir en TRAIN y TEST.\n",
+        f"Resultado: {'READY' if coverage_audit['ready'] else 'BLOCKED'}. Effective sample size: NOT_FORMALLY_ESTIMATED.\n",
+    ]
+    for f in coverage_audit["folds"]:
+        coverage_md.append(f"## Fold {f['index'] + 1}\n")
+        coverage_md.append(
+            table(
+                [
+                    [
+                        fam,
+                        role,
+                        v["rows"],
+                        v["unique_issuers"],
+                        v["minimum_monthly_issuers"],
+                        v["passing_months"],
+                        v["required_passing_months"],
+                        v["passes"],
+                    ]
+                    for fam, partitions in f["families"].items()
+                    for role, v in partitions.items()
+                ],
+                [
+                    "Family",
+                    "Partition",
+                    "Rows",
+                    "Issuers",
+                    "Min monthly issuers",
+                    "Passing months",
+                    "Required",
+                    "Pass",
+                ],
+            )
+        )
+        for failure in f["failures"]:
+            coverage_md.append(
+                f"{failure['family']} {failure['partition']}: reparar al menos {failure['minimum_months_to_repair']} meses; tolerancia {failure['allowed_failed_months']}.\n"
+            )
+            coverage_md.append(
+                table(
+                    [
+                        [
+                            m["month"],
+                            m["issuers"],
+                            m["required_issuers"],
+                            m["coverage_pct"],
+                            m["required_coverage_pct"],
+                            m["minimum_additional_eligible_issuers"],
+                        ]
+                        for m in failure["failing_months"]
+                    ],
+                    [
+                        "Month",
+                        "Issuers",
+                        "Minimum",
+                        "Coverage %",
+                        "Required %",
+                        "Minimum additional issuers",
+                    ],
+                )
+            )
+        for role, cohort in f["PRIMARY_COMMON_COHORT"].items():
+            coverage_md.append(
+                f"COMMON {role}: {cohort['rows']} rows, {cohort['unique_issuers']} issuers; labels {cohort['labels']}; frozen keys SHA256 {cohort['cohort_sha256']}.\n"
+            )
+    coverage_md.append("\n## Limitaciones\n\n" + "\n".join(coverage_audit["limitations"]))
+    coverage_md.append(
+        f"\nExclusiones: {coverage_audit['excluded_security_periods']}; distribución completa y concentración en FIRST_ML_COVERAGE_AUDIT.json. No se compararon retornos futuros de filas excluidas.\n"
+    )
+    (ROOT / "docs/FIRST_ML_COVERAGE.md").write_text("\n".join(coverage_md), encoding="utf-8")
+    js["fold_readiness"] = {
+        **fold_audit,
+        "row_evidence_file": "FIRST_ML_FOLD_AUDIT.json",
+        "folds": [
+            {
+                **f,
+                **{
+                    role: {k: v for k, v in f[role].items() if k != "rows"}
+                    for role in ("TRAIN", "TEST")
+                },
+            }
+            for f in fold_audit["folds"]
+        ],
+    }
+    d02["calendar_folds"] = len(plan.folds)
+    d02["label_safe_folds"] = fold_audit["label_safe_folds"]
+    d02["test_label_safe_folds"] = fold_audit["test_label_safe_folds"]
+    d02["coverage_gate_evaluated"] = True
+    d02_ready = (
+        d02["required_months_ready"] == history_requirement["minimum_contiguous_ready_months"]
+        and len(plan.folds) >= C.MIN_FOLDS
+        and fold_audit["label_safe_folds"] >= C.MIN_FOLDS
+    )
     gates = {
+        "D02_MEMBERSHIP_VALIDITY": FM.gate(
+            js["membership_validity"]["status"],
+            "Every included security-period OFFICIAL_DIRECT or CORROBORATED_HISTORICAL; nonempty supported months",
+            f"{d02['required_months_ready']}/{len(projection['months'])} temporally valid months",
+            None if d02_ready else "missing valid temporal folds",
+        ),
         "D02_MONTHLY_RESEARCH_READY": FM.gate(
             "READY" if d02_ready else "BLOCKED",
-            f">= {C.MIN_FOLDS} feasible walk-forward folds on consecutive READY months",
-            f"{d02['ready_months']}/{d02['total_months']} months READY, longest run {d02['longest_run']}, folds {d02['feasible_folds']}",
-            None if d02_ready else (plan.reason_if_none or "existing D02 gate false"),
+            f"{history_requirement['minimum_contiguous_ready_months']} READY months positioned {d02['required_history_start']}..{d02['required_history_end']}; >= {C.MIN_FOLDS} LABEL_SAFE folds; statistical coverage separate",
+            f"{d02['ready_months']}/{d02['total_months']} READY; required history {d02['required_months_ready']}/{history_requirement['minimum_contiguous_ready_months']}; target calendar folds {len(plan.folds)}, label-safe {fold_audit['label_safe_folds']}",
+            None
+            if d02_ready
+            else (
+                f"{d02['required_months_blocked']} required membership months blocked; {fold_audit['label_safe_folds']} LABEL_SAFE folds; need {C.MIN_FOLDS}. Coverage not evaluated and does not decide D02."
+            ),
         ),
         "US_SECURITY_IDENTITY_READY": FM.gate(
             "READY" if rf.flags["US_SECURITY_IDENTITY_READY"] else "PARTIAL",
             "0 weak identity members, 0 unresolved lines",
-            "see D02 graph metrics",
+            f"{len(weak)} weak identity securities; {sum(a.unresolved_lines for a in rep.anchors)} unresolved anchor lines",
             None
             if rf.flags["US_SECURITY_IDENTITY_READY"]
-            else "weak_identity_members > 0 (PPoG Industries line without CUSIP)",
+            else "unresolved identity evidence; see D02 graph metrics",
         ),
         "D05_READY": FM.gate(
             "READY" if rf.flags["US_D05_RESEARCH_READY"] else "BLOCKED",
             "accepted prices + corporate actions + adjustment method + provenance",
-            "Yahoo chart (VENDOR, EXPLORATORY_SOURCE)",
+            "Yahoo Finance (CANONICAL_PROVIDER_FOR_PITQUANT, VENDOR)",
             None
             if rf.flags["US_D05_RESEARCH_READY"]
-            else "price source is exploratory (owner chose Yahoo): not accepted as canonical; D05 suite (>=98% active / >=95% delisted coverage) not run",
+            else "per-series quality checks remain blocked; see d05_quality and D05_YAHOO_QA.json",
         ),
         "BENCHMARK_RETURN_BASIS_READY": FM.gate(
-            "PARTIAL",
-            "comparable return + currency basis, accepted provenance",
+            "READY"
+            if us_rows
+            and us_ok == len(us_rows)
+            and any(DS._ticker(S, r["security_id"]) == "SPY" and r["status"] == "READY" for r in qa)
+            else "PARTIAL",
+            "first ML US scope: comparable return + currency basis, accepted provenance",
             f"US rows comparable {us_ok}/{len(us_rows)}; non-US via USD conversion (PROXY)",
-            "return basis comparable (TR vs TR, USD) but the benchmark series is a Yahoo ETF proxy (not D05-accepted); Spain: IBEX Total Return MISSING, ^IBEX price-only",
+            None
+            if us_rows and us_ok == len(us_rows)
+            else "US return-basis comparability incomplete; Spain: IBEX Total Return not verified, ^IBEX price-only",
+        ),
+        "FIRST_ML_IDENTITY_VALIDITY_READY": FM.gate(
+            "READY" if coverage_audit["identity_valid"] else "BLOCKED",
+            "Every included row has verified issuer/security/membership identity",
+            coverage_audit["identity_valid"],
+            None if coverage_audit["identity_valid"] else "included identity errors",
         ),
         "RESEARCH_SECURITY_COVERAGE_READY": FM.gate(
-            "BLOCKED",
-            f">= {C.REQUIRED_SECURITIES} usable securities",
-            f"{js['coverage']['usable_strict']} usable (strict); {js['coverage']['usable_preview']} if D05 were accepted; {js['coverage']['with_snapshots']} with snapshots",
-            "fewer than 100 securities and none usable until D02/D05 close",
+            "READY" if coverage_audit["ready"] else "BLOCKED",
+            COVERAGE_VERSION,
+            {"passing_folds": fold_audit["ml_eligible_folds"], "required_folds": C.MIN_FOLDS},
+            None
+            if coverage_audit["ready"]
+            else "See FIRST_ML_COVERAGE_AUDIT.json: exact family/month deficits or class degeneracy",
         ),
         "US_FUNDAMENTALS_READY": FM.gate(
             "READY" if fund_ready else "BLOCKED",
@@ -274,7 +747,7 @@ def main() -> None:
             None if bad_holdout == 0 else "holdout rows present",
         ),
     }
-    gates["RESEARCH_DATA_READY"] = FM.gate("READY" if all(gates[g]["status"] == "READY" for g in ("D02_MONTHLY_RESEARCH_READY", "US_SECURITY_IDENTITY_READY", "D05_READY", "BENCHMARK_RETURN_BASIS_READY", "RESEARCH_SECURITY_COVERAGE_READY", "US_FUNDAMENTALS_READY")) else "BLOCKED", "all data gates READY", "derived", "at least one data gate is not READY")  # fmt: skip
+    gates["RESEARCH_DATA_READY"] = FM.gate("READY" if all(gates[g]["status"] == "READY" for g in ("D02_MEMBERSHIP_VALIDITY", "FIRST_ML_IDENTITY_VALIDITY_READY", "D05_READY", "BENCHMARK_RETURN_BASIS_READY", "RESEARCH_SECURITY_COVERAGE_READY", "US_FUNDAMENTALS_READY", "HOLDOUT_SEALED")) else "BLOCKED", "all data gates READY", "derived", "at least one data gate is not READY")  # fmt: skip
     ml = FM.first_ml_baseline_ready(gates, FM.REQUIRED_GATES)
     gates["FIRST_ML_BASELINE_READY"] = FM.gate(
         "READY" if ml else "BLOCKED",
@@ -291,7 +764,7 @@ def main() -> None:
     w = md.append
     w("# DATA READINESS FOR FIRST ML (generado desde la base)\n")
     w(
-        f"Generado {js['generated_at'][:19]}Z · experimento preparado `{C.EXPERIMENT_ID}` (NO ejecutado). Fuente de datos de mercado y FX: **Yahoo Finance** (decisión del propietario; VENDOR, `EXPLORATORY_SOURCE`). Ningún gate se ha bajado: `required_securities = {C.REQUIRED_SECURITIES}`.\n"
+        f"Generado {js['generated_at'][:19]}Z · experimento preparado `{C.EXPERIMENT_ID}` (NO ejecutado). Fuente de datos de mercado y FX: **Yahoo Finance** (decisión del propietario; VENDOR, `CANONICAL_PROVIDER_FOR_PITQUANT`). Contrato US: `{COVERAGE_VERSION}`. El `required_securities = {C.REQUIRED_SECURITIES}` global se conserva solo como diagnóstico legacy y no decide First US ML.\n"
     )
     w("## Matriz de gates\n")
     w(
@@ -304,7 +777,125 @@ def main() -> None:
         )
     )
     w(f"`FIRST_ML_BASELINE_READY = {str(ml).lower()}` (calcularlo no entrena nada).\n")
+    w(
+        "La matriz corresponde al primer ML. Los `flags` del JSON describen el Research Lab histórico y su disponibilidad para recopilar features; no autorizan entrenamiento ni sustituyen estos gates.\n"
+    )
+    w("## D02: validez y completitud (ADR-0056)\n")
+    w(
+        "Todas las filas incluidas requieren OFFICIAL_DIRECT o CORROBORATED_HISTORICAL. UNVERIFIED/CONFLICTED se excluyen por security y fecha. La reconstrucción estricta se conserva. La completitud no decide suficiencia estadística. Yahoo sigue siendo proveedor de mercado, nunca autoridad de membership.\n"
+    )
+    w(
+        f"Ledger versionado `{MEMBERSHIP_VERSION}`, hash `{ledger['sha256']}`; provenance y exclusiones en D02_MEMBERSHIP_ELIGIBILITY.json.\n"
+    )
+    w(
+        table(
+            [
+                [
+                    m[k]
+                    for k in (
+                        "month",
+                        "configured_relevant_securities",
+                        "resolved_securities",
+                        "eligible_securities",
+                        "eligible_issuers",
+                        "unverified_excluded",
+                        "conflicted_excluded",
+                        "verified_nonmember_excluded",
+                        "eligible_rows",
+                        "rows_lost",
+                        "coverage_pct",
+                    )
+                ]
+                for m in projection["months"]
+            ],
+            [
+                "Month",
+                "Configured",
+                "Resolved",
+                "Eligible securities",
+                "Eligible issuers",
+                "UNVERIFIED",
+                "CONFLICTED",
+                "Verified nonmember",
+                "Included rows",
+                "Lost rows",
+                "Coverage %",
+            ],
+        )
+    )
+    w(
+        "La selección usa exclusivamente evidencia histórica e identidad; no retornos ni scores. Sectores/issuers afectados y pérdidas por evidencia separadas de ausencias verificadas: D02_MEMBERSHIP_COMPLETENESS.json. El subconjunto configurado conserva su limitación de supervivencia.\n"
+    )
+    w("## Folds factibles\n")
+    w(
+        table(
+            [
+                [
+                    r[k]
+                    for k in (
+                        "index",
+                        "train_start",
+                        "train_end",
+                        "test_start",
+                        "test_end",
+                        "train_months",
+                        "purged_months",
+                        "embargo_months",
+                    )
+                ]
+                for r in js["folds"]
+            ],
+            [
+                "fold",
+                "train start",
+                "train end",
+                "test start",
+                "test end",
+                "train months",
+                "purge",
+                "embargo",
+            ],
+        )
+    )
     w("## D02 mensual\n")
+    w(
+        "CALENDAR_FOLD = structural dates; LABEL_SAFE_FOLD = valid included membership history with explicit security-period exclusions and TRAIN labels available at fit, plus twelve valid TEST outcome months; ML_ELIGIBLE_FOLD adds FIRST_ML_COVERAGE_V1 structural issuer/month coverage, common cohorts and non-degenerate labels. See FIRST_ML_COVERAGE.md. Label safety is unchanged. TRAIN cutoff = first TEST decision; TEST cutoff = audit time. See ADR-0055 V2 and ADR-0056.\n"
+    )
+    w(
+        table(
+            [
+                [
+                    f["index"],
+                    f["TEST"]["calendar_rows"],
+                    f["TEST"]["mature_target_rows"],
+                    f["TEST"]["benchmark_ready_rows"],
+                    f["TEST"]["price_ready_rows"],
+                    f["TEST"]["eligible_rows"],
+                    f["TEST"]["holdout_touching_rows_excluded"],
+                    f["test_label_safe"],
+                    f["label_safe"],
+                ]
+                for f in fold_audit["folds"]
+            ],
+            [
+                "fold",
+                "calendar TEST rows",
+                "mature targets",
+                "benchmark ready",
+                "price ready",
+                "eligible",
+                "holdout excluded",
+                "TEST label safe",
+                "full fold label safe",
+            ],
+        )
+    )
+    w(
+        "Every TRAIN/TEST row's target_start, target_end, actual_exit_session, target_mature_at, availability cutoff and exclusion reasons are recorded in `FIRST_ML_FOLD_AUDIT.json`.\n"
+    )
+    w(
+        f"Derived requirement: {history_requirement['minimum_ready_history_start']}..{history_requirement['last_required_dev_month']}, {history_requirement['minimum_contiguous_ready_months']} continuous READY months. Last admissible decision {history_requirement['last_decision_at']}; target end {history_requirement['target_end']}; expected earliest maturity {history_requirement['earliest_target_mature_at']}. No outcomes read for this derivation.\n"
+    )
     w(table([[k, v] for k, v in d02.items()], ["métrica", "valor"]))
     w(
         "Walk-forward factible (train_min 36, purge 12, embargo 1, test 12): "
@@ -338,8 +929,34 @@ def main() -> None:
             ],
         )
     )
-    w("## Cobertura de securities (96 vs 100)\n")
-    w(table([[k, v] for k, v in js["coverage"].items()], ["métrica", "valor"]))
+    w("## Cobertura US por fold y familia\n")
+    w(
+        "Contrato FIRST_ML_COVERAGE_V1: PRICE >=40 emisores y >=80% de membresía válida; FUNDAMENTALS/COMBINED >=30 y >=70% de PRICE. TRAIN >=90% meses; TEST 12/12. Cohorte común TRAIN y TEST para M0–M4. Ver [FIRST_ML_COVERAGE.md](FIRST_ML_COVERAGE.md) y FIRST_ML_COVERAGE_AUDIT.json: déficits exactos, labels DEV, concentración, dependencia y hashes.\n"
+    )
+    w("## Diagnóstico legacy global de securities (100; no gate de First US ML)\n")
+    w(
+        table(
+            [[k, v] for k, v in js["coverage"].items() if not isinstance(v, dict)],
+            ["métrica", "valor"],
+        )
+    )
+    w(
+        table(
+            [[month, count] for month, count in sorted(monthly_eligible.items())],
+            ["mes DEV", "securities elegibles PRICE 12M"],
+        )
+    )
+    w(
+        table(
+            [
+                [ticker_of.get(sid, sid), count]
+                for sid, count in sorted(
+                    rows_per_security.items(), key=lambda x: ticker_of.get(x[0], x[0])
+                )
+            ],
+            ["security", "meses elegibles PRICE 12M"],
+        )
+    )
     w(
         table(
             [
@@ -420,63 +1037,24 @@ def main() -> None:
         )
     )
     w("## Blockers restantes y mínima acción correcta\n")
-    w("| gate | qué falla | evidencia que falta | mínima acción |")
-    w("|---|---|---|---|")
     w(
-        f"| D02_MONTHLY_RESEARCH_READY | cadena de {d02['longest_run']} meses consecutivos (60 requeridos por el gate existente; el contrato de folds necesita 61 + 12 por fold: {plan.reason_if_none}); 0 anclas antes de 2017-09 | identidad de la línea «PPoG Industries, Inc.» (N-30D 2017-09-30, sin CUSIP) con PPG Industries; anclas N-30D 2014-09→2017-03 (`--extend`) | decisión del propietario sobre la identidad PPoG→PPG (evidencia candidata: valor/acciones de la línea = 108,66 = cierre de PPG el 2017-09-29, Yahoo, VENDOR: NO se aplica como evidencia oficial) y después `scripts/ingest_spy_anchors.py --extend` |"
-    )
-    w(
-        "| US_SECURITY_IDENTITY_READY | 2 miembros con identidad débil (sin CUSIP/ISIN oficial); el puente investigación→ancla es DERIVADO (nombre exacto único) para 44 de 52 | CUSIP oficial por emisor (Schedule 13G, como AAPL/MSFT en ADR-0024) | extender `ingest_cusip_evidence.py` a los emisores de investigación |"
-    )
-    w(
-        "| D05_READY | fuente de precios = Yahoo (exploratoria, elegida por el propietario) | suite D05 (cobertura ≥98 % activos / ≥95 % excluidos), corporate actions oficiales, método de ajuste y proveniencia aceptados | aceptación explícita de una fuente o suite D05 sobre Yahoo; no se eleva automáticamente |"
-    )
-    w(
-        "| BENCHMARK_RETURN_BASIS_READY | base TR/USD comparable pero la serie es un ETF proxy de Yahoo; IBEX 35 Total Return (ES0SI0000047) sin serie histórica auditable | serie oficial IBEX TR; D05 | idem D05; España queda con URTH+FX sólo diagnóstico |"
-    )
-    w(
-        "| RESEARCH_SECURITY_COVERAGE_READY | 100 requeridos; ver tabla de cobertura | MSFT/AAPL (serie EODHD demo, QA, sin ticker/issuer: guarda de no mezclar fuentes), ENG (22 sesiones) | AAPL/MSFT con precios Yahoo en una security de precio vinculada al ancla; ENG no recuperable; 100 NO se baja (propuesta separada) |"
-    )
-    w("")
-    bc_md = [
-        "# Contrato de retorno de benchmark (ADR-0049, generado)\n",
-        "Versión `"
-        + BC.BENCHMARK_CONTRACT_VERSION
-        + "`. `future_excess_total_return = retorno total del valor − retorno del benchmark`, sólo si ambos están en la MISMA base de retorno y de divisa.\n",
-        "## Reglas\n",
-        "* Valor con retorno total frente a benchmark de precio (`PRICE_RETURN`) ⇒ `PRICE_RETURN_ONLY` / `NOT_COMPARABLE_RETURN_BASIS`: el exceso NO se calcula (NULL) y la fila queda fuera del ML.",
-        "* Divisa distinta: el valor se convierte a USD en cada instante con FX PIT (`fx_rates`, Yahoo, VENDOR/EXPLORATORY, disponible a las 00:00 UTC del día siguiente a la cotización; máx. 7 días de antigüedad). Sin FX ⇒ `FX_MISMATCH` / `FX_DATA_NOT_READY`. Nunca el tipo actual para el histórico.",
-        "* ETF ⇒ siempre `ETF_PROXY`, nunca el índice oficial. `READY` se reserva a una serie oficial de retorno total; `PROXY_ACCEPTABLE` (ETF con dividendos y base comparable) es el estado aprobado por metodología para el primer ML. `APPROVED_FOR_ML = {READY, PROXY_ACCEPTABLE}`.",
-        "* Benchmarks: XNYS→SPY; XMAD→IBEX 35 Total Return (ES0SI0000047) **MISSING**, `^IBEX` es sólo precio (`PRICE_RETURN_ONLY`), fallback URTH+FX diagnóstico; resto→URTH+FX (URTH empieza en 2012-01).",
-        "* Campos guardados por fila (`research_targets.details.benchmark_contract`): benchmark_id, benchmark_security_id, benchmark_name, benchmark_type, benchmark_return_type, benchmark_currency, security_currency, return_currency_basis, currency_conversion_method, fx_source, fx_available_at, fx_rate_date, benchmark_start_price, benchmark_end_price, benchmark_total_return, benchmark_source, benchmark_version, benchmark_provenance, benchmark_quality_status, comparability, skipped_candidates.\n",
-        "## Estado por mercado (horizonte 12M, filas con objetivo calculable o no)\n",
         table(
-            brows,
             [
-                "market",
-                "region",
-                "security_ccy",
-                "benchmark",
-                "bench_ccy",
-                "return_type",
-                "currency_basis",
-                "quality",
-                "comparables/filas",
-                "bloqueo",
+                [name, data["status"], data["actual"], data["blocking_reason"]]
+                for name, data in gates.items()
+                if data["status"] != "READY"
             ],
-        ),
-        "## Resumen\n",
-        table(
-            [[k, v] for k, v in sorted(js["comparability"].items(), key=lambda kv: str(kv[0]))],
-            ["comparabilidad (filas OK)", "n"],
-        ),
-        table(
-            [[k, v] for k, v in sorted(js["currency_methods"].items(), key=lambda kv: str(kv[0]))],
-            ["método de conversión (filas OK)", "n"],
-        ),
-    ]
-    Path(ROOT / "docs/BENCHMARK_RETURN_CONTRACT.md").write_text("\n".join(bc_md), encoding="utf-8")
+            ["gate", "estado", "actual", "bloqueo técnico"],
+        )
+    )
+    w(
+        "PPoG→PPG está aprobado y aplicado como alias documental. La extensión SEC se ha ejecutado con contacto runtime; discrepancias documentales permanecen bloqueadas.\n"
+    )
+    # Keep the historical global benchmark artifact unchanged; V2 reports US-only evidence.
     Path(ROOT / "docs/DATA_READINESS_FIRST_ML.md").write_text("\n".join(md), encoding="utf-8")
+    Path(ROOT / "docs/FIRST_ML_FOLD_AUDIT.json").write_text(
+        json.dumps(fold_audit, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     Path(ROOT / "docs/DATA_READINESS_FIRST_ML.json").write_text(
         json.dumps(js, default=str, indent=1), encoding="utf-8"
     )

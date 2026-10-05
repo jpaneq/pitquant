@@ -1,3 +1,5 @@
+> La restricción de Yahoo como fuente exploratoria queda sustituida por ADR-0050; se mantiene la validación técnica por serie.
+
 # ADR-0049 — Data readiness for first ML: base de retorno, base de divisa, semántica de proxy y contrato del primer experimento
 
 Estado: aceptada (2026-10-04). Migración `0027` (`fx_rates`, append-only). Fuente de mercado/FX: **Yahoo Finance**, por decisión expresa del propietario («no pierdas tiempo con otras fuentes»): VENDOR, `EXPLORATORY_SOURCE`, nunca canónica sin aceptación D05.

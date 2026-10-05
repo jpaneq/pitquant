@@ -44,9 +44,14 @@ class MarketData:
 
 
 def load_market(
-    session: Session, security_id: str, decision_at: datetime, exchange: str = "XNYS"
+    session: Session,
+    security_id: str,
+    decision_at: datetime,
+    exchange: str = "XNYS",
+    *,
+    market_source: str | None = None,
 ) -> MarketData:
-    ctx = PITContext(session, decision_at)
+    ctx = PITContext(session, decision_at, market_source=market_source)
     bars = ctx.raw_bars(security_id)
     actions = ctx.market_actions(security_id)
     if bars.empty:

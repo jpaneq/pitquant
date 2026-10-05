@@ -25,7 +25,7 @@ from enum import StrEnum
 from pitquant.core.errors import DataQualityError
 from pitquant.data.calendars.market_calendar import get_calendar
 
-PARSER_VERSION = "sp500-evidence-4"
+PARSER_VERSION = "sp500-evidence-8"
 
 
 class Timing(StrEnum):
@@ -95,7 +95,7 @@ _REPLACE = re.compile(
 _TIMING = re.compile(
     rf"(?P<tba>(?:after the close of trading|prior to the open of trading|effective)?\s*on a date to be announced)|"
     rf"(?P<after>after the (?:market )?close of trading(?: on)?)\s*{_DATE}|"
-    rf"(?P<before>(?:effective )?(?:prior to|before) the open(?:ing)? (?:of trading )?(?:on trading )?on)\s*{_DATE}|"
+    rf"(?P<before>(?:effective )?(?:prior to|before|at) the open(?:ing)? (?:of trading )?(?:on trading )?on)\s*{_DATE}|"
     rf"(?P<eff>effective (?:on )?)\s*{_DATE}",
     re.I,
 )
@@ -484,18 +484,46 @@ def _name_only_clauses(text: str) -> list[tuple[str, str, str, str, int, int]]:
     must appear once, earlier in the SAME release as «Joy Global Inc. (NYSE: JOY)». Otherwise no clause."""
     out: list[tuple[str, str, str, str, int, int]] = []
     for m in _NAME_ONLY.finditer(text):
-        rname = re.sub(r"\s+", " ", m.group(3)).strip().rstrip("'s ").strip()
+        rname = re.sub(r"\s+", " ", m.group(3)).strip()
+        rname = re.sub(r"['’]s$", "", rname)
         rname = re.sub(r"[ ,]+(?:Inc|Corp|Co|Ltd|plc|Group)\.?$", "", rname).strip()
-        found = {
-            t.upper()
-            for t in re.findall(
-                rf"{re.escape(rname)}\b[^():;]{{0,45}}?\((?:[A-Za-z][A-Za-z /]{{1,18}})\s*:\s*([A-Z][A-Za-z0-9.\-]{{0,9}})\s*\)",
-                text[: m.start()],
-            )
-        }
+        mentions = [
+            (_clean_name(n), t.upper())
+            for n, t in _TICK_NAME.findall(text[: m.start()])
+            if name_key(_clean_name(n)) == name_key(rname)
+        ]
+        found = {t for _, t in mentions}
         if len(found) != 1:
             continue
-        out.append((m.group(1).strip(), m.group(2), rname, next(iter(found)), m.start(), m.end()))
+        out.append(
+            (m.group(1).strip(), m.group(2), mentions[0][0], next(iter(found)), m.start(), m.end())
+        )
+    return out
+
+
+def _summary_backed_pairs(text: str) -> list[tuple[str, str, str, str, int, int]]:
+    """An index-less prose pair needs BOTH exact names in a dated S&P 500 summary.
+
+    Some releases state the destination index only in their summary (FBHS/CVC, 2016).
+    Never infer it from the title, a nearby other-index clause, or a GICS description.
+    """
+    pair = re.compile(rf"{_NAME}{_TICK}\s+will replace\s+{_NAME}{_TICK}")
+    sector = r"Consumer|Energy|Financials|Health|Industrials|Information|Materials|Real|Utilities|Telecommunication|Communication"
+    rows = []
+    for hm in _HEADER.finditer(text):
+        tail = text[hm.end() :]
+        end = re.search(r"S&P (?:MIDCAP |SMALLCAP )?\d+ INDEX", tail, re.I)
+        table = tail[: end.start()] if end else tail[:1400]
+        adds = re.findall(rf"ADDED\s+(.+?)\s+(?:{sector})\b", table)
+        removes = re.findall(rf"DELETED\s+(.+?)\s+(?:{sector})\b", table)
+        if len(adds) == len(removes) == 1:
+            rows.append((name_key(adds[0]), name_key(removes[0])))
+    out = []
+    for m in pair.finditer(text):
+        an, at, rn, rt = m.groups()
+        an, rn = _clean_name(an), _clean_name(rn)
+        if (name_key(an), name_key(rn)) in rows:
+            out.append((an, at, rn, rt, m.start(), m.end()))
     return out
 
 
@@ -588,6 +616,7 @@ def parse_release(
         _move_clauses(text),
         _switch_clauses(text),
         _name_only_clauses(text),
+        _summary_backed_pairs(text),
         _added_then_replace(text),
     ):
         clauses += [c for c in extra if (c[1].upper(), c[3].upper()) not in seen_pairs]

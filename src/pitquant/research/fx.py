@@ -1,5 +1,5 @@
 # ruff: noqa: E501
-"""PIT FX for the return currency basis (ADR-0049). Source: Yahoo chart daily FX closes (VENDOR tier, ``EXPLORATORY``: chosen by the owner, never presented as a canonical FX source).
+"""PIT FX for the return currency basis (ADR-0049). Source: Yahoo chart daily FX closes (VENDOR tier, ``CANONICAL_PROVIDER_FOR_PITQUANT``: methodological choice, not an official exchange source).
 
 * Rates are stored as USD per 1 unit of currency. ``available_at`` of the quote of day d = 00:00 UTC of d+1: a rate is never used before the day it quotes has ended. Today's rate is never used for history.
 * Lookup by INSTANT: the last rate with ``available_at <= instant``; older than ``MAX_STALE_DAYS`` => ``FX_STALE`` (no rate), a missing currency => ``FX_DATA_NOT_READY``.
@@ -22,7 +22,7 @@ from pitquant.db.models_research import FxRate
 from pitquant.market.providers.yahoo import YahooChartMarketDataProvider
 
 SOURCE = "YAHOO_CHART:fx"
-QUALITY = "EXPLORATORY_SOURCE"
+QUALITY = "CANONICAL_SOURCE"
 MAX_STALE_DAYS = 7
 QUOTES: dict[str, tuple[str, bool]] = {  # currency -> (Yahoo symbol, quoted as units of currency PER USD => invert)
     "EUR": ("EURUSD=X", False), "GBP": ("GBPUSD=X", False), "CHF": ("CHFUSD=X", False), "JPY": ("JPY=X", True),
@@ -71,7 +71,7 @@ def ingest_fx(
                 data=body,
                 mime_type="application/json",
                 parser_version="fx-chart-1",
-                notes="daily FX close; VENDOR tier; EXPLORATORY",
+                notes="daily FX close; VENDOR tier; CANONICAL_PROVIDER_FOR_PITQUANT",
             )
             n = 0
             for d, v in parse_chart(body, inv):

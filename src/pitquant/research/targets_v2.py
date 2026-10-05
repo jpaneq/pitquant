@@ -63,9 +63,17 @@ def choose(
 
 
 def build_targets_v2(
-    session: Session, *, now: datetime | None = None, tickers: list[str] | None = None
+    session: Session,
+    *,
+    now: datetime | None = None,
+    tickers: list[str] | None = None,
+    canonical_only: bool = False,
 ) -> dict[str, Any]:
     now = now or datetime.now(UTC)
+    from pitquant.market.canonical import FEATURE_VERSION, TARGET_VERSION
+
+    feature_version = FEATURE_VERSION if canonical_only else FT.FEATURE_SET_VERSION
+    target_version = TARGET_VERSION if canonical_only else TARGET_SET_VERSION_V2
     ho = get_settings().validation.final_holdout
     hold = (ho.start, ho.end)
     fx = FxTable.load(session)
@@ -87,6 +95,7 @@ def build_targets_v2(
                 session.get_one(Security, sid).exchange,
                 now,
                 is_index=spec.ticker.startswith("^"),
+                canonical_only=canonical_only,
             )
             if sid
             else None
@@ -95,14 +104,14 @@ def build_targets_v2(
     snaps: dict[str, list[ResearchFeatureSnapshot]] = {}
     for sn in session.scalars(
         select(ResearchFeatureSnapshot).where(
-            ResearchFeatureSnapshot.feature_set_version == FT.FEATURE_SET_VERSION
+            ResearchFeatureSnapshot.feature_set_version == feature_version
         )
     ):
         snaps.setdefault(sn.security_id, []).append(sn)
     existing = {
         (t.security_id, t.decision_at, t.horizon_months)
         for t in session.scalars(
-            select(ResearchTarget).where(ResearchTarget.target_set_version == TARGET_SET_VERSION_V2)
+            select(ResearchTarget).where(ResearchTarget.target_set_version == target_version)
         )
     }
     stats: dict[str, int] = {
@@ -118,7 +127,7 @@ def build_targets_v2(
         tk = DS._ticker(session, sid)
         if tickers and tk not in tickers:
             continue
-        got = DS._bundle(session, sid, tk or sid, sec.exchange, now)
+        got = DS._bundle(session, sid, tk or sid, sec.exchange, now, canonical_only=canonical_only)
         if got is None:
             continue
         b, md = got
@@ -146,7 +155,7 @@ def build_targets_v2(
                 d["benchmark_contract"] = {
                     "contract_version": BC.BENCHMARK_CONTRACT_VERSION, "benchmark_id": spec.benchmark_id, "benchmark_security_id": bench[2] if bench else None, "benchmark_name": spec.name, "benchmark_type": spec.benchmark_type,
                     "benchmark_return_type": spec.return_type.value, "benchmark_currency": spec.currency, "security_currency": sec.currency, "return_currency_basis": assess["return_currency_basis"],
-                    "currency_conversion_method": assess["currency_conversion_method"], "fx_source": "YAHOO_CHART:fx (VENDOR, EXPLORATORY)" if use_usd else None, "benchmark_source": spec.source, "benchmark_version": BC.BENCHMARK_CONTRACT_VERSION,
+                    "currency_conversion_method": assess["currency_conversion_method"], "fx_source": "YAHOO_CHART:fx (CANONICAL_SOURCE, VENDOR)" if use_usd else None, "benchmark_source": spec.source, "benchmark_version": BC.BENCHMARK_CONTRACT_VERSION,
                     "benchmark_provenance": md.sources if md is not None else None, "benchmark_quality_status": assess["quality_status"], "comparability": "COMPARABLE" if comparable else (assess["comparability"] if assess["comparability"] != "COMPARABLE" else "BENCHMARK_UNAVAILABLE_IN_WINDOW"),
                     "skipped_candidates": skipped, "reason": assess["reason"], "security_return_basis": f"{b.return_type}_{assess['return_currency_basis'] or sec.currency}", "benchmark_return_basis": f"{spec.return_type.value}_{spec.currency}",
                 }  # fmt: skip
@@ -185,7 +194,7 @@ def build_targets_v2(
                 stats["ok" if t["status"] == "OK" else "unavailable"] += 1
                 session.add(
                     ResearchTarget(
-                        security_id=sid, decision_at=sn.decision_at, horizon_months=t["horizon_months"], target_set_version=TARGET_SET_VERSION_V2, benchmark_id=bench[2] if bench else None, benchmark_ticker=spec.ticker, benchmark_type=spec.benchmark_type,
+                        security_id=sid, decision_at=sn.decision_at, horizon_months=t["horizon_months"], target_set_version=target_version, benchmark_id=bench[2] if bench else None, benchmark_ticker=spec.ticker, benchmark_type=spec.benchmark_type,
                         benchmark_source=spec.source, entry_session=t.get("entry_session"), exit_session=t.get("exit_session"), label_available_at=t["label_available_at"], status=t["status"], reason=t["reason"], security_total_return=t.get("security_total_return"),
                         benchmark_total_return=t.get("benchmark_total_return") if comparable else None, excess_total_return=excess, outperform=outp, direction_up=t.get("direction_up"), max_drawdown=t.get("max_drawdown"), drawdown_10=t.get("drawdown_10"),
                         drawdown_15=t.get("drawdown_15"), drawdown_20=t.get("drawdown_20"), details=d,

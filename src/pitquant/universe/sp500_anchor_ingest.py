@@ -5,7 +5,9 @@ parse, identity bootstrap by CUSIP/ISIN (never by ticker) and persistence. Idemp
 
 from __future__ import annotations
 
+import html
 import json
+import re
 from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
@@ -230,6 +232,19 @@ class ParsedAnchor:
     notes: list[str] = field(default_factory=list)
 
 
+def schedule_period(primary: bytes) -> date | None:
+    """Read the date attached to the investment schedule, never the filing year."""
+    text = re.sub(
+        r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", primary.decode("utf-8", "replace")))
+    )
+    hit = re.search(r"Schedule of Investments\s+([A-Za-z]+ \d{1,2}, \d{4})", text, re.I)
+    if hit is None:
+        return None
+    from datetime import UTC, datetime
+
+    return datetime.strptime(hit.group(1), "%B %d, %Y").replace(tzinfo=UTC).date()
+
+
 def parse_anchor(docs: FilingDocs, d: Discovered) -> ParsedAnchor:
     verify(docs, d)
     notes: list[str] = []
@@ -247,6 +262,11 @@ def parse_anchor(docs: FilingDocs, d: Discovered) -> ParsedAnchor:
             notes.append(f"{n.duplicates_merged} duplicate-CUSIP lines merged")
         tier = TIER_A
     else:
+        visible_period = schedule_period(docs.primary)
+        if visible_period is not None and visible_period != d.period:
+            raise AnchorVerificationError(
+                f"{d.accession}: schedule period {visible_period} != EDGAR/header period {d.period}"
+            )
         raw_n = len(parse_n30d_schedule(docs.primary, dedupe=False))
         sched = parse_n30d_schedule(docs.primary)
         if raw_n != len(sched):
@@ -374,8 +394,8 @@ def persist_anchors(session: Session, parsed: list[ParsedAnchor]) -> IngestRepor
             by_c = by_id.get(("CUSIP", c)) if c else None
             by_i = by_id.get(("ISIN", i)) if i else None
             if by_c and by_i and by_c != by_i:
-                rep.identity_conflicts.append(
-                    f"{p.d.period} {r['name']}: CUSIP {c} -> {by_c} but ISIN {i} -> {by_i}"
+                raise AnchorVerificationError(
+                    f"{p.d.period} {r['name']}: CUSIP {c} -> {by_c} but ISIN {i} -> {by_i}; conflicting security identifiers"
                 )
             sid = by_c or by_i
             if sid is None:

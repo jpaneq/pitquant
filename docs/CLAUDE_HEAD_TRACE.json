@@ -1,0 +1,71 @@
+{
+  "range": "d90309e..1b0cc6a",
+  "commits": [
+    {
+      "commit": "c7569b0",
+      "summary": "Visor visual de operaciones: velas, tendencia, entrada/objetivo/stop y salida de cada decisi\u00f3n de la rutina y de las simulaciones (/operaciones, /trades)",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/AppShell.tsx",
+        "frontend/src/components/AppSwitcher.tsx",
+        "frontend/src/features/bitcoin/BitcoinPage.tsx",
+        "frontend/src/features/routine/RoutinePage.tsx",
+        "frontend/src/features/trades/OperacionesPage.tsx",
+        "frontend/src/features/trades/TradeChart.tsx",
+        "src/pitquant/api/app.py",
+        "src/pitquant/api/trades.py",
+        "src/pitquant/positions/trade_view.py",
+        "tests/unit/test_trade_view.py"
+      ]
+    },
+    {
+      "commit": "1b0cc6a",
+      "summary": "BTC: pesta\u00f1as arriba con explicaci\u00f3n y contenido propio por pesta\u00f1a (Analyzer / Prediction Lab / Strategy Lab / Simulations / Research)",
+      "files": [
+        "frontend/artifacts/btc-analyzer.png",
+        "frontend/artifacts/btc-live-market.png",
+        "frontend/artifacts/btc-simulation.png",
+        "frontend/artifacts/btc-time-machine.png",
+        "frontend/artifacts/positions-btc.png",
+        "frontend/artifacts/positions-equity.png",
+        "frontend/artifacts/routine-report.png",
+        "frontend/src/features/bitcoin/BitcoinPage.tsx"
+      ]
+    }
+  ],
+  "modified_files": [
+    "frontend/artifacts/btc-analyzer.png",
+    "frontend/artifacts/btc-live-market.png",
+    "frontend/artifacts/btc-simulation.png",
+    "frontend/artifacts/btc-time-machine.png",
+    "frontend/artifacts/positions-btc.png",
+    "frontend/artifacts/positions-equity.png",
+    "frontend/artifacts/routine-report.png",
+    "frontend/src/App.tsx",
+    "frontend/src/components/AppShell.tsx",
+    "frontend/src/components/AppSwitcher.tsx",
+    "frontend/src/features/bitcoin/BitcoinPage.tsx",
+    "frontend/src/features/routine/RoutinePage.tsx",
+    "frontend/src/features/trades/OperacionesPage.tsx",
+    "frontend/src/features/trades/TradeChart.tsx",
+    "src/pitquant/api/app.py",
+    "src/pitquant/api/trades.py",
+    "src/pitquant/positions/trade_view.py",
+    "tests/unit/test_trade_view.py"
+  ],
+  "files_count": 18,
+  "contracts_modified": [
+    "New read-only trade-view API/UI payloads only"
+  ],
+  "tests_added": [
+    "tests/unit/test_trade_view.py: one synthetic chart/marker/frozen-level test"
+  ],
+  "existing_tests_modified": [],
+  "D02_changed": false,
+  "fold_generation_changed": false,
+  "targets_changed": false,
+  "holdout_changed": false,
+  "readiness_gates_changed": false,
+  "model_or_feature_contracts_changed": false,
+  "decision": "Preserve valid interface commits; no revert and no unrelated edit."
+}

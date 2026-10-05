@@ -1,0 +1,62 @@
+[
+  {
+    "position": 88,
+    "source_document": "0001193125-16-777823",
+    "source_sha256": "997f53d43c213337fc103c27ea92e7653ab558dea8999835959429ab7222222a",
+    "old_raw_name": "CBRE Group, Inc. Class AREIT",
+    "corrected_name": "CBRE Group, Inc. Class A",
+    "security_before": "f030d63e-5314-4e1b-ac19-6c77e0e4f8c1",
+    "security_after": "05aaf736-9901-437a-b13b-a26dcc0b4a6c",
+    "decision_type": "DOCUMENT_EXTRACTION_SAME_INSTRUMENT",
+    "resolution_confidence": "HIGH",
+    "version": "d02-document-breaks-1",
+    "official_observations": [
+      {
+        "quarter": "2016Q3",
+        "cusip": "12504L109",
+        "hash": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+        "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+        "raw_name": "CBRE GROUP INC",
+        "raw_description": "CL A"
+      },
+      {
+        "quarter": "2017Q1",
+        "cusip": "12504L109",
+        "hash": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+        "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+        "raw_name": "CBRE GROUP INC",
+        "raw_description": "CL A"
+      }
+    ]
+  },
+  {
+    "position": 286,
+    "source_document": "0001193125-16-777823",
+    "source_sha256": "997f53d43c213337fc103c27ea92e7653ab558dea8999835959429ab7222222a",
+    "old_raw_name": "LyondellBasell Industries NVClass A",
+    "corrected_name": "LyondellBasell Industries NV Class A",
+    "security_before": "dbed208e-9590-4d84-9387-98fa392cf755",
+    "security_after": "f9e74e98-a858-4cfe-91fc-1754d7f84346",
+    "decision_type": "DOCUMENT_EXTRACTION_SAME_INSTRUMENT",
+    "resolution_confidence": "HIGH",
+    "version": "d02-document-breaks-1",
+    "official_observations": [
+      {
+        "quarter": "2016Q3",
+        "cusip": "N53745100",
+        "hash": "c5670e2dbef8141d7517a3b8df110f55d5269451c7a2d3d6dd063688bbbd1132",
+        "archive_id": "02c10a49-dfc6-4cf7-9b12-a1f54ffe89e6",
+        "raw_name": "LYONDELLBASELL INDUSTRIES N SHS - A -",
+        "raw_description": ""
+      },
+      {
+        "quarter": "2017Q1",
+        "cusip": "N53745100",
+        "hash": "c28db44b6988ca2eacc907365679b3d482c8590fed04ba061efbb9883ba6895a",
+        "archive_id": "0ccacab5-2d84-4441-8707-3b974daf8a21",
+        "raw_name": "LYONDELLBASELL INDUSTRIES N SHS - A -",
+        "raw_description": ""
+      }
+    ]
+  }
+]

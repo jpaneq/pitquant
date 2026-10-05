@@ -55,9 +55,7 @@ def test_golden_securities(client: TestClient, t: str, elig: str) -> None:
             and q["badge"] in ("EOD", "STALE")
             and q["source"]
         )
-        min_bars = (
-            3500 if t == "KO" else 5000
-        )  # KO comes from the Yahoo daily source since 2011 (canonical V1 start); AAPL/MSFT carry the 1995+ vendor history
+        min_bars = 3500  # canonical Yahoo coverage begins 2011; legacy 1995+ bars stay excluded
         tech = client.get(f"/analyzer/{t}/technicals").json()
         assert (
             tech["n_bars"] > min_bars
