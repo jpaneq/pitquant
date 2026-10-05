@@ -62,17 +62,49 @@ def main() -> None:
     }
     # ---- D02 ------------------------------------------------------------------------------------------------------------------
     rep = reconstruct(S, date(2011, 1, 1), date(2022, 9, 30), standard="MONTHLY")
+    from pitquant.universe.identity_bridge import succession_map
+
+    canon = succession_map(S)
+    weak = set(rep.weak_identity)
     months = []
     for c in rep.cohorts:
-        ready = c.status == "MEMBERSHIP_READY"
+        membership_ready = c.status == "MEMBERSHIP_READY"
+        weak_members = sorted(x for x in (c.members or ()) if canon.get(x, x) in weak)
+        ready = FM.cohort_is_usable(c.status, c.members, weak, canon)
         months.append({"month": c.date.strftime("%Y-%m"), "date": c.date, "expected_universe": c.n_members, "resolved_members": len(c.members) if (ready and c.members) else None, "unresolved_members": None if ready else len(c.reasons) or None,
-                       "identity_resolved": ready, "membership_evidence": (f"segment {c.segment}; forward==backward" if c.sets_equal else (f"segment {c.segment}" if c.segment else None)), "status": "READY" if ready else ("BLOCKED" if c.status == "BLOCKED" else "NO_ANCHOR"),
-                       "blocking_reason": None if ready else ("; ".join(c.reasons)[:120] or c.status)})  # fmt: skip
+                       "identity_resolved": membership_ready and not weak_members, "weak_identity_members": weak_members, "membership_ready": membership_ready, "membership_evidence": (f"segment {c.segment}; forward==backward" if c.sets_equal else (f"segment {c.segment}" if c.segment else None)), "status": "READY" if ready else ("PARTIAL" if membership_ready else ("BLOCKED" if c.status == "BLOCKED" else "NO_ANCHOR")),
+                       "blocking_reason": None if ready else ("WEAK_IDENTITY: " + ", ".join(weak_members) if weak_members else ("; ".join(c.reasons) or c.status))})  # fmt: skip
     ready_dates = [m["date"] for m in months if m["status"] == "READY"]
     plan = C.walk_forward_folds(ready_dates)
-    d02 = {"total_months": len(months), "ready_months": len(ready_dates), "partial_months": 0, "blocked_months": sum(1 for m in months if m["status"] == "BLOCKED"), "no_anchor_months": sum(1 for m in months if m["status"] == "NO_ANCHOR"),
+    d02 = {"total_months": len(months), "ready_months": len(ready_dates), "membership_ready_months": rep.ready, "partial_months": sum(m["status"] == "PARTIAL" for m in months), "blocked_months": sum(1 for m in months if m["status"] == "BLOCKED"), "no_anchor_months": sum(1 for m in months if m["status"] == "NO_ANCHOR"),
            "coverage_pct": round(100 * len(ready_dates) / max(len(months), 1), 1), "longest_run": rep.longest_run, "feasible_folds": len(plan.folds), "reason_if_no_folds": plan.reason_if_none}  # fmt: skip
+    d02["required_continuous_months"] = (
+        C.TRAIN_MIN_MONTHS
+        + C.HORIZON_MONTHS
+        + C.EMBARGO_MONTHS
+        + C.TEST_MONTHS
+        + (C.MIN_FOLDS - 1) * C.STEP_MONTHS
+    )
+    d02["weak_identity_securities"] = len(weak)
+
+    def month_label(idx: int) -> str:
+        return f"{(idx - 1) // 12:04d}-{(idx - 1) % 12 + 1:02d}"
+
+    js["folds"] = [
+        {
+            "index": f.index,
+            "train_start": month_label(f.train_start),
+            "train_end": month_label(f.train_end),
+            "test_start": month_label(f.test_start),
+            "test_end": month_label(f.test_end),
+            "train_months": f.n_train_months,
+            "purged_months": f.purged_months,
+            "embargo_months": C.EMBARGO_MONTHS,
+        }
+        for f in plan.folds
+    ]
     js["d02"] = d02
+    js["monthly_cohorts"] = months
     js["flags"] = {k: bool(v) for k, v in rf.flags.items()}
     js["flags_scope"] = (
         "Legacy Research Lab feature-collection flags; experiment readiness is defined by gates, not flags."
@@ -112,7 +144,11 @@ def main() -> None:
     # ---- context ---------------------------------------------------------------------------------------------------------------
     bridge, unresolved_bridge = build_bridge(S)
     cohorts = {
-        c.date: {"status": c.status, "members": frozenset(c.members or ())} for c in rep.cohorts
+        c.date: {
+            "status": c.status if m["status"] == "READY" else "BLOCKED",
+            "members": frozenset(c.members or ()),
+        }
+        for c, m in zip(rep.cohorts, months, strict=True)
     }
     identity_ok = set(bridge)
     js["identity_bridge"] = {
@@ -128,6 +164,7 @@ def main() -> None:
     js["d05_quality"] = qa
     present = {r["security_id"] for r in qa if r["status"] == "READY"}
     out: dict[str, Any] = {}
+    eligible_panel: dict[str, list[dict[str, Any]]] = {}
     for label, accepted in (
         ("strict", True),
         ("preview_if_D05_accepted", True),
@@ -140,6 +177,16 @@ def main() -> None:
                 )
                 for s in snaps
             ]
+            if label == "strict":
+                eligible_panel[fam] = [
+                    {
+                        "security_id": s["security_id"],
+                        "decision_date": str(s["decision_session"]),
+                        "month": s["decision_session"].strftime("%Y-%m"),
+                    }
+                    for s, r in zip(snaps, res, strict=True)
+                    if r["eligible"]
+                ]
             out[f"{label}_{fam}"] = {
                 **FM.funnel(res),
                 "securities_with_eligible_rows": len(
@@ -217,6 +264,27 @@ def main() -> None:
     js["security_audit"] = audit
     js["coverage"] = {"required": C.REQUIRED_SECURITIES, "configured_tickers": len(cfg_tickers) - 3, "with_prices": len([a for a in audit if a["ticker_at_T"] not in DS.BENCH_TICKERS]), "with_snapshots": len(research), "identity_ready": sum(a["security_id"] in identity_ok for a in research), "configured_labels_unmatched": [t for t in missing_cfg if t not in DS.BENCH_TICKERS],
                       "usable_strict": out["strict_PRICE"]["securities_with_eligible_rows"], "usable_preview": out["preview_if_D05_accepted_PRICE"]["securities_with_eligible_rows"]}  # fmt: skip
+    eligible_ids = {r["security_id"] for r in eligible_panel["PRICE"]}
+    eligible_issuers = {
+        s.issuer_id for s in securities if s.security_id in eligible_ids and s.issuer_id
+    }
+    monthly_eligible = Counter({m["month"]: 0 for m in months})
+    monthly_eligible.update(r["month"] for r in eligible_panel["PRICE"])
+    rows_per_security = Counter(r["security_id"] for r in eligible_panel["PRICE"])
+    js["coverage"].update(
+        {
+            "us_configured_with_snapshots": sum(a["market"] == "XNYS" for a in research),
+            "non_us_configured_with_snapshots": sum(a["market"] != "XNYS" for a in research),
+            "global_eligible_under_current_contract": len(eligible_ids),
+            "distinct_issuer_ids_with_eligible_rows": len(eligible_issuers),
+            "monthly_eligible_counts": dict(sorted(monthly_eligible.items())),
+            "eligible_months_per_security": dict(sorted(rows_per_security.items())),
+            "scope": "US_ONLY: XNYS membership + SPY comparable benchmark; non-US excluded by current eligibility contract",
+            "iid_effective_sample_size": None,
+            "ess_reason": "Overlapping 12M targets and shared market regimes; counts do not establish statistical independence.",
+        }
+    )
+    js["eligible_panel_audit"] = eligible_panel
     # ---- benchmark table ------------------------------------------------------------------------------------------------------
     bt: dict[tuple[Any, ...], Counter[str]] = defaultdict(Counter)
     for (sid, _), t in targets12.items():
@@ -279,7 +347,7 @@ def main() -> None:
         "US_SECURITY_IDENTITY_READY": FM.gate(
             "READY" if rf.flags["US_SECURITY_IDENTITY_READY"] else "PARTIAL",
             "0 weak identity members, 0 unresolved lines",
-            "see D02 graph metrics",
+            f"{len(weak)} weak identity securities; {sum(a.unresolved_lines for a in rep.anchors)} unresolved anchor lines",
             None
             if rf.flags["US_SECURITY_IDENTITY_READY"]
             else "unresolved identity evidence; see D02 graph metrics",
@@ -356,6 +424,37 @@ def main() -> None:
     w(
         "La matriz corresponde al primer ML. Los `flags` del JSON describen el Research Lab histórico y su disponibilidad para recopilar features; no autorizan entrenamiento ni sustituyen estos gates.\n"
     )
+    w("## Folds factibles\n")
+    w(
+        table(
+            [
+                [
+                    r[k]
+                    for k in (
+                        "index",
+                        "train_start",
+                        "train_end",
+                        "test_start",
+                        "test_end",
+                        "train_months",
+                        "purged_months",
+                        "embargo_months",
+                    )
+                ]
+                for r in js["folds"]
+            ],
+            [
+                "fold",
+                "train start",
+                "train end",
+                "test start",
+                "test end",
+                "train months",
+                "purge",
+                "embargo",
+            ],
+        )
+    )
     w("## D02 mensual\n")
     w(table([[k, v] for k, v in d02.items()], ["métrica", "valor"]))
     w(
@@ -391,7 +490,29 @@ def main() -> None:
         )
     )
     w("## Cobertura de securities frente al requisito de 100\n")
-    w(table([[k, v] for k, v in js["coverage"].items()], ["métrica", "valor"]))
+    w(
+        table(
+            [[k, v] for k, v in js["coverage"].items() if not isinstance(v, dict)],
+            ["métrica", "valor"],
+        )
+    )
+    w(
+        table(
+            [[month, count] for month, count in sorted(monthly_eligible.items())],
+            ["mes DEV", "securities elegibles PRICE 12M"],
+        )
+    )
+    w(
+        table(
+            [
+                [ticker_of.get(sid, sid), count]
+                for sid, count in sorted(
+                    rows_per_security.items(), key=lambda x: ticker_of.get(x[0], x[0])
+                )
+            ],
+            ["security", "meses elegibles PRICE 12M"],
+        )
+    )
     w(
         table(
             [
@@ -483,7 +604,7 @@ def main() -> None:
         )
     )
     w(
-        "PPoG→PPG está aprobado y aplicado como alias documental. La extensión SEC requiere el correo de contacto; no se inventan anclas anteriores.\n"
+        "PPoG→PPG está aprobado y aplicado como alias documental. La extensión SEC se ha ejecutado con contacto runtime; discrepancias documentales permanecen bloqueadas.\n"
     )
     bc_md = [
         "# Contrato de retorno de benchmark (ADR-0049, generado)\n",

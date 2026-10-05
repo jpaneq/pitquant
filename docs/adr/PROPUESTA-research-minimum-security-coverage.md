@@ -1,3 +1,5 @@
+> Análisis sustituido por [PROPUESTA-first-ml-security-coverage.md](PROPUESTA-first-ml-security-coverage.md), todavía NO aplicada. La aproximación de independencia y los umbrales ilustrativos de este documento no justifican cambiar el gate.
+
 # Propuesta (NO aplicada) — Research minimum security coverage
 
 Estado: PROPUESTA para decisión del propietario. **No se ha modificado ningún gate**: `required_securities = 100` sigue vigente.

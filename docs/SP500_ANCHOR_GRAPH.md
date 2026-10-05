@@ -11,12 +11,12 @@ Holdout 2022-10-01 → 2025-09-30 sellado; ningún ancla posterior a 2022-09-30.
 
 | métrica | mensual (Research) | diario canónico |
 |---|---|---|
-| verified_anchors | 17 | 17 |
-| segments | 16 | 16 |
+| verified_anchors | 30 | 30 |
+| segments | 29 | 29 |
 | validated_segments | 6 | 6 |
 | forward_validated_segments | 11 | 11 |
 | backward_validated_segments | 11 | 11 |
-| monthly_cohorts | 60 | 60 |
+| monthly_cohorts | 145 | 145 |
 | monthly_cohorts_reconstructible | 60 | 18 |
 | longest_continuous_period | 60 | 9 |
 | post_limit_events_used | 0 | 0 |
@@ -24,11 +24,11 @@ Holdout 2022-10-01 → 2025-09-30 sellado; ningún ancla posterior a 2022-09-30.
 
 ## Ventana mínima (60): 2017-10-01 → 2022-09-30
 
-- monthly_cohorts 60 · membership_ready **60** · racha continua 60 · cohortes sin ancla 0 (no se ha extendido a 2014-2017)
+- monthly_cohorts 60 · membership_ready **60** · racha continua 60 · cohortes sin ancla 0 (anclas extendidas; eventos e identidad se verifican por separado)
 
 ## Ventana preferida (96): 2014-10-01 → 2022-09-30
 
-- monthly_cohorts 96 · membership_ready **60** · racha continua 60 · cohortes sin ancla 36 (no se ha extendido a 2014-2017)
+- monthly_cohorts 96 · membership_ready **60** · racha continua 60 · cohortes sin ancla 0 (anclas extendidas; eventos e identidad se verifican por separado)
 
 ## Cohortes (ventana mínima)
 
@@ -101,16 +101,16 @@ Antes (ficha global, ADR-0032): **95** gaps. Tras la reclasificación y las reso
 
 | categoría | n | bloquea membresía | bloquea identidad |
 |---|---|---|---|
-| PRIMARY_DELTA_UNEXPLAINED | 0 | 0 | 0 |
-| PRIMARY_EVENT_MISSING | 0 | 0 | 0 |
-| MONTHLY_DATE_AMBIGUITY | 0 | 0 | 0 |
-| SECURITY_IDENTITY_ONLY | 0 | 0 | 0 |
-| TICKER_OR_NAME_CHANGE | 26 | 0 | 0 |
+| PRIMARY_DELTA_UNEXPLAINED | 9 | 9 | 0 |
+| PRIMARY_EVENT_MISSING | 141 | 141 | 0 |
+| MONTHLY_DATE_AMBIGUITY | 12 | 12 | 0 |
+| SECURITY_IDENTITY_ONLY | 65 | 65 | 65 |
+| TICKER_OR_NAME_CHANGE | 32 | 0 | 0 |
 | SUCCESSOR_SECURITY | 10 | 0 | 0 |
-| DISCOVERY_UNCORROBORATED | 20 | 0 | 0 |
-| DISCOVERY_CONFLICT | 18 | 0 | 0 |
+| DISCOVERY_UNCORROBORATED | 22 | 0 | 0 |
+| DISCOVERY_CONFLICT | 56 | 0 | 0 |
 | TRANSIENT_EVENT_POSSIBLE | 0 | 0 | 0 |
-| RESOLVED | 1 | 0 | 0 |
+| RESOLVED | 8 | 0 | 0 |
 
-Blockers de membresía reales: **0** · de identidad: **0** + 0 securities sin evidencia oficial de CUSIP/ISIN.
+Blockers de membresía reales: **227** · de identidad: **65** + 56 securities sin evidencia oficial de CUSIP/ISIN.
 

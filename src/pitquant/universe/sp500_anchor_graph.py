@@ -40,7 +40,7 @@ from pitquant.universe.sources.sp500_evidence import PARSER_VERSION as EVIDENCE_
 from pitquant.universe.sources.spy_sec_anchors import PARSER_VERSION as ANCHOR_PARSER
 from pitquant.universe.sources.spy_sec_anchors import norm_name
 
-ENGINE_VERSION = "anchor-graph-5"
+ENGINE_VERSION = "anchor-graph-6"
 CONFIRMED = {"OFFICIAL_CONFIRMED", "OFFICIAL_REPUBLISHED_CONFIRMED"}
 
 
@@ -309,7 +309,19 @@ class Resolver:
         cands: set[str] = set()
         how = "RELEASE_NAME"
         ok: set[str] = set()
-        for rc, rh in self.routes(leg.ticker, leg.name, leg.lo or leg.discovery_date):
+        routes = self.routes(leg.ticker, leg.name, leg.lo or leg.discovery_date)
+        # A dated S&P rename can name the predecessor in an ADD release. Once
+        # historical anchors introduce that predecessor, it must not steal the
+        # successor's event merely because it is absent from A. Prefer the stated
+        # new name only when the successor is actually present in B and absent in A.
+        if leg.kind == "ADD":
+            preferred = [
+                (cs, how)
+                for cs, how in routes
+                if how == "RENAME_STATEMENT" and len(plausible(cs) & b.members) == 1
+            ]
+            routes = preferred + [r for r in routes if r not in preferred]
+        for rc, rh in routes:
             rc = {lineage.get(c, c) for c in rc} if lineage else rc
             if not cands:
                 cands, how = rc, rh  # first non-empty route: the fallback when none is plausible

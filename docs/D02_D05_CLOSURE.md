@@ -1,6 +1,8 @@
 # D02/D05 y preparación del primer ML — cierre verificable
 
-HEAD inicial: `85cf086`. Rama: `codex/d02-d05-first-ml-readiness`. No se ha entrenado ningún modelo ni tocado BTC, pesos, champion o holdout.
+> Los apartados anteriores al resultado de extensión documentan la iteración previa. El estado vigente está en **D02 EXTENDED ANCHOR RESULT**, al final.
+
+HEAD inicial de la iteración previa: `85cf086`. Rama: `codex/d02-d05-first-ml-readiness`. No se ha entrenado ningún modelo ni tocado BTC, pesos, champion o holdout.
 
 ## D02
 
@@ -41,3 +43,64 @@ Validación: ruff, mypy strict, SQLite (933 passed, 3 skipped por proveedores op
 Único siguiente paso recomendado: proporcionar el contacto SEC y ejecutar la extensión oficial de anclas SPY para obtener al menos 85 meses consecutivos verificables, manteniendo los gates restantes visibles.
 
 Reproducción: `PITQUANT_DATABASE_URL=sqlite:///data/pitquant.db .venv/bin/python scripts/rebuild_canonical_research.py` (o `--targets-only`), seguido de `scripts/validate_yahoo_d05.py` y `scripts/gen_data_readiness_first_ml.py`. Cada fase confirma su transacción; no entrena modelos.
+
+## D02 EXTENDED ANCHOR RESULT
+
+HEAD inicial de esta iteración: `c936a13`. Rama: `codex/d02-d05-first-ml-readiness`; PR draft [#1](https://github.com/jpaneq/pitquant/pull/1). Se mantiene separada de master.
+
+### SEC y anclas
+
+El contacto proporcionado por el propietario se ha validado mediante respuestas SEC 200. Se pasa sólo en `PITQUANT_SEC_USER_AGENT` runtime; no se guarda en código, configuración ni logs. Se ejecutó `scripts/ingest_spy_anchors.py --extend`: core sin duplicados y 13 anclas N-30D nuevas, de 2010-09 a 2017-03. Se archivaron también las 14 listas 13(f) trimestrales correspondientes, con originales y hashes. La repetición de la extensión crea cero anclas: es idempotente.
+
+Anclas verificadas en DB: **24→37**; nodos únicos por fecha, con NPORT preferido: **17→30**. La ancla 2010-09 acota enero de 2011; ninguna posterior a 2022-09 se incorpora. Los 13 accessions, fechas de presentación/aceptación, fuentes, retrievals, hashes, nombres originales/resueltos de 6.512 posiciones, CUSIP/ISIN observados y métodos/versiones se publican en D02_EXTENDED_ANCHOR_PROVENANCE.json.
+
+El filing `0001193125-14-428689`, presentado 2014-12-01, declara 2013-09-30 en la API y el encabezado, pero 2014-09-30 en el schedule. Sus originales se archivaron; **no se corrige la fecha ni se declara ancla VERIFIED**. La ejecución de extensión devuelve 1 por este objetivo pendiente, conservando las 13 incorporaciones válidas. No es un error de contacto o de red.
+
+### Reconstrucción y pendientes exactos
+
+Antes: **60/141 READY**, 81 NO_ANCHOR, racha 60. Después: **60/141 READY**, **81 BLOCKED**, **0 NO_ANCHOR**, racha **60**, cero folds. Los 81 meses 2011-01→2017-09 ahora están acotados por anclas; faltan los cambios oficiales e identidades que permiten fechar su composición. Tres folds requieren **85 meses continuos** (36 train +12 purge +1 embargo +36 test); un fold requiere 61. Ningún umbral cambia.
+
+La incorporación de anclas antiguas reveló un cruce del nombre Bemis con la pata ADD de Amcor en 2019. Se corrige mediante la declaración fechada de S&P y la presencia del sucesor en B; una declaración futura no se usa. Los **60 meses originales vuelven a estar íntegros**. `anchor-graph-6` conserva los segmentos de versiones previas y escribe nuevos resultados append-only; no redefine la fecha legal de una fusión.
+
+Quedan **227 fichas que bloquean membresía**: **141 PRIMARY_EVENT_MISSING**, **65 SECURITY_IDENTITY_ONLY**, **12 MONTHLY_DATE_AMBIGUITY**, **9 PRIMARY_DELTA_UNEXPLAINED**. No se afirma que todos los documentos estén ausentes: los casos de fecha insuficiente o contradicción incluyen evidencia primaria archivada. Hay **56 securities históricas con identidad débil**, frente a cero en la cadena corta previa; se hacen visibles al ampliar la cadena. No se oculta el retroceso del gate global de identidad: US_SECURITY_IDENTITY_READY está PARTIAL.
+
+D02_EXTENDED_AUDIT.json vincula cada uno de los 81 meses a sus gap_ids, anclas A/B, accession/hash, instrumento, intervalo, disponibilidad de evidencia, documento requerido y condición de cierre. Todas las cohortes bloqueadas tienen fichas. SP500_LOCAL_GAPS.md/.json y SP500_RESIDUAL_GAP_CARDS.md/.json cubren ahora **DEV 2011-01→2022-09**, no sólo la ventana antigua de 60 meses.
+
+Las cohortes con identidad débil no entran en folds. El planificador tampoco acepta holdout/OOT aunque un llamador se los pase. No hay rangos de folds reales que publicar mientras el contador sea cero.
+
+### Cuatro identidades de research
+
+FIRST_ML_SECURITY_IDENTITY.json conserva fuentes regulatorias/exchange con retrieval, archive_id y hash. Ninguna se promociona automáticamente a una serie entera:
+
+- **XOM PARTIAL**: el 8-K confirma sustitución 1:1 del antiguo issuer CIK 34088 por ExxonMobil Holdings CIK 2115436 el 2026-07-01. El perfil actual no certifica el instrumento antiguo. La evidencia posterior al DEV es sólo auditoría de identidad, nunca ancla, feature o dato de selección.
+- **RTX PARTIAL**: UTC/UTX continúa bajo nuevo nombre el 2020-04-03; RTN es otra security, con canje 2.3348. No se aplica esa ratio a UTX. Falta formalizar el vínculo fechado de instrumentos y reconciliar Carrier/Otis con la base de retorno.
+- **GOOGL PARTIAL**: SEC verifica Alphabet Class A CUSIP 02079K305; Nasdaq confirma reemplazo por clases el 2015-10-05. GOOG Class C 02079K107 permanece distinto. Falta la asignación temporal completa de la serie de research al instrumento, incluidas las etapas Google/Alphabet.
+- **GE PARTIAL**: el exhibit del emisor verifica reverse split 1:8 y CUSIP 369604301 desde 2021-08-02. Falta formalizar la transición desde el antiguo identificador con su evidencia y unidades, separada de la QA de retornos. No se traslada retrospectivamente el negocio actual a periodos anteriores a los spin-offs.
+
+### Cobertura y decisión metodológica
+
+Se mantienen **51 securities US elegibles**, antes y después; 55 US configuradas, 45 non-US, 100 globales con snapshots. Bajo el contrato US actual, el número global elegible también es 51. Hay 51 issuer IDs distintos, 2.396 filas PRICE 12M en 48 cohortes con etiquetas maduras (49–51 valores por cohorte, entre 9 y 48 meses por security) y 1.785 filas FUNDAMENTALS. Estos conteos **no son tamaño efectivo independiente**.
+
+El umbral 100 procede del gate global de snapshots de RUN 3; fue conservado para un gate de elegibilidad distinto en ADR-0049. No hay cálculo estadístico documentado que derive 100. PROPUESTA-first-ml-security-coverage.md propone cobertura histórica mensual y precisión por fold, con dependencia por issuer/bloques temporales y parámetros preregistrados; **no se aplica** y no se inventa un nuevo mínimo para que pasen los 51. El primer ML actual es US-only y se recomienda mantener ese alcance; no se renombra el experimento.
+
+### Matriz final
+
+| Gate | Estado |
+|---|---|
+| D02_MONTHLY_RESEARCH_READY | BLOCKED |
+| US_SECURITY_IDENTITY_READY | PARTIAL |
+| D05_READY (US) | READY |
+| BENCHMARK_RETURN_BASIS_READY (US) | READY |
+| RESEARCH_SECURITY_COVERAGE_READY | BLOCKED: 51/100 |
+| US_FUNDAMENTALS_READY | READY: 40 securities con >=36 meses; mínimo 30 |
+| HOLDOUT_SEALED | READY |
+| RESEARCH_DATA_READY | BLOCKED |
+| FIRST_ML_BASELINE_READY | **false** |
+
+Validación local final: ruff y formato limpios; mypy strict, 213 módulos; **948 passed, 3 skipped** en SQLite, **363 PIT passed sin skips**, **20 PostgreSQL passed**, upgrade/check/downgrade Alembic limpio, head **0027**, ninguna migración nueva. Docker no está instalado localmente; su build se valida en el job específico de GitHub Actions del commit publicado. No se toca frontend/E2E; sus jobs de CI siguen siendo obligatorios. La PR y el cierre de chat enlazan el run final, no un verde de otro SHA.
+
+No se han entrenado M0–M4, ajustado gates, modificado champion, V0, P0, BTC/scheduler/paper, Simulation Engine, Trade Plan o Filing Intelligence. Holdout/OOT siguen excluidos.
+
+**Único siguiente paso:** investigar y cerrar con documentos oficiales las fichas de **2015-03→2017-09**, priorizando las que bloquean la apertura de septiembre de 2015: ese tramo contiene los 25 meses inmediatamente anteriores a la racha actual necesarios para alcanzar 85. La discrepancia de 2014 no debe desviar esa prioridad ni resolverse forzando fechas.
+
+Reproducción: contacto SEC runtime → `scripts/ingest_spy_anchors.py --extend` (partial documentado, exit 1), `scripts/ingest_13f_lists.py --anchor-quarters` (sólo trimestres de anclas verificadas anteriores al holdout), `scripts/build_sp500_anchor_graph.py`, `scripts/gen_d02_extended_audit.py`, `scripts/audit_first_ml_security_identity.py`, `scripts/gen_data_readiness_first_ml.py`. Los reportes no entrenan ni reescriben snapshots/objetivos.

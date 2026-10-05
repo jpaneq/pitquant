@@ -48,6 +48,24 @@ class EligibilityContext:
     extra: dict[str, Any] = field(default_factory=dict)
 
 
+def cohort_is_usable(
+    status: str,
+    members: frozenset[str] | None,
+    weak_identity: set[str],
+    lineage: dict[str, str],
+) -> bool:
+    """A monthly membership without instrument evidence cannot enter a fold.
+
+    Reconciliation uses lineage IDs; published cohorts use dated legal IDs.
+    Map both to the same lineage before checking the weak-identity exclusion.
+    """
+    return (
+        status == "MEMBERSHIP_READY"
+        and members is not None
+        and not any(lineage.get(sid, sid) in weak_identity for sid in members)
+    )
+
+
 def first_ml_eligibility(
     ctx: EligibilityContext,
     snap: dict[str, Any],

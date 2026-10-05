@@ -163,7 +163,9 @@ def walk_forward_folds(
     spans a missing month. Purge + embargo: a training month t is allowed for a test window starting at s iff idx(t) + horizon + embargo <= idx(s). A fold needs >= ``train_min`` allowed training months and a FULL test window."""
     if not months:
         return FoldPlan([], "no usable decision months")
-    idx = sorted({month_index(m) for m in months})
+    idx = sorted({month_index(m) for m in months if m < HOLDOUT[0]})
+    if not idx:
+        return FoldPlan([], "no usable decision months before sealed holdout")
     runs: list[list[int]] = [[idx[0]]]
     for i in idx[1:]:
         if i == runs[-1][-1] + 1:

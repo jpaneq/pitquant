@@ -1,24 +1,29 @@
 # DATA READINESS FOR FIRST ML (generado desde la base)
 
-Generado 2026-10-04T22:37:46Z · experimento preparado `FIRST_EQUITY_ML_12M_V0` (NO ejecutado). Fuente de datos de mercado y FX: **Yahoo Finance** (decisión del propietario; VENDOR, `CANONICAL_PROVIDER_FOR_PITQUANT`). Ningún gate se ha bajado: `required_securities = 100`.
+Generado 2026-10-05T05:40:04Z · experimento preparado `FIRST_EQUITY_ML_12M_V0` (NO ejecutado). Fuente de datos de mercado y FX: **Yahoo Finance** (decisión del propietario; VENDOR, `CANONICAL_PROVIDER_FOR_PITQUANT`). Ningún gate se ha bajado: `required_securities = 100`.
 
 ## Matriz de gates
 
 | Gate | Required | Actual | Status | Blocking reason |
 |---|---|---|---|---|
 | D02_MONTHLY_RESEARCH_READY | >= 3 feasible walk-forward folds on consecutive READY months | 60/141 months READY, longest run 60, folds 0 | BLOCKED | longest consecutive usable run = 60 months; one fold needs 61 (train_min 36 + purge 12 + embargo 1 + test 12) |
-| US_SECURITY_IDENTITY_READY | 0 weak identity members, 0 unresolved lines | see D02 graph metrics | READY | — |
+| US_SECURITY_IDENTITY_READY | 0 weak identity members, 0 unresolved lines | 56 weak identity securities; 0 unresolved anchor lines | PARTIAL | unresolved identity evidence; 56 weak identity securities; 0 unresolved anchor lines |
 | D05_READY | accepted prices + corporate actions + adjustment method + provenance | Yahoo Finance (CANONICAL_PROVIDER_FOR_PITQUANT, VENDOR) | READY | — |
 | BENCHMARK_RETURN_BASIS_READY | first ML US scope: comparable return + currency basis, accepted provenance | US rows comparable 7055/7055; non-US via USD conversion (PROXY) | READY | — |
 | RESEARCH_SECURITY_COVERAGE_READY | >= 100 usable securities | 51 usable (strict); 51 if D05 were accepted; 100 with snapshots | BLOCKED | fewer than 100 securities satisfy all PIT eligibility conditions; see the per-security audit |
 | US_FUNDAMENTALS_READY | >= 30 securities with >= 36 usable PIT months | 40 securities | READY | — |
 | HOLDOUT_SEALED | 0 research rows inside 2022-10-01..2025-09-30 | 0 snapshots inside the holdout | READY | — |
 | RESEARCH_DATA_READY | all data gates READY | derived | BLOCKED | at least one data gate is not READY |
-| FIRST_ML_BASELINE_READY | all required gates READY | false | BLOCKED | required gates not READY: D02_MONTHLY_RESEARCH_READY, RESEARCH_SECURITY_COVERAGE_READY, RESEARCH_DATA_READY |
+| FIRST_ML_BASELINE_READY | all required gates READY | false | BLOCKED | required gates not READY: D02_MONTHLY_RESEARCH_READY, US_SECURITY_IDENTITY_READY, RESEARCH_SECURITY_COVERAGE_READY, RESEARCH_DATA_READY |
 
 `FIRST_ML_BASELINE_READY = false` (calcularlo no entrena nada).
 
 La matriz corresponde al primer ML. Los `flags` del JSON describen el Research Lab histórico y su disponibilidad para recopilar features; no autorizan entrenamiento ni sustituyen estos gates.
+
+## Folds factibles
+
+| fold | train start | train end | test start | test end | train months | purge | embargo |
+|---|---|---|---|---|---|---|---|
 
 ## D02 mensual
 
@@ -26,99 +31,102 @@ La matriz corresponde al primer ML. Los `flags` del JSON describen el Research L
 |---|---|
 | total_months | 141 |
 | ready_months | 60 |
+| membership_ready_months | 60 |
 | partial_months | 0 |
-| blocked_months | 0 |
-| no_anchor_months | 81 |
+| blocked_months | 81 |
+| no_anchor_months | 0 |
 | coverage_pct | 42.600 |
 | longest_run | 60 |
 | feasible_folds | 0 |
 | reason_if_no_folds | longest consecutive usable run = 60 months; one fold needs 61 (train_min 36 + purge 12 + embargo 1 + test 12) |
+| required_continuous_months | 85 |
+| weak_identity_securities | 56 |
 
 Walk-forward factible (train_min 36, purge 12, embargo 1, test 12): **0 folds** — longest consecutive usable run = 60 months; one fold needs 61 (train_min 36 + purge 12 + embargo 1 + test 12)
 
 | month | expected_universe | resolved_members | unresolved_members | identity_resolved | membership_evidence | status | blocking_reason |
 |---|---|---|---|---|---|---|---|
-| 2011-01 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2011-02 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2011-03 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2011-04 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2011-05 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2011-06 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2011-07 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2011-08 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2011-09 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2011-10 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2011-11 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2011-12 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2012-01 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2012-02 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2012-03 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2012-04 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2012-05 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2012-06 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2012-07 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2012-08 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2012-09 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2012-10 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2012-11 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2012-12 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2013-01 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2013-02 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2013-03 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2013-04 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2013-05 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2013-06 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2013-07 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2013-08 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2013-09 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2013-10 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2013-11 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2013-12 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2014-01 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2014-02 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2014-03 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2014-04 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2014-05 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2014-06 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2014-07 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2014-08 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2014-09 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2014-10 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2014-11 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2014-12 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2015-01 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2015-02 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2015-03 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2015-04 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2015-05 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2015-06 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2015-07 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2015-08 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2015-09 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2015-10 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2015-11 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2015-12 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2016-01 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2016-02 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2016-03 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2016-04 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2016-05 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2016-06 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2016-07 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2016-08 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2016-09 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2016-10 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2016-11 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2016-12 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2017-01 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2017-02 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2017-03 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2017-04 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2017-05 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2017-06 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2017-07 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2017-08 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
-| 2017-09 | — | — | 1 | False | — | NO_ANCHOR | no anchor on one side of this date inside the pre-holdout chain |
+| 2011-01 | — | — | 1 | False | segment 2010-09-30→2011-03-31 | BLOCKED | 17 securities with an effective-date uncertainty covering this decision_at |
+| 2011-02 | — | — | 1 | False | segment 2010-09-30→2011-03-31 | BLOCKED | 19 securities with an effective-date uncertainty covering this decision_at |
+| 2011-03 | — | — | 1 | False | segment 2010-09-30→2011-03-31 | BLOCKED | 19 securities with an effective-date uncertainty covering this decision_at |
+| 2011-04 | — | — | 1 | False | segment 2011-03-31→2011-09-30 | BLOCKED | 13 securities with an effective-date uncertainty covering this decision_at |
+| 2011-05 | — | — | 1 | False | segment 2011-03-31→2011-09-30 | BLOCKED | 13 securities with an effective-date uncertainty covering this decision_at |
+| 2011-06 | — | — | 1 | False | segment 2011-03-31→2011-09-30 | BLOCKED | 13 securities with an effective-date uncertainty covering this decision_at |
+| 2011-07 | — | — | 1 | False | segment 2011-03-31→2011-09-30 | BLOCKED | 14 securities with an effective-date uncertainty covering this decision_at |
+| 2011-08 | — | — | 1 | False | segment 2011-03-31→2011-09-30 | BLOCKED | 14 securities with an effective-date uncertainty covering this decision_at |
+| 2011-09 | — | — | 1 | False | segment 2011-03-31→2011-09-30 | BLOCKED | 14 securities with an effective-date uncertainty covering this decision_at |
+| 2011-10 | — | — | 1 | False | segment 2011-09-30→2012-03-31 | BLOCKED | 39 securities with an effective-date uncertainty covering this decision_at |
+| 2011-11 | — | — | 1 | False | segment 2011-09-30→2012-03-31 | BLOCKED | 39 securities with an effective-date uncertainty covering this decision_at |
+| 2011-12 | — | — | 1 | False | segment 2011-09-30→2012-03-31 | BLOCKED | 39 securities with an effective-date uncertainty covering this decision_at |
+| 2012-01 | — | — | 1 | False | segment 2011-09-30→2012-03-31 | BLOCKED | 39 securities with an effective-date uncertainty covering this decision_at |
+| 2012-02 | — | — | 1 | False | segment 2011-09-30→2012-03-31 | BLOCKED | 39 securities with an effective-date uncertainty covering this decision_at |
+| 2012-03 | — | — | 1 | False | segment 2011-09-30→2012-03-31 | BLOCKED | 39 securities with an effective-date uncertainty covering this decision_at |
+| 2012-04 | — | — | 1 | False | segment 2012-03-31→2012-09-30 | BLOCKED | 24 securities with an effective-date uncertainty covering this decision_at |
+| 2012-05 | — | — | 1 | False | segment 2012-03-31→2012-09-30 | BLOCKED | 24 securities with an effective-date uncertainty covering this decision_at |
+| 2012-06 | — | — | 1 | False | segment 2012-03-31→2012-09-30 | BLOCKED | 26 securities with an effective-date uncertainty covering this decision_at |
+| 2012-07 | — | — | 1 | False | segment 2012-03-31→2012-09-30 | BLOCKED | 26 securities with an effective-date uncertainty covering this decision_at |
+| 2012-08 | — | — | 1 | False | segment 2012-03-31→2012-09-30 | BLOCKED | 26 securities with an effective-date uncertainty covering this decision_at |
+| 2012-09 | — | — | 1 | False | segment 2012-03-31→2012-09-30 | BLOCKED | 26 securities with an effective-date uncertainty covering this decision_at |
+| 2012-10 | — | — | 1 | False | segment 2012-09-30→2013-03-31 | BLOCKED | 11 securities with an effective-date uncertainty covering this decision_at |
+| 2012-11 | — | — | 1 | False | segment 2012-09-30→2013-03-31 | BLOCKED | 11 securities with an effective-date uncertainty covering this decision_at |
+| 2012-12 | — | — | 1 | False | segment 2012-09-30→2013-03-31 | BLOCKED | 11 securities with an effective-date uncertainty covering this decision_at |
+| 2013-01 | — | — | 1 | False | segment 2012-09-30→2013-03-31 | BLOCKED | 11 securities with an effective-date uncertainty covering this decision_at |
+| 2013-02 | — | — | 1 | False | segment 2012-09-30→2013-03-31 | BLOCKED | 11 securities with an effective-date uncertainty covering this decision_at |
+| 2013-03 | — | — | 1 | False | segment 2012-09-30→2013-03-31 | BLOCKED | 13 securities with an effective-date uncertainty covering this decision_at |
+| 2013-04 | — | — | 1 | False | segment 2013-03-31→2013-09-30 | BLOCKED | 3 securities with an effective-date uncertainty covering this decision_at |
+| 2013-05 | — | — | 1 | False | segment 2013-03-31→2013-09-30 | BLOCKED | 3 securities with an effective-date uncertainty covering this decision_at |
+| 2013-06 | — | — | 1 | False | segment 2013-03-31→2013-09-30 | BLOCKED | 3 securities with an effective-date uncertainty covering this decision_at |
+| 2013-07 | — | — | 1 | False | segment 2013-03-31→2013-09-30 | BLOCKED | 4 securities with an effective-date uncertainty covering this decision_at |
+| 2013-08 | — | — | 1 | False | segment 2013-03-31→2013-09-30 | BLOCKED | 4 securities with an effective-date uncertainty covering this decision_at |
+| 2013-09 | — | — | 1 | False | segment 2013-03-31→2013-09-30 | BLOCKED | 4 securities with an effective-date uncertainty covering this decision_at |
+| 2013-10 | — | — | 1 | False | segment 2013-09-30→2014-03-31 | BLOCKED | 4 securities with an effective-date uncertainty covering this decision_at |
+| 2013-11 | — | — | 1 | False | segment 2013-09-30→2014-03-31 | BLOCKED | 4 securities with an effective-date uncertainty covering this decision_at |
+| 2013-12 | — | — | 1 | False | segment 2013-09-30→2014-03-31 | BLOCKED | 4 securities with an effective-date uncertainty covering this decision_at |
+| 2014-01 | — | — | 1 | False | segment 2013-09-30→2014-03-31 | BLOCKED | 4 securities with an effective-date uncertainty covering this decision_at |
+| 2014-02 | — | — | 1 | False | segment 2013-09-30→2014-03-31 | BLOCKED | 4 securities with an effective-date uncertainty covering this decision_at |
+| 2014-03 | — | — | 1 | False | segment 2013-09-30→2014-03-31 | BLOCKED | 4 securities with an effective-date uncertainty covering this decision_at |
+| 2014-04 | — | — | 1 | False | segment 2014-03-31→2015-03-31 | BLOCKED | 15 securities with an effective-date uncertainty covering this decision_at |
+| 2014-05 | — | — | 1 | False | segment 2014-03-31→2015-03-31 | BLOCKED | 15 securities with an effective-date uncertainty covering this decision_at |
+| 2014-06 | — | — | 1 | False | segment 2014-03-31→2015-03-31 | BLOCKED | 15 securities with an effective-date uncertainty covering this decision_at |
+| 2014-07 | — | — | 1 | False | segment 2014-03-31→2015-03-31 | BLOCKED | 15 securities with an effective-date uncertainty covering this decision_at |
+| 2014-08 | — | — | 1 | False | segment 2014-03-31→2015-03-31 | BLOCKED | 15 securities with an effective-date uncertainty covering this decision_at |
+| 2014-09 | — | — | 1 | False | segment 2014-03-31→2015-03-31 | BLOCKED | 15 securities with an effective-date uncertainty covering this decision_at |
+| 2014-10 | — | — | 1 | False | segment 2014-03-31→2015-03-31 | BLOCKED | 15 securities with an effective-date uncertainty covering this decision_at |
+| 2014-11 | — | — | 1 | False | segment 2014-03-31→2015-03-31 | BLOCKED | 15 securities with an effective-date uncertainty covering this decision_at |
+| 2014-12 | — | — | 1 | False | segment 2014-03-31→2015-03-31 | BLOCKED | 15 securities with an effective-date uncertainty covering this decision_at |
+| 2015-01 | — | — | 1 | False | segment 2014-03-31→2015-03-31 | BLOCKED | 15 securities with an effective-date uncertainty covering this decision_at |
+| 2015-02 | — | — | 1 | False | segment 2014-03-31→2015-03-31 | BLOCKED | 15 securities with an effective-date uncertainty covering this decision_at |
+| 2015-03 | — | — | 1 | False | segment 2014-03-31→2015-03-31 | BLOCKED | 15 securities with an effective-date uncertainty covering this decision_at |
+| 2015-04 | — | — | 1 | False | segment 2015-03-31→2015-09-30 | BLOCKED | 25 securities with an effective-date uncertainty covering this decision_at |
+| 2015-05 | — | — | 1 | False | segment 2015-03-31→2015-09-30 | BLOCKED | 25 securities with an effective-date uncertainty covering this decision_at |
+| 2015-06 | — | — | 1 | False | segment 2015-03-31→2015-09-30 | BLOCKED | 25 securities with an effective-date uncertainty covering this decision_at |
+| 2015-07 | — | — | 1 | False | segment 2015-03-31→2015-09-30 | BLOCKED | 25 securities with an effective-date uncertainty covering this decision_at |
+| 2015-08 | — | — | 1 | False | segment 2015-03-31→2015-09-30 | BLOCKED | 25 securities with an effective-date uncertainty covering this decision_at |
+| 2015-09 | — | — | 1 | False | segment 2015-03-31→2015-09-30 | BLOCKED | 25 securities with an effective-date uncertainty covering this decision_at |
+| 2015-10 | — | — | 1 | False | segment 2015-09-30→2016-03-31 | BLOCKED | 16 securities with an effective-date uncertainty covering this decision_at |
+| 2015-11 | — | — | 1 | False | segment 2015-09-30→2016-03-31 | BLOCKED | 16 securities with an effective-date uncertainty covering this decision_at |
+| 2015-12 | — | — | 1 | False | segment 2015-09-30→2016-03-31 | BLOCKED | 16 securities with an effective-date uncertainty covering this decision_at |
+| 2016-01 | — | — | 1 | False | segment 2015-09-30→2016-03-31 | BLOCKED | 16 securities with an effective-date uncertainty covering this decision_at |
+| 2016-02 | — | — | 1 | False | segment 2015-09-30→2016-03-31 | BLOCKED | 17 securities with an effective-date uncertainty covering this decision_at |
+| 2016-03 | — | — | 1 | False | segment 2015-09-30→2016-03-31 | BLOCKED | 17 securities with an effective-date uncertainty covering this decision_at |
+| 2016-04 | — | — | 1 | False | segment 2016-03-31→2016-09-30 | BLOCKED | 16 securities with an effective-date uncertainty covering this decision_at |
+| 2016-05 | — | — | 1 | False | segment 2016-03-31→2016-09-30 | BLOCKED | 16 securities with an effective-date uncertainty covering this decision_at |
+| 2016-06 | — | — | 1 | False | segment 2016-03-31→2016-09-30 | BLOCKED | 16 securities with an effective-date uncertainty covering this decision_at |
+| 2016-07 | — | — | 1 | False | segment 2016-03-31→2016-09-30 | BLOCKED | 16 securities with an effective-date uncertainty covering this decision_at |
+| 2016-08 | — | — | 1 | False | segment 2016-03-31→2016-09-30 | BLOCKED | 16 securities with an effective-date uncertainty covering this decision_at |
+| 2016-09 | — | — | 1 | False | segment 2016-03-31→2016-09-30 | BLOCKED | 16 securities with an effective-date uncertainty covering this decision_at |
+| 2016-10 | — | — | 1 | False | segment 2016-09-30→2017-03-31 | BLOCKED | 19 securities with an effective-date uncertainty covering this decision_at |
+| 2016-11 | — | — | 1 | False | segment 2016-09-30→2017-03-31 | BLOCKED | 19 securities with an effective-date uncertainty covering this decision_at |
+| 2016-12 | — | — | 1 | False | segment 2016-09-30→2017-03-31 | BLOCKED | 19 securities with an effective-date uncertainty covering this decision_at |
+| 2017-01 | — | — | 1 | False | segment 2016-09-30→2017-03-31 | BLOCKED | 19 securities with an effective-date uncertainty covering this decision_at |
+| 2017-02 | — | — | 1 | False | segment 2016-09-30→2017-03-31 | BLOCKED | 19 securities with an effective-date uncertainty covering this decision_at |
+| 2017-03 | — | — | 1 | False | segment 2016-09-30→2017-03-31 | BLOCKED | 25 securities with an effective-date uncertainty covering this decision_at |
+| 2017-04 | — | — | 1 | False | segment 2017-03-31→2017-09-30 | BLOCKED | 9 securities with an effective-date uncertainty covering this decision_at |
+| 2017-05 | — | — | 1 | False | segment 2017-03-31→2017-09-30 | BLOCKED | 10 securities with an effective-date uncertainty covering this decision_at |
+| 2017-06 | — | — | 1 | False | segment 2017-03-31→2017-09-30 | BLOCKED | 10 securities with an effective-date uncertainty covering this decision_at |
+| 2017-07 | — | — | 1 | False | segment 2017-03-31→2017-09-30 | BLOCKED | 10 securities with an effective-date uncertainty covering this decision_at |
+| 2017-08 | — | — | 1 | False | segment 2017-03-31→2017-09-30 | BLOCKED | 10 securities with an effective-date uncertainty covering this decision_at |
+| 2017-09 | — | — | 1 | False | segment 2017-03-31→2017-09-30 | BLOCKED | 10 securities with an effective-date uncertainty covering this decision_at |
 | 2017-10 | 504 | 504 | — | True | segment 2017-09-30→2018-03-31; forward==backward | READY | — |
 | 2017-11 | 504 | 504 | — | True | segment 2017-09-30→2018-03-31; forward==backward | READY | — |
 | 2017-12 | 504 | 504 | — | True | segment 2017-09-30→2018-03-31; forward==backward | READY | — |
@@ -192,6 +200,211 @@ Walk-forward factible (train_min 36, purge 12, embargo 1, test 12): **0 folds** 
 | configured_labels_unmatched | ['CABK', 'NTGY', 'ROG', 'SAN'] |
 | usable_strict | 51 |
 | usable_preview | 51 |
+| us_configured_with_snapshots | 55 |
+| non_us_configured_with_snapshots | 45 |
+| global_eligible_under_current_contract | 51 |
+| distinct_issuer_ids_with_eligible_rows | 51 |
+| scope | US_ONLY: XNYS membership + SPY comparable benchmark; non-US excluded by current eligibility contract |
+| iid_effective_sample_size | — |
+| ess_reason | Overlapping 12M targets and shared market regimes; counts do not establish statistical independence. |
+
+| mes DEV | securities elegibles PRICE 12M |
+|---|---|
+| 2011-01 | 0 |
+| 2011-02 | 0 |
+| 2011-03 | 0 |
+| 2011-04 | 0 |
+| 2011-05 | 0 |
+| 2011-06 | 0 |
+| 2011-07 | 0 |
+| 2011-08 | 0 |
+| 2011-09 | 0 |
+| 2011-10 | 0 |
+| 2011-11 | 0 |
+| 2011-12 | 0 |
+| 2012-01 | 0 |
+| 2012-02 | 0 |
+| 2012-03 | 0 |
+| 2012-04 | 0 |
+| 2012-05 | 0 |
+| 2012-06 | 0 |
+| 2012-07 | 0 |
+| 2012-08 | 0 |
+| 2012-09 | 0 |
+| 2012-10 | 0 |
+| 2012-11 | 0 |
+| 2012-12 | 0 |
+| 2013-01 | 0 |
+| 2013-02 | 0 |
+| 2013-03 | 0 |
+| 2013-04 | 0 |
+| 2013-05 | 0 |
+| 2013-06 | 0 |
+| 2013-07 | 0 |
+| 2013-08 | 0 |
+| 2013-09 | 0 |
+| 2013-10 | 0 |
+| 2013-11 | 0 |
+| 2013-12 | 0 |
+| 2014-01 | 0 |
+| 2014-02 | 0 |
+| 2014-03 | 0 |
+| 2014-04 | 0 |
+| 2014-05 | 0 |
+| 2014-06 | 0 |
+| 2014-07 | 0 |
+| 2014-08 | 0 |
+| 2014-09 | 0 |
+| 2014-10 | 0 |
+| 2014-11 | 0 |
+| 2014-12 | 0 |
+| 2015-01 | 0 |
+| 2015-02 | 0 |
+| 2015-03 | 0 |
+| 2015-04 | 0 |
+| 2015-05 | 0 |
+| 2015-06 | 0 |
+| 2015-07 | 0 |
+| 2015-08 | 0 |
+| 2015-09 | 0 |
+| 2015-10 | 0 |
+| 2015-11 | 0 |
+| 2015-12 | 0 |
+| 2016-01 | 0 |
+| 2016-02 | 0 |
+| 2016-03 | 0 |
+| 2016-04 | 0 |
+| 2016-05 | 0 |
+| 2016-06 | 0 |
+| 2016-07 | 0 |
+| 2016-08 | 0 |
+| 2016-09 | 0 |
+| 2016-10 | 0 |
+| 2016-11 | 0 |
+| 2016-12 | 0 |
+| 2017-01 | 0 |
+| 2017-02 | 0 |
+| 2017-03 | 0 |
+| 2017-04 | 0 |
+| 2017-05 | 0 |
+| 2017-06 | 0 |
+| 2017-07 | 0 |
+| 2017-08 | 0 |
+| 2017-09 | 0 |
+| 2017-10 | 49 |
+| 2017-11 | 49 |
+| 2017-12 | 49 |
+| 2018-01 | 49 |
+| 2018-02 | 49 |
+| 2018-03 | 49 |
+| 2018-04 | 49 |
+| 2018-05 | 49 |
+| 2018-06 | 49 |
+| 2018-07 | 49 |
+| 2018-08 | 49 |
+| 2018-09 | 49 |
+| 2018-10 | 49 |
+| 2018-11 | 50 |
+| 2018-12 | 50 |
+| 2019-01 | 50 |
+| 2019-02 | 50 |
+| 2019-03 | 50 |
+| 2019-04 | 50 |
+| 2019-05 | 50 |
+| 2019-06 | 50 |
+| 2019-07 | 50 |
+| 2019-08 | 50 |
+| 2019-09 | 50 |
+| 2019-10 | 50 |
+| 2019-11 | 50 |
+| 2019-12 | 50 |
+| 2020-01 | 50 |
+| 2020-02 | 50 |
+| 2020-03 | 50 |
+| 2020-04 | 50 |
+| 2020-05 | 50 |
+| 2020-06 | 50 |
+| 2020-07 | 50 |
+| 2020-08 | 50 |
+| 2020-09 | 50 |
+| 2020-10 | 50 |
+| 2020-11 | 50 |
+| 2020-12 | 50 |
+| 2021-01 | 51 |
+| 2021-02 | 51 |
+| 2021-03 | 51 |
+| 2021-04 | 51 |
+| 2021-05 | 51 |
+| 2021-06 | 51 |
+| 2021-07 | 51 |
+| 2021-08 | 51 |
+| 2021-09 | 51 |
+| 2021-10 | 0 |
+| 2021-11 | 0 |
+| 2021-12 | 0 |
+| 2022-01 | 0 |
+| 2022-02 | 0 |
+| 2022-03 | 0 |
+| 2022-04 | 0 |
+| 2022-05 | 0 |
+| 2022-06 | 0 |
+| 2022-07 | 0 |
+| 2022-08 | 0 |
+| 2022-09 | 0 |
+
+| security | meses elegibles PRICE 12M |
+|---|---|
+| AAPL | 48 |
+| ABBV | 48 |
+| ABT | 48 |
+| ACN | 48 |
+| ADBE | 48 |
+| AMGN | 48 |
+| AMZN | 48 |
+| AVGO | 48 |
+| BA | 48 |
+| BAC | 48 |
+| CAT | 48 |
+| COST | 48 |
+| CRM | 48 |
+| CSCO | 48 |
+| CVX | 48 |
+| DIS | 48 |
+| HD | 48 |
+| HON | 48 |
+| IBM | 48 |
+| INTU | 48 |
+| JNJ | 48 |
+| JPM | 48 |
+| KO | 48 |
+| LIN | 35 |
+| LLY | 48 |
+| LMT | 48 |
+| LOW | 48 |
+| MA | 48 |
+| MCD | 48 |
+| META | 48 |
+| MRK | 48 |
+| MSFT | 48 |
+| NEE | 48 |
+| NFLX | 48 |
+| NVDA | 48 |
+| ORCL | 48 |
+| PEP | 48 |
+| PFE | 48 |
+| PG | 48 |
+| QCOM | 48 |
+| SPGI | 48 |
+| TMO | 48 |
+| TSLA | 9 |
+| TXN | 48 |
+| UNH | 48 |
+| UNP | 48 |
+| UPS | 48 |
+| V | 48 |
+| VZ | 48 |
+| WFC | 48 |
+| WMT | 48 |
 
 | security_id | ticker_at_T | issuer_id | market | first_date | last_date | identity_status | price_status | fundamental_status | reason_not_usable |
 |---|---|---|---|---|---|---|---|---|---|
@@ -487,8 +700,9 @@ Walk-forward factible (train_min 36, purge 12, embargo 1, test 12): **0 folds** 
 | gate | estado | actual | bloqueo técnico |
 |---|---|---|---|
 | D02_MONTHLY_RESEARCH_READY | BLOCKED | 60/141 months READY, longest run 60, folds 0 | longest consecutive usable run = 60 months; one fold needs 61 (train_min 36 + purge 12 + embargo 1 + test 12) |
+| US_SECURITY_IDENTITY_READY | PARTIAL | 56 weak identity securities; 0 unresolved anchor lines | unresolved identity evidence; 56 weak identity securities; 0 unresolved anchor lines |
 | RESEARCH_SECURITY_COVERAGE_READY | BLOCKED | 51 usable (strict); 51 if D05 were accepted; 100 with snapshots | fewer than 100 securities satisfy all PIT eligibility conditions; see the per-security audit |
 | RESEARCH_DATA_READY | BLOCKED | derived | at least one data gate is not READY |
-| FIRST_ML_BASELINE_READY | BLOCKED | false | required gates not READY: D02_MONTHLY_RESEARCH_READY, RESEARCH_SECURITY_COVERAGE_READY, RESEARCH_DATA_READY |
+| FIRST_ML_BASELINE_READY | BLOCKED | false | required gates not READY: D02_MONTHLY_RESEARCH_READY, US_SECURITY_IDENTITY_READY, RESEARCH_SECURITY_COVERAGE_READY, RESEARCH_DATA_READY |
 
-PPoG→PPG está aprobado y aplicado como alias documental. La extensión SEC requiere el correo de contacto; no se inventan anclas anteriores.
+PPoG→PPG está aprobado y aplicado como alias documental. La extensión SEC se ha ejecutado con contacto runtime; discrepancias documentales permanecen bloqueadas.
