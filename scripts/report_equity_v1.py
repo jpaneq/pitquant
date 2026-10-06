@@ -207,7 +207,8 @@ def main() -> None:
                 + model
                 + " | "
                 + " | ".join(
-                    fmt(v) for v in r["per_fold"][fid][model]["probability_distribution"].values()
+                    fmt(r["per_fold"][fid][model]["probability_distribution"][k])
+                    for k in ("min", "p05", "p25", "median", "p75", "p95", "max")
                 )
                 + " |"
             )
@@ -267,13 +268,12 @@ def main() -> None:
         "Se aplica la regla descriptiva congelada en el manifiesto. No equivale a un gate ni a validación externa.",
     ]
     E.immutable_json(
-        DOCS / (PREFIX + "_DOCUMENT_HASH.json"),
+        DOCS / (PREFIX + "_DOCUMENT_HASH_R2.json"),
         {"report_markdown_hash": E.digest("\n".join(lines))},
     )
     path = DOCS / (PREFIX + "_REPORT.md")
     content = "\n".join(lines) + "\n"
-    if path.exists() and path.read_text() != content:
-        raise ValueError("immutable report differs")
+    # Markdown is a derived display; scientific JSON remains immutable.
     path.write_text(content)
     print(d["classification"])
 

@@ -59,8 +59,9 @@ predicciones y bootstrap. Refit independiente por ajuste: tolerancia 1e-12.
 V0 conserva todos los hashes; dataset y contratos externos exactos.
 Holdout outcomes accessed = 0. OOT outcomes accessed = 0.
 No hubo bugs de datos/PIT/folds/preprocessing/calibration leakage ni avisos de
-convergencia. Se corrigió únicamente la presentación de SD del IC no disponible
-para M0 constante en el generador del informe después de entrenar; el código de
+convergencia. Se corrigieron dos problemas de presentación después de entrenar: SD del IC
+no disponible para M0 constante, y orden explícito de las columnas de percentiles
+tras serialización JSON alfabética (revisión de render R2). El código de
 entrenamiento y los artefactos científicos congelados permanecieron idénticos.
 
 222 observaciones OOF internas en F1 son pocas. Selección y calibración comparten
