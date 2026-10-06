@@ -82,7 +82,11 @@ def diagnostics(
         stability[m] = {
             k: {
                 "values": [report["per_fold"][f"F{i}"][m][k] for i in (1, 2, 3)],
-                "std": float(np.std([report["per_fold"][f"F{i}"][m][k] for i in (1, 2, 3)])),
+                "std": (
+                    float(np.std([report["per_fold"][f"F{i}"][m][k] for i in (1, 2, 3)]))
+                    if all(report["per_fold"][f"F{i}"][m][k] is not None for i in (1, 2, 3))
+                    else None
+                ),
             }
             for k in ("auc", "log_loss", "brier", "rank_ic")
         }
