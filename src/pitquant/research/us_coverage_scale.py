@@ -21,6 +21,9 @@ CORE_TAGS = frozenset(
     + F.DEBT_TAGS
     + ("DebtAndCapitalLeaseObligations", "LongTermDebtAndCapitalLeaseObligations")
 )
+KNOWN_MAPPED_TAGS = CORE_TAGS | frozenset(
+    tag for family in (*F.TAGS.values(), *FV.EXTRA_TAGS.values()) for tag in family
+)
 
 
 def validate_collection(
@@ -163,11 +166,33 @@ def mapping_debt(
     ]
     ranked = []
     for concept, first_available in concepts.items():
+        name = concept.lower()
+        if concept in KNOWN_MAPPED_TAGS:
+            continue
+        families = []
+        if "debt" in name or "borrowing" in name or "lease" in name:
+            families.append("fund_debt_to_assets")
+        if ("revenue" in name or "sales" in name) and not any(
+            term in name for term in ("cost", "tax", "receivable", "deferred")
+        ):
+            families += ["fund_net_margin", "fund_revenue_yoy"]
+        if any(term in name for term in ("netincome", "netearnings", "profitloss")) and not any(
+            term in name for term in ("comprehensive", "tax", "otherincome")
+        ):
+            families.append("fund_net_margin")
+        if not families:
+            continue
         units = {
             (r["issuer_id"], r["month"])
             for r in missing
             if r["issuer_id"] in first_available
             and first_available[r["issuer_id"]] < datetime.fromisoformat(r["decision_at"])
+            and any(
+                r.get("core_fundamentals", {}).get(field, {}).get("value") is None
+                and r.get("core_fundamentals", {}).get(field, {}).get("missing_reason")
+                == "MAPPING_GAP"
+                for field in families
+            )
         }
         if units:
             ranked.append(
@@ -176,6 +201,7 @@ def mapping_debt(
                     "issuer_count": len({i for i, _ in units}),
                     "issuer_month_impact": len(units),
                     "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+                    "core_families_for_semantic_review": families,
                 }
             )
     return sorted(ranked, key=lambda r: (-r["issuer_month_impact"], r["concept"]))

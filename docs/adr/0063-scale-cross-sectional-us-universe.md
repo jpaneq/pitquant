@@ -28,6 +28,8 @@ El registro histórico SEC de nombres/CIK permite descubrir emisores ausentes de
 
 Un 404 real y archivado de companyfacts permite la recuperación nativa desde header y XBRL propios de cada filing. Un fallo de autorización, presupuesto o caché nunca equivale a ese 404. No se alteran mappings ni fórmulas. La descarga mantiene una reserva de 5 GiB en disco: al alcanzarla se clasifica el resto como bloqueo de capacidad y se conservan los originales.
 
+Si el presupuesto impide obtener un header, los hechos de companyfacts que el ingestor nativo rechazaría por esa ausencia se excluyen de la entrada y se cuentan de forma agregada. Los originales quedan archivados y cada filing ausente conserva su aviso. Los hechos con filing existente o header cacheado 200 pasan todavía por la validación nativa; no se omite ninguna validación ni se cambia la fecha de disponibilidad. Esto evita generar miles de avisos SQL duplicados durante un cierre por capacidad.
+
 No perseguir perfección: detener al procesar el roster, clasificar todos los casos y cuantificar bloqueos. Registrar ausencia de Yahoo y desconocimiento de lifecycle; no inferir delisting, adquisición o bankruptcy desde una retirada del índice o un 404. La cobertura conseguida puede conservar sesgo de disponibilidad hacia supervivientes; se presenta explícitamente.
 
 ## Consecuencias

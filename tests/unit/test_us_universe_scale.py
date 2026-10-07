@@ -25,6 +25,12 @@ from tests.unit.test_fundamental_period_tolerance import fact
 AT = datetime(2015, 2, 2, 14, tzinfo=UTC)
 
 
+@pytest.fixture(autouse=True)
+def synthetic_disk_capacity(monkeypatch):
+    """Mocked HTTP tests must not depend on available space on the developer's disk."""
+    monkeypatch.setattr(U.shutil, "disk_usage", lambda _: SimpleNamespace(free=20 * 1024**3))
+
+
 def test_collection_stop_rule_rejects_pending_but_allows_classified_provider_failures():
     roster = [
         {
@@ -46,6 +52,39 @@ def test_collection_stop_rule_rejects_pending_but_allows_classified_provider_fai
     assert closed["stop_rule_met"]
     assert closed["sec_states"] == {"FAILED": 1}
     assert not closed["all_ready_required"]
+
+
+@pytest.mark.pit
+def test_resource_budget_rejects_only_uncached_headers_and_keeps_existing_filings(tmp_path):
+    from pitquant.data.providers.sec_edgar.client import HEADER_URL
+    from pitquant.data.providers.sec_edgar.parsers import CompanyFact, accession_nodash
+    from pitquant.research.us_sec_collection import cached_header_facts
+
+    cache = mock_cache(tmp_path, lambda req: httpx.Response(200, content=b"SYNTHETIC_HEADER"))
+    accs = [f"0000999999-15-00000{i}" for i in range(1, 5)]
+    facts = [
+        CompanyFact(
+            "us-gaap",
+            "Assets",
+            "USD",
+            None,
+            date(2014, 12, 31),
+            10.0,
+            acc,
+            "10-K",
+            date(2015, 1, 1),
+            None,
+            None,
+        )
+        for acc in accs
+    ]
+    for acc, status in zip(accs[:2], (200, 0), strict=True):
+        url = HEADER_URL.format(cik=999999, acc_nodash=accession_nodash(acc), acc=acc)
+        cache.records[url] = {"status": status}
+    kept, excluded = cached_header_facts(cache, "0000999999", facts, {accs[3]})
+    assert [f.accession_number for f in kept] == [accs[0], accs[3]]
+    assert excluded == 2
+    assert len(facts) == 4  # original evidence is never rewritten
 
 
 def profile_pair():
@@ -433,11 +472,28 @@ def test_mapping_debt_no_later_concept_or_financial_family_backfill():
     after["decision_at"] = "2014-10-01T13:30:00+00:00"
     for r in (before, after):
         r["blockers"] = ["FUNDAMENTALS"]
-    concepts = {"SYN_UNMAPPED": {"ISSUER": datetime(2014, 9, 10, tzinfo=UTC)}}
+        r["core_fundamentals"] = {
+            "fund_debt_to_assets": {"value": None, "missing_reason": "MAPPING_GAP"}
+        }
+    concepts = {"SyntheticDebtBalance": {"ISSUER": datetime(2014, 9, 10, tzinfo=UTC)}}
     rank = A.mapping_debt([before, after], concepts)
     assert rank[0]["issuer_month_impact"] == 1 and rank[0]["issuer_count"] == 1
     after["blockers"].append("UNSUPPORTED_SECTOR")
     assert A.mapping_debt([before, after], concepts) == []
+
+
+def test_mapping_debt_never_proposes_existing_tags_or_unrelated_tax_fields():
+    r = row(combined=False)
+    r["blockers"] = ["FUNDAMENTALS"]
+    r["core_fundamentals"] = {
+        "fund_net_margin": {"value": None, "missing_reason": "MAPPING_GAP"},
+        "fund_debt_to_assets": {"value": None, "missing_reason": "INSUFFICIENT_HISTORY"},
+    }
+    concepts = {
+        tag: {"ISSUER": datetime(2011, 1, 1, tzinfo=UTC)}
+        for tag in ("OperatingIncomeLoss", "IncomeTaxExpenseBenefit", "SyntheticDebtBalance")
+    }
+    assert A.mapping_debt([r], concepts) == []
 
 
 def test_historical_cik_registry_exact_unique_and_ambiguous():

@@ -28,6 +28,24 @@ from pitquant.research import us_universe_scale as U
 BUDGET = 220
 
 
+def cached_header_facts(
+    cache: U.EvidenceCache, cik: str, facts: list[CompanyFact], existing: set[str]
+) -> tuple[list[CompanyFact], int]:
+    """Aggregate facts the native ingestor would reject for an unavailable header.
+
+    Keep originals in the cache. The native ingestor still validates every kept
+    header and reports unavailable filings. Avoid one SQL issue per rejected fact
+    when a resource budget has already made the header unavailable.
+    """
+    valid = set(existing)
+    for acc in {fact.accession_number for fact in facts} - existing:
+        url = HEADER_URL.format(cik=int(cik), acc_nodash=accession_nodash(acc), acc=acc)
+        if cache.records.get(url, {}).get("status") == 200:
+            valid.add(acc)
+    kept = [fact for fact in facts if fact.accession_number in valid]
+    return kept, len(facts) - len(kept)
+
+
 def prefetch(
     cache: U.EvidenceCache, cik: str, forms: list[str], existing: set[str]
 ) -> dict[str, Any]:

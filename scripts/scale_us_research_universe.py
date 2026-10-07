@@ -325,7 +325,18 @@ class BoundedSECProvider(CachedPrimaryInstanceProvider):
         ]
 
     def companyfacts(self, session: Any, cik: str) -> Any:
-        return [f for f in super().companyfacts(session, cik) if U.PRICE_START <= f.filed <= U.END]
+        from pitquant.research.us_sec_collection import OfflineTransport, cached_header_facts
+
+        facts = [f for f in super().companyfacts(session, cik) if U.PRICE_START <= f.filed <= U.END]
+        self.excluded_without_cached_header = 0
+        if isinstance(self.client.transport, OfflineTransport):
+            existing = set(
+                session.scalars(select(SecFiling.accession_number).where(SecFiling.cik == cik))
+            )
+            facts, self.excluded_without_cached_header = cached_header_facts(
+                self.client.transport.cache, cik, facts, existing
+            )
+        return facts
 
 
 def fundamentals_prefetched() -> None:
@@ -416,6 +427,7 @@ def fundamentals_prefetched() -> None:
                             "facts_rejected": report.facts_rejected,
                             "filings_recovered_from_instance": report.filings_recovered_from_instance,
                             "issues": report.issues,
+                            "facts_excluded_without_cached_header": provider.excluded_without_cached_header,
                         }
                     result["prefetch"] = fetched
                     result["companyfacts_discovery_http_status"] = cache.records.get(

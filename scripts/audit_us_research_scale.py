@@ -7,6 +7,7 @@ from __future__ import annotations
 import gzip
 import hashlib
 import json
+import re
 import subprocess
 from collections import Counter, defaultdict
 from datetime import UTC, date, datetime
@@ -306,6 +307,12 @@ def markdown_reports(universe: dict[str, Any], coverage: dict[str, Any]) -> None
         lines.append(f"| {r['concept']} | {r['issuer_count']} | {r['issuer_month_impact']} |")
     lines += [
         "",
+        "## Límites observados de colección",
+        "",
+        f"SEC: {universe['collection']['expected_sec_issuers']} emisores clasificados, `{json.dumps(universe['collection']['sec_states'], sort_keys=True)}`. Yahoo: {universe['collection']['expected_yahoo_symbols']} símbolos clasificados.",
+        "",
+        f"Reserva de disco: {universe['collection']['capacity_limited_source_count']} URLs bloqueadas por capacidad; {len(universe['collection']['capacity_limited_sec_ciks'])} CIK afectados. {universe['collection']['capacity_affected_blocked_known_issuer_months']} issuer-months conocidos tienen a la vez un bloqueo fundamental y una colección afectada por capacidad; no se afirma que todos se repararían al descargar. Los originales se conservan. Continuar esas descargas requiere capacidad adicional y una nueva revisión explícita de evidencia, sin borrar fallos anteriores.",
+        "",
         "## Decisión",
         "",
         "La muestra ampliada aumenta materialmente la información transversal disponible. Antes de un experimento estructural único conviene resolver los mayores vacíos de identidad/membresía histórica y fijar explícitamente el próximo coverage contract. El alcance actual no permite afirmar tamaño efectivo independiente, estabilidad de señal o aptitud estadística: no se han inspeccionado outcomes.",
@@ -339,6 +346,23 @@ def main() -> None:
         cache[record["url"]] = record
     primary_recheck(roster, cache)
     collection = A.validate_collection(roster, ingestion, prices)
+    capacity_ciks = set()
+    capacity_sources = [
+        r for r in cache.values() if r.get("error") == "DISK_CAPACITY_RESERVE_5_GIB"
+    ]
+    for source in capacity_sources:
+        match = re.search(r"/(?:CIK(\d{10})|data/(\d+)/)", source["url"])
+        if match:
+            capacity_ciks.add(next(g for g in match.groups() if g).zfill(10))
+    collection["download_error_counts"] = dict(
+        Counter(
+            r.get("error") or "HTTP_" + str(r["status"])
+            for r in cache.values()
+            if r["status"] != 200
+        )
+    )
+    collection["capacity_limited_source_count"] = len(capacity_sources)
+    collection["capacity_limited_sec_ciks"] = sorted(capacity_ciks)
     by_sid = {r["security_id"]: r for r in roster}
     manifest = json.loads((DOCS / "D02_MEMBERSHIP_SOURCE_MANIFEST.json").read_bytes())
     factory = make_session_factory(make_engine("sqlite:///" + str(WORK / "candidate.db")))
@@ -539,7 +563,8 @@ def main() -> None:
             # Candidates are descriptive unused concepts, not automatically accepted equivalences.
             for f in fact_rows:
                 if f.concept not in A.CORE_TAGS and any(
-                    k in f.concept.lower() for k in ("debt", "revenue", "income", "sales")
+                    k in f.concept.lower()
+                    for k in ("debt", "borrowing", "lease", "revenue", "income", "sales", "profit")
                 ):
                     current = debt_candidates[f.concept].get(issuer)
                     if current is None or f.available_at < current:
@@ -560,6 +585,17 @@ def main() -> None:
                 and not (r["legal_price_start"] and day < r["legal_price_start"])
                 and not (r["legal_price_end_exclusive"] and day >= r["legal_price_end_exclusive"])
             )
+            identity_reason = r.get("identity_reason") or r["candidate_reason"]
+            if issuer and not identity_ok:
+                if (
+                    r.get("issuer_history_start_observed")
+                    and day < r["issuer_history_start_observed"]
+                ):
+                    identity_reason = "PRIMARY_ISSUER_HISTORY_NOT_SUPPORTED_AT_DECISION"
+                elif r["legal_price_start"] and day < r["legal_price_start"]:
+                    identity_reason = "SECURITY_NOT_YET_EFFECTIVE"
+                else:
+                    identity_reason = "SECURITY_ALREADY_REPLACED"
             member = m["membership_research_eligible"]
             symbol = r["ticker_candidate"]
             qa = qa_by_symbol.get(symbol)
@@ -594,7 +630,7 @@ def main() -> None:
             blockers, reasons = [], {}
             for category, okay, reason in (
                 ("MEMBERSHIP", member, m["exclusion_reason"]),
-                ("IDENTITY", identity_ok, r.get("identity_reason") or r["candidate_reason"]),
+                ("IDENTITY", identity_ok, identity_reason),
                 ("PRICE", price_ok, price_reason),
                 (
                     "FUNDAMENTALS",
@@ -649,6 +685,19 @@ def main() -> None:
             )
         A.validate_candidate(rows)
         expanded = U.aggregate(rows, months)
+        collection["capacity_affected_blocked_known_issuer_months"] = len(
+            {
+                (row["issuer_id"], row["month"])
+                for row in rows
+                if row["issuer_id"]
+                and "FUNDAMENTALS" in row["blockers"]
+                and by_sid[row["security_id"]]["cik_candidate"] in capacity_ciks
+            }
+        )
+        collection["capacity_impact_limit"] = (
+            "Association with a capacity-affected collection, not proof that every missing field "
+            "would be repaired by downloading the blocked source; reasons overlap."
+        )
         baseline = old_comparison(session, months)
         filing_index = []
         for f in session.scalars(
@@ -845,12 +894,13 @@ def main() -> None:
         "median_percentage_increase": gain,
         "eligible_issuers": len({r["issuer_id"] for r in rows if r["eligibility"]["COMBINED"]}),
         "configured_verified_issuers": universe["unique_verified_issuers"],
+        "collection_limits": collection,
         "blockers": {
             k: A.blocker_ranking(rows, k)
             for k in ("MEMBERSHIP", "IDENTITY", "PRICE", "FUNDAMENTALS", "UNSUPPORTED_SECTOR")
         },
         "mapping_debt": mapping,
-        "mapping_debt_limit": "Unused concept presence does not prove semantic equivalence or that mapping it repairs missing coverage; impacts overlap.",
+        "mapping_debt_limit": "Existing mapped tags and unrelated tax/comprehensive-income concepts are excluded. Lexical candidates are counted only where their existing core family has MAPPING_GAP and the concept was already available. Presence does not prove semantic equivalence or that mapping repairs coverage; impacts overlap.",
         "fundamental_family": "Existing First ML core, sec-tags-4; not full-feature training readiness",
         "price_family": "Existing D05 RAW QA + contiguous 253 historical closes + benchmark availability; no forward outcomes",
         "recommendation": "CONTINUE_DATA_EXPANSION",
