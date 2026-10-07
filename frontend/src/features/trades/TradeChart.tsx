@@ -11,6 +11,7 @@ export type TradePayload = {
   bars: TradeBar[]; sma50: TradeLine[]; sma200: TradeLine[]; levels: TradeLevel[]; markers: TradeMarker[]
   decision_date: string; horizon_end: string
   outcome: { state: string; closed: boolean; return_pct: number | null; exit_date: string | null }
+  tracking: { date: string; close: number; return_pct: number; target_progress: number | null; state: string }[]
   explanation: string[]; disclaimer: string
 }
 const css = (v: string) => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#888'

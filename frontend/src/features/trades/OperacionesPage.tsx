@@ -7,6 +7,7 @@ import { TradeChart, type TradePayload } from './TradeChart'
 
 type Row = { ref: string; kind: string; date: string; market: string; ticker: string; horizon_months: number | null; decision: string; recommendation: string | null; score: number | null }
 const pct = (v: number | null) => (v == null ? '—' : `${(v * 100).toFixed(1)}%`)
+const DAY: Record<string, string> = { ON_TRACK: 'en camino', AGAINST: 'en contra', TARGET: 'OBJETIVO tocado', STOP: 'STOP tocado', AMBIGUOUS: 'objetivo y stop el mismo día', AFTER_EXIT: 'tras la salida' }
 const STATE: Record<string, string> = { IN_PROGRESS: 'en curso', TARGET_HIT: 'objetivo cumplido', STOP_HIT: 'stop tocado', EXPIRED: 'vencida', AMBIGUOUS_INTRABAR: 'ambigua', NOT_EVALUATED_YET: 'sin evaluar aún', CREATED: 'creada' }
 
 /** Visor visual de operaciones: cada decisión de la rutina (compra o no compra) y cada simulación, con velas, tendencia, entrada, objetivo, stop y salida. */
@@ -55,6 +56,16 @@ export function OperacionesPage() {
                 <CardBody>
                   <TradeChart t={chart.data} />
                   <p className="mt-2 text-[11px] text-muted"><span className="text-[#e0a030]">━ SMA50</span> · <span className="text-[#6a8cff]">━ SMA200</span> (tendencia) · línea azul = entrada, verde = objetivo, roja = stop · flecha ↑ entrada, flecha ↓ salida, círculo = decisión de no comprar.</p>
+                </CardBody>
+              </Card>
+              <Card>
+                <CardHeader title="Día a día: ¿va como se previó?" sub="Cierre de cada sesión desde la entrada frente al precio de entrada planteado" />
+                <CardBody>
+                  {chart.data.tracking.length === 0 ? <p className="text-xs text-muted">Aún no hay ninguna vela cerrada después de la entrada: la primera aparece al cierre de la siguiente sesión.</p> : (
+                    <div className="max-h-72 overflow-auto"><table className="num w-full text-xs"><thead className="sticky top-0 bg-surface text-left text-muted"><tr><th className="py-1">Fecha</th><th>Cotización</th><th>vs entrada</th><th>Camino al objetivo</th><th>Estado</th></tr></thead><tbody>
+                      {[...chart.data.tracking].reverse().map((r) => <tr key={r.date} className="border-t border-border/50"><td className="py-1">{r.date}</td><td>{r.close.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td><td className={r.return_pct >= 0 ? 'text-up' : 'text-down'}>{pct(r.return_pct)}</td><td>{r.target_progress == null ? '—' : `${(r.target_progress * 100).toFixed(0)}%`}</td><td>{DAY[r.state] ?? r.state}</td></tr>)}
+                    </tbody></table></div>
+                  )}
                 </CardBody>
               </Card>
               <Card>

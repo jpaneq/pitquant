@@ -145,6 +145,39 @@ def list_trades(session: Session, days: int = 120) -> list[dict[str, Any]]:
     return out
 
 
+def tracking_rows(
+    bars: pd.DataFrame, day0: date, entry: float, target: float | None, stop: float | None
+) -> list[dict[str, Any]]:
+    """Day-by-day follow-up: the CLOSE of every completed session after the decision against the planned entry, the share of the way to the target and that day's verdict (first touch of target/stop wins)."""
+    rows: list[dict[str, Any]] = []
+    done = False
+    for d, r in bars[bars.index > day0].iterrows():
+        state = "ON_TRACK" if r.close >= entry else "AGAINST"
+        if not done:
+            hit_t = target is not None and r.high >= target
+            hit_s = stop is not None and r.low <= stop
+            if hit_t and hit_s:
+                state, done = "AMBIGUOUS", True
+            elif hit_t:
+                state, done = "TARGET", True
+            elif hit_s:
+                state, done = "STOP", True
+        else:
+            state = "AFTER_EXIT"
+        rows.append(
+            {
+                "date": str(d),
+                "close": float(r.close),
+                "return_pct": float(r.close / entry - 1),
+                "target_progress": float((r.close - entry) / (target - entry))
+                if target and target != entry
+                else None,
+                "state": state,
+            }
+        )
+    return rows
+
+
 def routine_chart(
     session: Session, ref_pick: str, horizon: int, now: datetime | None = None
 ) -> dict[str, Any]:
@@ -267,6 +300,7 @@ def routine_chart(
             "return_pct": float(ev.return_pct) if ev else None,
             "exit_date": str(ev.outcome_date) if ev and ev.outcome_date else None,
         },
+        "tracking": tracking_rows(bars, day0, entry, target, stop) if len(bars) else [],
         "explanation": lines,
         "disclaimer": "Dinero simulado. Reglas sin validar: sirve para entender qué se planteó y qué ocurrió, no para operar.",
     }
@@ -345,4 +379,4 @@ def simulation_chart(
         + ".",
     ]
     return {"ref": f"S~{simulation_id}", "title": f"Simulación · {s.asset_type} · {day0}", "kind": "SIMULATION", "asset": s.asset_type, "decision": {"action": "SIMULATED", "recommendation": None, "score": None, "reason": "", "decided_at": str(s.decision_at)}, **chart, "levels": levels, "markers": markers,
-            "decision_date": str(day0), "horizon_end": str(s.expiration_at.date()), "outcome": {"state": out.state if out else "CREATED", "closed": bool(out and out.is_closed), "return_pct": out.realized_return if out else None, "exit_date": str(out.exit_date) if out and out.exit_date else None}, "explanation": lines, "disclaimer": "Dinero simulado."}  # fmt: skip
+            "decision_date": str(day0), "horizon_end": str(s.expiration_at.date()), "outcome": {"state": out.state if out else "CREATED", "closed": bool(out and out.is_closed), "return_pct": out.realized_return if out else None, "exit_date": str(out.exit_date) if out and out.exit_date else None}, "tracking": [], "explanation": lines, "disclaimer": "Dinero simulado."}  # fmt: skip
