@@ -55,7 +55,7 @@ export function OperacionesPage() {
                 <CardHeader title={chart.data.title} sub={`Decidida ${chart.data.decision_date} · horizonte hasta ${chart.data.horizon_end}`} right={<Badge tone={chart.data.outcome.state === 'TARGET_HIT' ? 'up' : chart.data.outcome.state === 'STOP_HIT' ? 'down' : 'neutral'}>{STATE[chart.data.outcome.state] ?? chart.data.outcome.state} · {pct(chart.data.outcome.return_pct)}</Badge>} />
                 <CardBody>
                   <TradeChart t={chart.data} />
-                  <p className="mt-2 text-[11px] text-muted"><span className="text-[#e0a030]">━ SMA50</span> · <span className="text-[#6a8cff]">━ SMA200</span> (tendencia) · línea azul = entrada, verde = objetivo, roja = stop · flecha ↑ entrada, flecha ↓ salida, círculo = decisión de no comprar.</p>
+                  <p className="mt-2 text-[11px] text-muted"><span className="text-[#e0a030]">━ SMA50</span> · <span className="text-[#6a8cff]">━ SMA200</span> (tendencia) · línea azul = entrada, verde punteada = objetivo, roja = stop · <b>línea gruesa con puntos = cierre de cada día desde la entrada (verde si está por encima de la entrada, roja si por debajo)</b> · flecha ↑ entrada, flecha ↓ salida, círculo = decisión de no comprar.</p>
                 </CardBody>
               </Card>
               <Card>

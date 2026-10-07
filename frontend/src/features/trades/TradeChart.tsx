@@ -1,4 +1,4 @@
-import { CandlestickSeries, ColorType, CrosshairMode, LineSeries, LineStyle, createChart, createSeriesMarkers, type SeriesMarker, type Time } from 'lightweight-charts'
+import { BaselineSeries, CandlestickSeries, ColorType, CrosshairMode, LineSeries, LineStyle, createChart, createSeriesMarkers, type SeriesMarker, type Time } from 'lightweight-charts'
 import { useEffect, useRef } from 'react'
 
 export type TradeBar = { date: string; open: number; high: number; low: number; close: number }
@@ -40,6 +40,16 @@ export function TradeChart({ t }: { t: TradePayload }) {
     }
     sma(t.sma50, '#e0a030', 'SMA50')
     sma(t.sma200, '#6a8cff', 'SMA200')
+    const entryLevel = t.levels.find((l) => l.kind === 'entry')?.price
+    if (entryLevel !== undefined && t.tracking.length) {
+      const base = c.addSeries(BaselineSeries, {
+        baseValue: { type: 'price', price: entryLevel },
+        topLineColor: up, topFillColor1: up + '55', topFillColor2: up + '11',
+        bottomLineColor: down, bottomFillColor1: down + '11', bottomFillColor2: down + '55',
+        lineWidth: 3, pointMarkersVisible: true, pointMarkersRadius: 3, priceLineVisible: false, lastValueVisible: true, title: 'Cierre diario',
+      })
+      base.setData([{ time: (t.markers[0]?.date ?? t.decision_date) as Time, value: entryLevel }, ...t.tracking.map((r) => ({ time: r.date as Time, value: r.close }))])
+    }
     const col = { entry: accent, target: up, stop: down, invalidation: down + 'aa' }
     for (const l of t.levels) s.createPriceLine({ price: l.price, color: col[l.kind], lineWidth: 2, lineStyle: l.kind === 'target' ? LineStyle.Dotted : l.kind === 'invalidation' ? LineStyle.Dashed : LineStyle.Solid, axisLabelVisible: true, title: l.label })
     const markers: SeriesMarker<Time>[] = t.markers.map((m) => ({
@@ -50,7 +60,10 @@ export function TradeChart({ t }: { t: TradePayload }) {
       text: m.label,
     }))
     createSeriesMarkers(s, markers.sort((a, b) => String(a.time).localeCompare(String(b.time))))
-    c.timeScale().fitContent()
+    const first = t.bars[Math.max(0, t.bars.findIndex((b) => b.date >= t.decision_date) - 30)]?.date
+    const last = t.bars[t.bars.length - 1].date
+    if (first && first < last) c.timeScale().setVisibleRange({ from: first as Time, to: last as Time })
+    else c.timeScale().fitContent()
     return () => c.remove()
   }, [t])
   if (t.bars.length === 0) return <p className="text-xs text-muted">Sin velas disponibles para este activo.</p>
