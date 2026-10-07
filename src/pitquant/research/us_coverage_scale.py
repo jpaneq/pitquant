@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import datetime
 from typing import Any
 
@@ -12,6 +12,7 @@ from pitquant.features.v0 import fundamentals as F
 from pitquant.features.v0.engine import _debt
 from pitquant.research import fundamental_recovery as FR
 from pitquant.research import us_universe_scale as U
+from pitquant.research.fundamentals_v1 import sector_status
 
 CORE_TAGS = frozenset(
     F.TAGS["revenue"]
@@ -20,6 +21,41 @@ CORE_TAGS = frozenset(
     + F.DEBT_TAGS
     + ("DebtAndCapitalLeaseObligations", "LongTermDebtAndCapitalLeaseObligations")
 )
+
+
+def validate_collection(
+    roster: list[dict[str, Any]],
+    ingestion: dict[str, Any],
+    prices: dict[str, Any],
+) -> dict[str, Any]:
+    """Do not publish coverage while a provider case still awaits classification."""
+    issuers = {
+        r["cik_candidate"]
+        for r in roster
+        if r.get("issuer_primary_match") and not sector_status(r.get("sic"))
+    }
+    symbols = {r["ticker_candidate"] for r in roster if r.get("ticker_candidate")}
+    for r in roster:
+        if not r.get("ticker_candidate") and r.get("official_ticker_legs"):
+            latest = max(
+                r["official_ticker_legs"], key=lambda leg: (leg["effective_date"], leg["event_id"])
+            )
+            symbols.add(latest["ticker"])
+    if issuers - ingestion.keys() or symbols - prices.keys():
+        raise ValueError("collection incomplete: finish classifying SEC and Yahoo cases first")
+    allowed = {"COMPLETE", "PARTIAL", "FAILED", "REUSED_PRIMARY_ARCHIVE"}
+    if any(ingestion[cik]["status"] not in allowed for cik in issuers):
+        raise ValueError("SEC case has no final classification")
+    if any(prices[symbol]["status"] not in {"READY", "BLOCKED"} for symbol in symbols):
+        raise ValueError("Yahoo case has no final classification")
+    return {
+        "expected_sec_issuers": len(issuers),
+        "expected_yahoo_symbols": len(symbols),
+        "sec_states": dict(Counter(ingestion[cik]["status"] for cik in sorted(issuers))),
+        "yahoo_states": dict(Counter(prices[symbol]["status"] for symbol in sorted(symbols))),
+        "stop_rule_met": True,
+        "all_ready_required": False,
+    }
 
 
 def core_fundamentals(facts: list[F.Fact], decision_at: datetime) -> dict[str, Any]:

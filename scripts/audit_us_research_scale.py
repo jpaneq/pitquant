@@ -338,6 +338,7 @@ def main() -> None:
         record = json.loads(line)
         cache[record["url"]] = record
     primary_recheck(roster, cache)
+    collection = A.validate_collection(roster, ingestion, prices)
     by_sid = {r["security_id"]: r for r in roster}
     manifest = json.loads((DOCS / "D02_MEMBERSHIP_SOURCE_MANIFEST.json").read_bytes())
     factory = make_session_factory(make_engine("sqlite:///" + str(WORK / "candidate.db")))
@@ -797,6 +798,7 @@ def main() -> None:
         ),
         "evidence_tiers": dict(Counter(r["membership_tier"] for r in rows)),
         "identity_states": dict(Counter(r["identity_status"] for r in roster)),
+        "collection": collection,
         "global_identity_completeness": all(r["resolved_issuer_id"] for r in roster),
         "research_identity_validity": all(
             r["issuer_id"] for r in rows if r["eligibility"]["COMBINED"]

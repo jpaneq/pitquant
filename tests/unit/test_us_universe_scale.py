@@ -25,6 +25,29 @@ from tests.unit.test_fundamental_period_tolerance import fact
 AT = datetime(2015, 2, 2, 14, tzinfo=UTC)
 
 
+def test_collection_stop_rule_rejects_pending_but_allows_classified_provider_failures():
+    roster = [
+        {
+            "cik_candidate": "999999",
+            "issuer_primary_match": True,
+            "sic": "2000",
+            "ticker_candidate": "SYN",
+        }
+    ]
+    with pytest.raises(ValueError, match="incomplete"):
+        A.validate_collection(roster, {}, {"SYN": {"status": "BLOCKED"}})
+    with pytest.raises(ValueError, match="final classification"):
+        A.validate_collection(
+            roster, {"999999": {"status": "WAITING"}}, {"SYN": {"status": "READY"}}
+        )
+    closed = A.validate_collection(
+        roster, {"999999": {"status": "FAILED"}}, {"SYN": {"status": "BLOCKED"}}
+    )
+    assert closed["stop_rule_met"]
+    assert closed["sec_states"] == {"FAILED": 1}
+    assert not closed["all_ready_required"]
+
+
 def profile_pair():
     r = {
         "cik_candidate": "0000999999",
