@@ -1,0 +1,4770 @@
+{
+  "blockers": {
+    "FUNDAMENTALS": [
+      {
+        "lost_known_issuer_months": 4415,
+        "reason": "UNSUPPORTED_SECTOR",
+        "unresolved_security_periods": 2176
+      },
+      {
+        "lost_known_issuer_months": 3476,
+        "reason": "MAPPING_GAP",
+        "unresolved_security_periods": 0
+      },
+      {
+        "lost_known_issuer_months": 2581,
+        "reason": "unresolved_tag",
+        "unresolved_security_periods": 0
+      },
+      {
+        "lost_known_issuer_months": 576,
+        "reason": "NO_PRIMARY_FACTS_ARCHIVED",
+        "unresolved_security_periods": 0
+      },
+      {
+        "lost_known_issuer_months": 365,
+        "reason": "MAPPING_GAP;unresolved_tag",
+        "unresolved_security_periods": 0
+      },
+      {
+        "lost_known_issuer_months": 214,
+        "reason": "INSUFFICIENT_HISTORY",
+        "unresolved_security_periods": 0
+      },
+      {
+        "lost_known_issuer_months": 125,
+        "reason": "NOT_MEANINGFUL;denominator_invalid",
+        "unresolved_security_periods": 0
+      },
+      {
+        "lost_known_issuer_months": 25,
+        "reason": "NOT_MEANINGFUL",
+        "unresolved_security_periods": 0
+      },
+      {
+        "lost_known_issuer_months": 23,
+        "reason": "MAPPING_GAP;denominator_invalid",
+        "unresolved_security_periods": 0
+      },
+      {
+        "lost_known_issuer_months": 10,
+        "reason": "denominator_invalid",
+        "unresolved_security_periods": 0
+      },
+      {
+        "lost_known_issuer_months": 8,
+        "reason": "MAPPING_GAP;NOT_MEANINGFUL",
+        "unresolved_security_periods": 0
+      },
+      {
+        "lost_known_issuer_months": 4,
+        "reason": "MAPPING_GAP;denominator_invalid;unresolved_tag",
+        "unresolved_security_periods": 0
+      },
+      {
+        "lost_known_issuer_months": 0,
+        "reason": "NO_VERIFIED_PRIMARY_FACTS",
+        "unresolved_security_periods": 10690
+      }
+    ],
+    "IDENTITY": [
+      {
+        "lost_known_issuer_months": 206,
+        "reason": "PRIMARY_ISSUER_HISTORY_NOT_SUPPORTED_AT_DECISION",
+        "unresolved_security_periods": 0
+      },
+      {
+        "lost_known_issuer_months": 0,
+        "reason": "AMBIGUOUS_HISTORICAL_PRIMARY_CIK",
+        "unresolved_security_periods": 5414
+      },
+      {
+        "lost_known_issuer_months": 0,
+        "reason": "COMMON_CLASS_TICKER_NOT_IN_PRIMARY_SUBMISSIONS_OR_DATED_EVENT",
+        "unresolved_security_periods": 4201
+      },
+      {
+        "lost_known_issuer_months": 0,
+        "reason": "MULTIPLE_HISTORICAL_INSTRUMENTS_REQUIRE_DATED_VENDOR_BINDING",
+        "unresolved_security_periods": 960
+      },
+      {
+        "lost_known_issuer_months": 0,
+        "reason": "NO_UNIQUE_PRIMARY_CIK_TICKER_MATCH",
+        "unresolved_security_periods": 842
+      },
+      {
+        "lost_known_issuer_months": 0,
+        "reason": "NO_EXACT_OFFICIAL_CURRENT_OR_FORMER_NAME",
+        "unresolved_security_periods": 765
+      },
+      {
+        "lost_known_issuer_months": 0,
+        "reason": "PREEXISTING_FIRST_ML_IDENTITY_AUDIT_PARTIAL",
+        "unresolved_security_periods": 170
+      },
+      {
+        "lost_known_issuer_months": 0,
+        "reason": "NO_PRIMARY_INSTRUMENT_IDENTIFIER",
+        "unresolved_security_periods": 113
+      },
+      {
+        "lost_known_issuer_months": 0,
+        "reason": "PRIMARY_ISSUER_HISTORY_STARTS_AFTER_RESEARCH_PERIOD",
+        "unresolved_security_periods": 106
+      },
+      {
+        "lost_known_issuer_months": 0,
+        "reason": "PRIMARY_ISSUER_HISTORY_ENDS_BEFORE_SECURITY_PERIOD",
+        "unresolved_security_periods": 104
+      },
+      {
+        "lost_known_issuer_months": 0,
+        "reason": "ISSUER_CONFLICT",
+        "unresolved_security_periods": 85
+      },
+      {
+        "lost_known_issuer_months": 0,
+        "reason": "PRIMARY_ISSUER_HISTORY_UNAVAILABLE",
+        "unresolved_security_periods": 85
+      },
+      {
+        "lost_known_issuer_months": 0,
+        "reason": "PRIMARY_ISSUER_HISTORY_STARTS_AFTER_SECURITY_PERIOD",
+        "unresolved_security_periods": 21
+      }
+    ],
+    "MEMBERSHIP": [
+      {
+        "lost_known_issuer_months": 1278,
+        "reason": "HISTORICAL_REFERENCE_DISAGREEMENT_OR_MISSING",
+        "unresolved_security_periods": 10550
+      },
+      {
+        "lost_known_issuer_months": 57,
+        "reason": "UNRESOLVED_SECURITY_PERIOD_OR_IDENTITY",
+        "unresolved_security_periods": 182
+      },
+      {
+        "lost_known_issuer_months": 2,
+        "reason": "CONTRADICTORY_MEMBERSHIP_SOURCES",
+        "unresolved_security_periods": 0
+      },
+      {
+        "lost_known_issuer_months": 0,
+        "reason": "NO_SUPPORTED_MEMBERSHIP_AT_T",
+        "unresolved_security_periods": 239
+      }
+    ],
+    "PRICE": [
+      {
+        "lost_known_issuer_months": 2509,
+        "reason": "MARKET_DATA_UNAVAILABLE",
+        "unresolved_security_periods": 0
+      },
+      {
+        "lost_known_issuer_months": 262,
+        "reason": "INSUFFICIENT_PRICE_HISTORY",
+        "unresolved_security_periods": 0
+      },
+      {
+        "lost_known_issuer_months": 206,
+        "reason": "IDENTITY_UNRESOLVED",
+        "unresolved_security_periods": 12866
+      },
+      {
+        "lost_known_issuer_months": 160,
+        "reason": "VENDOR_INSTRUMENT_MISMATCH",
+        "unresolved_security_periods": 0
+      }
+    ],
+    "UNSUPPORTED_SECTOR": [
+      {
+        "lost_known_issuer_months": 1728,
+        "reason": "67",
+        "unresolved_security_periods": 516
+      },
+      {
+        "lost_known_issuer_months": 1088,
+        "reason": "63",
+        "unresolved_security_periods": 723
+      },
+      {
+        "lost_known_issuer_months": 799,
+        "reason": "62",
+        "unresolved_security_periods": 85
+      },
+      {
+        "lost_known_issuer_months": 269,
+        "reason": "60",
+        "unresolved_security_periods": 682
+      },
+      {
+        "lost_known_issuer_months": 225,
+        "reason": "61",
+        "unresolved_security_periods": 85
+      },
+      {
+        "lost_known_issuer_months": 221,
+        "reason": "64",
+        "unresolved_security_periods": 85
+      },
+      {
+        "lost_known_issuer_months": 85,
+        "reason": "65",
+        "unresolved_security_periods": 0
+      }
+    ]
+  },
+  "collection_limits": {
+    "all_ready_required": false,
+    "capacity_affected_blocked_known_issuer_months": 418,
+    "capacity_impact_limit": "Association with a capacity-affected collection, not proof that every missing field would be repaired by downloading the blocked source; reasons overlap.",
+    "capacity_limited_sec_ciks": [
+      "0000004281",
+      "0000906163",
+      "0000906709",
+      "0000921738",
+      "0000945841",
+      "0001018963",
+      "0001021860",
+      "0001064728",
+      "0001070412",
+      "0001093557",
+      "0001094285",
+      "0001100682",
+      "0001137789",
+      "0001144215",
+      "0001163739",
+      "0001274494",
+      "0001280452",
+      "0001283699",
+      "0001286681",
+      "0001300514",
+      "0001335258",
+      "0001336920",
+      "0001370637",
+      "0001373715",
+      "0001402057",
+      "0001463101",
+      "0001474735",
+      "0001590895",
+      "0001590955",
+      "0001682852",
+      "0001699150",
+      "0001755672",
+      "0001757898",
+      "0001781335",
+      "0001783180",
+      "0001786842",
+      "0001792044",
+      "0001821825",
+      "0001841666"
+    ],
+    "capacity_limited_source_count": 186,
+    "download_error_counts": {
+      "DISK_CAPACITY_RESERVE_5_GIB": 186,
+      "HTTP_404": 103
+    },
+    "expected_sec_issuers": 454,
+    "expected_yahoo_symbols": 550,
+    "sec_states": {
+      "COMPLETE": 144,
+      "FAILED": 30,
+      "PARTIAL": 249,
+      "REUSED_PRIMARY_ARCHIVE": 31
+    },
+    "stop_rule_met": true,
+    "yahoo_states": {
+      "BLOCKED": 116,
+      "READY": 434
+    }
+  },
+  "configured_verified_issuers": 469,
+  "current_first_ml": {
+    "comparison_limit": "Frozen PRIMARY_COMMON_COHORT includes the previous label-safe contract; expanded candidate measures data availability only, without labels or training gates.",
+    "configured_issuers": 55,
+    "configured_securities": 55,
+    "cross_section": {
+      "maximum": 44,
+      "median": 38.0,
+      "minimum": 33,
+      "p10": 34.4,
+      "p90": 43.0
+    },
+    "eligible_issuers": 45,
+    "issuer_months": 3280,
+    "monthly": {
+      "2014-09": 34,
+      "2014-10": 34,
+      "2014-11": 34,
+      "2014-12": 34,
+      "2015-01": 34,
+      "2015-02": 34,
+      "2015-03": 33,
+      "2015-04": 34,
+      "2015-05": 34,
+      "2015-06": 35,
+      "2015-07": 35,
+      "2015-08": 36,
+      "2015-09": 36,
+      "2015-10": 36,
+      "2015-11": 36,
+      "2015-12": 36,
+      "2016-01": 36,
+      "2016-02": 36,
+      "2016-03": 36,
+      "2016-04": 36,
+      "2016-05": 36,
+      "2016-06": 36,
+      "2016-07": 36,
+      "2016-08": 36,
+      "2016-09": 36,
+      "2016-10": 36,
+      "2016-11": 36,
+      "2016-12": 36,
+      "2017-01": 36,
+      "2017-02": 36,
+      "2017-03": 37,
+      "2017-04": 37,
+      "2017-05": 37,
+      "2017-06": 37,
+      "2017-07": 37,
+      "2017-08": 37,
+      "2017-09": 37,
+      "2017-10": 37,
+      "2017-11": 37,
+      "2017-12": 37,
+      "2018-01": 37,
+      "2018-02": 37,
+      "2018-03": 38,
+      "2018-04": 38,
+      "2018-05": 39,
+      "2018-06": 39,
+      "2018-07": 39,
+      "2018-08": 39,
+      "2018-09": 38,
+      "2018-10": 38,
+      "2018-11": 38,
+      "2018-12": 38,
+      "2019-01": 39,
+      "2019-02": 39,
+      "2019-03": 42,
+      "2019-04": 42,
+      "2019-05": 41,
+      "2019-06": 40,
+      "2019-07": 40,
+      "2019-08": 39,
+      "2019-09": 40,
+      "2019-10": 40,
+      "2019-11": 42,
+      "2019-12": 43,
+      "2020-01": 43,
+      "2020-02": 43,
+      "2020-03": 43,
+      "2020-04": 44,
+      "2020-05": 42,
+      "2020-06": 42,
+      "2020-07": 42,
+      "2020-08": 43,
+      "2020-09": 43,
+      "2020-10": 43,
+      "2020-11": 43,
+      "2020-12": 43,
+      "2021-01": 44,
+      "2021-02": 44,
+      "2021-03": 44,
+      "2021-04": 44,
+      "2021-05": 44,
+      "2021-06": 44,
+      "2021-07": 43,
+      "2021-08": 43,
+      "2021-09": 42
+    },
+    "sector_distribution": {
+      "Manufacturing": {
+        "issuer_months": 1633,
+        "issuers": 24
+      },
+      "Retail": {
+        "issuer_months": 503,
+        "issuers": 6
+      },
+      "Services": {
+        "issuer_months": 825,
+        "issuers": 11
+      },
+      "Transport, Comms, Utilities": {
+        "issuer_months": 319,
+        "issuers": 4
+      }
+    },
+    "source_sha256": "3b3ccf9f1d1a7724aa4fd6bf0091ebfd3b224fca7a64ef7e26dc182d1deaa1fa"
+  },
+  "dataset": "US_LARGE_CAP_RESEARCH_DATASET_V1",
+  "dev_adaptive_iteration": 2,
+  "eligible_issuers": 274,
+  "expanded": {
+    "blocker_issuer_months": {
+      "FUNDAMENTALS": 11822,
+      "IDENTITY": 206,
+      "MEMBERSHIP": 1337,
+      "PRICE": 3137,
+      "UNSUPPORTED_SECTOR": 4415
+    },
+    "combined_issuer_months": 16275,
+    "cross_section": {
+      "COMBINED": {
+        "maximum": 239,
+        "median": 181.0,
+        "minimum": 143,
+        "p10": 157.0,
+        "p90": 237.0
+      },
+      "FUNDAMENTALS": {
+        "maximum": 252,
+        "median": 200.0,
+        "minimum": 154,
+        "p10": 170.0,
+        "p90": 248.0
+      },
+      "MEMBERSHIP": {
+        "maximum": 370,
+        "median": 341.0,
+        "minimum": 283,
+        "p10": 294.0,
+        "p90": 368.0
+      },
+      "PRICE": {
+        "maximum": 352,
+        "median": 310.0,
+        "minimum": 258,
+        "p10": 270.0,
+        "p90": 344.0
+      }
+    },
+    "dev_adaptive_iteration": 2,
+    "engineering_milestone_200": false,
+    "exclusion_counts_overlap": true,
+    "holdout_outcomes_accessed": 0,
+    "months": [
+      {
+        "combined_eligible": 143,
+        "excluded_fundamentals": 334,
+        "excluded_identity": 193,
+        "excluded_membership": 201,
+        "excluded_price": 239,
+        "fundamental_eligible": 154,
+        "historical_membership_count": 507,
+        "issuer_counts": {
+          "COMBINED": 143,
+          "FUNDAMENTALS": 154,
+          "MEMBERSHIP": 283,
+          "PRICE": 258
+        },
+        "membership_verified": 306,
+        "month": "2014-09",
+        "price_eligible": 258,
+        "unique_issuers": 143,
+        "unique_securities": 143,
+        "unsupported_sector": 66
+      },
+      {
+        "combined_eligible": 145,
+        "excluded_fundamentals": 332,
+        "excluded_identity": 192,
+        "excluded_membership": 199,
+        "excluded_price": 237,
+        "fundamental_eligible": 156,
+        "historical_membership_count": 507,
+        "issuer_counts": {
+          "COMBINED": 145,
+          "FUNDAMENTALS": 156,
+          "MEMBERSHIP": 285,
+          "PRICE": 260
+        },
+        "membership_verified": 308,
+        "month": "2014-10",
+        "price_eligible": 260,
+        "unique_issuers": 145,
+        "unique_securities": 145,
+        "unsupported_sector": 66
+      },
+      {
+        "combined_eligible": 147,
+        "excluded_fundamentals": 330,
+        "excluded_identity": 192,
+        "excluded_membership": 199,
+        "excluded_price": 237,
+        "fundamental_eligible": 158,
+        "historical_membership_count": 507,
+        "issuer_counts": {
+          "COMBINED": 147,
+          "FUNDAMENTALS": 158,
+          "MEMBERSHIP": 285,
+          "PRICE": 260
+        },
+        "membership_verified": 308,
+        "month": "2014-11",
+        "price_eligible": 260,
+        "unique_issuers": 147,
+        "unique_securities": 147,
+        "unsupported_sector": 66
+      },
+      {
+        "combined_eligible": 149,
+        "excluded_fundamentals": 328,
+        "excluded_identity": 193,
+        "excluded_membership": 200,
+        "excluded_price": 237,
+        "fundamental_eligible": 160,
+        "historical_membership_count": 507,
+        "issuer_counts": {
+          "COMBINED": 149,
+          "FUNDAMENTALS": 160,
+          "MEMBERSHIP": 284,
+          "PRICE": 260
+        },
+        "membership_verified": 307,
+        "month": "2014-12",
+        "price_eligible": 260,
+        "unique_issuers": 149,
+        "unique_securities": 149,
+        "unsupported_sector": 66
+      },
+      {
+        "combined_eligible": 150,
+        "excluded_fundamentals": 327,
+        "excluded_identity": 192,
+        "excluded_membership": 199,
+        "excluded_price": 236,
+        "fundamental_eligible": 161,
+        "historical_membership_count": 507,
+        "issuer_counts": {
+          "COMBINED": 150,
+          "FUNDAMENTALS": 161,
+          "MEMBERSHIP": 285,
+          "PRICE": 261
+        },
+        "membership_verified": 308,
+        "month": "2015-01",
+        "price_eligible": 261,
+        "unique_issuers": 150,
+        "unique_securities": 150,
+        "unsupported_sector": 66
+      },
+      {
+        "combined_eligible": 151,
+        "excluded_fundamentals": 327,
+        "excluded_identity": 191,
+        "excluded_membership": 197,
+        "excluded_price": 235,
+        "fundamental_eligible": 162,
+        "historical_membership_count": 507,
+        "issuer_counts": {
+          "COMBINED": 151,
+          "FUNDAMENTALS": 162,
+          "MEMBERSHIP": 287,
+          "PRICE": 262
+        },
+        "membership_verified": 310,
+        "month": "2015-02",
+        "price_eligible": 262,
+        "unique_issuers": 151,
+        "unique_securities": 151,
+        "unsupported_sector": 66
+      },
+      {
+        "combined_eligible": 151,
+        "excluded_fundamentals": 325,
+        "excluded_identity": 191,
+        "excluded_membership": 197,
+        "excluded_price": 235,
+        "fundamental_eligible": 164,
+        "historical_membership_count": 507,
+        "issuer_counts": {
+          "COMBINED": 151,
+          "FUNDAMENTALS": 164,
+          "MEMBERSHIP": 287,
+          "PRICE": 262
+        },
+        "membership_verified": 310,
+        "month": "2015-03",
+        "price_eligible": 262,
+        "unique_issuers": 151,
+        "unique_securities": 151,
+        "unsupported_sector": 66
+      },
+      {
+        "combined_eligible": 156,
+        "excluded_fundamentals": 328,
+        "excluded_identity": 194,
+        "excluded_membership": 200,
+        "excluded_price": 238,
+        "fundamental_eligible": 169,
+        "historical_membership_count": 514,
+        "issuer_counts": {
+          "COMBINED": 156,
+          "FUNDAMENTALS": 169,
+          "MEMBERSHIP": 293,
+          "PRICE": 269
+        },
+        "membership_verified": 314,
+        "month": "2015-04",
+        "price_eligible": 269,
+        "unique_issuers": 156,
+        "unique_securities": 156,
+        "unsupported_sector": 68
+      },
+      {
+        "combined_eligible": 157,
+        "excluded_fundamentals": 327,
+        "excluded_identity": 193,
+        "excluded_membership": 199,
+        "excluded_price": 237,
+        "fundamental_eligible": 170,
+        "historical_membership_count": 514,
+        "issuer_counts": {
+          "COMBINED": 157,
+          "FUNDAMENTALS": 170,
+          "MEMBERSHIP": 294,
+          "PRICE": 270
+        },
+        "membership_verified": 315,
+        "month": "2015-05",
+        "price_eligible": 270,
+        "unique_issuers": 157,
+        "unique_securities": 157,
+        "unsupported_sector": 69
+      },
+      {
+        "combined_eligible": 157,
+        "excluded_fundamentals": 327,
+        "excluded_identity": 193,
+        "excluded_membership": 199,
+        "excluded_price": 237,
+        "fundamental_eligible": 170,
+        "historical_membership_count": 514,
+        "issuer_counts": {
+          "COMBINED": 157,
+          "FUNDAMENTALS": 170,
+          "MEMBERSHIP": 294,
+          "PRICE": 270
+        },
+        "membership_verified": 315,
+        "month": "2015-06",
+        "price_eligible": 270,
+        "unique_issuers": 157,
+        "unique_securities": 157,
+        "unsupported_sector": 69
+      },
+      {
+        "combined_eligible": 157,
+        "excluded_fundamentals": 326,
+        "excluded_identity": 194,
+        "excluded_membership": 198,
+        "excluded_price": 237,
+        "fundamental_eligible": 171,
+        "historical_membership_count": 514,
+        "issuer_counts": {
+          "COMBINED": 157,
+          "FUNDAMENTALS": 171,
+          "MEMBERSHIP": 294,
+          "PRICE": 270
+        },
+        "membership_verified": 316,
+        "month": "2015-07",
+        "price_eligible": 270,
+        "unique_issuers": 157,
+        "unique_securities": 157,
+        "unsupported_sector": 69
+      },
+      {
+        "combined_eligible": 160,
+        "excluded_fundamentals": 324,
+        "excluded_identity": 192,
+        "excluded_membership": 197,
+        "excluded_price": 235,
+        "fundamental_eligible": 173,
+        "historical_membership_count": 514,
+        "issuer_counts": {
+          "COMBINED": 160,
+          "FUNDAMENTALS": 173,
+          "MEMBERSHIP": 295,
+          "PRICE": 272
+        },
+        "membership_verified": 317,
+        "month": "2015-08",
+        "price_eligible": 272,
+        "unique_issuers": 160,
+        "unique_securities": 160,
+        "unsupported_sector": 69
+      },
+      {
+        "combined_eligible": 161,
+        "excluded_fundamentals": 322,
+        "excluded_identity": 192,
+        "excluded_membership": 196,
+        "excluded_price": 235,
+        "fundamental_eligible": 175,
+        "historical_membership_count": 514,
+        "issuer_counts": {
+          "COMBINED": 161,
+          "FUNDAMENTALS": 175,
+          "MEMBERSHIP": 296,
+          "PRICE": 272
+        },
+        "membership_verified": 318,
+        "month": "2015-09",
+        "price_eligible": 272,
+        "unique_issuers": 161,
+        "unique_securities": 161,
+        "unsupported_sector": 69
+      },
+      {
+        "combined_eligible": 162,
+        "excluded_fundamentals": 315,
+        "excluded_identity": 185,
+        "excluded_membership": 184,
+        "excluded_price": 227,
+        "fundamental_eligible": 177,
+        "historical_membership_count": 509,
+        "issuer_counts": {
+          "COMBINED": 162,
+          "FUNDAMENTALS": 177,
+          "MEMBERSHIP": 300,
+          "PRICE": 273
+        },
+        "membership_verified": 325,
+        "month": "2015-10",
+        "price_eligible": 273,
+        "unique_issuers": 162,
+        "unique_securities": 162,
+        "unsupported_sector": 70
+      },
+      {
+        "combined_eligible": 162,
+        "excluded_fundamentals": 317,
+        "excluded_identity": 185,
+        "excluded_membership": 183,
+        "excluded_price": 227,
+        "fundamental_eligible": 177,
+        "historical_membership_count": 510,
+        "issuer_counts": {
+          "COMBINED": 162,
+          "FUNDAMENTALS": 177,
+          "MEMBERSHIP": 302,
+          "PRICE": 274
+        },
+        "membership_verified": 327,
+        "month": "2015-11",
+        "price_eligible": 274,
+        "unique_issuers": 162,
+        "unique_securities": 162,
+        "unsupported_sector": 70
+      },
+      {
+        "combined_eligible": 164,
+        "excluded_fundamentals": 314,
+        "excluded_identity": 182,
+        "excluded_membership": 182,
+        "excluded_price": 225,
+        "fundamental_eligible": 179,
+        "historical_membership_count": 509,
+        "issuer_counts": {
+          "COMBINED": 164,
+          "FUNDAMENTALS": 179,
+          "MEMBERSHIP": 303,
+          "PRICE": 275
+        },
+        "membership_verified": 327,
+        "month": "2015-12",
+        "price_eligible": 275,
+        "unique_issuers": 164,
+        "unique_securities": 164,
+        "unsupported_sector": 69
+      },
+      {
+        "combined_eligible": 163,
+        "excluded_fundamentals": 316,
+        "excluded_identity": 182,
+        "excluded_membership": 181,
+        "excluded_price": 224,
+        "fundamental_eligible": 178,
+        "historical_membership_count": 509,
+        "issuer_counts": {
+          "COMBINED": 163,
+          "FUNDAMENTALS": 178,
+          "MEMBERSHIP": 304,
+          "PRICE": 276
+        },
+        "membership_verified": 328,
+        "month": "2016-01",
+        "price_eligible": 276,
+        "unique_issuers": 163,
+        "unique_securities": 163,
+        "unsupported_sector": 69
+      },
+      {
+        "combined_eligible": 162,
+        "excluded_fundamentals": 318,
+        "excluded_identity": 181,
+        "excluded_membership": 180,
+        "excluded_price": 222,
+        "fundamental_eligible": 177,
+        "historical_membership_count": 509,
+        "issuer_counts": {
+          "COMBINED": 162,
+          "FUNDAMENTALS": 177,
+          "MEMBERSHIP": 305,
+          "PRICE": 277
+        },
+        "membership_verified": 329,
+        "month": "2016-02",
+        "price_eligible": 277,
+        "unique_issuers": 162,
+        "unique_securities": 162,
+        "unsupported_sector": 72
+      },
+      {
+        "combined_eligible": 163,
+        "excluded_fundamentals": 315,
+        "excluded_identity": 182,
+        "excluded_membership": 179,
+        "excluded_price": 222,
+        "fundamental_eligible": 179,
+        "historical_membership_count": 509,
+        "issuer_counts": {
+          "COMBINED": 163,
+          "FUNDAMENTALS": 179,
+          "MEMBERSHIP": 305,
+          "PRICE": 277
+        },
+        "membership_verified": 330,
+        "month": "2016-03",
+        "price_eligible": 277,
+        "unique_issuers": 163,
+        "unique_securities": 163,
+        "unsupported_sector": 71
+      },
+      {
+        "combined_eligible": 164,
+        "excluded_fundamentals": 308,
+        "excluded_identity": 174,
+        "excluded_membership": 168,
+        "excluded_price": 215,
+        "fundamental_eligible": 181,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 164,
+          "FUNDAMENTALS": 181,
+          "MEMBERSHIP": 310,
+          "PRICE": 281
+        },
+        "membership_verified": 336,
+        "month": "2016-04",
+        "price_eligible": 281,
+        "unique_issuers": 164,
+        "unique_securities": 164,
+        "unsupported_sector": 73
+      },
+      {
+        "combined_eligible": 166,
+        "excluded_fundamentals": 305,
+        "excluded_identity": 172,
+        "excluded_membership": 165,
+        "excluded_price": 214,
+        "fundamental_eligible": 185,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 166,
+          "FUNDAMENTALS": 185,
+          "MEMBERSHIP": 313,
+          "PRICE": 282
+        },
+        "membership_verified": 339,
+        "month": "2016-05",
+        "price_eligible": 282,
+        "unique_issuers": 166,
+        "unique_securities": 166,
+        "unsupported_sector": 73
+      },
+      {
+        "combined_eligible": 165,
+        "excluded_fundamentals": 310,
+        "excluded_identity": 168,
+        "excluded_membership": 160,
+        "excluded_price": 209,
+        "fundamental_eligible": 183,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 165,
+          "FUNDAMENTALS": 183,
+          "MEMBERSHIP": 318,
+          "PRICE": 287
+        },
+        "membership_verified": 344,
+        "month": "2016-06",
+        "price_eligible": 287,
+        "unique_issuers": 165,
+        "unique_securities": 165,
+        "unsupported_sector": 75
+      },
+      {
+        "combined_eligible": 169,
+        "excluded_fundamentals": 307,
+        "excluded_identity": 166,
+        "excluded_membership": 156,
+        "excluded_price": 206,
+        "fundamental_eligible": 188,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 169,
+          "FUNDAMENTALS": 188,
+          "MEMBERSHIP": 322,
+          "PRICE": 290
+        },
+        "membership_verified": 348,
+        "month": "2016-07",
+        "price_eligible": 290,
+        "unique_issuers": 169,
+        "unique_securities": 169,
+        "unsupported_sector": 75
+      },
+      {
+        "combined_eligible": 168,
+        "excluded_fundamentals": 308,
+        "excluded_identity": 166,
+        "excluded_membership": 155,
+        "excluded_price": 204,
+        "fundamental_eligible": 187,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 168,
+          "FUNDAMENTALS": 187,
+          "MEMBERSHIP": 323,
+          "PRICE": 292
+        },
+        "membership_verified": 349,
+        "month": "2016-08",
+        "price_eligible": 292,
+        "unique_issuers": 168,
+        "unique_securities": 168,
+        "unsupported_sector": 75
+      },
+      {
+        "combined_eligible": 170,
+        "excluded_fundamentals": 306,
+        "excluded_identity": 166,
+        "excluded_membership": 155,
+        "excluded_price": 204,
+        "fundamental_eligible": 189,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 170,
+          "FUNDAMENTALS": 189,
+          "MEMBERSHIP": 323,
+          "PRICE": 292
+        },
+        "membership_verified": 349,
+        "month": "2016-09",
+        "price_eligible": 292,
+        "unique_issuers": 170,
+        "unique_securities": 170,
+        "unsupported_sector": 75
+      },
+      {
+        "combined_eligible": 171,
+        "excluded_fundamentals": 304,
+        "excluded_identity": 162,
+        "excluded_membership": 150,
+        "excluded_price": 201,
+        "fundamental_eligible": 191,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 171,
+          "FUNDAMENTALS": 191,
+          "MEMBERSHIP": 327,
+          "PRICE": 295
+        },
+        "membership_verified": 354,
+        "month": "2016-10",
+        "price_eligible": 295,
+        "unique_issuers": 171,
+        "unique_securities": 171,
+        "unsupported_sector": 75
+      },
+      {
+        "combined_eligible": 171,
+        "excluded_fundamentals": 304,
+        "excluded_identity": 162,
+        "excluded_membership": 150,
+        "excluded_price": 200,
+        "fundamental_eligible": 191,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 171,
+          "FUNDAMENTALS": 191,
+          "MEMBERSHIP": 327,
+          "PRICE": 296
+        },
+        "membership_verified": 354,
+        "month": "2016-11",
+        "price_eligible": 296,
+        "unique_issuers": 171,
+        "unique_securities": 171,
+        "unsupported_sector": 75
+      },
+      {
+        "combined_eligible": 172,
+        "excluded_fundamentals": 303,
+        "excluded_identity": 162,
+        "excluded_membership": 150,
+        "excluded_price": 200,
+        "fundamental_eligible": 192,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 172,
+          "FUNDAMENTALS": 192,
+          "MEMBERSHIP": 327,
+          "PRICE": 296
+        },
+        "membership_verified": 354,
+        "month": "2016-12",
+        "price_eligible": 296,
+        "unique_issuers": 172,
+        "unique_securities": 172,
+        "unsupported_sector": 75
+      },
+      {
+        "combined_eligible": 172,
+        "excluded_fundamentals": 302,
+        "excluded_identity": 162,
+        "excluded_membership": 150,
+        "excluded_price": 200,
+        "fundamental_eligible": 193,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 172,
+          "FUNDAMENTALS": 193,
+          "MEMBERSHIP": 327,
+          "PRICE": 296
+        },
+        "membership_verified": 354,
+        "month": "2017-01",
+        "price_eligible": 296,
+        "unique_issuers": 172,
+        "unique_securities": 172,
+        "unsupported_sector": 75
+      },
+      {
+        "combined_eligible": 174,
+        "excluded_fundamentals": 301,
+        "excluded_identity": 161,
+        "excluded_membership": 148,
+        "excluded_price": 199,
+        "fundamental_eligible": 195,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 174,
+          "FUNDAMENTALS": 195,
+          "MEMBERSHIP": 329,
+          "PRICE": 297
+        },
+        "membership_verified": 356,
+        "month": "2017-02",
+        "price_eligible": 297,
+        "unique_issuers": 174,
+        "unique_securities": 174,
+        "unsupported_sector": 75
+      },
+      {
+        "combined_eligible": 174,
+        "excluded_fundamentals": 301,
+        "excluded_identity": 160,
+        "excluded_membership": 147,
+        "excluded_price": 198,
+        "fundamental_eligible": 195,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 174,
+          "FUNDAMENTALS": 195,
+          "MEMBERSHIP": 330,
+          "PRICE": 298
+        },
+        "membership_verified": 357,
+        "month": "2017-03",
+        "price_eligible": 298,
+        "unique_issuers": 174,
+        "unique_securities": 174,
+        "unsupported_sector": 76
+      },
+      {
+        "combined_eligible": 175,
+        "excluded_fundamentals": 301,
+        "excluded_identity": 159,
+        "excluded_membership": 145,
+        "excluded_price": 195,
+        "fundamental_eligible": 195,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 175,
+          "FUNDAMENTALS": 195,
+          "MEMBERSHIP": 331,
+          "PRICE": 301
+        },
+        "membership_verified": 359,
+        "month": "2017-04",
+        "price_eligible": 301,
+        "unique_issuers": 175,
+        "unique_securities": 175,
+        "unsupported_sector": 79
+      },
+      {
+        "combined_eligible": 176,
+        "excluded_fundamentals": 301,
+        "excluded_identity": 158,
+        "excluded_membership": 144,
+        "excluded_price": 194,
+        "fundamental_eligible": 195,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 176,
+          "FUNDAMENTALS": 195,
+          "MEMBERSHIP": 332,
+          "PRICE": 302
+        },
+        "membership_verified": 360,
+        "month": "2017-05",
+        "price_eligible": 302,
+        "unique_issuers": 176,
+        "unique_securities": 176,
+        "unsupported_sector": 79
+      },
+      {
+        "combined_eligible": 175,
+        "excluded_fundamentals": 302,
+        "excluded_identity": 158,
+        "excluded_membership": 144,
+        "excluded_price": 194,
+        "fundamental_eligible": 194,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 175,
+          "FUNDAMENTALS": 194,
+          "MEMBERSHIP": 332,
+          "PRICE": 302
+        },
+        "membership_verified": 360,
+        "month": "2017-06",
+        "price_eligible": 302,
+        "unique_issuers": 175,
+        "unique_securities": 175,
+        "unsupported_sector": 79
+      },
+      {
+        "combined_eligible": 173,
+        "excluded_fundamentals": 304,
+        "excluded_identity": 156,
+        "excluded_membership": 142,
+        "excluded_price": 194,
+        "fundamental_eligible": 192,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 173,
+          "FUNDAMENTALS": 192,
+          "MEMBERSHIP": 334,
+          "PRICE": 302
+        },
+        "membership_verified": 362,
+        "month": "2017-07",
+        "price_eligible": 302,
+        "unique_issuers": 173,
+        "unique_securities": 173,
+        "unsupported_sector": 80
+      },
+      {
+        "combined_eligible": 174,
+        "excluded_fundamentals": 304,
+        "excluded_identity": 155,
+        "excluded_membership": 140,
+        "excluded_price": 192,
+        "fundamental_eligible": 193,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 174,
+          "FUNDAMENTALS": 193,
+          "MEMBERSHIP": 336,
+          "PRICE": 304
+        },
+        "membership_verified": 364,
+        "month": "2017-08",
+        "price_eligible": 304,
+        "unique_issuers": 174,
+        "unique_securities": 174,
+        "unsupported_sector": 81
+      },
+      {
+        "combined_eligible": 173,
+        "excluded_fundamentals": 305,
+        "excluded_identity": 152,
+        "excluded_membership": 138,
+        "excluded_price": 190,
+        "fundamental_eligible": 192,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 173,
+          "FUNDAMENTALS": 192,
+          "MEMBERSHIP": 338,
+          "PRICE": 305
+        },
+        "membership_verified": 366,
+        "month": "2017-09",
+        "price_eligible": 305,
+        "unique_issuers": 173,
+        "unique_securities": 173,
+        "unsupported_sector": 83
+      },
+      {
+        "combined_eligible": 175,
+        "excluded_fundamentals": 304,
+        "excluded_identity": 152,
+        "excluded_membership": 137,
+        "excluded_price": 188,
+        "fundamental_eligible": 194,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 175,
+          "FUNDAMENTALS": 194,
+          "MEMBERSHIP": 339,
+          "PRICE": 307
+        },
+        "membership_verified": 367,
+        "month": "2017-10",
+        "price_eligible": 307,
+        "unique_issuers": 175,
+        "unique_securities": 175,
+        "unsupported_sector": 83
+      },
+      {
+        "combined_eligible": 177,
+        "excluded_fundamentals": 303,
+        "excluded_identity": 151,
+        "excluded_membership": 136,
+        "excluded_price": 187,
+        "fundamental_eligible": 196,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 177,
+          "FUNDAMENTALS": 196,
+          "MEMBERSHIP": 340,
+          "PRICE": 308
+        },
+        "membership_verified": 368,
+        "month": "2017-11",
+        "price_eligible": 308,
+        "unique_issuers": 177,
+        "unique_securities": 177,
+        "unsupported_sector": 83
+      },
+      {
+        "combined_eligible": 178,
+        "excluded_fundamentals": 302,
+        "excluded_identity": 151,
+        "excluded_membership": 136,
+        "excluded_price": 187,
+        "fundamental_eligible": 197,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 178,
+          "FUNDAMENTALS": 197,
+          "MEMBERSHIP": 340,
+          "PRICE": 308
+        },
+        "membership_verified": 368,
+        "month": "2017-12",
+        "price_eligible": 308,
+        "unique_issuers": 178,
+        "unique_securities": 178,
+        "unsupported_sector": 83
+      },
+      {
+        "combined_eligible": 178,
+        "excluded_fundamentals": 302,
+        "excluded_identity": 151,
+        "excluded_membership": 137,
+        "excluded_price": 187,
+        "fundamental_eligible": 197,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 178,
+          "FUNDAMENTALS": 197,
+          "MEMBERSHIP": 339,
+          "PRICE": 308
+        },
+        "membership_verified": 367,
+        "month": "2018-01",
+        "price_eligible": 308,
+        "unique_issuers": 178,
+        "unique_securities": 178,
+        "unsupported_sector": 83
+      },
+      {
+        "combined_eligible": 179,
+        "excluded_fundamentals": 301,
+        "excluded_identity": 150,
+        "excluded_membership": 136,
+        "excluded_price": 185,
+        "fundamental_eligible": 198,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 179,
+          "FUNDAMENTALS": 198,
+          "MEMBERSHIP": 340,
+          "PRICE": 310
+        },
+        "membership_verified": 368,
+        "month": "2018-02",
+        "price_eligible": 310,
+        "unique_issuers": 179,
+        "unique_securities": 179,
+        "unsupported_sector": 83
+      },
+      {
+        "combined_eligible": 181,
+        "excluded_fundamentals": 297,
+        "excluded_identity": 149,
+        "excluded_membership": 136,
+        "excluded_price": 185,
+        "fundamental_eligible": 200,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 181,
+          "FUNDAMENTALS": 200,
+          "MEMBERSHIP": 341,
+          "PRICE": 310
+        },
+        "membership_verified": 368,
+        "month": "2018-03",
+        "price_eligible": 310,
+        "unique_issuers": 181,
+        "unique_securities": 181,
+        "unsupported_sector": 83
+      },
+      {
+        "combined_eligible": 183,
+        "excluded_fundamentals": 297,
+        "excluded_identity": 148,
+        "excluded_membership": 135,
+        "excluded_price": 182,
+        "fundamental_eligible": 200,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 183,
+          "FUNDAMENTALS": 200,
+          "MEMBERSHIP": 342,
+          "PRICE": 312
+        },
+        "membership_verified": 369,
+        "month": "2018-04",
+        "price_eligible": 312,
+        "unique_issuers": 183,
+        "unique_securities": 183,
+        "unsupported_sector": 84
+      },
+      {
+        "combined_eligible": 186,
+        "excluded_fundamentals": 294,
+        "excluded_identity": 147,
+        "excluded_membership": 134,
+        "excluded_price": 180,
+        "fundamental_eligible": 203,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 186,
+          "FUNDAMENTALS": 203,
+          "MEMBERSHIP": 343,
+          "PRICE": 314
+        },
+        "membership_verified": 370,
+        "month": "2018-05",
+        "price_eligible": 314,
+        "unique_issuers": 186,
+        "unique_securities": 186,
+        "unsupported_sector": 84
+      },
+      {
+        "combined_eligible": 188,
+        "excluded_fundamentals": 293,
+        "excluded_identity": 146,
+        "excluded_membership": 133,
+        "excluded_price": 180,
+        "fundamental_eligible": 205,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 188,
+          "FUNDAMENTALS": 205,
+          "MEMBERSHIP": 345,
+          "PRICE": 314
+        },
+        "membership_verified": 371,
+        "month": "2018-06",
+        "price_eligible": 314,
+        "unique_issuers": 188,
+        "unique_securities": 188,
+        "unsupported_sector": 84
+      },
+      {
+        "combined_eligible": 188,
+        "excluded_fundamentals": 294,
+        "excluded_identity": 143,
+        "excluded_membership": 129,
+        "excluded_price": 180,
+        "fundamental_eligible": 205,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 188,
+          "FUNDAMENTALS": 205,
+          "MEMBERSHIP": 349,
+          "PRICE": 314
+        },
+        "membership_verified": 375,
+        "month": "2018-07",
+        "price_eligible": 314,
+        "unique_issuers": 188,
+        "unique_securities": 188,
+        "unsupported_sector": 84
+      },
+      {
+        "combined_eligible": 188,
+        "excluded_fundamentals": 294,
+        "excluded_identity": 143,
+        "excluded_membership": 129,
+        "excluded_price": 178,
+        "fundamental_eligible": 205,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 188,
+          "FUNDAMENTALS": 205,
+          "MEMBERSHIP": 349,
+          "PRICE": 316
+        },
+        "membership_verified": 375,
+        "month": "2018-08",
+        "price_eligible": 316,
+        "unique_issuers": 188,
+        "unique_securities": 188,
+        "unsupported_sector": 84
+      },
+      {
+        "combined_eligible": 189,
+        "excluded_fundamentals": 293,
+        "excluded_identity": 143,
+        "excluded_membership": 128,
+        "excluded_price": 177,
+        "fundamental_eligible": 206,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 189,
+          "FUNDAMENTALS": 206,
+          "MEMBERSHIP": 350,
+          "PRICE": 317
+        },
+        "membership_verified": 376,
+        "month": "2018-09",
+        "price_eligible": 317,
+        "unique_issuers": 189,
+        "unique_securities": 189,
+        "unsupported_sector": 83
+      },
+      {
+        "combined_eligible": 189,
+        "excluded_fundamentals": 293,
+        "excluded_identity": 142,
+        "excluded_membership": 129,
+        "excluded_price": 176,
+        "fundamental_eligible": 206,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 189,
+          "FUNDAMENTALS": 206,
+          "MEMBERSHIP": 349,
+          "PRICE": 318
+        },
+        "membership_verified": 375,
+        "month": "2018-10",
+        "price_eligible": 318,
+        "unique_issuers": 189,
+        "unique_securities": 189,
+        "unsupported_sector": 84
+      },
+      {
+        "combined_eligible": 188,
+        "excluded_fundamentals": 294,
+        "excluded_identity": 140,
+        "excluded_membership": 128,
+        "excluded_price": 175,
+        "fundamental_eligible": 205,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 188,
+          "FUNDAMENTALS": 205,
+          "MEMBERSHIP": 350,
+          "PRICE": 319
+        },
+        "membership_verified": 376,
+        "month": "2018-11",
+        "price_eligible": 319,
+        "unique_issuers": 188,
+        "unique_securities": 188,
+        "unsupported_sector": 84
+      },
+      {
+        "combined_eligible": 189,
+        "excluded_fundamentals": 293,
+        "excluded_identity": 138,
+        "excluded_membership": 125,
+        "excluded_price": 172,
+        "fundamental_eligible": 206,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 189,
+          "FUNDAMENTALS": 206,
+          "MEMBERSHIP": 353,
+          "PRICE": 322
+        },
+        "membership_verified": 379,
+        "month": "2018-12",
+        "price_eligible": 322,
+        "unique_issuers": 189,
+        "unique_securities": 189,
+        "unsupported_sector": 84
+      },
+      {
+        "combined_eligible": 190,
+        "excluded_fundamentals": 291,
+        "excluded_identity": 137,
+        "excluded_membership": 123,
+        "excluded_price": 171,
+        "fundamental_eligible": 208,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 190,
+          "FUNDAMENTALS": 208,
+          "MEMBERSHIP": 355,
+          "PRICE": 323
+        },
+        "membership_verified": 381,
+        "month": "2019-01",
+        "price_eligible": 323,
+        "unique_issuers": 190,
+        "unique_securities": 190,
+        "unsupported_sector": 84
+      },
+      {
+        "combined_eligible": 190,
+        "excluded_fundamentals": 290,
+        "excluded_identity": 137,
+        "excluded_membership": 124,
+        "excluded_price": 171,
+        "fundamental_eligible": 208,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 190,
+          "FUNDAMENTALS": 208,
+          "MEMBERSHIP": 354,
+          "PRICE": 322
+        },
+        "membership_verified": 380,
+        "month": "2019-02",
+        "price_eligible": 322,
+        "unique_issuers": 190,
+        "unique_securities": 190,
+        "unsupported_sector": 84
+      },
+      {
+        "combined_eligible": 212,
+        "excluded_fundamentals": 267,
+        "excluded_identity": 136,
+        "excluded_membership": 126,
+        "excluded_price": 168,
+        "fundamental_eligible": 229,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 212,
+          "FUNDAMENTALS": 229,
+          "MEMBERSHIP": 353,
+          "PRICE": 323
+        },
+        "membership_verified": 378,
+        "month": "2019-03",
+        "price_eligible": 323,
+        "unique_issuers": 212,
+        "unique_securities": 212,
+        "unsupported_sector": 84
+      },
+      {
+        "combined_eligible": 217,
+        "excluded_fundamentals": 261,
+        "excluded_identity": 135,
+        "excluded_membership": 128,
+        "excluded_price": 168,
+        "fundamental_eligible": 234,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 217,
+          "FUNDAMENTALS": 234,
+          "MEMBERSHIP": 354,
+          "PRICE": 323
+        },
+        "membership_verified": 376,
+        "month": "2019-04",
+        "price_eligible": 323,
+        "unique_issuers": 217,
+        "unique_securities": 217,
+        "unsupported_sector": 84
+      },
+      {
+        "combined_eligible": 218,
+        "excluded_fundamentals": 260,
+        "excluded_identity": 135,
+        "excluded_membership": 129,
+        "excluded_price": 169,
+        "fundamental_eligible": 235,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 218,
+          "FUNDAMENTALS": 235,
+          "MEMBERSHIP": 353,
+          "PRICE": 322
+        },
+        "membership_verified": 375,
+        "month": "2019-05",
+        "price_eligible": 322,
+        "unique_issuers": 218,
+        "unique_securities": 218,
+        "unsupported_sector": 83
+      },
+      {
+        "combined_eligible": 214,
+        "excluded_fundamentals": 266,
+        "excluded_identity": 135,
+        "excluded_membership": 130,
+        "excluded_price": 169,
+        "fundamental_eligible": 230,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 214,
+          "FUNDAMENTALS": 230,
+          "MEMBERSHIP": 353,
+          "PRICE": 323
+        },
+        "membership_verified": 375,
+        "month": "2019-06",
+        "price_eligible": 323,
+        "unique_issuers": 214,
+        "unique_securities": 214,
+        "unsupported_sector": 83
+      },
+      {
+        "combined_eligible": 213,
+        "excluded_fundamentals": 267,
+        "excluded_identity": 136,
+        "excluded_membership": 132,
+        "excluded_price": 168,
+        "fundamental_eligible": 228,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 213,
+          "FUNDAMENTALS": 228,
+          "MEMBERSHIP": 350,
+          "PRICE": 322
+        },
+        "membership_verified": 372,
+        "month": "2019-07",
+        "price_eligible": 322,
+        "unique_issuers": 213,
+        "unique_securities": 213,
+        "unsupported_sector": 84
+      },
+      {
+        "combined_eligible": 211,
+        "excluded_fundamentals": 269,
+        "excluded_identity": 135,
+        "excluded_membership": 132,
+        "excluded_price": 167,
+        "fundamental_eligible": 226,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 211,
+          "FUNDAMENTALS": 226,
+          "MEMBERSHIP": 350,
+          "PRICE": 322
+        },
+        "membership_verified": 372,
+        "month": "2019-08",
+        "price_eligible": 322,
+        "unique_issuers": 211,
+        "unique_securities": 211,
+        "unsupported_sector": 84
+      },
+      {
+        "combined_eligible": 207,
+        "excluded_fundamentals": 272,
+        "excluded_identity": 134,
+        "excluded_membership": 134,
+        "excluded_price": 165,
+        "fundamental_eligible": 221,
+        "historical_membership_count": 504,
+        "issuer_counts": {
+          "COMBINED": 207,
+          "FUNDAMENTALS": 221,
+          "MEMBERSHIP": 349,
+          "PRICE": 322
+        },
+        "membership_verified": 370,
+        "month": "2019-09",
+        "price_eligible": 322,
+        "unique_issuers": 207,
+        "unique_securities": 207,
+        "unsupported_sector": 84
+      },
+      {
+        "combined_eligible": 217,
+        "excluded_fundamentals": 270,
+        "excluded_identity": 134,
+        "excluded_membership": 122,
+        "excluded_price": 165,
+        "fundamental_eligible": 231,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 217,
+          "FUNDAMENTALS": 231,
+          "MEMBERSHIP": 362,
+          "PRICE": 332
+        },
+        "membership_verified": 383,
+        "month": "2019-10",
+        "price_eligible": 332,
+        "unique_issuers": 217,
+        "unique_securities": 217,
+        "unsupported_sector": 83
+      },
+      {
+        "combined_eligible": 224,
+        "excluded_fundamentals": 264,
+        "excluded_identity": 134,
+        "excluded_membership": 121,
+        "excluded_price": 165,
+        "fundamental_eligible": 238,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 224,
+          "FUNDAMENTALS": 238,
+          "MEMBERSHIP": 363,
+          "PRICE": 333
+        },
+        "membership_verified": 384,
+        "month": "2019-11",
+        "price_eligible": 333,
+        "unique_issuers": 224,
+        "unique_securities": 224,
+        "unsupported_sector": 83
+      },
+      {
+        "combined_eligible": 226,
+        "excluded_fundamentals": 263,
+        "excluded_identity": 134,
+        "excluded_membership": 121,
+        "excluded_price": 163,
+        "fundamental_eligible": 239,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 226,
+          "FUNDAMENTALS": 239,
+          "MEMBERSHIP": 363,
+          "PRICE": 335
+        },
+        "membership_verified": 384,
+        "month": "2019-12",
+        "price_eligible": 335,
+        "unique_issuers": 226,
+        "unique_securities": 226,
+        "unsupported_sector": 83
+      },
+      {
+        "combined_eligible": 225,
+        "excluded_fundamentals": 264,
+        "excluded_identity": 133,
+        "excluded_membership": 120,
+        "excluded_price": 162,
+        "fundamental_eligible": 238,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 225,
+          "FUNDAMENTALS": 238,
+          "MEMBERSHIP": 364,
+          "PRICE": 336
+        },
+        "membership_verified": 385,
+        "month": "2020-01",
+        "price_eligible": 336,
+        "unique_issuers": 225,
+        "unique_securities": 225,
+        "unsupported_sector": 82
+      },
+      {
+        "combined_eligible": 225,
+        "excluded_fundamentals": 264,
+        "excluded_identity": 133,
+        "excluded_membership": 120,
+        "excluded_price": 161,
+        "fundamental_eligible": 238,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 225,
+          "FUNDAMENTALS": 238,
+          "MEMBERSHIP": 364,
+          "PRICE": 337
+        },
+        "membership_verified": 385,
+        "month": "2020-02",
+        "price_eligible": 337,
+        "unique_issuers": 225,
+        "unique_securities": 225,
+        "unsupported_sector": 81
+      },
+      {
+        "combined_eligible": 231,
+        "excluded_fundamentals": 256,
+        "excluded_identity": 133,
+        "excluded_membership": 120,
+        "excluded_price": 161,
+        "fundamental_eligible": 246,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 231,
+          "FUNDAMENTALS": 246,
+          "MEMBERSHIP": 364,
+          "PRICE": 337
+        },
+        "membership_verified": 385,
+        "month": "2020-03",
+        "price_eligible": 337,
+        "unique_issuers": 231,
+        "unique_securities": 231,
+        "unsupported_sector": 81
+      },
+      {
+        "combined_eligible": 237,
+        "excluded_fundamentals": 251,
+        "excluded_identity": 133,
+        "excluded_membership": 119,
+        "excluded_price": 158,
+        "fundamental_eligible": 252,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 237,
+          "FUNDAMENTALS": 252,
+          "MEMBERSHIP": 365,
+          "PRICE": 341
+        },
+        "membership_verified": 386,
+        "month": "2020-04",
+        "price_eligible": 341,
+        "unique_issuers": 237,
+        "unique_securities": 237,
+        "unsupported_sector": 81
+      },
+      {
+        "combined_eligible": 236,
+        "excluded_fundamentals": 252,
+        "excluded_identity": 132,
+        "excluded_membership": 116,
+        "excluded_price": 159,
+        "fundamental_eligible": 251,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 236,
+          "FUNDAMENTALS": 251,
+          "MEMBERSHIP": 366,
+          "PRICE": 340
+        },
+        "membership_verified": 389,
+        "month": "2020-05",
+        "price_eligible": 340,
+        "unique_issuers": 236,
+        "unique_securities": 236,
+        "unsupported_sector": 81
+      },
+      {
+        "combined_eligible": 234,
+        "excluded_fundamentals": 256,
+        "excluded_identity": 131,
+        "excluded_membership": 116,
+        "excluded_price": 157,
+        "fundamental_eligible": 247,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 234,
+          "FUNDAMENTALS": 247,
+          "MEMBERSHIP": 367,
+          "PRICE": 342
+        },
+        "membership_verified": 389,
+        "month": "2020-06",
+        "price_eligible": 342,
+        "unique_issuers": 234,
+        "unique_securities": 234,
+        "unsupported_sector": 81
+      },
+      {
+        "combined_eligible": 234,
+        "excluded_fundamentals": 257,
+        "excluded_identity": 131,
+        "excluded_membership": 116,
+        "excluded_price": 155,
+        "fundamental_eligible": 246,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 234,
+          "FUNDAMENTALS": 246,
+          "MEMBERSHIP": 367,
+          "PRICE": 344
+        },
+        "membership_verified": 389,
+        "month": "2020-07",
+        "price_eligible": 344,
+        "unique_issuers": 234,
+        "unique_securities": 234,
+        "unsupported_sector": 80
+      },
+      {
+        "combined_eligible": 235,
+        "excluded_fundamentals": 256,
+        "excluded_identity": 131,
+        "excluded_membership": 116,
+        "excluded_price": 155,
+        "fundamental_eligible": 247,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 235,
+          "FUNDAMENTALS": 247,
+          "MEMBERSHIP": 367,
+          "PRICE": 344
+        },
+        "membership_verified": 389,
+        "month": "2020-08",
+        "price_eligible": 344,
+        "unique_issuers": 235,
+        "unique_securities": 235,
+        "unsupported_sector": 80
+      },
+      {
+        "combined_eligible": 236,
+        "excluded_fundamentals": 255,
+        "excluded_identity": 131,
+        "excluded_membership": 116,
+        "excluded_price": 155,
+        "fundamental_eligible": 248,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 236,
+          "FUNDAMENTALS": 248,
+          "MEMBERSHIP": 367,
+          "PRICE": 344
+        },
+        "membership_verified": 389,
+        "month": "2020-09",
+        "price_eligible": 344,
+        "unique_issuers": 236,
+        "unique_securities": 236,
+        "unsupported_sector": 80
+      },
+      {
+        "combined_eligible": 234,
+        "excluded_fundamentals": 256,
+        "excluded_identity": 131,
+        "excluded_membership": 115,
+        "excluded_price": 156,
+        "fundamental_eligible": 247,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 234,
+          "FUNDAMENTALS": 247,
+          "MEMBERSHIP": 367,
+          "PRICE": 343
+        },
+        "membership_verified": 390,
+        "month": "2020-10",
+        "price_eligible": 343,
+        "unique_issuers": 234,
+        "unique_securities": 234,
+        "unsupported_sector": 80
+      },
+      {
+        "combined_eligible": 234,
+        "excluded_fundamentals": 256,
+        "excluded_identity": 131,
+        "excluded_membership": 115,
+        "excluded_price": 155,
+        "fundamental_eligible": 247,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 234,
+          "FUNDAMENTALS": 247,
+          "MEMBERSHIP": 367,
+          "PRICE": 344
+        },
+        "membership_verified": 390,
+        "month": "2020-11",
+        "price_eligible": 344,
+        "unique_issuers": 234,
+        "unique_securities": 234,
+        "unsupported_sector": 79
+      },
+      {
+        "combined_eligible": 234,
+        "excluded_fundamentals": 256,
+        "excluded_identity": 130,
+        "excluded_membership": 114,
+        "excluded_price": 155,
+        "fundamental_eligible": 247,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 234,
+          "FUNDAMENTALS": 247,
+          "MEMBERSHIP": 368,
+          "PRICE": 344
+        },
+        "membership_verified": 391,
+        "month": "2020-12",
+        "price_eligible": 344,
+        "unique_issuers": 234,
+        "unique_securities": 234,
+        "unsupported_sector": 79
+      },
+      {
+        "combined_eligible": 237,
+        "excluded_fundamentals": 253,
+        "excluded_identity": 130,
+        "excluded_membership": 114,
+        "excluded_price": 155,
+        "fundamental_eligible": 250,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 237,
+          "FUNDAMENTALS": 250,
+          "MEMBERSHIP": 368,
+          "PRICE": 344
+        },
+        "membership_verified": 391,
+        "month": "2021-01",
+        "price_eligible": 344,
+        "unique_issuers": 237,
+        "unique_securities": 237,
+        "unsupported_sector": 78
+      },
+      {
+        "combined_eligible": 238,
+        "excluded_fundamentals": 253,
+        "excluded_identity": 129,
+        "excluded_membership": 114,
+        "excluded_price": 153,
+        "fundamental_eligible": 250,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 238,
+          "FUNDAMENTALS": 250,
+          "MEMBERSHIP": 369,
+          "PRICE": 346
+        },
+        "membership_verified": 391,
+        "month": "2021-02",
+        "price_eligible": 346,
+        "unique_issuers": 238,
+        "unique_securities": 238,
+        "unsupported_sector": 78
+      },
+      {
+        "combined_eligible": 238,
+        "excluded_fundamentals": 253,
+        "excluded_identity": 128,
+        "excluded_membership": 113,
+        "excluded_price": 153,
+        "fundamental_eligible": 250,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 238,
+          "FUNDAMENTALS": 250,
+          "MEMBERSHIP": 370,
+          "PRICE": 346
+        },
+        "membership_verified": 392,
+        "month": "2021-03",
+        "price_eligible": 346,
+        "unique_issuers": 238,
+        "unique_securities": 238,
+        "unsupported_sector": 78
+      },
+      {
+        "combined_eligible": 237,
+        "excluded_fundamentals": 254,
+        "excluded_identity": 129,
+        "excluded_membership": 113,
+        "excluded_price": 151,
+        "fundamental_eligible": 249,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 237,
+          "FUNDAMENTALS": 249,
+          "MEMBERSHIP": 369,
+          "PRICE": 348
+        },
+        "membership_verified": 392,
+        "month": "2021-04",
+        "price_eligible": 348,
+        "unique_issuers": 237,
+        "unique_securities": 237,
+        "unsupported_sector": 77
+      },
+      {
+        "combined_eligible": 238,
+        "excluded_fundamentals": 254,
+        "excluded_identity": 129,
+        "excluded_membership": 113,
+        "excluded_price": 150,
+        "fundamental_eligible": 249,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 238,
+          "FUNDAMENTALS": 249,
+          "MEMBERSHIP": 369,
+          "PRICE": 349
+        },
+        "membership_verified": 392,
+        "month": "2021-05",
+        "price_eligible": 349,
+        "unique_issuers": 238,
+        "unique_securities": 238,
+        "unsupported_sector": 77
+      },
+      {
+        "combined_eligible": 239,
+        "excluded_fundamentals": 254,
+        "excluded_identity": 129,
+        "excluded_membership": 113,
+        "excluded_price": 149,
+        "fundamental_eligible": 249,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 239,
+          "FUNDAMENTALS": 249,
+          "MEMBERSHIP": 369,
+          "PRICE": 350
+        },
+        "membership_verified": 392,
+        "month": "2021-06",
+        "price_eligible": 350,
+        "unique_issuers": 239,
+        "unique_securities": 239,
+        "unsupported_sector": 77
+      },
+      {
+        "combined_eligible": 238,
+        "excluded_fundamentals": 255,
+        "excluded_identity": 128,
+        "excluded_membership": 113,
+        "excluded_price": 149,
+        "fundamental_eligible": 248,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 238,
+          "FUNDAMENTALS": 248,
+          "MEMBERSHIP": 370,
+          "PRICE": 350
+        },
+        "membership_verified": 392,
+        "month": "2021-07",
+        "price_eligible": 350,
+        "unique_issuers": 238,
+        "unique_securities": 238,
+        "unsupported_sector": 77
+      },
+      {
+        "combined_eligible": 239,
+        "excluded_fundamentals": 255,
+        "excluded_identity": 128,
+        "excluded_membership": 113,
+        "excluded_price": 148,
+        "fundamental_eligible": 248,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 239,
+          "FUNDAMENTALS": 248,
+          "MEMBERSHIP": 370,
+          "PRICE": 351
+        },
+        "membership_verified": 392,
+        "month": "2021-08",
+        "price_eligible": 351,
+        "unique_issuers": 239,
+        "unique_securities": 239,
+        "unsupported_sector": 77
+      },
+      {
+        "combined_eligible": 239,
+        "excluded_fundamentals": 256,
+        "excluded_identity": 128,
+        "excluded_membership": 112,
+        "excluded_price": 147,
+        "fundamental_eligible": 247,
+        "historical_membership_count": 505,
+        "issuer_counts": {
+          "COMBINED": 239,
+          "FUNDAMENTALS": 247,
+          "MEMBERSHIP": 370,
+          "PRICE": 352
+        },
+        "membership_verified": 393,
+        "month": "2021-09",
+        "price_eligible": 352,
+        "unique_issuers": 239,
+        "unique_securities": 239,
+        "unsupported_sector": 77
+      }
+    ],
+    "new_fits": 0,
+    "oot_outcomes_accessed": 0,
+    "scientific_coverage_gate": "NOT_DEFINED",
+    "sector_distribution": {
+      "Agriculture": {
+        "issuer_months": 15,
+        "issuers": 1,
+        "percentage": 0.09216589861751152
+      },
+      "Construction": {
+        "issuer_months": 80,
+        "issuers": 3,
+        "percentage": 0.4915514592933948
+      },
+      "Manufacturing": {
+        "issuer_months": 8047,
+        "issuers": 138,
+        "percentage": 49.443932411674346
+      },
+      "Mining": {
+        "issuer_months": 591,
+        "issuers": 10,
+        "percentage": 3.6313364055299537
+      },
+      "Retail": {
+        "issuer_months": 1704,
+        "issuers": 28,
+        "percentage": 10.47004608294931
+      },
+      "Services": {
+        "issuer_months": 2638,
+        "issuers": 48,
+        "percentage": 16.20890937019969
+      },
+      "Transport, Comms, Utilities": {
+        "issuer_months": 2648,
+        "issuers": 38,
+        "percentage": 16.270353302611365
+      },
+      "Wholesale": {
+        "issuer_months": 552,
+        "issuers": 8,
+        "percentage": 3.391705069124424
+      }
+    }
+  },
+  "fundamental_family": "Existing First ML core, sec-tags-4; not full-feature training readiness",
+  "hashes": {
+    "coverage": "0d10c4b0d73eb5cdcb92db75e7d7dfd1f47e1aa5d6432217f0b4b1fe73542c4e",
+    "fundamental_universe": "8f9f76029ace786c8005eedf50b2bdc52de40e7512fa34ca56584c04b1fd90fc",
+    "identity": "aae7968149672b9e25360d054fb28562fef6c20d97bfe4333717918c6799095d",
+    "membership": "bc97cc9ec2ddf81dce16e66da2c4dfd7527d9e4b740a238d02d865420ad22b2b",
+    "price_universe": "7ca5cced746b397b7bd3bc449ed053e442c711499f7315ce7b462c1f9f4b43f7"
+  },
+  "holdout_outcomes_accessed": 0,
+  "mapping_debt": [
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ProfitLoss",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 91,
+      "issuer_month_impact": 3080
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NetIncomeLossAttributableToNoncontrollingInterest",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 61,
+      "issuer_month_impact": 1951
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NetIncomeLossAvailableToCommonStockholdersBasic",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 49,
+      "issuer_month_impact": 1871
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SalesRevenueGoodsNet",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 44,
+      "issuer_month_impact": 1804
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "BusinessAcquisitionsProFormaRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 43,
+      "issuer_month_impact": 1504
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AdjustmentsNoncashItemsToReconcileNetIncomeLossToCashProvidedByUsedInOperatingActivitiesOther",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 36,
+      "issuer_month_impact": 1434
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "BusinessAcquisitionsProFormaNetIncomeLoss",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 32,
+      "issuer_month_impact": 1235
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NetIncomeLossAvailableToCommonStockholdersDiluted",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 35,
+      "issuer_month_impact": 1225
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecurities",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 39,
+      "issuer_month_impact": 1170
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "DisposalGroupIncludingDiscontinuedOperationRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 33,
+      "issuer_month_impact": 974
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableforsaleSecuritiesGrossUnrealizedGain",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 20,
+      "issuer_month_impact": 821
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ProceedsFromSaleOfAvailableForSaleSecurities",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 23,
+      "issuer_month_impact": 711
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SalesRevenueServicesNet",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 20,
+      "issuer_month_impact": 706
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesNoncurrent",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 16,
+      "issuer_month_impact": 676
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesGrossUnrealizedLosses1",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 17,
+      "issuer_month_impact": 655
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesDebtSecurities",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 24,
+      "issuer_month_impact": 621
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ContractWithCustomerLiabilityRevenueRecognized",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 30,
+      "issuer_month_impact": 557
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ProceedsFromSaleAndMaturityOfAvailableForSaleSecurities",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 12,
+      "issuer_month_impact": 548
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesGrossUnrealizedLoss",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 16,
+      "issuer_month_impact": 546
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesDebtMaturitiesAfterOneThroughFiveYearsFairValue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 15,
+      "issuer_month_impact": 545
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "FairValueMeasurementWithUnobservableInputsReconciliationRecurringBasisAssetPurchasesSalesIssuancesSettlements",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 13,
+      "issuer_month_impact": 545
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesFairValueDisclosure",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 20,
+      "issuer_month_impact": 536
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "PaymentsToAcquireAvailableForSaleSecurities",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 14,
+      "issuer_month_impact": 528
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesCurrent",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 17,
+      "issuer_month_impact": 521
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesGrossUnrealizedGains",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 13,
+      "issuer_month_impact": 492
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesDebtMaturitiesWithinOneYearFairValue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 16,
+      "issuer_month_impact": 483
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "EquityMethodInvestmentSummarizedFinancialInformationNetIncomeLoss",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 12,
+      "issuer_month_impact": 476
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RevenuesFromTransactionsWithOtherOperatingSegmentsOfSameEntity",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 15,
+      "issuer_month_impact": 453
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SegmentReportingInformationRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 12,
+      "issuer_month_impact": 452
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "EntityWideDisclosureOnGeographicAreasRevenueFromExternalCustomersAttributedToEntitysCountryOfDomicile",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 11,
+      "issuer_month_impact": 446
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RevenueFromRelatedParties",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 12,
+      "issuer_month_impact": 446
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesGrossRealizedGains",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 15,
+      "issuer_month_impact": 411
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "EquityMethodInvestmentSummarizedFinancialInformationRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 12,
+      "issuer_month_impact": 407
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NetIncomeLossAttributableToRedeemableNoncontrollingInterest",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 9,
+      "issuer_month_impact": 391
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "EntityWideDisclosureOnGeographicAreasRevenueFromExternalCustomersAttributedToForeignCountries",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 10,
+      "issuer_month_impact": 390
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesDebtMaturitiesAfterFiveThroughTenYearsFairValue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 11,
+      "issuer_month_impact": 367
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "GainLossOnSalesOfAssetsAndAssetImpairmentCharges",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 13,
+      "issuer_month_impact": 348
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "OtherSalesRevenueNet",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 14,
+      "issuer_month_impact": 348
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesGrossRealizedLosses",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 12,
+      "issuer_month_impact": 345
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "BusinessCombinationProFormaInformationRevenueOfAcquireeSinceAcquisitionDateActual",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 11,
+      "issuer_month_impact": 335
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RevenueRemainingPerformanceObligation",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 22,
+      "issuer_month_impact": 334
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesDebtSecuritiesCurrent",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 11,
+      "issuer_month_impact": 318
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesGrossRealizedGainsLossesSaleProceeds",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 9,
+      "issuer_month_impact": 279
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesDebtMaturitiesAfterTenYearsFairValue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 7,
+      "issuer_month_impact": 276
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RelatedPartyTransactionRevenuesFromTransactionsWithRelatedParty",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 7,
+      "issuer_month_impact": 269
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SegmentReportingInformationRevenueFromExternalCustomers",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 9,
+      "issuer_month_impact": 264
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ProceedsFromSaleOfAvailableForSaleSecuritiesDebt",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 15,
+      "issuer_month_impact": 262
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "PaymentsToAcquireAvailableForSaleSecuritiesDebt",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 11,
+      "issuer_month_impact": 258
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "OtherThanTemporaryImpairmentLossesInvestmentsAvailableforsaleSecurities",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 7,
+      "issuer_month_impact": 251
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "EquityMethodInvestmentSummarizedFinancialInformationGrossProfitLoss",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 7,
+      "issuer_month_impact": 250
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesGrossUnrealizedGainLoss",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 238
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ResultsOfOperationsOilAndGasProducingActivitiesNetIncomeExcludingCorporateOverheadAndInterestCosts",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 8,
+      "issuer_month_impact": 236
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NetIncomeLossIncludingPortionAttributableToNonredeemableNoncontrollingInterest",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 10,
+      "issuer_month_impact": 232
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "FairValueMeasurementWithUnobservableInputsReconciliationRecurringBasisAssetSales",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 8,
+      "issuer_month_impact": 230
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SegmentReportingSegmentOperatingProfitLoss",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 5,
+      "issuer_month_impact": 229
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesDebtSecuritiesNoncurrent",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 9,
+      "issuer_month_impact": 227
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "PaymentsToAcquireAvailableForSaleSecuritiesEquity",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 227
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesGrossRealizedGainLossNet",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 7,
+      "issuer_month_impact": 219
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NewAccountingPronouncementOrChangeInAccountingPrincipleEffectOfChangeOnNetIncome",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 213
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesEquitySecurities",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 11,
+      "issuer_month_impact": 212
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SegmentReportingInformationProfitLoss",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 5,
+      "issuer_month_impact": 205
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesDebtMaturitiesNextRollingTwelveMonthsFairValue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 202
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AdjustmentsNoncashItemsToReconcileNetIncomeLossToCashProvidedByUsedInOperatingActivities",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 199
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ProceedsFromMaturitiesPrepaymentsAndCallsOfAvailableForSaleSecurities",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 8,
+      "issuer_month_impact": 195
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RevenueRecognitionGiftCardsBreakage",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 5,
+      "issuer_month_impact": 194
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesContinuousUnrealizedLossPositionLessThanTwelveMonthsFairValue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 10,
+      "issuer_month_impact": 193
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesDebtMaturitiesWithoutSingleMaturityDateFairValue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 192
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AdjustmentsToReconcileNetIncomeLossToCashProvidedByUsedInOperatingActivities",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 6,
+      "issuer_month_impact": 190
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ResultsOfOperationsRevenueFromOilAndGasProducingActivities",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 7,
+      "issuer_month_impact": 190
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "BusinessAcquisitionProFormaRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 6,
+      "issuer_month_impact": 187
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "DecreaseDueToSalesOfMineralsInPlace",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 7,
+      "issuer_month_impact": 187
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "BusinessAcquisitionProFormaNetIncomeLoss",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 6,
+      "issuer_month_impact": 184
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "GainsLossesOnSalesOfAssets",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 5,
+      "issuer_month_impact": 184
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesContinuousUnrealizedLossPositionTwelveMonthsOrLongerFairValue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 10,
+      "issuer_month_impact": 181
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SegmentReportingInformationIntersegmentRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 175
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "EquityMethodInvestmentSummarizedFinancialInformationNetSalesOrGrossRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 6,
+      "issuer_month_impact": 167
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesDebtMaturitiesFairValue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 164
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "LossesGainsOnSalesOfAssetsAndAssetImpairmentCharges",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 162
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ElectricUtilityRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 7,
+      "issuer_month_impact": 156
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SegmentReportingReconcilingItemForOperatingProfitLossFromSegmentToConsolidatedAmount",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 155
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesEquitySecuritiesNoncurrent",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 153
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SegmentReportingSegmentRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 151
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "OilAndGasRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 6,
+      "issuer_month_impact": 150
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "InterestRevenueExpenseNet",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 6,
+      "issuer_month_impact": 149
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "OtherThanTemporaryImpairmentLossesInvestmentsPortionRecognizedInEarningsNetAvailableforsaleSecurities",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 5,
+      "issuer_month_impact": 148
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ProceedsFromSalesOfBusinessAffiliateAndProductiveAssets",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 7,
+      "issuer_month_impact": 147
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SalesReturnsGoods",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 146
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesContinuousUnrealizedLossPositionFairValue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 9,
+      "issuer_month_impact": 145
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "HealthCareOrganizationPatientServiceRevenueLessProvisionForBadDebts",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 145
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "HealthCareOrganizationPatientServiceRevenueProvisionforBadDebts",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 145
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesDebtMaturitiesRollingYearTwoThroughFiveFairValue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 142
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ProceedsFromSaleOfAvailableForSaleSecuritiesEquity",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 5,
+      "issuer_month_impact": 140
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AntidilutiveSecuritiesExcludedFromComputationOfNetIncomePerOutstandingUnitAmount",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 139
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableforsaleSecuritiesGrossRealizedGainLossExcludingOtherThanTemporaryImpairments",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 137
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "EntityWideRevenueMajorCustomerAmount",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 135
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesDebtMaturitiesRollingYearSixThroughTenFairValue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 134
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NetIncomeLossAttributableToNonredeemableNoncontrollingInterest",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 132
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NewAccountingPronouncementOrChangeInAccountingPrincipleEffectOfChangeOnNetRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 132
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "LeveragedLeasesIncomeStatementNetIncomeFromLeveragedLeases",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 130
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesContinuousUnrealizedLossPositionLessThan12MonthsAccumulatedLoss",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 7,
+      "issuer_month_impact": 127
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SegmentReportingReconcilingItemsForOperatingProfitLoss",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 127
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SalesRevenueServicesGross",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 126
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "HealthCareOrganizationPatientServiceRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 125
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ResultsOfOperationsSalesRevenueToUnaffiliatedEnterprises",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 119
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "EntityWideRevenueMajorCustomerPercentage",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 115
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "GasDomesticRegulatedRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 114
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesContinuousUnrealizedLossPositionLessThan12MonthsAggregateLosses",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 5,
+      "issuer_month_impact": 108
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RevenueRemainingPerformanceObligationPercentage",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 5,
+      "issuer_month_impact": 104
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ProvedDevelopedAndUndevelopedReservesSalesOfMineralsInPlace",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 103
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ContractsRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 102
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "EquityMethodInvestmentNetSalesProceeds",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 92
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "FairValueInputsLongTermRevenueGrowthRate",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 85
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NetInvestmentInDirectFinancingAndSalesTypeLeases",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 85
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ProceedsFromSalesOfAssetsInvestingActivities",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 85
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RevenueMineralSales",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 85
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RevenueRecognitionMilestoneMethodRevenueRecognized",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 85
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "EntityWideDisclosureOnGeographicAreasRevenueFromExternalCustomersAttributedToIndividualForeignCountriesAmount",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 83
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesContinuousUnrealizedLossPosition12MonthsOrLongerAccumulatedLoss",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 6,
+      "issuer_month_impact": 77
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "DefinedBenefitPlanPurchasesSalesAndSettlements",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 77
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SalesRevenueGoodsNetPercentage",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 77
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RevenueRecognitionSalesReturnsReserveForSalesReturns",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 75
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "HealthCareOrganizationRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 74
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "FranchiseRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 72
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "GasGatheringTransportationMarketingAndProcessingRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 70
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NetIncomeLossFromContinuingOperationsAvailableToCommonShareholdersBasic",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 70
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "CashFlowHedgeGainLossReclassifiedToRevenueNet",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 69
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RegulatedOperatingRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 67
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RoyaltyRevenueFromCoal",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 66
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ConsolidationLessThanWhollyOwnedSubsidiaryParentOwnershipInterestChangeDueToNetIncomeAttributableToParentAndEffectsOfChangesNet",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 65
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ElectricalGenerationRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 65
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NetIncomeLossAttributableToParentDiluted",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 65
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RefiningAndMarketingRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 65
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ResultsOfOperationsSalesOrTransfersToEntitysOtherOperations",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 65
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesDebtMaturitiesRollingAfterYearTenFairValue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 63
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "InterestRevenueExpense",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 63
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SegmentReportingReconcilingItemsRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 63
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "BusinessAcquisitionRevenueReportedByAcquiredEntityForLastAnnualPeriod",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 61
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableforsaleSecuritiesGrossUnrealizedGainLoss1",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 60
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "LicenseAndServicesRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 60
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NoncontrollingInterestInNetIncomeLossJointVenturePartnersNonredeemable",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 58
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "CompetitiveEnergyRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 57
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "FoodAndBeverageRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 57
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "UtilityRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 57
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "OilAndGasSalesPayableCurrent",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 55
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RoyaltyRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 5,
+      "issuer_month_impact": 55
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ElectricDomesticRegulatedRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 54
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "HealthCareOrganizationCapitationRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 54
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "HealthCareOrganizationOtherRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 54
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "MinorityInterestInNetIncomeLossOtherMinorityInterests",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 54
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "MinorityInterestInNetIncomeLossPreferredUnitHolders",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 54
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NoncontrollingInterestInNetIncomeLossPreferredUnitHoldersRedeemable",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 54
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "OilAndGasSalesRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 54
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RevenueOtherFinancialServices",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 54
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SalesAllowancesServices",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 54
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesContinuousUnrealizedLossPosition12MonthsOrLongerAggregateLosses",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 51
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesContinuousUnrealizedLossPositionAggregateLosses",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 51
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableforsaleSecuritiesRestrictedNoncurrent",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 51
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "EquityMethodInvestmentUnrealizedIntercompanyProfitLossNotEliminatedAmount",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 51
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ContractWithCustomerLiabilityChangeInTimeframePerformanceObligationSatisfiedRevenueRecognized",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 49
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesAndHeldToMaturitySecurities",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 48
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "MinorityInterestInNetIncomeLossOperatingPartnerships",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 45
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "TemporaryEquityNetIncome",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 44
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RevenueOilAndGasServices",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 43
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "FinancialServicesRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 42
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesChangeInNetUnrealizedHoldingGainLoss",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 41
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "PassengerRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 41
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NetIncomeLossFromDiscontinuedOperationsAvailableToCommonShareholdersBasic",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 39
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "OperatingLeasesIncomeStatementLeaseRevenue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 37
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesContinuousUnrealizedLossPositionAccumulatedLoss",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 5,
+      "issuer_month_impact": 35
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "LandSales",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 34
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RetailLandSalesInstallmentMethodSalesValue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 34
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "BusinessCombinationSeparatelyRecognizedTransactionsRevenuesAndGainsRecognized",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 33
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NaturalGasMidstreamRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 33
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "TransferOfFinancialAssetsAccountedForAsSalesCashProceedsReceivedForAssetsDerecognizedAmount",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 32
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesDebtMaturitiesSingleMaturityDate",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 30
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "OperatingLeasesIncomeStatementMinimumLeaseRevenue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 30
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesEquitySecuritiesCurrent",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 26
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NaturalGasProductionRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 25
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "GainLossOnSalesOfMortgageBackedSecuritiesMBS",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 24
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RelatedPartyTransactionOtherRevenuesFromTransactionsWithRelatedParty",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 23
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "CapitalLeasesLessorBalanceSheetNetInvestmentInDirectFinancingAndSalesTypeLeasesCurrent",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 22
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "CapitalLeasesLessorBalanceSheetNetInvestmentInDirectFinancingAndSalesTypeLeasesNoncurrent",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 22
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "CapitalLeasesNetInvestmentInDirectFinancingAndSalesTypeLeases",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 22
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "TransferOfFinancialAssetsAccountedForAsSalesAmountDerecognized",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 22
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RevenuesFromExternalCustomers",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 20
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "CapitalLeasesNetInvestmentInSalesTypeLeasesMinimumPaymentsToBeReceived",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 19
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "UnregulatedOperatingRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 19
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AccruedSalesCommissionCurrentAndNoncurrent",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 18
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AdvertisingRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 18
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SalesAllowancesGoods",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 18
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "HealthCareOrganizationRevenueNetOfPatientServiceRevenueProvisions",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 17
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ManagementFeesBaseRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 16
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AverageSalesPrices",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 15
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NetIncomeLossFromContinuingOperationsAvailableToCommonShareholdersDiluted",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 4,
+      "issuer_month_impact": 15
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RegulatedAndUnregulatedOperatingRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 15
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NaturalGasStorageRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 14
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ResultsOfOperationsRevenueOther",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 14
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SalesOfOilAndGasProspects",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 14
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "CapitalLeasesLessorBalanceSheetNetInvestmentInSalesTypeLeasesCurrent",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 13
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "CapitalLeasesLessorBalanceSheetNetInvestmentInSalesTypeLeasesNoncurrent",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 13
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "CapitalLeasesNetInvestmentInSalesTypeLeases",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 13
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SalesReturnsAndAllowancesGoods",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 12
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "CargoAndFreightRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 11
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ContractWithCustomerAssetCumulativeCatchUpAdjustmentToRevenueChangeInEstimateOfTransactionPrice",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 11
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "PassengerRevenueMainline",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 11
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "PassengerRevenueRegional",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 11
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ContractWithCustomerLiabilityCumulativeCatchUpAdjustmentToRevenueChangeInEstimateOfTransactionPrice",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 10
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "EscrowDepositsRelatedToPropertySales",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 10
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "FairValueNetDerivativeAssetLiabilityMeasuredOnRecurringBasisUnobservableInputsReconciliationSales",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 10
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "MinorityInterestInNetIncomeLossLimitedPartnerships",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 10
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NoncontrollingInterestInNetIncomeLossLimitedPartnershipsNonredeemable",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 10
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "OilAndCondensateRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 10
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AccruedSalesCommissionCurrent",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 9
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "CapitalLeasesIncomeStatementLeaseRevenue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 9
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ContractWithCustomerLiabilityCumulativeCatchUpAdjustmentToRevenueChangeInMeasureOfProgress",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 9
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "NetIncomeLossFromDiscontinuedOperationsAvailableToCommonShareholdersDiluted",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 9
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "OperatingLeasesIncomeStatementContingentRevenue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 9
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RegulatedOperatingRevenueGas",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 9
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SalesDiscountsGoods",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 9
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SalesTypeLeaseLeaseIncome",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 9
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SalesTypeLeaseSellingProfitLoss",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy",
+        "fund_net_margin"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 9
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SegmentReportingInformationEquityInNetIncomeOfEquityMethodInvesteesOfSegment",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 9
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableforsaleSecuritiesContinuousUnrealizedLossPosition12MonthsOrLongerAggregateLosses1",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 8
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableforsaleSecuritiesContinuousUnrealizedLossPositionAggregateLosses1",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 8
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableforsaleSecuritiesContinuousUnrealizedLossPositionLessThan12MonthsAggregateLosses1",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 3,
+      "issuer_month_impact": 8
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "DisposalGroupIncludingDiscontinuedOperationGrossProfitLoss",
+      "core_families_for_semantic_review": [
+        "fund_net_margin"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 8
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "LicensesRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 8
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "OperatingLeasesIncomeStatementSubleaseRevenue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 8
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableforsaleSecuritiesContinuousUnrealizedLossPosition12MonthsOrLongerAggregateLosses2",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 7
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableforsaleSecuritiesContinuousUnrealizedLossPositionAggregateLosses2",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 7
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableforsaleSecuritiesContinuousUnrealizedLossPositionLessThan12MonthsAggregateLosses2",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 7
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "GainLossOnSalesOfLoansNet",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 7
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ProceedsFromDepositsOnRealEstateSales",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 2,
+      "issuer_month_impact": 7
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SegmentReportingEntityConsolidatedRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 7
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableforsaleSecuritiesGrossRealizedLossesExcludingOtherThanTemporaryImpairments",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 6
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "CapitalLeasesIncomeStatementSalesTypeLeaseRevenue",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 6
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ElectricalDistributionRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 6
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "FairValueAssetsMeasuredOnRecurringBasisChangeInUnrealizedGainLossIncludedInTradingRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 6
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ManagementFeesIncentiveRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 6
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "ReimbursementRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 6
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RevenueFromLeasedAndOwnedHotels",
+      "core_families_for_semantic_review": [
+        "fund_debt_to_assets",
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 6
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "SalesAllowancesPriceProtection",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 6
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "TimeShareRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 6
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RegulatedOperatingRevenueOther",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 4
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "RevenueNotFromContractWithCustomerOther",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 4
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "TechnologyServicesRevenue",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 3
+    },
+    {
+      "classification": "UNMAPPED_CONCEPT_CANDIDATE_NOT_PROVEN_CAUSE",
+      "concept": "AvailableForSaleSecuritiesPledgedAsCollateral",
+      "core_families_for_semantic_review": [
+        "fund_net_margin",
+        "fund_revenue_yoy"
+      ],
+      "issuer_count": 1,
+      "issuer_month_impact": 1
+    }
+  ],
+  "mapping_debt_limit": "Existing mapped tags and unrelated tax/comprehensive-income concepts are excluded. Lexical candidates are counted only where their existing core family has MAPPING_GAP and the concept was already available. Presence does not prove semantic equivalence or that mapping repairs coverage; impacts overlap.",
+  "median_percentage_increase": 376.3157894736843,
+  "new_fits": 0,
+  "oot_outcomes_accessed": 0,
+  "price_family": "Existing D05 RAW QA + contiguous 253 historical closes + benchmark availability; no forward outcomes",
+  "recommendation": "CONTINUE_DATA_EXPANSION",
+  "scientific_coverage_gate": "NOT_DEFINED",
+  "version": "us-large-cap-research-universe-v1"
+}

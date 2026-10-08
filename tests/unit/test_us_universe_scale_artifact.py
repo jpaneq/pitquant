@@ -22,7 +22,7 @@ def reports():
         json.loads((DOCS / (name + ".json")).read_bytes())
         for name in (
             "US_LARGE_CAP_RESEARCH_UNIVERSE_V1",
-            "US_LARGE_CAP_RESEARCH_COVERAGE_V1",
+            "US_LARGE_CAP_RESEARCH_COVERAGE_EXPANSION_BASELINE_V1",
         )
     )
 
