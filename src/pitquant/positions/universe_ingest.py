@@ -112,7 +112,9 @@ def ingest_universe(
             try:
                 sid = ensure_security(session, base, vendor)
                 have = _sources_of(session, sid)
-                if source == "YAHOO" and have and have != {YAHOO_SOURCE}:
+                if (
+                    source == "YAHOO" and have and YAHOO_SOURCE not in have
+                ):  # a security that ALREADY carries Yahoo bars (AAPL/MSFT also keep the EODHD demo QA series) keeps being refreshed from Yahoo
                     out[entry] = (
                         f"SKIPPED: already has bars from {sorted(have)} (another source is not mixed in)"
                     )

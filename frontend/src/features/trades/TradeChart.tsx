@@ -60,10 +60,9 @@ export function TradeChart({ t }: { t: TradePayload }) {
       text: m.label,
     }))
     createSeriesMarkers(s, markers.sort((a, b) => String(a.time).localeCompare(String(b.time))))
-    const first = t.bars[Math.max(0, t.bars.findIndex((b) => b.date >= t.decision_date) - 30)]?.date
-    const last = t.bars[t.bars.length - 1].date
-    if (first && first < last) c.timeScale().setVisibleRange({ from: first as Time, to: last as Time })
-    else c.timeScale().fitContent()
+    const di = Math.max(0, t.bars.findIndex((b) => b.date >= t.decision_date))
+    const from = Math.max(0, di - 12)
+    c.timeScale().setVisibleLogicalRange({ from, to: t.bars.length - 1 + 14 })
     return () => c.remove()
   }, [t])
   if (t.bars.length === 0) return <p className="text-xs text-muted">Sin velas disponibles para este activo.</p>
