@@ -434,3 +434,15 @@ def test_historical_artifacts_and_proposal_gate_are_preserved() -> None:
     assert report["dev_adaptive_iteration"] == 3
     assert report["real_fits"] == report["dev_predictions"] == 0
     assert report["holdout_outcomes_accessed"] == report["oot_outcomes_accessed"] == 0
+
+
+@pytest.mark.pit
+def test_empty_backend_serialization_is_a_persistence_failure(tmp_path: Path) -> None:
+    with pytest.raises(PersistenceError, match="no model artifact"):
+        AtomicArchive(tmp_path).commit(
+            "model",
+            ArtifactKind.TRAINING_ARTIFACT,
+            {"trained": True},
+            serialize=lambda _path: None,
+        )
+    assert not (tmp_path / "model").exists()

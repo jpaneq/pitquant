@@ -105,6 +105,8 @@ class AtomicArchive:
             staging = Path(tempfile.mkdtemp(prefix="." + phase + ".staging-", dir=self.root))
             if serialize is not None:
                 serialize(staging / "model")
+                if not any(p.is_file() for p in (staging / "model").rglob("*")):
+                    raise PersistenceError("serializer produced no model artifact")
             self.writer(staging / "payload.json", encoded(payload))
             if arrays is not None:
                 buffer = io.BytesIO()
@@ -113,6 +115,8 @@ class AtomicArchive:
             files = sorted(p for p in staging.rglob("*") if p.is_file())
             if any(p.is_symlink() for p in staging.rglob("*")):
                 raise PersistenceError("symlink in model archive")
+            for artifact in files:
+                _sync(artifact)
             envelope = {
                 "kind": kind.value,
                 "phase": phase,
