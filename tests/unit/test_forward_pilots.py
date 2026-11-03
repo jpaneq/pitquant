@@ -224,3 +224,32 @@ def test_sqlite_migration_blocks_raw_journal_mutation(tmp_path):
     ]:
         with engine.begin() as conn, pytest.raises(IntegrityError, match="append-only"):
             conn.execute(text(sql))
+
+
+def test_paper_drawdown_uses_largest_positive_decline_and_ten_trade_gate(session, monkeypatch):
+    from types import SimpleNamespace
+
+    import pitquant.forward.paper as paper
+
+    links = [
+        SimpleNamespace(market="BTC", payload={"model_id": "m", "simulation_id": str(i)})
+        for i in range(10)
+    ]
+    monkeypatch.setattr(paper, "records", lambda *_: links)
+    monkeypatch.setattr(
+        paper,
+        "latest_outcome",
+        lambda _, sid: SimpleNamespace(
+            state="STOPPED",
+            is_closed=True,
+            realized_return=-0.02,
+            max_drawdown=int(sid) / 100,
+            excess_return_vs_benchmark=None,
+        ),
+    )
+    result = paper.statistics(session, "m")
+    assert result["worst_trade_drawdown"] == 0.09
+    assert result["mean_excess_vs_benchmark"] is None
+    assert result["portfolio_return"] is None
+    links.pop()
+    assert paper.statistics(session, "m")["worst_trade_drawdown"] is None

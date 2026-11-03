@@ -64,7 +64,7 @@ def statistics(s: Session, model_id: str) -> dict[str, Any]:
         "metrics_available": enough,
         "mean_win": float(np.mean(wins)) if enough and wins else None,
         "mean_loss": float(np.mean(losses)) if enough and losses else None,
-        "worst_trade_drawdown": min(dd) if enough and dd else None,
+        "worst_trade_drawdown": max(dd) if enough and dd else None,
         "mean_excess_vs_benchmark": float(np.mean(excess)) if enough and excess else None,
         "benchmark_n": len(excess),
         "items": items,
