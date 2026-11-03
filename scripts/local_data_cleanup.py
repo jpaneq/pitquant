@@ -8,7 +8,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import signal
 import subprocess
+import time
 from pathlib import Path
 
 from project_backup import REPO, SKIP, file_hash, load_manifest
@@ -78,12 +81,47 @@ def plan(tag: str) -> list[Path]:
     return candidates
 
 
+def stop_project_app(root: Path) -> None:
+    probe = subprocess.run(
+        ["lsof", "-nP", "-iTCP:8000", "-sTCP:LISTEN", "-t"],
+        capture_output=True,
+        text=True,
+    )
+    for pid in set(probe.stdout.split()):
+        command = subprocess.check_output(["ps", "-p", pid, "-o", "command="], text=True)
+        cwd = subprocess.check_output(["lsof", "-a", "-p", pid, "-d", "cwd", "-Fn"], text=True)
+        directories = [
+            Path(line[1:]).resolve() for line in cwd.splitlines() if line.startswith("n")
+        ]
+        if "uvicorn pitquant.api.main:app" not in command or root.resolve() not in directories:
+            raise RuntimeError("Port 8000 belongs to another app; it will not be stopped")
+        os.kill(int(pid), signal.SIGTERM)
+    deadline = time.monotonic() + 15
+    while probe.stdout.strip():
+        if time.monotonic() >= deadline:
+            raise RuntimeError("App did not stop gracefully; no data deleted")
+        time.sleep(0.2)
+        probe = subprocess.run(
+            ["lsof", "-nP", "-iTCP:8000", "-sTCP:LISTEN", "-t"], capture_output=True, text=True
+        )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tag", default="full-project-2026-11-03-v2")
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--confirm")
+    parser.add_argument(
+        "--stop-app",
+        action="store_true",
+        help="Stop only this project uvicorn on port 8000 before deletion",
+    )
     args = parser.parse_args()
+    if args.stop_app:
+        if not args.execute or args.confirm != "DELETE_BACKED_UP_LOCAL_DATA":
+            raise ValueError("Stopping the app requires explicit execution confirmation")
+        manifest = load_manifest(args.tag)
+        stop_project_app(Path(manifest["sources"]["project"]))
     files = plan(args.tag)
     total = sum(p.stat().st_size for p in files)
     print(

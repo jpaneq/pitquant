@@ -99,3 +99,20 @@ def test_cleanup_missing_restore_receipt_blocks(tmp_path, monkeypatch):
     )
     with pytest.raises(RuntimeError, match="restore verification"):
         module.plan("synthetic")
+
+
+def test_cleanup_stop_app_refuses_another_project(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    module = cleanup_module(monkeypatch)
+    monkeypatch.setattr(module.subprocess, "run", lambda *a, **kw: SimpleNamespace(stdout="123\n"))
+    monkeypatch.setattr(
+        module.subprocess,
+        "check_output",
+        lambda args, **kw: (
+            "uvicorn pitquant.api.main:app" if args[0] == "ps" else "n/another/project\n"
+        ),
+    )
+    monkeypatch.setattr(module.os, "kill", lambda *_: pytest.fail("Another project killed"))
+    with pytest.raises(RuntimeError, match="another app"):
+        module.stop_project_app(tmp_path)

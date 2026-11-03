@@ -43,8 +43,12 @@ obtener la comprobación anterior satisfactoria:
 
 ```sh
 python3 scripts/local_data_cleanup.py --tag full-project-2026-11-03-v2 \
-  --execute --confirm DELETE_BACKED_UP_LOCAL_DATA
+  --stop-app --execute --confirm DELETE_BACKED_UP_LOCAL_DATA
 ```
+
+La opción `--stop-app` detiene únicamente el servidor PITQuant del proyecto
+en el puerto 8000, verificando su carpeta y proceso; no mata otras aplicaciones.
+Parar aparte cualquier ingesta o automatización.
 
 Elimina solo archivos dentro de los directorios data incluidos en la copia y
 cuyo hash sigue coincidiendo. Conserva código, .git, credenciales, entornos y
