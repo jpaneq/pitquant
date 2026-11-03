@@ -363,7 +363,11 @@ def restore(tag: str, destination: Path | None, minimal: bool = False) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             p = Path(tmp) / "FULL_RESTORE_VERIFIED.json"
             p.write_text(json.dumps(receipt, indent=2) + "\n")
-            subprocess.run(["gh", "release", "upload", tag, str(p), "--repo", REPO], check=True)
+            release = gh(f"repos/{REPO}/releases/tags/{tag}")
+            if not any(a["name"] == p.name for a in release["assets"]):
+                subprocess.run(["gh", "release", "upload", tag, str(p), "--repo", REPO], check=True)
+            # A repeated successful verification must not fail or overwrite its
+            # first durable receipt merely because that receipt already exists.
     print(json.dumps(receipt))
 
 
