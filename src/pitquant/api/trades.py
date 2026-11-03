@@ -19,6 +19,20 @@ def make_trades_router(cfg: Settings) -> APIRouter:
     def trades(db: DB, days: int = 120) -> list[dict[str, Any]]:
         return tv.list_trades(db, max(1, min(days, 730)))
 
+    @r.post("/evaluate")
+    def evaluate_existing(db: DB) -> dict[str, Any]:
+        from pitquant.positions.routine import evaluate_positions, evaluate_virtual
+
+        result = {**evaluate_positions(db, cfg), **evaluate_virtual(db, cfg), "orders_opened": 0}
+        db.commit()
+        return result
+
+    @r.get("/audit")
+    def audit_existing(db: DB) -> dict[str, Any]:
+        from pitquant.positions.audit import audit
+
+        return audit(db, cfg)
+
     @r.get("/chart")
     def chart(db: DB, ref: str) -> dict[str, Any]:
         try:

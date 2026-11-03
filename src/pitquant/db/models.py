@@ -1978,11 +1978,13 @@ IMMUTABLE_TABLES: frozenset[str] = frozenset(
         "research_targets",
         "filing_analysis_snapshots",
         "fx_rates",
+        "forward_pilot_records",
     }
 )
 
 # Register the independent BTC vertical without changing equity tables.
 from pitquant.btc import models as _btc_models  # noqa: E402, F401
+from pitquant.db import models_forward as _models_forward  # noqa: E402,F401
 from pitquant.db import models_lab as _models_lab  # noqa: E402,F401  (prediction/strategy tables)
 from pitquant.db import models_positions as _models_positions  # noqa: E402,F401
 from pitquant.db import models_research as _models_research  # noqa: E402,F401

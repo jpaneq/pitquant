@@ -1,10 +1,12 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { api } from '../../api/client'
+import { api, apiPost } from '../../api/client'
 import { Badge, Card, CardBody, CardHeader, PanelError, Skeleton } from '../../components/ui/primitives'
 import { TradeChart, type TradePayload } from './TradeChart'
 
+type AuditGroup = { n: number; closed: number; pending: number; no_data: number; target_first: number; stop_first: number; target_rate_closed: number | null; mean_closed_return: number | null; mean_winner: number | null; mean_loser: number | null; stale_at_creation: number; calendar_mature: number }
+type Audit = { total_decisions: number; picks: number; buy: AuditGroup; no_order_counterfactual: AuditGroup; by_market: Record<string, { buy: AuditGroup; no_order: AuditGroup }> }
 type Row = { ref: string; kind: string; date: string; market: string; ticker: string; horizon_months: number | null; decision: string; recommendation: string | null; score: number | null }
 const pct = (v: number | null) => (v == null ? '—' : `${(v * 100).toFixed(1)}%`)
 const DAY: Record<string, string> = { ON_TRACK: 'en camino', AGAINST: 'en contra', TARGET: 'OBJETIVO tocado', STOP: 'STOP tocado', AMBIGUOUS: 'objetivo y stop el mismo día', AFTER_EXIT: 'tras la salida' }
@@ -12,10 +14,13 @@ const STATE: Record<string, string> = { IN_PROGRESS: 'en curso', TARGET_HIT: 'ob
 
 /** Visor visual de operaciones: cada decisión de la rutina (compra o no compra) y cada simulación, con velas, tendencia, entrada, objetivo, stop y salida. */
 export function OperacionesPage() {
+  const cache = useQueryClient()
+  const evaluation = useMutation({ mutationFn: () => apiPost('/trades/evaluate', {}), onSuccess: () => cache.invalidateQueries() })
   const [params, setParams] = useSearchParams()
   const [market, setMarket] = useState('TODOS')
   const [only, setOnly] = useState<'TODAS' | 'COMPRAS' | 'NO COMPRAS'>('TODAS')
   const list = useQuery({ queryKey: ['trades'], queryFn: ({ signal }) => api<Row[]>('/trades?days=365', signal) })
+  const audit = useQuery({ queryKey: ['trade-audit'], queryFn: ({ signal }) => api<Audit>('/trades/audit', signal), staleTime: 60000 })
   const ref = params.get('ref') ?? ''
   const chart = useQuery({ queryKey: ['trade-chart', ref], queryFn: ({ signal }) => api<TradePayload>(`/trades/chart?ref=${encodeURIComponent(ref)}`, signal), enabled: !!ref })
   const rows = useMemo(() => (list.data ?? []).filter((r) => (market === 'TODOS' || r.market === market) && (only === 'TODAS' || (only === 'COMPRAS') === (r.decision === 'BUY' || r.decision === 'SIMULATED'))), [list.data, market, only])
@@ -25,7 +30,18 @@ export function OperacionesPage() {
       <header className="space-y-1">
         <h1 className="text-2xl font-semibold">Operaciones: qué se planteó y qué pasó</h1>
         <p className="text-sm text-muted">Pulsa una fila para verla en el gráfico: velas, tendencia (medias de 50 y 200 sesiones), la <b>entrada</b> planteada, el <b>objetivo</b>, el <b>stop</b> y la <b>salida</b> si ya ocurrió. Las compras abren una posición simulada; las «no compra» muestran qué habría pasado. Dinero simulado, reglas sin validar.</p>
+        <button className="rounded border border-border px-3 py-2 text-sm" disabled={evaluation.isPending} onClick={() => evaluation.mutate()}>{evaluation.isPending ? 'Evaluando…' : 'Actualizar evaluaciones existentes'}</button>
+        <p className="text-xs text-muted">Revisa con los cierres guardados; no abre nuevas operaciones ni descarga cotizaciones.</p>
+        {evaluation.isError && <PanelError what="Evaluación" error={evaluation.error} onRetry={() => evaluation.mutate()} />}
       </header>
+      {audit.data && <Card><CardHeader title={`Auditoría: ${audit.data.total_decisions} decisiones · ${audit.data.picks} selecciones`} sub="Las decisiones de varios horizontes sobre el mismo valor están relacionadas. Resultados brutos, sin costes." /><CardBody className="space-y-3 text-sm">
+        <p>Compras: <b>{audit.data.buy.n}</b> · objetivo: <b>{audit.data.buy.target_first}</b> · stop: <b>{audit.data.buy.stop_first}</b> · pendientes: <b>{audit.data.buy.pending}</b>. Aciertos entre cerradas: <b>{pct(audit.data.buy.target_rate_closed)}</b> ({audit.data.buy.target_first}/{audit.data.buy.closed}).</p>
+        <p>Media por decisión cerrada: <b>{pct(audit.data.buy.mean_closed_return)}</b> · ganadora: {pct(audit.data.buy.mean_winner)} · perdedora: {pct(audit.data.buy.mean_loser)}. No es la rentabilidad de una cartera.</p>
+        <p className="text-warn">{audit.data.buy.stale_at_creation} compras antiguas usaron cotización marcada como desactualizada. Corregido para futuras entradas: se exige cotización vigente. Las entradas originales se conservan.</p>
+        <p>Las {audit.data.no_order_counterfactual.n} decisiones de no comprar son comparaciones hipotéticas: {audit.data.no_order_counterfactual.target_first} objetivos y {audit.data.no_order_counterfactual.stop_first} stops; {audit.data.no_order_counterfactual.no_data} sin datos suficientes.</p>
+        <p className="text-muted">{audit.data.buy.calendar_mature === 0 ? 'Todavía no ha vencido ningún horizonte original de compra.' : `${audit.data.buy.calendar_mature} horizontes de compra han vencido.`} Las pérdidas medias superan a las ganancias medias; ajustar ahora los umbrales con esta muestra puede sobreajustar. Conservamos las decisiones originales y medimos el nuevo predictor por separado.</p>
+        <a className="text-accent underline" href="/pilotos">Ver los nuevos pilotos y sus puntos de revisión</a>
+      </CardBody></Card>}
       <div className="grid gap-4 lg:grid-cols-[22rem_1fr]">
         <Card>
           <CardHeader title="Decisiones" sub={`${rows.length} de ${list.data?.length ?? 0}`} />

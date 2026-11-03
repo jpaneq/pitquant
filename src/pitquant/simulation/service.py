@@ -165,6 +165,7 @@ def create_simulation(
     sizing_mode: str = "RISK_BASED",
     notional: float | None = None,
     authority: AutoPaperAuthority | None = None,
+    forward_prediction: dict[str, Any] | None = None,
 ) -> Simulation:
     at = at or utc_now()
     _guard(at, settings)
@@ -315,6 +316,8 @@ def create_simulation(
         "simulation_engine_version": engine.version,
         "versions": ver,
     }  # fmt: skip
+    if forward_prediction is not None:
+        sim.source_provenance["forward_prediction"] = forward_prediction
     session.add(sim)
     session.flush()
     session.add(

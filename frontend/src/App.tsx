@@ -1,3 +1,4 @@
+import { ForwardPage } from './features/forward/ForwardPage'
 import { Route, Routes } from 'react-router-dom'
 import { BitcoinPage } from './features/bitcoin/BitcoinPage'
 import { AppShell } from './components/AppShell'
@@ -27,6 +28,7 @@ export function App() {
         <Route path="simulations/insights" element={<InsightsPage />} />
         <Route path="simulations/:id" element={<SimulationDetail />} />
         <Route path="rutina" element={<RoutinePage />} />
+        <Route path="pilotos" element={<ForwardPage />} />
         <Route path="operaciones" element={<OperacionesPage />} />
         <Route path="ayuda" element={<HelpPage />} />
         <Route path="status" element={<StatusPage />} />

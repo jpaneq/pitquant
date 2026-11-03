@@ -623,3 +623,30 @@ def test_msci_world_picks_only_tickers_whose_own_exchange_is_open(env: Env) -> N
         rt.exchange_open("XLON", datetime(2026, 10, 5, 9, 0, tzinfo=UTC)) is True
         and rt.exchange_open("XASX", datetime(2026, 10, 4, 23, 30, tzinfo=UTC)) is True
     )
+
+
+@pytest.mark.pit
+@pytest.mark.parametrize("freshness", ["STALE", "UNAVAILABLE", None])
+def test_future_buys_require_current_quote(env: Env, monkeypatch, freshness):
+    s, cfg, sf, _ = env
+    ctx = Context(price=100, vol_annual=0.2, atr14=2)
+    monkeypatch.setattr(
+        rt.engine, "review", lambda *_: {"score": 9, "recommendation": "ADD", "reason": "synthetic"}
+    )
+    monkeypatch.setattr(rt.ps, "open_position", lambda *a, **kw: pytest.fail("Stale order opened"))
+    decisions = rt._decide(
+        s,
+        cfg,
+        market="SP500",
+        ticker="SYNF",
+        sid=sf,
+        ctx=ctx,
+        meta={"freshness": freshness, "price_source": "SYNTHETIC"},
+        now=NOW,
+        pick_id="synthetic",
+    )
+    assert all(
+        d["decision"] == "NO_ORDER" and d["entry_blocker"] == "FRESH_PRICE_REQUIRED"
+        for d in decisions
+    )
+    assert all(d["hypothetical"]["entry_price"] == 100 for d in decisions)

@@ -256,8 +256,12 @@ def _decide(
             lv is not None
         ):  # a decision NOT to buy keeps the levels it WOULD have used, so it can be valued later
             row["hypothetical"] = {"entry_price": ctx.price, **lv}
+        row["entry_policy_version"] = "FRESH_QUOTE_REQUIRED_V2"
         if rv["recommendation"] == "ADD":
-            if lv is None:
+            if meta.get("freshness") not in {"LIVE", "EOD"}:
+                row["entry_blocker"] = "FRESH_PRICE_REQUIRED"
+                row["reason"] = "Compra bloqueada: cotización ausente o desactualizada."
+            elif lv is None:
                 row["reason"] = (
                     "Entrada justificada por las reglas pero sin volatilidad/ATR para fijar objetivo y stop: no se abre."
                 )

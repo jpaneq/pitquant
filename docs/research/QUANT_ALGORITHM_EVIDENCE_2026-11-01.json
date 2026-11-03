@@ -1,0 +1,444 @@
+{
+  "review_date": "2026-11-01",
+  "timezone": "Europe/Madrid",
+  "status": "DOCUMENTARY_RESEARCH_ONLY_NOT_AN_APPROVED_EXPERIMENT",
+  "papers": [
+    {
+      "title": "Time Series Momentum",
+      "publication_year": 2012,
+      "version": "Journal of Financial Economics",
+      "url": "https://www.aqr.com/Insights/Research/Journal-Article/Time-Series-Momentum",
+      "assessment": "A"
+    },
+    {
+      "title": "A Century of Evidence on Trend-Following Investing",
+      "publication_year": 2017,
+      "version": "Journal of Portfolio Management",
+      "url": "https://www.aqr.com/Insights/Research/Journal-Article/A-Century-of-Evidence-on-Trend-Following-Investing",
+      "assessment": "A"
+    },
+    {
+      "title": "Trends Everywhere",
+      "publication_year": 2020,
+      "version": "Journal article hosted by AQR",
+      "url": "https://www.aqr.com/insights/research/journal-article/trends-everywhere",
+      "assessment": "A"
+    },
+    {
+      "title": "Value and Momentum Everywhere",
+      "publication_year": 2013,
+      "version": "Journal of Finance",
+      "url": "https://www.aqr.com/insights/research/journal-article/value-and-momentum-everywhere",
+      "assessment": "A"
+    },
+    {
+      "title": "Quality Minus Junk",
+      "publication_year": 2019,
+      "version": "Review of Accounting Studies",
+      "url": "https://doi.org/10.1007/s11142-018-9470-2",
+      "assessment": "A"
+    },
+    {
+      "title": "Empirical Asset Pricing via Machine Learning",
+      "publication_year": 2020,
+      "version": "Review of Financial Studies; NBER working version accessed",
+      "url": "https://www.nber.org/papers/w25398",
+      "assessment": "B"
+    },
+    {
+      "title": "Building Cross-Sectional Systematic Strategies by Learning to Rank",
+      "publication_year": 2020,
+      "version": "arXiv version accessed; subsequently Journal of Financial Data Science",
+      "url": "https://arxiv.org/abs/2012.07149",
+      "assessment": "B"
+    },
+    {
+      "title": "Is There a Replication Crisis in Finance?",
+      "publication_year": 2023,
+      "version": "Journal of Finance",
+      "url": "https://doi.org/10.1111/jofi.13249",
+      "assessment": "A"
+    },
+    {
+      "title": "Open Source Cross-Sectional Asset Pricing",
+      "publication_year": 2022,
+      "version": "Critical Finance Review; author manuscript accessed",
+      "url": "https://www.cfr-cologne.de/download/workingpaper/cfr-20-04.pdf",
+      "assessment": "A"
+    },
+    {
+      "title": "Risks and Returns of Cryptocurrency",
+      "publication_year": 2021,
+      "version": "Review of Financial Studies; NBER working version accessed",
+      "url": "https://www.nber.org/papers/w24877",
+      "assessment": "B"
+    },
+    {
+      "title": "Multi-Period Trading via Convex Optimization",
+      "publication_year": 2017,
+      "version": "Foundations and Trends in Optimization; author page",
+      "url": "https://stanford.edu/~boyd/papers/cvx_portfolio.html",
+      "assessment": "I"
+    },
+    {
+      "title": "A Decade of Evidence of Trend Following Investing in Cryptocurrencies",
+      "publication_year": 2020,
+      "version": "arXiv preprint; peer-reviewed publication not verified",
+      "url": "https://arxiv.org/abs/2009.12155",
+      "assessment": "C"
+    },
+    {
+      "title": "Replicating Anomalies",
+      "publication_year": 2020,
+      "version": "Review of Financial Studies; author manuscript",
+      "url": "https://theinvestmentcapm.com/uploads/1/2/2/6/122679606/houxuezhang2020rfs.pdf",
+      "assessment": "COUNTER_EVIDENCE"
+    },
+    {
+      "title": "Does Academic Research Destroy Stock Return Predictability?",
+      "publication_year": 2016,
+      "version": "Journal of Finance; author SSRN version",
+      "url": "https://papers.ssrn.com/abstract_id=2156623",
+      "assessment": "COUNTER_EVIDENCE"
+    },
+    {
+      "title": "Trading Costs",
+      "publication_year": 2018,
+      "version": "AQR working paper",
+      "url": "https://www.aqr.com/Insights/Research/Working-Paper/Trading-Costs",
+      "assessment": "IMPLEMENTATION_COSTS"
+    },
+    {
+      "title": "Anomalies and Their Short-Sale Costs",
+      "publication_year": 2025,
+      "version": "Journal of Finance",
+      "url": "https://doi.org/10.1111/jofi.13501",
+      "assessment": "COUNTER_EVIDENCE"
+    },
+    {
+      "title": "Cryptocurrency momentum has (not) its moments",
+      "publication_year": 2025,
+      "version": "Financial Markets and Portfolio Management",
+      "url": "https://doi.org/10.1007/s11408-025-00474-9",
+      "assessment": "COUNTER_EVIDENCE"
+    },
+    {
+      "title": "High-frequency trading in a limit order book",
+      "publication_year": 2008,
+      "version": "Quantitative Finance; author PDF",
+      "url": "https://math.nyu.edu/inmemoriam/avellaneda/HighFrequencyTrading.pdf",
+      "assessment": "DEFER"
+    },
+    {
+      "title": "Pairs Trading: Performance of a Relative-Value Arbitrage Rule",
+      "publication_year": 2006,
+      "version": "Review of Financial Studies; NBER 1999 working version accessed",
+      "url": "https://www.nber.org/papers/w7032.pdf",
+      "assessment": "DEFER"
+    }
+  ],
+  "repository_metadata": [
+    {
+      "full_name": "OpenSourceAP/CrossSection",
+      "html_url": "https://github.com/OpenSourceAP/CrossSection",
+      "default_branch": "master",
+      "archived": false,
+      "pushed_at": "2026-10-27T20:29:45Z",
+      "updated_at": "2026-10-31T22:00:16Z",
+      "license": {
+        "key": "gpl-2.0",
+        "name": "GNU General Public License v2.0",
+        "spdx_id": "GPL-2.0",
+        "url": "https://api.github.com/licenses/gpl-2.0",
+        "node_id": "MDc6TGljZW5zZTg="
+      }
+    },
+    {
+      "full_name": "bkelly-lab/jkp-data",
+      "html_url": "https://github.com/bkelly-lab/jkp-data",
+      "default_branch": "main",
+      "archived": false,
+      "pushed_at": "2026-11-01T21:02:10Z",
+      "updated_at": "2026-11-01T20:11:40Z",
+      "license": {
+        "key": "mit",
+        "name": "MIT License",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit",
+        "node_id": "MDc6TGljZW5zZTEz"
+      }
+    },
+    {
+      "full_name": "bkelly-lab/ReplicationCrisis",
+      "html_url": "https://github.com/bkelly-lab/ReplicationCrisis",
+      "default_branch": "master",
+      "archived": false,
+      "pushed_at": "2026-05-29T14:18:21Z",
+      "updated_at": "2026-10-30T01:47:43Z",
+      "license": null
+    },
+    {
+      "full_name": "xiubooth/ML_Codes",
+      "html_url": "https://github.com/xiubooth/ML_Codes",
+      "default_branch": "master",
+      "archived": false,
+      "pushed_at": "2019-06-24T14:21:14Z",
+      "updated_at": "2026-05-16T17:06:28Z",
+      "license": null
+    },
+    {
+      "full_name": "microsoft/qlib",
+      "html_url": "https://github.com/microsoft/qlib",
+      "default_branch": "main",
+      "archived": false,
+      "pushed_at": "2026-10-30T05:12:38Z",
+      "updated_at": "2026-11-01T19:33:26Z",
+      "license": {
+        "key": "mit",
+        "name": "MIT License",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit",
+        "node_id": "MDc6TGljZW5zZTEz"
+      }
+    },
+    {
+      "full_name": "lightgbm-org/LightGBM",
+      "html_url": "https://github.com/lightgbm-org/LightGBM",
+      "default_branch": "main",
+      "archived": false,
+      "pushed_at": "2026-10-31T03:37:47Z",
+      "updated_at": "2026-11-01T04:17:58Z",
+      "license": {
+        "key": "mit",
+        "name": "MIT License",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit",
+        "node_id": "MDc6TGljZW5zZTEz"
+      }
+    },
+    {
+      "full_name": "catboost/catboost",
+      "html_url": "https://github.com/catboost/catboost",
+      "default_branch": "master",
+      "archived": false,
+      "pushed_at": "2026-11-01T21:26:19Z",
+      "updated_at": "2026-11-01T21:26:26Z",
+      "license": {
+        "key": "apache-2.0",
+        "name": "Apache License 2.0",
+        "spdx_id": "Apache-2.0",
+        "url": "https://api.github.com/licenses/apache-2.0",
+        "node_id": "MDc6TGljZW5zZTI="
+      }
+    },
+    {
+      "full_name": "cvxgrp/cvxportfolio",
+      "html_url": "https://github.com/cvxgrp/cvxportfolio",
+      "default_branch": "master",
+      "archived": false,
+      "pushed_at": "2026-04-27T14:11:17Z",
+      "updated_at": "2026-11-01T09:13:07Z",
+      "license": {
+        "key": "gpl-3.0",
+        "name": "GNU General Public License v3.0",
+        "spdx_id": "GPL-3.0",
+        "url": "https://api.github.com/licenses/gpl-3.0",
+        "node_id": "MDc6TGljZW5zZTk="
+      }
+    },
+    {
+      "full_name": "Globe-Research/bittrends",
+      "html_url": "https://github.com/Globe-Research/bittrends",
+      "default_branch": "master",
+      "archived": false,
+      "pushed_at": "2020-09-20T17:05:47Z",
+      "updated_at": "2026-10-12T03:58:48Z",
+      "license": {
+        "key": "mit",
+        "name": "MIT License",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit",
+        "node_id": "MDc6TGljZW5zZTEz"
+      }
+    },
+    {
+      "full_name": "AI4Finance-Foundation/FinRL",
+      "html_url": "https://github.com/AI4Finance-Foundation/FinRL",
+      "default_branch": "master",
+      "archived": false,
+      "pushed_at": "2026-10-25T13:49:47Z",
+      "updated_at": "2026-11-01T18:52:14Z",
+      "license": {
+        "key": "mit",
+        "name": "MIT License",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit",
+        "node_id": "MDc6TGljZW5zZTEz"
+      }
+    },
+    {
+      "full_name": "scikit-learn/scikit-learn",
+      "html_url": "https://github.com/scikit-learn/scikit-learn",
+      "default_branch": "main",
+      "archived": false,
+      "pushed_at": "2026-11-01T15:58:02Z",
+      "updated_at": "2026-11-01T21:43:52Z",
+      "license": {
+        "key": "bsd-3-clause",
+        "name": "BSD 3-Clause \"New\" or \"Revised\" License",
+        "spdx_id": "BSD-3-Clause",
+        "url": "https://api.github.com/licenses/bsd-3-clause",
+        "node_id": "MDc6TGljZW5zZTU="
+      }
+    }
+  ],
+  "repository_heads_at_check": [
+    {
+      "repo": "OpenSourceAP/CrossSection",
+      "head_sha": "9f053398c4995651d822e90d81526d0644c6f3e5",
+      "committed_at": "2026-10-27T20:27:06Z",
+      "url": "https://github.com/OpenSourceAP/CrossSection/commit/9f053398c4995651d822e90d81526d0644c6f3e5"
+    },
+    {
+      "repo": "bkelly-lab/jkp-data",
+      "head_sha": "daacd5e0ea97df6992e996e28dfc29fb90f05be5",
+      "committed_at": "2026-11-01T20:11:35Z",
+      "url": "https://github.com/bkelly-lab/jkp-data/commit/daacd5e0ea97df6992e996e28dfc29fb90f05be5"
+    },
+    {
+      "repo": "xiubooth/ML_Codes",
+      "head_sha": "927c93ca7e4e452525a989f5a8cc22b73bb1b3d4",
+      "committed_at": "2019-06-24T14:21:14Z",
+      "url": "https://github.com/xiubooth/ML_Codes/commit/927c93ca7e4e452525a989f5a8cc22b73bb1b3d4"
+    },
+    {
+      "repo": "microsoft/qlib",
+      "head_sha": "54355232463878d2eebb91fe0ee5fa7fa1f5976c",
+      "committed_at": "2026-10-08T10:15:27Z",
+      "url": "https://github.com/microsoft/qlib/commit/54355232463878d2eebb91fe0ee5fa7fa1f5976c"
+    },
+    {
+      "repo": "lightgbm-org/LightGBM",
+      "head_sha": "0859368ef88618a22de33931a4c7be1c81c2a657",
+      "committed_at": "2026-10-31T03:37:47Z",
+      "url": "https://github.com/lightgbm-org/LightGBM/commit/0859368ef88618a22de33931a4c7be1c81c2a657"
+    },
+    {
+      "repo": "catboost/catboost",
+      "head_sha": "0731baa6062adf14958cdfe70a17cccac3d75e22",
+      "committed_at": "2026-11-01T21:26:14Z",
+      "url": "https://github.com/catboost/catboost/commit/0731baa6062adf14958cdfe70a17cccac3d75e22"
+    },
+    {
+      "repo": "cvxgrp/cvxportfolio",
+      "head_sha": "351c782b9b8b395c1a5f886b77e0d55f1bc9396e",
+      "committed_at": "2026-04-27T14:01:55Z",
+      "url": "https://github.com/cvxgrp/cvxportfolio/commit/351c782b9b8b395c1a5f886b77e0d55f1bc9396e"
+    },
+    {
+      "repo": "Globe-Research/bittrends",
+      "head_sha": "d2e66e405183349f52556a18d387bb1dfc900db5",
+      "committed_at": "2020-09-20T17:05:46Z",
+      "url": "https://github.com/Globe-Research/bittrends/commit/d2e66e405183349f52556a18d387bb1dfc900db5"
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "head_sha": "84fc20f30f5150b415c11ac9a20123f6b2de876d",
+      "committed_at": "2026-11-01T15:58:02Z",
+      "url": "https://github.com/scikit-learn/scikit-learn/commit/84fc20f30f5150b415c11ac9a20123f6b2de876d"
+    }
+  ],
+  "statically_read_files": [
+    {
+      "name": "jkp_readme",
+      "url": "https://raw.githubusercontent.com/bkelly-lab/jkp-data/main/README.md",
+      "sha256": "7782beb7c28068d889fac381afa1bde0396a6fda48bf6931d50a3e553128a4e6",
+      "bytes": 7521
+    },
+    {
+      "name": "jkp_data_license",
+      "url": "https://raw.githubusercontent.com/bkelly-lab/jkp-data/main/DATA_LICENSE",
+      "sha256": "2ec673912dbf41ab27a52f1711e8f302d61ca4021f33a01be823003b02acfb9b",
+      "bytes": 1236
+    },
+    {
+      "name": "crosssection_readme",
+      "url": "https://raw.githubusercontent.com/OpenSourceAP/CrossSection/master/README.md",
+      "sha256": "9992115680ae23caabee22831111b891a984a6dde2edd5cdf2d5480848f61412",
+      "bytes": 7966
+    },
+    {
+      "name": "bittrends_code",
+      "url": "https://raw.githubusercontent.com/Globe-Research/bittrends/master/MovingAverage.py",
+      "sha256": "6d69b753f7b4a8b803752092326a6710dd7ffe75412741e7f2957f6b54496910",
+      "bytes": 1497
+    },
+    {
+      "name": "bittrends_prices",
+      "url": "https://raw.githubusercontent.com/Globe-Research/bittrends/master/Price_Data.py",
+      "sha256": "0925bd381e9e506c33a3e229a00c405b20b7eb2ed54fc4c5c1d2ea714d0cfd21",
+      "bytes": 2387
+    },
+    {
+      "name": "qlib_ranker",
+      "url": "https://raw.githubusercontent.com/microsoft/qlib/main/qlib/contrib/model/gbdt.py",
+      "sha256": "a1afddb3bb965d108a916565b57e474cfddc55ce029f781765876e825623ad39",
+      "bytes": 5040
+    },
+    {
+      "name": "gkx_readme",
+      "url": "https://raw.githubusercontent.com/xiubooth/ML_Codes/master/README.md",
+      "sha256": "05cead432fbf05785454380ed6db2e3956f34a297b8c48ec145b9d264f0f2343",
+      "bytes": 108
+    }
+  ],
+  "scope_limits": [
+    "No author code executed",
+    "No complete replication",
+    "No comprehensive security or legal audit",
+    "Metadata/branch heads and file bytes were fetched separately; file hashes identify the exact reviewed bytes",
+    "No inference of exact proprietary strategy from public job descriptions"
+  ],
+  "proposed_priority": [
+    "equity momentum/value/quality controls",
+    "explicit BTC trend adaptation",
+    "separate monthly versus H12 protocols",
+    "bounded tabular challenger only after new approval",
+    "cost-aware forward simulation"
+  ],
+  "new_fits": 0,
+  "new_dev_predictions": 0,
+  "holdout_outcomes_accessed": 0,
+  "oot_outcomes_accessed": 0,
+  "report_sha256": "ffaabe43289bd16d3cbca137b599c35b721fabeb4f525c70379a16aea1fa3925",
+  "institutional_sources": [
+    {
+      "firm": "Renaissance Technologies",
+      "url": "https://www.rentec.com/"
+    },
+    {
+      "firm": "Two Sigma",
+      "url": "https://www.twosigma.com/businesses/investment-management/"
+    },
+    {
+      "firm": "D. E. Shaw",
+      "url": "https://www.deshaw.com/assets/articles/DESCO_Machine_Teaching_20231211.pdf"
+    },
+    {
+      "firm": "Citadel",
+      "url": "https://www.citadel.com/what-we-do/global-quantitative-strategies/"
+    },
+    {
+      "firm": "Citadel research roles",
+      "url": "https://www.citadel.com/careers/details/global-quantitative-strategies-gqs-machine-learning-researcher/"
+    },
+    {
+      "firm": "AQR",
+      "url": "https://www.aqr.com/Insights/Datasets/Value-and-Momentum-Everywhere-Factors-Monthly"
+    },
+    {
+      "firm": "Jane Street",
+      "url": "https://www.janestreet.com/join-jane-street/machine-learning/"
+    }
+  ]
+}
