@@ -20,14 +20,23 @@ from pitquant.positions.universe_ingest import find_security
 
 
 def load_frame(
-    s: Session, market: str, ticker: str, now: datetime, *, training: bool = False
+    s: Session,
+    market: str,
+    ticker: str,
+    now: datetime,
+    *,
+    training: bool = False,
+    full_history: bool = False,
 ) -> pd.DataFrame:
+    """``training``: history before the V1 seal. ``full_history``: everything known at ``now``
+    (learning refits and the one-time exam, ADR-0064). Default: recent live context."""
     cutoff = date.fromisoformat(str(MARKETS[market]["cutoff"]))
     until = (
         datetime.combine(cutoff, datetime.min.time(), UTC) - timedelta(microseconds=1)
         if training
         else now
     )
+    training = training or full_history  # no live-context truncation
     if market == "BTC":
         query = select(BTCDatum).where(
             BTCDatum.source == "BINANCE_SPOT",
@@ -84,12 +93,20 @@ def load_frame(
 
 
 def training_frames(
-    s: Session, market: str, now: datetime
+    s: Session,
+    market: str,
+    now: datetime,
+    *,
+    tickers: list[str] | None = None,
+    full_history: bool = False,
 ) -> tuple[dict[str, pd.DataFrame], dict[str, str]]:
     frames, exclusions = {}, {}
-    for ticker in ["BTC"] if market == "BTC" else TICKERS:
+    universe = ["BTC"] if market == "BTC" else (tickers or TICKERS)
+    for ticker in universe:
         try:
-            frame = load_frame(s, market, ticker, now, training=True)
+            frame = load_frame(
+                s, market, ticker, now, training=not full_history, full_history=full_history
+            )
             if frame.close.notna().sum() < 500:
                 raise ValueError("INSUFFICIENT_HISTORY_MIN500")
             frames[ticker] = frame

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- PLANTILLA (ADR-0064). La instala Instalar_aprendizaje_diario.command, que sustituye
+     __PROJECT__ por la carpeta del proyecto. Todos los días a las 23:30 (hora local):
+     tras el cierre de Nueva York y con la vela diaria de BTC del día anterior ya cerrada.
+     Si el Mac está dormido a esa hora, launchd lo ejecuta al despertar. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.pitquant.forward-learning</string>
+  <key>WorkingDirectory</key><string>__PROJECT__</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PITQUANT_DATABASE_URL</key><string>sqlite+pysqlite:///data/pitquant.db</string>
+  </dict>
+  <key>ProgramArguments</key>
+  <array>
+    <string>__PROJECT__/.venv/bin/python</string>
+    <string>__PROJECT__/scripts/forward_daily.py</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict><key>Hour</key><integer>23</integer><key>Minute</key><integer>30</integer></dict>
+  <key>StandardOutPath</key><string>__PROJECT__/data/forward-learning.log</string>
+  <key>StandardErrorPath</key><string>__PROJECT__/data/forward-learning.err</string>
+</dict>
+</plist>

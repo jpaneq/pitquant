@@ -105,8 +105,11 @@ def features(bars: pd.DataFrame) -> pd.DataFrame:
     return out[FEATURES].replace([np.inf, -np.inf], np.nan)
 
 
-def training_rows(bars: pd.DataFrame, market: str, ticker: str) -> pd.DataFrame:
-    cutoff = date.fromisoformat(str(MARKETS[market]["cutoff"]))
+def training_rows(
+    bars: pd.DataFrame, market: str, ticker: str, cutoff: date | None = None
+) -> pd.DataFrame:
+    """Rows whose feature AND target dates are strictly before ``cutoff`` (default: V1 seal)."""
+    cutoff = cutoff or date.fromisoformat(str(MARKETS[market]["cutoff"]))
     # Filter BEFORE any target construction: reserved prices cannot enter a target.
     b = bars[bars.index < cutoff]
     h = int(MARKETS[market]["horizon"])
@@ -129,7 +132,17 @@ def fit_model(
     candidate: bool = False,
     replay_at: date | None = None,
     now: datetime | None = None,
+    cutoff: date | None = None,
+    family: str = VERSION,
+    label: str | None = None,
+    archive: bool = True,
 ) -> Record:
+    """Fit one logistic model with the frozen V1 features/parameters.
+
+    Defaults reproduce V1 exactly. ``family``/``label``/``cutoff`` identify the learning
+    refits (ADR-0064): same algorithm, wider universe, training window up to ``cutoff``.
+    ``archive=False`` skips the compact training archive (exam refits; hash still recorded).
+    """
     import sklearn
     from sklearn.impute import SimpleImputer
     from sklearn.linear_model import LogisticRegression
@@ -138,18 +151,18 @@ def fit_model(
     from threadpoolctl import threadpool_limits
 
     now = require_aware(now or utc_now())
-    version = (
+    version = label or (
         ("replay-" + str(replay_at))
         if replay_at
         else (now.strftime("%Y-%m") if candidate else "v1")
     )
-    key = f"model:{VERSION}:{market}:{version}"
+    key = f"model:{family}:{market}:{version}"
     existing = s.scalar(select(Record).where(Record.record_key == key))
     if existing:
         if digest(existing.payload) != existing.payload_hash:
             raise ValueError("MODEL_INTEGRITY_ERROR")
         return existing
-    rows = [training_rows(b, market, t) for t, b in sorted(frames.items())]
+    rows = [training_rows(b, market, t, cutoff) for t, b in sorted(frames.items())]
     data = pd.concat(rows, ignore_index=True) if rows else pd.DataFrame()
     if candidate:
         seen = set()
@@ -209,7 +222,7 @@ def fit_model(
         "universe": sorted(frames),
         "excluded": exclusions,
         "target": "return > 0; exactly zero is DOWN_OR_FLAT",
-        "train_before": MARKETS[market]["cutoff"],
+        "train_before": str(cutoff) if cutoff else MARKETS[market]["cutoff"],
         "candidate_forward_labels": candidate,
         "evidence": "RETROSPECTIVE_CURRENT_VINTAGE_NOT_HISTORICAL_PIT",
         "holdout_outcomes_accessed": 0,
@@ -219,27 +232,33 @@ def fit_model(
         "costs": "NOT_MODELED",
         "selection": "fixed parameters; no tuning",
     }
+    if family != VERSION:  # V1 protocol keys stay byte-identical
+        protocol["family"] = family
+        protocol["learning_adr"] = "ADR-0064"
     append(s, f"protocol:{key}", "PROTOCOL", market, protocol)
     s.commit()  # must survive a failed fit
-    root.mkdir(parents=True, exist_ok=True)
-    target = root / f"{market}-{version}-{dataset_hash[:12]}.npz"
-    buffer = io.BytesIO()
-    np.savez_compressed(
-        buffer,
-        x=x,
-        y=y,
-        ticker=data.ticker.to_numpy(str),
-        feature_date=data.feature_date.astype(str).to_numpy(str),
-        target_date=data.target_date.astype(str).to_numpy(str),
-    )
-    publish(target, buffer.getvalue())
-    with np.load(target, allow_pickle=False) as checked:
-        if not np.array_equal(checked["x"], x, equal_nan=True) or not np.array_equal(
-            checked["y"], y
-        ):
-            raise ValueError("TRAINING_ARCHIVE_INTEGRITY_ERROR")
-    publish(root / f"{market}-{version}-protocol.json", encoded(protocol))
-    artifact_hash = hashlib.sha256(target.read_bytes()).hexdigest()
+    target: Path | None = None
+    artifact_hash: str | None = None
+    if archive:
+        root.mkdir(parents=True, exist_ok=True)
+        target = root / f"{market}-{version}-{dataset_hash[:12]}.npz"
+        buffer = io.BytesIO()
+        np.savez_compressed(
+            buffer,
+            x=x,
+            y=y,
+            ticker=data.ticker.to_numpy(str),
+            feature_date=data.feature_date.astype(str).to_numpy(str),
+            target_date=data.target_date.astype(str).to_numpy(str),
+        )
+        publish(target, buffer.getvalue())
+        with np.load(target, allow_pickle=False) as checked:
+            if not np.array_equal(checked["x"], x, equal_nan=True) or not np.array_equal(
+                checked["y"], y
+            ):
+                raise ValueError("TRAINING_ARCHIVE_INTEGRITY_ERROR")
+        publish(root / f"{market}-{version}-protocol.json", encoded(protocol))
+        artifact_hash = hashlib.sha256(target.read_bytes()).hexdigest()
     pipeline = make_pipeline(
         SimpleImputer(strategy="median"), StandardScaler(), LogisticRegression(**PARAMS)
     )
@@ -255,9 +274,10 @@ def fit_model(
         "protocol_key": f"protocol:{key}",
         "protocol_hash": digest(protocol),
         "dataset_hash": dataset_hash,
-        "dataset_file": str(target),
+        "dataset_file": str(target) if target else None,
         "dataset_file_sha256": artifact_hash,
         "train_n": len(data),
+        "train_up_rate": float(y.mean()),
         "train_feature_start": str(data.feature_date.min()),
         "train_feature_end": str(data.feature_date.max()),
         "train_target_end": str(data.target_date.max()),
@@ -272,9 +292,12 @@ def fit_model(
         "coef": classifier.coef_[0].tolist(),
         "intercept": float(classifier.intercept_[0]),
         "classes": classifier.classes_.tolist(),
-        "baseline": not candidate,
+        "baseline": not candidate and family == VERSION and replay_at is None,
     }
-    publish(root / f"{market}-{version}-model.json", encoded(payload))
+    if family != VERSION:
+        payload["family"] = family
+    if archive:
+        publish(root / f"{market}-{version}-model.json", encoded(payload))
     row = append(s, key, "REPLAY_MODEL" if replay_at else "MODEL", market, payload)
     s.commit()
     return row

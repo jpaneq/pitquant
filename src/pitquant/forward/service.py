@@ -31,8 +31,11 @@ def run_cycle(
     *,
     train: bool = False,
     candidate: bool = False,
+    learn: bool = False,
     cfg: Settings | None = None,
 ) -> dict[str, Any]:
+    from pitquant.forward.learning import learning_step
+
     now = utc_now()
     summary: dict[str, Any] = {
         "started_at": now.isoformat(),
@@ -41,6 +44,7 @@ def run_cycle(
         "gaps": [],
         "reviews": 0,
         "orders_opened": 0,
+        "learning": [],
     }
     for market in MARKETS:
         if train or candidate:
@@ -58,11 +62,19 @@ def run_cycle(
                 )
             except ValueError as exc:
                 summary["gaps"].append({"market": market, "reason": str(exc)})
+        if learn:  # ADR-0064: exam once, monthly refit, forward switch rule
+            try:
+                summary["learning"].append(learning_step(s, market, root, now))
+            except ValueError as exc:
+                summary["gaps"].append({"market": market, "reason": "LEARNING: " + str(exc)})
         models = records(s, "MODEL", market)
         active = [m for m in models if m.payload["baseline"]]
         challengers = [m for m in models if not m.payload["baseline"]]
-        if challengers:
-            active.append(challengers[-1])
+        # Latest model of each family keeps forecasting next to V1 (legacy candidates, refits).
+        for family in sorted({m.payload.get("family", VERSION) for m in challengers}):
+            active.append(
+                [m for m in challengers if m.payload.get("family", VERSION) == family][-1]
+            )
         frames_live = {}
         tickers = sorted({t for m in active for t in m.payload["universe"]})
         for ticker in tickers:
@@ -122,4 +134,6 @@ def run_cycle(
 
 
 def status(s: Session) -> dict[str, Any]:
-    return dashboard(s)
+    from pitquant.forward.learning import learning_dashboard
+
+    return {**dashboard(s), "learning": learning_dashboard(s)}

@@ -35,7 +35,7 @@ temporal, se rechaza.
   "FIXTURE"). Nunca presentarlos como históricos reales.
 - No dar una funcionalidad por terminada porque "ejecuta": correcta, testeada, tipada,
   documentada, reproducible, point-in-time.
-- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0050).
+- Cada decisión arquitectónica relevante → ADR nuevo en `docs/adr/` (siguiente: 0065).
 - Migraciones: `0001`…`0027` fijadas (`0027` `fx_rates` PIT, ADR-0049) (`0026` features de investigación, objetivos y análisis de filings, ADR-0048) (`0025` estado AMBIGUOUS_INTRABAR) (`0024` evaluaciones virtuales) (`0023` rutina diaria) (`0022` posiciones simuladas) (`0021` fusiona la cabeza BTC `btc_v0_20261004_r1` con `0020`) (`0020` predicciones y Strategy Engine) (`0019` motor fijado por simulación, `event_schema_version` y observaciones históricas) (`0018` event store del Simulation Lab y contrafactual, `0017` ancho de event_type de sucesiones, `0016` Simulation Lab, `0015` tipos de sucesión) (`0014` lista SEC 13(f) y sucesión de securities) (`0013` grafo de anclas SEC SPY: `sp500_anchors`, `sp500_anchor_members`, `sp500_anchor_crosschecks`, `sp500_membership_segments`, `security_ticker_alias`) (`0011` perfiles descriptivos `security_profiles`) (`0010` anclas de índice SPY/IVV) (`0009` evidencia de membresía S&P 500) (`0008` evidencia de identificadores con clase OFFICIAL/DERIVED/VENDOR) (`0004` emisor/security y snapshots, `0005` evidencia
   código↔ISIN, `0006` transiciones de ISIN, `0007` traza de corporate actions, `role` de
   security e `issuer_id` en filings SEC); **todo cambio de esquema = revisión nueva**.
@@ -256,3 +256,12 @@ Dataset de investigación `research_feature_snapshots` / `research_targets` (app
 
 ## DATA READINESS FOR FIRST ML (ADR-0049)
 `python scripts/gen_data_readiness_first_ml.py` → `docs/DATA_READINESS_FIRST_ML.md`, `docs/BENCHMARK_RETURN_CONTRACT.md` (generados). Datos de mercado y FX = **Yahoo** (decisión del propietario, `EXPLORATORY_SOURCE`). `research-targets-v2` (`scripts/build_targets_v2.py`): exceso sólo con base de retorno y de divisa comparables (FX PIT en `fx_rates`); ^IBEX (precio) nunca es benchmark de retorno total. `research/first_ml.py::first_ml_eligibility` es la ÚNICA decisión de elegibilidad; `first_ml_contract.py` fija el experimento `FIRST_EQUITY_ML_12M_V0` (M0–M4, folds purgados) sin entrenarlo. `FIRST_ML_BASELINE_READY=false` (D02, D05, cobertura 100 y base de benchmark abiertos); `required_securities=100` no se ha tocado (propuesta separada en `docs/adr/PROPUESTA-research-minimum-security-coverage.md`).
+
+## Aprendizaje continuo (ADR-0064, rama feature/forward-learning)
+La base del otro Mac no está: todo se reconstruye con datos gratuitos (Yahoo acciones, Binance BTC). Ciclo diario
+`scripts/forward_daily.py` (primera vez `--backfill-btc`; programar con `Instalar_aprendizaje_diario.command`).
+`forward/learning.py`: examen ÚNICO por mercado (V1 fijo vs reentreno mensual, preregistrado, predicciones congeladas
+antes de resultados; el periodo sellado queda consumido), reentreno mensual `forward-logistic-price-v2-learning` sobre 55
+acciones de EE. UU., política `LEARNING`/`FROZEN_V1` en registros `POLICY` y regla de cambio con pronósticos reales
+(≥200 pares, ≥20 fechas, IC90 sin cero). Examen 2026-11-08: acciones → LEARNING, BTC → FROZEN_V1, y ningún brazo supera
+la tasa base: las features de solo-precio no tienen señal. Siguiente paso con sentido: features nuevas como versión nueva.

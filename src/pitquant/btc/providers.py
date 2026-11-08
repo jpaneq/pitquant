@@ -21,6 +21,7 @@ from pitquant.core.timeutils import utc_now
 from pitquant.data.archive import ArchiveStore, archive_document
 
 SPOT = "https://data-api.binance.vision"
+SPOT_FALLBACK = "https://api.binance.com"
 FUTURES = "https://fapi.binance.com"
 COMMUNITY = "https://community-api.coinmetrics.io/v4"
 NETWORK_CANDIDATES = {
@@ -60,6 +61,16 @@ class PublicProvider:
         self.session, self.store = session, store
 
     def get(self, base: str, path: str, params: dict[str, Any]) -> tuple[Any, Any]:
+        try:
+            return self._get(base, path, params)
+        except urllib.error.URLError as exc:
+            # Some networks refuse the market-data mirror; the main API serves identical klines.
+            # The archived source_identifier records which host actually answered.
+            if base != SPOT or isinstance(exc, urllib.error.HTTPError):
+                raise
+            return self._get(SPOT_FALLBACK, path, params)
+
+    def _get(self, base: str, path: str, params: dict[str, Any]) -> tuple[Any, Any]:
         url = base + path + "?" + urllib.parse.urlencode(params)
         request = urllib.request.Request(
             url, headers={"User-Agent": "PITQuant-BTC-V0", "Accept": "application/json"}
