@@ -156,3 +156,21 @@ def test_forward_switch_rule(session, monkeypatch, policy, pairs, low, high, exp
     out = review_policy(session, "BTC", NOW + timedelta(seconds=1))
     assert out["switched"] is (expected is not None)
     assert current_policy(session, "BTC")["policy"] == (expected or policy)
+
+
+def test_exam_series_matches_exam_and_is_derived_once(session, tmp_path, btc, monkeypatch):
+    from pitquant.forward.learning import exam_series, learning_dashboard
+
+    v1(session, tmp_path, btc)
+    exam = run_exam(session, "BTC", tmp_path, NOW)
+    series = exam_series(session, "BTC", NOW)
+    p = series.payload
+    assert sum(m["n"] for m in p["monthly"]) == exam.payload["n"]
+    total = sum(m["acc_learning"] * m["n"] for m in p["monthly"]) / exam.payload["n"]
+    assert total == pytest.approx(exam.payload["arms"]["B_LEARNING"]["accuracy"])
+    assert sum(c["n"] for c in p["calibration"]["learning"]) <= exam.payload["n"]
+    monkeypatch.setattr(learning, "training_frames", lambda *a, **k: pytest.fail("recomputed"))
+    assert exam_series(session, "BTC", NOW).record_id == series.record_id
+    board = {b["market"]: b for b in learning_dashboard(session)}["BTC"]
+    assert board["exam_series"]["monthly"] == p["monthly"]
+    assert board["live"]["matured"] == 0 and board["live"]["series"] == {"v1": [], "learning": []}

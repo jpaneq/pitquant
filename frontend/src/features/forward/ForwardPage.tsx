@@ -2,14 +2,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api, apiPost } from '../../api/client'
-import { Card, CardBody, CardHeader, PanelError, Skeleton } from '../../components/ui/primitives'
-import { LearningPanel, type Learning } from './LearningPanel'
+import { Button, Card, CardBody, CardHeader, PanelError, Skeleton } from '../../components/ui/primitives'
+import { ExamView, Glossary, LiveProgress, StatusStrip, TodayForecasts, TodoList, type Activity, type Learning } from './LearningPanel'
 
 type Paper = { total: number; closed: number; open: number; metrics_available: boolean; mean_win: number | null; mean_loss: number | null; worst_trade_drawdown: number | null; mean_excess_vs_benchmark: number | null; items: {simulation_id: string; market: string; state: string}[] }
 type Model = { market: string; model_id: string; model: { version: string; train_n: number; train_target_end: string; trained_at: string; universe: string[] }; paper: Paper; nonoverlap_n: number; abstentions: number; n: number; mature: number; pending: number; hits: number; failures: number; accuracy: number | null; brier: number | null; logloss: number | null; always_up_accuracy: number | null; momentum_accuracy: number | null }
 type Prediction = { id: string; market: string; version: string; ticker: string; generated_at: string; issued_at?: string; feature_date: string; reference_price: number; due_at: string; p_up: number }
 type Review = { prediction_id: string; step: number; close: number; actual_return: number; final: boolean; hit: boolean | null }
-type Evidence = { learning?: Learning[]; comparisons?: {market: string; version: string; candidate_id: string; matched_mature_n: number; baseline_accuracy: number | null; candidate_accuracy: number | null}[]; markets: Model[]; predictions: Prediction[]; reviews: Review[]; outcomes: Review[]; gaps: { market: string; ticker?: string; reason: string; observed_at: string }[]; replays: { market: string; window_months: number; status: string; reason: string; n?: number; nonoverlap_n?: number; accuracy?: number; always_up_accuracy?: number; brier?: number }[] }
+type Evidence = { learning?: Learning[]; activity?: Activity; comparisons?: {market: string; version: string; candidate_id: string; matched_mature_n: number; baseline_accuracy: number | null; candidate_accuracy: number | null}[]; markets: Model[]; predictions: Prediction[]; reviews: Review[]; outcomes: Review[]; gaps: { market: string; ticker?: string; reason: string; observed_at: string }[]; replays: { market: string; window_months: number; status: string; reason: string; n?: number; nonoverlap_n?: number; accuracy?: number; always_up_accuracy?: number; brier?: number }[] }
 const pct = (n: number | null) => n == null ? 'Pendiente' : `${(n * 100).toFixed(1)}%`
 const metric = (n: number | null) => n == null ? 'Pendiente' : n.toFixed(4)
 
@@ -22,11 +22,28 @@ export function ForwardPage() {
   if (query.isPending) return <Skeleton className="h-64" />
   if (query.isError) return <PanelError what="Pilotos forward" error={query.error} onRetry={() => query.refetch()} />
   const d = query.data
+  const learning = d.learning ?? []
   return <section aria-label="Pilotos forward" className="mx-auto max-w-7xl space-y-5">
-    <header className="flex flex-wrap items-center justify-between gap-3"><div><h1 className="text-2xl font-semibold">Aprender mirando hacia delante</h1><p className="text-sm text-muted">Acciones: 20 sesiones · Bitcoin: 30 días · versiones conservadas · dinero simulado.</p></div><button className="rounded border border-border px-3 py-2 text-sm" disabled={run.isPending} onClick={() => run.mutate()}>{run.isPending ? 'Revisando…' : 'Registrar pronósticos y revisar'}</button></header>
-    <p className="rounded border border-warn/30 bg-warn/5 p-3 text-sm">EXPERIMENTAL — probabilidades sin calibración demostrada. Este botón registra pronósticos y revisa los ya emitidos; no entrena ni abre operaciones. <Link className="underline" to="/operaciones">Ver las entradas automáticas anteriores →</Link></p>
+    <header className="flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <h1 className="text-2xl font-semibold">Laboratorio de aprendizaje</h1>
+        <p className="mt-1 max-w-3xl text-sm text-muted">Cada noche el algoritmo apuesta si {learning.length ? 'cada acción y bitcoin' : 'cada activo'} estará más alto dentro de un mes, guarda la apuesta sin poder tocarla y, cuando llega la fecha, comprueba si acertó. Una vez al mes se reentrena con lo aprendido. Dinero simulado: nunca opera.</p>
+      </div>
+      <Button disabled={run.isPending} onClick={() => run.mutate()} title="Emite los pronósticos que falten y revisa los vencidos. No entrena ni opera.">{run.isPending ? 'Revisando…' : 'Revisar ahora'}</Button>
+    </header>
     {run.isError && <PanelError what="Revisión" error={run.error} onRetry={() => run.mutate()} />}
-    {d.learning && <LearningPanel items={d.learning} />}
+    {learning.length > 0 && <>
+      <StatusStrip items={learning} activity={d.activity} />
+      <TodoList items={learning} activity={d.activity} />
+      <LiveProgress items={learning} />
+      <TodayForecasts items={learning} />
+      <ExamView items={learning} />
+      <Glossary />
+    </>}
+    <details className="rounded-lg border border-border bg-surface p-4">
+      <summary className="cursor-pointer text-sm font-semibold">Detalles técnicos <span className="font-normal text-muted">· modelos, simulaciones manuales, todos los pronósticos y huecos de datos</span></summary>
+      <div className="mt-4 space-y-5">
+    <p className="rounded border border-warn/30 bg-warn/5 p-3 text-sm">EXPERIMENTAL — probabilidades sin calibración demostrada. «Revisar ahora» registra pronósticos y revisa los ya emitidos; no entrena ni abre operaciones. <Link className="underline" to="/operaciones">Ver las entradas automáticas anteriores →</Link></p>
     {!d.markets.length && <p>No hay modelos entrenados todavía. Los bloqueos de datos se muestran abajo.</p>}
     <div className="grid gap-4 lg:grid-cols-2">{d.markets.map(m => <Card key={m.model_id}><CardHeader title={`${m.market === 'BTC' ? 'Bitcoin · 30 días' : 'Acciones · 20 sesiones'} · ${m.model.version}`} sub={`${m.model.train_n.toLocaleString()} observaciones de entrenamiento · última etiqueta ${m.model.train_target_end}`} /><CardBody><dl className="grid grid-cols-3 gap-3 text-sm"><div><dt>Pronósticos</dt><dd>{m.n}</dd></div><div><dt>Resultados maduros</dt><dd>{m.mature}</dd></div><div><dt>Pendientes</dt><dd>{m.pending}</dd></div><div><dt>Aciertos / fallos</dt><dd>{m.hits} / {m.failures}</dd></div><div><dt>Tasa de acierto</dt><dd>{pct(m.accuracy)}</dd></div><div><dt>Siempre subida</dt><dd>{pct(m.always_up_accuracy)}</dd></div><div><dt>Momentum</dt><dd>{pct(m.momentum_accuracy)}</dd></div><div><dt>Brier</dt><dd>{metric(m.brier)}</dd></div><div><dt>LogLoss</dt><dd>{metric(m.logloss)}</dd></div></dl><p className="mt-3 text-xs text-muted">{m.model.universe.join(', ')}. Las observaciones solapadas no son apuestas independientes. V1 sigue siempre como referencia; el campeón lo decide la política de aprendizaje (arriba). Cohortes sin solapamiento temporal por valor: {m.nonoverlap_n}; no mide independencia entre valores. Abstenciones por regla: {m.abstentions}; los huecos de datos se muestran abajo.</p><div className="mt-4 border-t border-border pt-3 text-sm"><b>Operaciones vinculadas: {m.paper.open} abiertas · {m.paper.closed} cerradas</b><p>Ganancia media: {pct(m.paper.mean_win)} · pérdida media: {pct(m.paper.mean_loss)} · peor drawdown por operación: {pct(m.paper.worst_trade_drawdown)} · exceso medio vs benchmark: {pct(m.paper.mean_excess_vs_benchmark)}.</p>{!m.paper.metrics_available && <p className="text-xs text-muted">Las estadísticas agregadas se muestran con al menos 10 operaciones cerradas. Costes no modelados. No se calcula una cartera con capital repetido.</p>}{m.paper.items.map(item => <Link className="mr-3 underline" key={item.simulation_id} to={item.market === 'BTC' ? `/bitcoin` : `/simulations/${item.simulation_id}`}>{item.state} · ver operación</Link>)}</div></CardBody></Card>)}</div>
     {!!d.comparisons?.length && <Card><CardHeader title="Candidatos frente a V1: mismas fechas y valores" /><CardBody>{d.comparisons.map(c => <p className="text-sm" key={c.candidate_id}>{c.market} · {c.version}: {c.matched_mature_n} pares maduros comparables. Acierto V1: {pct(c.baseline_accuracy)} · candidato: {pct(c.candidate_accuracy)}. Sin promoción automática.</p>)}</CardBody></Card>}
@@ -37,5 +54,7 @@ export function ForwardPage() {
     <Card><CardHeader title="Comparaciones históricas" /><CardBody>{d.replays.map(r => <p key={`${r.market}-${r.window_months}`} className="mb-2 text-sm">{r.market} · {r.window_months} meses: {r.status === 'BLOCKED_RESERVED_PERIODS' ? 'Bloqueado por periodos reservados' : r.status === 'PARTIAL_RESERVED_PERIODS' ? 'Tramo permitido evaluado; el resto sigue reservado' : 'Sin cohortes permitidas'}. {r.n != null && <span> N={r.n}; sin solapamiento={r.nonoverlap_n}. Acierto: {pct(r.accuracy ?? null)}; siempre subida: {pct(r.always_up_accuracy ?? null)}; Brier: {metric(r.brier ?? null)}.</span>}</p>)}</CardBody></Card>
     {!!d.gaps.length && <Card><CardHeader title="Disponibilidad de datos" /><CardBody>{d.gaps.slice(-15).map((g, i) => <p key={i} className="text-xs text-warn">{g.market} {g.ticker ?? ''}: {g.reason}</p>)}</CardBody></Card>}
     <p className="text-xs text-muted">Este panel mide pronósticos, no una cartera invertible. Las operaciones y sus ganancias/pérdidas se consultan en Operaciones y Simulation Lab. Costes no modelados: no se presenta rentabilidad neta.</p>
+      </div>
+    </details>
   </section>
 }

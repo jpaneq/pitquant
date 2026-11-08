@@ -508,6 +508,7 @@ def review_policy(s: Session, market: str, now: datetime) -> dict[str, Any]:
 def learning_step(s: Session, market: str, root: Path, now: datetime) -> dict[str, Any]:
     """Exam once, this month's refit, then the forward switch rule. Order matters."""
     exam = run_exam(s, market, root, now)
+    exam_series(s, market, now)
     refit = monthly_refit(s, market, root, now)
     review = review_policy(s, market, now)
     s.commit()
@@ -522,16 +523,202 @@ def learning_step(s: Session, market: str, root: Path, now: datetime) -> dict[st
     }
 
 
+CALIBRATION_BINS = np.round(np.arange(0.30, 0.851, 0.05), 2)
+
+
+def exam_series(s: Session, market: str, now: datetime | None = None) -> Record | None:
+    """Month-by-month and calibration view of the exam, derived ONCE from its frozen file.
+
+    Outcomes were already read by the exam; this only re-aggregates them for display and adds
+    nothing to any decision (policy, refits). Stored as an immutable ``EXAM_SERIES`` record.
+    """
+    key = f"series:exam:{LEARNING}:{market}"
+    done = s.scalar(select(Record).where(Record.record_key == key))
+    if done is not None:
+        return done
+    exam = exam_record(s, market)
+    if exam is None:
+        return None
+    now = require_aware(now or utc_now())
+    frozen = Path(exam.payload["predictions_file"])
+    with np.load(frozen, allow_pickle=False) as z:
+        rows = pd.DataFrame(
+            {
+                "ticker": z["ticker"],
+                "feature_date": [date.fromisoformat(d) for d in z["feature_date"]],
+                "target_date": [date.fromisoformat(d) for d in z["target_date"]],
+                "p_v1": z["p_v1"],
+                "p_learning": z["p_learning"],
+            }
+        )
+    frames, _ = training_frames(s, market, now, tickers=sorted(set(rows.ticker)), full_history=True)
+    rows = rows[rows.ticker.isin(frames)].reset_index(drop=True)
+    actual = _outcomes(frames, rows)
+    keep = np.isfinite(actual)
+    rows, y = rows[keep].reset_index(drop=True), (actual[keep] > 0).astype(float)
+    base = float(exam.payload["base_rate_p"])
+    rows["y"] = y
+    rows["month"] = rows.feature_date.map(lambda d: f"{d:%Y-%m}")
+    for arm in ("v1", "learning"):
+        p = rows[f"p_{arm}"].to_numpy()
+        rows[f"hit_{arm}"] = (p >= 0.5) == (y == 1)
+        rows[f"ll_{arm}"] = _logloss(p, y)
+    rows["ll_base"] = _logloss(np.full(len(rows), base), y)
+    monthly = [
+        {
+            "month": month,
+            "n": len(g),
+            "up_rate": float(g.y.mean()),
+            "acc_v1": float(g.hit_v1.mean()),
+            "acc_learning": float(g.hit_learning.mean()),
+            "gain_v1": float((g.ll_base - g.ll_v1).mean()),
+            "gain_learning": float((g.ll_base - g.ll_learning).mean()),
+        }
+        for month, g in rows.groupby("month", sort=True)
+    ]
+    calibration: dict[str, list[dict[str, float]]] = {}
+    for arm in ("v1", "learning"):
+        p = rows[f"p_{arm}"].to_numpy()
+        idx = np.digitize(p, CALIBRATION_BINS)
+        calibration[arm] = [
+            {
+                "p_mean": float(p[idx == i].mean()),
+                "up_rate": float(y[idx == i].mean()),
+                "n": int((idx == i).sum()),
+            }
+            for i in np.unique(idx)
+            if (idx == i).sum() >= 30
+        ]
+    payload = {
+        "exam_id": exam.record_id,
+        "predictions_sha256": hashlib.sha256(frozen.read_bytes()).hexdigest(),
+        "monthly": monthly,
+        "calibration": calibration,
+        "derived_at": now.isoformat(),
+        "note": "display aggregation of already-evaluated exam rows; no decision uses it",
+    }
+    row = append(s, key, "EXAM_SERIES", market, payload)
+    s.commit()
+    return row
+
+
+def live_track(s: Session, market: str) -> dict[str, Any]:
+    """Matured real forecasts, cumulative by maturity date, for V1 and for the refits."""
+    v1 = baseline_model(s, market)
+    models = {m.record_id: m for m in records(s, "MODEL", market)}
+    outcome = {r.payload["prediction_id"]: r.payload for r in records(s, "OUTCOME", market)}
+    predictions = records(s, "PREDICTION", market)
+    pending = [p for p in predictions if p.record_id not in outcome]
+    arms: dict[str, list[tuple[str, float, float, float]]] = {"v1": [], "learning": []}
+    for pred in predictions:
+        o = outcome.get(pred.record_id)
+        model = models.get(pred.payload["model_id"])
+        if o is None or model is None:
+            continue
+        arm = "v1" if v1 is not None and model.record_id == v1.record_id else None
+        if model.payload.get("family") == LEARNING:
+            arm = "learning"
+        if arm is None:
+            continue
+        y = float(o["actual_return"] > 0)
+        p = float(pred.payload["p_up"])
+        base = float(model.payload.get("train_up_rate") or 0.5)
+        gain = float(
+            _logloss(np.array([base]), np.array([y]))[0] - _logloss(np.array([p]), np.array([y]))[0]
+        )
+        arms[arm].append((o["target_date"], float((p >= 0.5) == (y == 1)), y, gain))
+    series: dict[str, list[dict[str, Any]]] = {}
+    for arm, rows in arms.items():
+        rows.sort()
+        points, hits, ups, gains = [], 0.0, 0.0, 0.0
+        for i, (day, hit, up, gain) in enumerate(rows, start=1):
+            hits, ups, gains = hits + hit, ups + up, gains + gain
+            if i == len(rows) or rows[i][0] != day:
+                points.append(
+                    {
+                        "date": day,
+                        "n": i,
+                        "accuracy": hits / i,
+                        "up_rate": ups / i,
+                        "gain": gains / i,
+                    }
+                )
+        series[arm] = points
+    return {
+        "series": series,
+        "matured": sum(len(v) for v in arms.values()),
+        "pending": len(pending),
+        "next_maturity": min((p.payload["due_at"] for p in pending), default=None),
+    }
+
+
+def latest_forecasts(s: Session, market: str) -> list[dict[str, Any]]:
+    """The champion's forecasts on its latest feature date, with their latest checkpoint."""
+    best = champion(s, market)
+    if best is None:
+        return []
+    mine = [p for p in records(s, "PREDICTION", market) if p.payload["model_id"] == best.record_id]
+    if not mine:
+        return []
+    day = max(p.payload["feature_date"] for p in mine)
+    latest: dict[str, dict[str, Any]] = {}
+    for r in records(s, "REVIEW", market) + records(s, "OUTCOME", market):
+        prev = latest.get(r.payload["prediction_id"])
+        if prev is None or r.payload["step"] > prev["step"]:
+            latest[r.payload["prediction_id"]] = r.payload
+    out = []
+    for p in mine:
+        if p.payload["feature_date"] != day:
+            continue
+        check = latest.get(p.record_id)
+        out.append(
+            {
+                "id": p.record_id,
+                "ticker": p.payload["ticker"],
+                "p_up": p.payload["p_up"],
+                "feature_date": day,
+                "reference_price": p.payload["reference_price"],
+                "due_at": p.payload["due_at"],
+                "horizon": p.payload["horizon"],
+                "last_step": check["step"] if check else 0,
+                "last_return": check["actual_return"] if check else None,
+                "final_hit": check["hit"] if check and check.get("final") else None,
+            }
+        )
+    return sorted(out, key=lambda r: -float(r["p_up"]))
+
+
+def activity(s: Session) -> dict[str, Any]:
+    """When the daily cycle last wrote something, and whether launchd has the job."""
+    last = s.scalar(
+        select(Record.created_at)
+        .where(Record.kind.in_(["PREDICTION", "REVIEW", "OUTCOME"]))
+        .order_by(Record.created_at.desc())
+        .limit(1)
+    )
+    plist = Path.home() / "Library/LaunchAgents/com.pitquant.forward-learning.plist"
+    return {
+        "last_activity": last.isoformat() if last else None,
+        "schedule_installed": plist.exists(),
+    }
+
+
 def learning_dashboard(s: Session) -> list[dict[str, Any]]:
     out = []
     for market in MARKETS:
         exam = exam_record(s, market)
         best = champion(s, market)
+        series = s.scalar(
+            select(Record).where(Record.record_key == f"series:exam:{LEARNING}:{market}")
+        )
         out.append(
             {
                 "market": market,
                 "family": LEARNING,
                 "exam": exam.payload if exam else None,
+                "exam_series": series.payload if series else None,
+                "live": live_track(s, market),
+                "latest": latest_forecasts(s, market),
                 "policy_history": [r.payload for r in records(s, "POLICY", market)],
                 "champion": {
                     "model_id": best.record_id,

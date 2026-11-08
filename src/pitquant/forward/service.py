@@ -134,6 +134,6 @@ def run_cycle(
 
 
 def status(s: Session) -> dict[str, Any]:
-    from pitquant.forward.learning import learning_dashboard
+    from pitquant.forward.learning import activity, learning_dashboard
 
-    return {**dashboard(s), "learning": learning_dashboard(s)}
+    return {**dashboard(s), "learning": learning_dashboard(s), "activity": activity(s)}

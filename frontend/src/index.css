@@ -29,8 +29,13 @@
   --down: #c0392b;
   --warn: #a8690a;
   --info: #3a6ea5;
+  /* Chart series (validated: CVD + contrast, both themes). 1 = reentreno, 2 = V1 fijo. */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
 }
 .dark {
+  --series-1: #3987e5;
+  --series-2: #d95926;
   --bg: #0d1016;
   --surface: #141922;
   --surface-2: #1b212c;
