@@ -24,6 +24,8 @@ SUFFIX: dict[str, tuple[str, str, str]] = {
     "HK": ("XHKG", "HKD", "ASIA"),
     "AX": ("XASX", "AUD", "ASIA"),
     "TO": ("XTSE", "CAD", "NA"),
+    # Yahoo lists European investment funds (NAV, Morningstar id 0P…) with the Frankfurt suffix
+    "F": ("XFRA", "EUR", "EU"),
     # index symbols (Yahoo ``^`` prefix): their own key, never read as an exchange suffix. PRICE indices, not total return (see benchmark contract, ADR-0048)
     "^IBEX": ("XMAD", "EUR", "ES"),
 }

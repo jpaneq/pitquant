@@ -18,6 +18,7 @@ from pitquant.forward.engine import (
     append,
     dashboard,
     digest,
+    extra_names,
     fit_model,
     predict,
     records,
@@ -82,6 +83,16 @@ def run_cycle(
                 frames_live[ticker] = load_frame(s, market, ticker, now)
             except ValueError as exc:
                 summary["gaps"].append({"market": market, "ticker": ticker, "reason": str(exc)})
+        if any(extra_names(m.payload) for m in active):  # v3: this month's fundamentals
+            from datetime import timedelta
+
+            from pitquant.forward.fundamentals import attach, fund_table
+
+            since = (now - timedelta(days=62)).date()
+            for ticker, bars in list(frames_live.items()):
+                attrs = bars.attrs
+                frames_live[ticker] = attach(bars, fund_table(s, ticker, now, since))
+                frames_live[ticker].attrs = attrs
         for m in active:
             for ticker in m.payload["universe"]:
                 if ticker not in frames_live:
@@ -134,6 +145,14 @@ def run_cycle(
 
 
 def status(s: Session) -> dict[str, Any]:
+    from pitquant.forward.funds import board
     from pitquant.forward.learning import activity, learning_dashboard
+    from pitquant.forward.learning_v3 import v3_dashboard
 
-    return {**dashboard(s), "learning": learning_dashboard(s), "activity": activity(s)}
+    return {
+        **dashboard(s),
+        "learning": learning_dashboard(s),
+        "v3": v3_dashboard(s),
+        "activity": activity(s),
+        "funds": board(s),
+    }

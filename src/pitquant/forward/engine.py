@@ -106,14 +106,21 @@ def features(bars: pd.DataFrame) -> pd.DataFrame:
 
 
 def training_rows(
-    bars: pd.DataFrame, market: str, ticker: str, cutoff: date | None = None
+    bars: pd.DataFrame,
+    market: str,
+    ticker: str,
+    cutoff: date | None = None,
+    extra: tuple[str, ...] = (),
 ) -> pd.DataFrame:
-    """Rows whose feature AND target dates are strictly before ``cutoff`` (default: V1 seal)."""
+    """Rows whose feature AND target dates are strictly before ``cutoff`` (default: V1 seal).
+    ``extra``: point-in-time columns already on ``bars`` (fundamentals, ADR-0066)."""
     cutoff = cutoff or date.fromisoformat(str(MARKETS[market]["cutoff"]))
     # Filter BEFORE any target construction: reserved prices cannot enter a target.
     b = bars[bars.index < cutoff]
     h = int(MARKETS[market]["horizon"])
     x = features(b)
+    for name in extra:
+        x[name] = b[name].astype(float) if name in b else float("nan")
     price = b.get("signal_close", b.close)
     x["actual_return"] = price.shift(-h) / price - 1
     x["target_date"] = pd.Series(b.index, index=b.index).shift(-h)
@@ -136,8 +143,11 @@ def fit_model(
     family: str = VERSION,
     label: str | None = None,
     archive: bool = True,
+    extra_features: tuple[str, ...] = (),
 ) -> Record:
     """Fit one logistic model with the frozen V1 features/parameters.
+
+    ``extra_features`` appends point-in-time columns after the 10 price features (v3).
 
     Defaults reproduce V1 exactly. ``family``/``label``/``cutoff`` identify the learning
     refits (ADR-0064): same algorithm, wider universe, training window up to ``cutoff``.
@@ -162,7 +172,8 @@ def fit_model(
         if digest(existing.payload) != existing.payload_hash:
             raise ValueError("MODEL_INTEGRITY_ERROR")
         return existing
-    rows = [training_rows(b, market, t, cutoff) for t, b in sorted(frames.items())]
+    names = [*FEATURES, *extra_features]
+    rows = [training_rows(b, market, t, cutoff, extra_features) for t, b in sorted(frames.items())]
     data = pd.concat(rows, ignore_index=True) if rows else pd.DataFrame()
     if candidate:
         seen = set()
@@ -190,9 +201,9 @@ def fit_model(
         data = pd.concat([data, pd.DataFrame(learned)], ignore_index=True)
     if len(data) < 250 or data.actual_return.gt(0).nunique() != 2:
         raise ValueError("INSUFFICIENT_ALLOWED_TRAINING_DATA")
-    if data[FEATURES].isna().all().any():
+    if data[names].isna().all().any():
         raise ValueError("ALL_MISSING_TRAIN_COLUMN")
-    x = data[FEATURES].to_numpy(float)
+    x = data[names].to_numpy(float)
     y = data.actual_return.gt(0).astype(int).to_numpy()
     if replay_at is not None and (data.target_date >= replay_at).any():
         raise ValueError("IMMATURE_REPLAY_TRAIN_LABEL")
@@ -235,13 +246,22 @@ def fit_model(
     if family != VERSION:  # V1 protocol keys stay byte-identical
         protocol["family"] = family
         protocol["learning_adr"] = "ADR-0064"
+    if extra_features:
+        protocol["features"] = names
+        protocol["extra_features_adr"] = "ADR-0066"
+    prior = s.scalar(select(Record).where(Record.record_key == f"protocol:{key}"))
+    if prior is not None and {k: v for k, v in prior.payload.items() if k != "frozen_at"} == {
+        k: v for k, v in protocol.items() if k != "frozen_at"
+    }:
+        protocol = dict(prior.payload)  # retry of a failed fit on the SAME data: keep its freeze
     append(s, f"protocol:{key}", "PROTOCOL", market, protocol)
     s.commit()  # must survive a failed fit
     target: Path | None = None
     artifact_hash: str | None = None
+    stem = f"{market}-pricefund-{version}" if extra_features else f"{market}-{version}"
     if archive:
         root.mkdir(parents=True, exist_ok=True)
-        target = root / f"{market}-{version}-{dataset_hash[:12]}.npz"
+        target = root / f"{stem}-{dataset_hash[:12]}.npz"
         buffer = io.BytesIO()
         np.savez_compressed(
             buffer,
@@ -257,7 +277,7 @@ def fit_model(
                 checked["y"], y
             ):
                 raise ValueError("TRAINING_ARCHIVE_INTEGRITY_ERROR")
-        publish(root / f"{market}-{version}-protocol.json", encoded(protocol))
+        publish(root / f"{stem}-protocol.json", encoded(protocol))
         artifact_hash = hashlib.sha256(target.read_bytes()).hexdigest()
     pipeline = make_pipeline(
         SimpleImputer(strategy="median"), StandardScaler(), LogisticRegression(**PARAMS)
@@ -285,7 +305,7 @@ def fit_model(
         "excluded": exclusions,
         "parameters": PARAMS,
         "sklearn_version": sklearn.__version__,
-        "feature_names": FEATURES,
+        "feature_names": names,
         "imputer": imputer.statistics_.tolist(),
         "mean": scaler.mean_.tolist(),
         "scale": scaler.scale_.tolist(),
@@ -297,10 +317,15 @@ def fit_model(
     if family != VERSION:
         payload["family"] = family
     if archive:
-        publish(root / f"{market}-{version}-model.json", encoded(payload))
+        publish(root / f"{stem}-model.json", encoded(payload))
     row = append(s, key, "REPLAY_MODEL" if replay_at else "MODEL", market, payload)
     s.commit()
     return row
+
+
+def extra_names(model: dict[str, Any]) -> list[str]:
+    """Inputs of a model beyond the 10 price features (empty for V1/v2)."""
+    return list(model.get("feature_names", FEATURES))[len(FEATURES) :]
 
 
 def probability(model: dict[str, Any], values: list[float | None]) -> float:
@@ -340,6 +365,9 @@ def predict(
     if pd.isna(x.ret60) or pd.isna(x.sma200):
         raise ValueError("MISSING_FEATURE_HISTORY")
     values = [None if pd.isna(v) else float(v) for v in x]
+    for name in extra_names(model.payload):  # v3: fundamentals already attached to ``bars``
+        v = bars[name].iloc[-1] if name in bars else None
+        values.append(None if v is None or pd.isna(v) else float(v))
     day = bars.index[-1]
     key = f"prediction:{model.record_id}:{ticker}:{day}"
     existing = s.scalar(select(Record).where(Record.record_key == key))

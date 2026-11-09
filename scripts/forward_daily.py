@@ -4,8 +4,11 @@ forecasts -> reviews of matured forecasts. Idempotent; safe to run several times
     export PITQUANT_DATABASE_URL=sqlite+pysqlite:///data/pitquant.db
     .venv/bin/python scripts/forward_daily.py
 
-``--no-ingest`` skips the downloads (Yahoo for US equities, Binance for BTC).
+``--no-ingest`` skips the downloads (Yahoo equities + funds, Binance BTC, SEC filings).
 ``--backfill-btc`` downloads every daily BTC candle since 2017 (first run only).
+SEC filings (ADR-0066) need the SEC identification ("Name email") in the environment
+``PITQUANT_SEC_USER_AGENT`` or in ``data/sec_user_agent.txt`` (not versioned); without it
+that step is skipped and v3 keeps the fundamentals it already has.
 No orders are ever opened.
 """
 
@@ -26,8 +29,26 @@ sys.path.insert(0, str(ROOT / "src"))
 from pitquant.config.settings import get_settings  # noqa: E402
 from pitquant.data.archive import ArchiveStore  # noqa: E402
 from pitquant.db.session import make_engine, make_session_factory  # noqa: E402
+from pitquant.forward import funds  # noqa: E402
 from pitquant.forward.learning import US_UNIVERSE, backfill_btc  # noqa: E402
 from pitquant.forward.service import run_cycle  # noqa: E402
+
+
+def ingest_sec(session: object, cfg: object, store: ArchiveStore) -> object:
+    """New 10-K/10-Q filings of the US universe (already-known accessions are skipped)."""
+    ua_file = Path("data/sec_user_agent.txt")
+    if not os.environ.get("PITQUANT_SEC_USER_AGENT") and ua_file.exists():
+        os.environ["PITQUANT_SEC_USER_AGENT"] = ua_file.read_text().strip()
+    if not os.environ.get("PITQUANT_SEC_USER_AGENT"):
+        return "SKIPPED: no SEC identification configured"
+    from pitquant.cli import _sec_provider
+    from pitquant.jobs.sec_universe import ingest_fundamentals
+
+    try:
+        res = ingest_fundamentals(session, cfg, _sec_provider(cfg), store, US_UNIVERSE)  # type: ignore[arg-type]
+    except Exception as exc:  # a SEC outage never stops the forecasts
+        return f"FAILED: {str(exc)[:160]}"
+    return {t: r.get("status") for t, r in res.items()}
 
 
 def main() -> None:
@@ -56,9 +77,12 @@ def main() -> None:
             else:
                 result["ingest_btc"] = PublicProvider(session, store).spot().status
                 session.commit()
+            result["ingest_funds"] = funds.ingest(session, store)
+            result["ingest_sec"] = ingest_sec(session, cfg, store)
         result["cycle"] = run_cycle(
             session, Path("data/forward-pilots-v1"), train=True, learn=True, cfg=cfg
         )
+        result["funds"] = funds.cycle(session)  # after the cycle: uses this month's champion
     print(json.dumps(result, indent=2, default=str))
 
 

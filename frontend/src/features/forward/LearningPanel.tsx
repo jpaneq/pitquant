@@ -20,7 +20,7 @@ export type Learning = {
   market: string
   exam: Exam | null
   exam_series?: { monthly: Monthly[]; calibration: { v1: Calib[]; learning: Calib[] } } | null
-  live?: { series: { v1: LivePoint[]; learning: LivePoint[] }; matured: number; pending: number; next_maturity: string | null }
+  live?: { series: { v1: LivePoint[]; learning: LivePoint[]; v3?: LivePoint[] }; matured: number; pending: number; next_maturity: string | null }
   latest?: Forecast[]
   policy_history: { policy: string; reason: string; decided_at: string }[]
   champion: { model_id: string; version: string; family: string } | null
@@ -67,7 +67,7 @@ export function StatusStrip({ items, activity }: { items: Learning[]; activity?:
     {items.map(i => {
       const p = policyOf(i)
       return <Tile key={i.market} label={NAME[i.market] ?? i.market} tone="info"
-        value={p === 'LEARNING' ? 'Aprendiendo' : p === 'FROZEN_V1' ? 'Modelo fijo' : 'Sin examen'}
+        value={p === 'LEARNING_V3' ? 'Aprende con resultados' : p === 'LEARNING' ? 'Aprendiendo' : p === 'FROZEN_V1' ? 'Modelo fijo' : 'Sin examen'}
         sub={i.champion ? `Usa el modelo ${i.champion.version}` : 'Sin modelo'} />
     })}
     <Tile label="Próximo resultado" value={next ? day(next) : '—'} sub={`${pending} pronósticos esperando su fecha`} />
@@ -106,9 +106,10 @@ export function LiveProgress({ items }: { items: Learning[] }) {
 }
 
 function LiveMarket({ item }: { item: Learning }) {
-  const champ = policyOf(item) === 'LEARNING' ? 'learning' : 'v1'
+  const policy = policyOf(item)
+  const champ = policy === 'LEARNING_V3' ? 'v3' : policy === 'LEARNING' ? 'learning' : 'v1'
   const main = item.live?.series[champ] ?? []
-  const other = item.live?.series[champ === 'learning' ? 'v1' : 'learning'] ?? []
+  const other = item.live?.series[champ === 'v1' ? 'learning' : 'v1'] ?? []
   const pairs = item.forward.pairs
   const last = main.at(-1)
   return <section aria-label={`Progreso ${item.market}`} className="space-y-3">
@@ -123,9 +124,9 @@ function LiveMarket({ item }: { item: Learning }) {
         series={[
           { key: 'champ', label: 'Campeón', color: C1, values: main.map(p => p.accuracy) },
           { key: 'base', label: 'Siempre sube', color: MUTED, dashed: true, values: main.map(p => p.up_rate) },
-          ...(other.length ? [{ key: 'other', label: champ === 'learning' ? 'V1 fijo' : 'Reentreno', color: C2, values: main.map(p => other.find(o => o.date === p.date)?.accuracy ?? null) }] : []),
+          ...(other.length ? [{ key: 'other', label: champ === 'v1' ? 'Reentreno' : 'V1 fijo', color: C2, values: main.map(p => other.find(o => o.date === p.date)?.accuracy ?? null) }] : []),
         ]} />
-      <Legend items={[{ label: 'Campeón', color: C1 }, { label: 'Siempre sube', color: MUTED, dashed: true }, ...(other.length ? [{ label: champ === 'learning' ? 'V1 fijo' : 'Reentreno', color: C2 }] : [])]} />
+      <Legend items={[{ label: 'Campeón', color: C1 }, { label: 'Siempre sube', color: MUTED, dashed: true }, ...(other.length ? [{ label: champ === 'v1' ? 'Reentreno' : 'V1 fijo', color: C2 }] : [])]} />
     </> : <div className="rounded-lg border border-dashed border-border bg-surface-2/50 p-5 text-sm">
       <p className="font-medium">Aún no ha vencido ningún pronóstico.</p>
       <p className="mt-1 text-muted">{item.live?.next_maturity ? <>El primero vence el <b className="text-fg">{day(item.live.next_maturity)}</b>.</> : 'Sin pronósticos pendientes.'} Desde ese día verás aquí una línea azul (acierto del algoritmo) y otra gris discontinua (acierto de decir siempre «sube»). <b className="text-fg">Si la azul va por encima de forma sostenida, el algoritmo aporta algo.</b></p>

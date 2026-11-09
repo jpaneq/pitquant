@@ -159,13 +159,17 @@ def _scores(model: dict[str, Any], x: np.ndarray) -> np.ndarray:
     return np.asarray(1 / (1 + np.exp(-score)), dtype=float)
 
 
-def _decisions(frames: dict[str, pd.DataFrame], market: str, start: date) -> pd.DataFrame:
+def _decisions(
+    frames: dict[str, pd.DataFrame], market: str, start: date, extra: tuple[str, ...] = ()
+) -> pd.DataFrame:
     """Feature rows from ``start`` on. Features are causal, so one pass over the full frame
     equals recomputing on each truncated past. Outcomes are NOT attached here."""
     h = int(MARKETS[market]["horizon"])
     out = []
     for ticker, bars in sorted(frames.items()):
         x = features(bars)
+        for name in extra:  # point-in-time columns already attached (fundamentals)
+            x[name] = bars[name].astype(float)
         x["target_date"] = pd.Series(bars.index, index=bars.index).shift(-h)
         x["ticker"] = ticker
         x["feature_date"] = x.index
@@ -404,16 +408,21 @@ def set_policy(
     return append(s, f"policy:{market}:{digest(payload)}", "POLICY", market, payload)
 
 
-def learning_models(s: Session, market: str) -> list[Record]:
-    return [m for m in records(s, "MODEL", market) if m.payload.get("family") == LEARNING]
+def learning_models(s: Session, market: str, family: str = LEARNING) -> list[Record]:
+    return [m for m in records(s, "MODEL", market) if m.payload.get("family") == family]
+
+
+# Policy -> family whose latest monthly refit is champion (LEARNING_V3: ADR-0066).
+POLICY_FAMILY = {"LEARNING": LEARNING, "LEARNING_V3": "forward-logistic-pricefund-v3"}
 
 
 def champion(s: Session, market: str) -> Record | None:
     policy = current_policy(s, market)
     if policy is None:
         return baseline_model(s, market)
-    if policy["policy"] == "LEARNING":
-        refits = learning_models(s, market)
+    family = POLICY_FAMILY.get(policy["policy"])
+    if family:
+        refits = learning_models(s, market, family)
         if refits:
             return refits[-1]
     return baseline_model(s, market)
@@ -512,6 +521,15 @@ def learning_step(s: Session, market: str, root: Path, now: datetime) -> dict[st
     refit = monthly_refit(s, market, root, now)
     review = review_policy(s, market, now)
     s.commit()
+    v3: dict[str, Any] | None = None
+    if market == "EQUITY":  # v3 needs company fundamentals: equities only (ADR-0066)
+        from pitquant.forward.learning_v3 import step_v3
+
+        try:
+            v3 = step_v3(s, root, now)
+        except ValueError as exc:
+            s.rollback()
+            v3 = {"gap": str(exc)}
     best = champion(s, market)
     return {
         "market": market,
@@ -520,6 +538,7 @@ def learning_step(s: Session, market: str, root: Path, now: datetime) -> dict[st
         "refit": refit.payload["version"],
         "champion": best.payload["version"] if best else None,
         "switched": review["switched"],
+        "v3": v3,
     }
 
 
@@ -609,7 +628,7 @@ def live_track(s: Session, market: str) -> dict[str, Any]:
     outcome = {r.payload["prediction_id"]: r.payload for r in records(s, "OUTCOME", market)}
     predictions = records(s, "PREDICTION", market)
     pending = [p for p in predictions if p.record_id not in outcome]
-    arms: dict[str, list[tuple[str, float, float, float]]] = {"v1": [], "learning": []}
+    arms: dict[str, list[tuple[str, float, float, float]]] = {"v1": [], "learning": [], "v3": []}
     for pred in predictions:
         o = outcome.get(pred.record_id)
         model = models.get(pred.payload["model_id"])
@@ -618,6 +637,8 @@ def live_track(s: Session, market: str) -> dict[str, Any]:
         arm = "v1" if v1 is not None and model.record_id == v1.record_id else None
         if model.payload.get("family") == LEARNING:
             arm = "learning"
+        elif model.payload.get("family") == POLICY_FAMILY["LEARNING_V3"]:
+            arm = "v3"
         if arm is None:
             continue
         y = float(o["actual_return"] > 0)
@@ -692,7 +713,7 @@ def activity(s: Session) -> dict[str, Any]:
     """When the daily cycle last wrote something, and whether launchd has the job."""
     last = s.scalar(
         select(Record.created_at)
-        .where(Record.kind.in_(["PREDICTION", "REVIEW", "OUTCOME"]))
+        .where(Record.kind.in_(["PREDICTION", "REVIEW", "OUTCOME", "FUND_PREDICTION"]))
         .order_by(Record.created_at.desc())
         .limit(1)
     )

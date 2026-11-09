@@ -173,4 +173,5 @@ def test_exam_series_matches_exam_and_is_derived_once(session, tmp_path, btc, mo
     assert exam_series(session, "BTC", NOW).record_id == series.record_id
     board = {b["market"]: b for b in learning_dashboard(session)}["BTC"]
     assert board["exam_series"]["monthly"] == p["monthly"]
-    assert board["live"]["matured"] == 0 and board["live"]["series"] == {"v1": [], "learning": []}
+    assert board["live"]["matured"] == 0
+    assert board["live"]["series"] == {"v1": [], "learning": [], "v3": []}

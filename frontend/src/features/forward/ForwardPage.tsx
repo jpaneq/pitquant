@@ -3,13 +3,15 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api, apiPost } from '../../api/client'
 import { Button, Card, CardBody, CardHeader, PanelError, Skeleton } from '../../components/ui/primitives'
+import { FundsPanel, type Fund } from './FundsPanel'
+import { V3Panel, type V3 } from './V3Panel'
 import { ExamView, Glossary, LiveProgress, StatusStrip, TodayForecasts, TodoList, type Activity, type Learning } from './LearningPanel'
 
 type Paper = { total: number; closed: number; open: number; metrics_available: boolean; mean_win: number | null; mean_loss: number | null; worst_trade_drawdown: number | null; mean_excess_vs_benchmark: number | null; items: {simulation_id: string; market: string; state: string}[] }
 type Model = { market: string; model_id: string; model: { version: string; train_n: number; train_target_end: string; trained_at: string; universe: string[] }; paper: Paper; nonoverlap_n: number; abstentions: number; n: number; mature: number; pending: number; hits: number; failures: number; accuracy: number | null; brier: number | null; logloss: number | null; always_up_accuracy: number | null; momentum_accuracy: number | null }
 type Prediction = { id: string; market: string; version: string; ticker: string; generated_at: string; issued_at?: string; feature_date: string; reference_price: number; due_at: string; p_up: number }
 type Review = { prediction_id: string; step: number; close: number; actual_return: number; final: boolean; hit: boolean | null }
-type Evidence = { learning?: Learning[]; activity?: Activity; comparisons?: {market: string; version: string; candidate_id: string; matched_mature_n: number; baseline_accuracy: number | null; candidate_accuracy: number | null}[]; markets: Model[]; predictions: Prediction[]; reviews: Review[]; outcomes: Review[]; gaps: { market: string; ticker?: string; reason: string; observed_at: string }[]; replays: { market: string; window_months: number; status: string; reason: string; n?: number; nonoverlap_n?: number; accuracy?: number; always_up_accuracy?: number; brier?: number }[] }
+type Evidence = { learning?: Learning[]; activity?: Activity; funds?: Fund[]; v3?: V3; comparisons?: {market: string; version: string; candidate_id: string; matched_mature_n: number; baseline_accuracy: number | null; candidate_accuracy: number | null}[]; markets: Model[]; predictions: Prediction[]; reviews: Review[]; outcomes: Review[]; gaps: { market: string; ticker?: string; reason: string; observed_at: string }[]; replays: { market: string; window_months: number; status: string; reason: string; n?: number; nonoverlap_n?: number; accuracy?: number; always_up_accuracy?: number; brier?: number }[] }
 const pct = (n: number | null) => n == null ? 'Pendiente' : `${(n * 100).toFixed(1)}%`
 const metric = (n: number | null) => n == null ? 'Pendiente' : n.toFixed(4)
 
@@ -37,7 +39,9 @@ export function ForwardPage() {
       <TodoList items={learning} activity={d.activity} />
       <LiveProgress items={learning} />
       <TodayForecasts items={learning} />
+      <FundsPanel funds={d.funds ?? []} />
       <ExamView items={learning} />
+      <V3Panel v3={d.v3} />
       <Glossary />
     </>}
     <details className="rounded-lg border border-border bg-surface p-4">
