@@ -50,7 +50,7 @@ export function LineChart({ x, series, yMin, yMax, format, zero, height = 220, l
         <text x={PAD.l - 6} y={sy(t) + 3} textAnchor="end" className="num" fontSize="10" fill="var(--muted)">{format(t)}</text>
       </g>)}
       {zero != null && <line x1={PAD.l} x2={W - PAD.r} y1={sy(zero)} y2={sy(zero)} stroke="var(--muted)" strokeWidth="1" />}
-      {x.map((l, i) => i % every === 0 || i === x.length - 1 ? <text key={l} x={sx(i)} y={H - 8} textAnchor={i === x.length - 1 && x.length > 1 ? 'end' : i === 0 && x.length > 1 ? 'start' : 'middle'} fontSize="10" fill="var(--muted)">{l}</text> : null)}
+      {x.map((l, i) => (i % every === 0 && x.length - 1 - i >= every / 2) || i === x.length - 1 ? <text key={l} x={sx(i)} y={H - 8} textAnchor={i === x.length - 1 && x.length > 1 ? 'end' : i === 0 && x.length > 1 ? 'start' : 'middle'} fontSize="10" fill="var(--muted)">{l}</text> : null)}
       {series.map(s => <path key={s.key} d={path(s.values)} fill="none" stroke={s.color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" strokeDasharray={s.dashed ? '5 4' : undefined} />)}
       {x.length === 1 && series.map(s => s.values[0] != null && <circle key={s.key} cx={sx(0)} cy={sy(s.values[0])} r="4" fill={s.color} />)}
       {hover != null && <>
@@ -104,4 +104,49 @@ export function CompareBars({ rows, min = 0.4, max = 0.7 }: { rows: { label: Rea
   </div>)}
     <p className="num pl-[9.75rem] text-[10px] text-muted">La escala empieza en {Math.round(min * 100)}% para que se vean las diferencias.</p>
   </div>
+}
+
+/** Grouped columns per period (e.g. revenue and net income). Bars start at 0; negatives go down. */
+export function ColumnChart({ x, series, format, label, height = 220 }: {
+  x: string[]; series: Series[]; format: (v: number) => string; label: string; height?: number
+}) {
+  const [hover, setHover] = useState<number | null>(null)
+  const H = height
+  const PL = 66 // long money labels
+  const iw = W - PL - PAD.r
+  const ih = H - PAD.t - PAD.b
+  const all = series.flatMap(s => s.values.filter((v): v is number => v != null))
+  const max = Math.max(0, ...all) * 1.08 || 1
+  const min = Math.min(0, ...all) * 1.08
+  const sy = (v: number) => PAD.t + (1 - (v - min) / (max - min)) * ih
+  const slot = iw / Math.max(1, x.length)
+  const bw = Math.max(2, Math.min(18, (slot - 4) / series.length - 2))
+  const every = Math.max(1, Math.ceil(x.length / 8))
+  return <figure className="relative" aria-label={label}>
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label={label}>
+      {ticks(min, max).map(t => <g key={t}>
+        <line x1={PL} x2={W - PAD.r} y1={sy(t)} y2={sy(t)} stroke="var(--border)" />
+        <text x={PL - 6} y={sy(t) + 3} textAnchor="end" fontSize="10" fill="var(--muted)">{format(t)}</text>
+      </g>)}
+      <line x1={PL} x2={W - PAD.r} y1={sy(0)} y2={sy(0)} stroke="var(--muted)" />
+      {x.map((l, i) => {
+        const cx = PL + slot * i + slot / 2
+        const left = cx - (series.length * (bw + 2)) / 2
+        return <g key={l} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}>
+          <rect x={PL + slot * i} y={PAD.t} width={slot} height={ih} fill={hover === i ? 'var(--surface-2)' : 'transparent'} />
+          {series.map((s, j) => {
+            const v = s.values[i]
+            if (v == null) return null
+            const y0 = sy(0), y1 = sy(v)
+            return <rect key={s.key} x={left + j * (bw + 2)} y={Math.min(y0, y1)} width={bw} height={Math.max(1, Math.abs(y1 - y0))} rx="2" fill={s.color} />
+          })}
+          {((i % every === 0 && x.length - 1 - i >= every / 2) || i === x.length - 1) && <text x={cx} y={H - 8} textAnchor="middle" fontSize="10" fill="var(--muted)">{l}</text>}
+        </g>
+      })}
+    </svg>
+    {hover != null && <div className="pointer-events-none absolute top-1 rounded-md border border-border bg-surface px-2.5 py-1.5 text-[11px] shadow-lg" style={{ left: `${Math.min(70, ((PL + slot * hover) / W) * 100)}%` }}>
+      <b className="block">{x[hover]}</b>
+      {series.map(s => <span key={s.key} className="num flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-full" style={{ background: s.color }} />{s.label}: {s.values[hover] == null ? '—' : format(s.values[hover] as number)}</span>)}
+    </div>}
+  </figure>
 }

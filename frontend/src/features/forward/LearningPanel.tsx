@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { useState, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { Badge, Card, CardBody, CardHeader, Segmented } from '../../components/ui/primitives'
 import { CalibrationChart, CompareBars, Legend, LineChart } from './charts'
 
@@ -164,7 +165,7 @@ function ForecastRow({ r }: { r: Forecast }) {
   const off = (r.p_up - 0.5) * 2 // −1..1
   const up = off >= 0
   return <li className="grid grid-cols-[4rem_1fr_3.5rem_6.5rem] items-center gap-3 text-xs">
-    <b>{r.ticker}</b>
+    <Link className="font-semibold hover:text-accent hover:underline" to={`/empresas/${r.ticker}`}>{r.ticker}</Link>
     <span className="relative h-3 rounded bg-surface-2" aria-label={`Probabilidad de subida ${pct(r.p_up)}`}>
       <span className="absolute inset-y-0 left-1/2 w-px bg-muted" />
       <span className={clsx('absolute inset-y-0', up ? 'left-1/2 rounded-r bg-up/70' : 'right-1/2 rounded-l bg-down/70')} style={{ width: `${Math.abs(off) * 50}%` }} />

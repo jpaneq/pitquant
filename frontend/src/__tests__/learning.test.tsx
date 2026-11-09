@@ -1,5 +1,6 @@
 import { expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { ExamView, LiveProgress, StatusStrip, TodayForecasts, TodoList, type Learning } from '../features/forward/LearningPanel'
 
 const interval = (mean: number, low90: number, high90: number) => ({ mean, low90, high90, clusters: 49 })
@@ -63,7 +64,7 @@ it('flags the missing schedule and ticks it once installed', () => {
 })
 
 it('lists today\'s forecasts with direction and checkpoint progress', () => {
-  render(<TodayForecasts items={[equity]} />)
+  render(<MemoryRouter><TodayForecasts items={[equity]} /></MemoryRouter>)
   expect(screen.getByText('65%')).toBeInTheDocument()
   expect(screen.getByText('45%')).toBeInTheDocument()
   expect(screen.getByText('5/20 · 1.2%')).toBeInTheDocument()

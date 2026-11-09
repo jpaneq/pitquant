@@ -1,6 +1,7 @@
 import { ForwardPage } from './features/forward/ForwardPage'
 import { Route, Routes } from 'react-router-dom'
 import { BitcoinPage } from './features/bitcoin/BitcoinPage'
+import { CompanyPage } from './features/companies/CompanyPage'
 import { AppShell } from './components/AppShell'
 import { AnalyzerHome } from './features/analyzer/AnalyzerHome'
 import { AnalyzerPage } from './features/analyzer/AnalyzerPage'
@@ -29,6 +30,8 @@ export function App() {
         <Route path="simulations/:id" element={<SimulationDetail />} />
         <Route path="rutina" element={<RoutinePage />} />
         <Route path="pilotos" element={<ForwardPage />} />
+        <Route path="empresas" element={<CompanyPage />} />
+        <Route path="empresas/:ticker" element={<CompanyPage />} />
         <Route path="operaciones" element={<OperacionesPage />} />
         <Route path="ayuda" element={<HelpPage />} />
         <Route path="status" element={<StatusPage />} />

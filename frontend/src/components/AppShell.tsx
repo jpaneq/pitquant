@@ -13,6 +13,7 @@ const NAV = [
   { to: '/research', label: 'Research Lab' },
   { to: '/simulations', label: 'Simulations' },
   { to: '/pilotos', label: 'Aprendizaje' },
+  { to: '/empresas', label: 'Empresas' },
   { to: '/operaciones', label: 'Operaciones (gráfico)' },
   { to: '/rutina', label: 'Rutina diaria' },
   { to: '/ayuda', label: 'Ayuda' },
